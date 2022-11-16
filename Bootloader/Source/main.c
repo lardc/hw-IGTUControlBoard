@@ -12,6 +12,7 @@
 void ConfigSysClk();
 void ConfigGPIO();
 void ConfigUART();
+void ConfigCAN();
 void ConfigTimer2();
 void ConfigWatchDog();
 
@@ -27,6 +28,7 @@ int main()
 	ConfigSysClk();
 	ConfigGPIO();
 	ConfigUART();
+	ConfigCAN();
 	ConfigTimer2();
 	ConfigWatchDog();
 	
@@ -52,29 +54,33 @@ void ConfigGPIO()
 	// Включение тактирования портов
 	RCC_GPIO_Clk_EN(PORTA);
 	RCC_GPIO_Clk_EN(PORTB);
+	RCC_GPIO_Clk_EN(PORTC);
 	
 	//Выходы
 	GPIO_Config(LED_BLINK_PORT, LED_BLINK_PIN, Output, PushPull, HighSpeed, NoPull);
 	//
-	GPIO_Config(EXT_DAC_PORT, EXT_DAC_CS, Output, PushPull, HighSpeed, NoPull);
-	GPIO_Bit_Rst(EXT_DAC_PORT, EXT_DAC_CS);
-	GPIO_Config(EXT_DAC_PORT, EXT_DAC_LDAC, Output, PushPull, HighSpeed, NoPull);
-	GPIO_Bit_Rst(EXT_DAC_PORT, EXT_DAC_LDAC);
-	GPIO_Config(EXT_DAC_PORT, EXT_DAC_DATA, Output, PushPull, HighSpeed, NoPull);
-	GPIO_Bit_Rst(EXT_DAC_PORT, EXT_DAC_DATA);
-	GPIO_Config(EXT_DAC_CLK_PORT, EXT_DAC_CLK, Output, PushPull, HighSpeed, NoPull);
-	GPIO_Bit_Rst(EXT_DAC_PORT, EXT_DAC_CLK);
+	GPIO_Config(C_EXT_DAC_PORT, C_EXT_DAC_CS, Output, PushPull, HighSpeed, NoPull);
+	GPIO_Bit_Rst(C_EXT_DAC_PORT, C_EXT_DAC_CS);
+	GPIO_Config(C_EXT_DAC_PORT, C_EXT_DAC_LDAC, Output, PushPull, HighSpeed, NoPull);
+	GPIO_Bit_Rst(C_EXT_DAC_PORT, C_EXT_DAC_LDAC);
+	GPIO_Config(C_EXT_DAC_PORT, C_EXT_DAC_DATA, Output, PushPull, HighSpeed, NoPull);
+	GPIO_Bit_Rst(C_EXT_DAC_PORT, C_EXT_DAC_DATA);
+	GPIO_Config(C_EXT_DAC_CLK_PORT, C_EXT_DAC_CLK, Output, PushPull, HighSpeed, NoPull);
+	GPIO_Bit_Rst(C_EXT_DAC_PORT, C_EXT_DAC_CLK);
 	//
-	GPIO_Config(A_SET_PORT, A_SET_I, Output, PushPull, HighSpeed, NoPull);
-	GPIO_Bit_Rst(A_SET_PORT, A_SET_I);
-	GPIO_Config(A_SET_PORT, A_SET_U, Output, PushPull, HighSpeed, NoPull);
-	GPIO_Bit_Rst(A_SET_PORT, A_SET_U);
+	GPIO_Config(C_A_SET_PORT, C_C_SET_PIN, Output, PushPull, HighSpeed, NoPull);
+	GPIO_Bit_Rst(C_A_SET_PORT, C_C_SET_PIN);
+	GPIO_Config(C_A_SET_PORT, C_V_SET_PIN, Output, PushPull, HighSpeed, NoPull);
+	GPIO_Bit_Rst(C_A_SET_PORT, C_V_SET_PIN);
 	//
-	GPIO_Config(SHORT_OUT_PORT, SHORT_OUT_PIN, Output, PushPull, HighSpeed, NoPull);
-	GPIO_Bit_Rst(SHORT_OUT_PORT, SHORT_OUT_PIN);
+	GPIO_Config(V_SHORT_OUT_PORT, V_SHORT_OUT_PIN, Output, PushPull, HighSpeed, NoPull);
+	GPIO_Bit_Rst(V_SHORT_OUT_PORT, V_SHORT_OUT_PIN);
 	//
-	GPIO_Config(I_START_PORT, I_START_PIN, Output, PushPull, HighSpeed, NoPull);
-	GPIO_Bit_Set(I_START_PORT, I_START_PIN);
+	GPIO_Config(C_ENABLE_PORT, C_ENABLE_PIN, Output, PushPull, HighSpeed, NoPull);
+	GPIO_Bit_Set(C_ENABLE_PORT, C_ENABLE_PIN);
+	//
+	GPIO_Config(C_C_START_PORT, C_C_START_PIN, Output, PushPull, HighSpeed, NoPull);
+	GPIO_Bit_Set(C_C_START_PORT, C_C_START_PIN);
 	
 	//Альтернативные функции портов
 	GPIO_Config(GPIOA, Pin_9, AltFn, PushPull, HighSpeed, NoPull); //PA9(USART1 TX)
@@ -90,6 +96,15 @@ void ConfigUART()
 {
 	USART_Init(USART1, SYSCLK, USART_BAUDRATE);
 	USART_Recieve_Interupt(USART1, 0, true);
+}
+//--------------------------------------------
+
+void ConfigCAN()
+{
+	RCC_CAN_Clk_EN(CAN_1_ClkEN);
+	NCAN_Init(SYSCLK, CAN_BAUDRATE, FALSE);
+	NCAN_FIFOInterrupt(TRUE);
+	NCAN_FilterInit(0, CAN_SLAVE_FILTER_ID, CAN_MASTER_FILTER_ID);
 }
 //--------------------------------------------
 

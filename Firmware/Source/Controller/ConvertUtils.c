@@ -7,58 +7,58 @@
 
 
 // Variables
-ConvertParams AdcToUUSenParams;
-ConvertParams AdcToUISenParams;
-ConvertParams AdcToIIGateParams;
-ConvertParams UUToDACParams;
-ConvertParams IIToDACParams;
-ConvertParams UCutoffToExtDACParams;
-ConvertParams UNegativeToExtDACParams;
+ConvertParams V_AdcToVSenParams;
+ConvertParams V_AdcToCSenParams;
+ConvertParams C_AdcToCSenParams;
+ConvertParams V_VToDACParams;
+ConvertParams C_CToDACParams;
+ConvertParams C_VCutoffToExtDACParams;
+ConvertParams C_VNegativeToExtDACParams;
 
 // Functions
 //
-Int16U CU_UCutoffToExtDAC(float Value)
+Int16U CU_C_VCutoffToExtDAC(float Value)
 {
-	return (Int16U)(((Value - UCutoffToExtDACParams.P0) / UCutoffToExtDACParams.P1) * UCutoffToExtDACParams.K);
+	return (Int16U)(((Value - C_VCutoffToExtDACParams.P0) / C_VCutoffToExtDACParams.P1) * C_VCutoffToExtDACParams.K);
 }
 //-----------------------------
 
-Int16U CU_UNegativeToExtDAC(float Value)
+Int16U CU_C_VNegativeToExtDAC(float Value)
 {
-	return (Int16U)(((Value - UNegativeToExtDACParams.P0) / UNegativeToExtDACParams.P1) * UNegativeToExtDACParams.K);
+	return (Int16U)(((Value - C_VNegativeToExtDACParams.P0) / C_VNegativeToExtDACParams.P1) * C_VNegativeToExtDACParams.K);
 }
 //-----------------------------
 
-Int16U CU_UUToDAC(float Value)
+Int16U CU_V_VToDAC(float Value)
 {
-	return (Int16U)(((Value - UUToDACParams.P0) / UUToDACParams.P1) * UUToDACParams.K);
+	return (Int16U)(((Value - V_VToDACParams.P0) / V_VToDACParams.P1) * V_VToDACParams.K);
 }
 //-----------------------------
 
-Int16U CU_IIToDAC(float Value)
+Int16U CU_C_CToDAC(float Value)
 {
-	return (Int16U)(((Value - IIToDACParams.P0) / IIToDACParams.P1) * IIToDACParams.K);
+	return (Int16U)(((Value - C_CToDACParams.P0) / C_CToDACParams.P1) * C_CToDACParams.K);
 }
 //-----------------------------
 
-float CU_UADCUToX(Int16U Data)
+float CU_V_ADCVToX(Int16U Data)
 {
-	float Value = Data * AdcToUUSenParams.K;
-	return (Value * Value * AdcToUUSenParams.P2 + Value * AdcToUUSenParams.P1 + AdcToUUSenParams.P0);
+	float Value = Data * V_AdcToVSenParams.K;
+	return (Value * Value * V_AdcToVSenParams.P2 + Value * V_AdcToVSenParams.P1 + V_AdcToVSenParams.P0);
 }
 //-----------------------------
 
-float CU_UADCIToX(Int16U Data)
+float CU_V_ADCCToX(Int16U Data)
 {
-	float Value = Data * AdcToUISenParams.K;
-	return (Value * Value * AdcToUISenParams.P2 + Value * AdcToUISenParams.P1 + AdcToUISenParams.P0);
+	float Value = Data * V_AdcToCSenParams.K;
+	return (Value * Value * V_AdcToCSenParams.P2 + Value * V_AdcToCSenParams.P1 + V_AdcToCSenParams.P0);
 }
 //-----------------------------
 
-float CU_IADCIToX(Int16U Data)
+float CU_C_ADCCToX(Int16U Data)
 {
-	float Value = Data * AdcToIIGateParams.K;
-	return (Value * Value * AdcToIIGateParams.P2 + Value * AdcToIIGateParams.P1 + AdcToIIGateParams.P0);
+	float Value = Data * C_AdcToCSenParams.K;
+	return (Value * Value * C_AdcToCSenParams.P2 + Value * C_AdcToCSenParams.P1 + C_AdcToCSenParams.P0);
 }
 //-----------------------------
 
@@ -72,13 +72,13 @@ void CU_LoadSingleConvertParams(ConvertParams* StructureName, Int16U RegK, Int16
 
 void CU_LoadConvertParams()
 {
-	CU_LoadSingleConvertParams(&AdcToUUSenParams, REG_ADC_U_U_SEN_K, REG_ADC_U_U_SEN_P0, REG_ADC_U_U_SEN_P1, REG_ADC_U_U_SEN_P2);
-	CU_LoadSingleConvertParams(&AdcToUISenParams, REG_ADC_U_I_SEN_K, REG_ADC_U_I_SEN_P0, REG_ADC_U_I_SEN_P1, REG_ADC_U_I_SEN_P2);
-	CU_LoadSingleConvertParams(&AdcToIIGateParams, REG_ADC_I_I_GATE_K, REG_ADC_I_I_GATE_P0, REG_ADC_I_I_GATE_P1, REG_ADC_I_I_GATE_P2);
-	CU_LoadSingleConvertParams(&UUToDACParams, REG_DAC_U_U_K, REG_DAC_U_U_P0, REG_DAC_U_U_P1, 0);
-	CU_LoadSingleConvertParams(&IIToDACParams, REG_DAC_I_I_K, REG_DAC_I_I_P0, REG_DAC_I_I_P1, 0);
-	CU_LoadSingleConvertParams(&UCutoffToExtDACParams, REG_EXT_DAC_I_CUTOFF_K, REG_EXT_DAC_I_CUTOFF_P0, REG_EXT_DAC_I_CUTOFF_P1, 0);
-	CU_LoadSingleConvertParams(&UNegativeToExtDACParams, REG_EXT_DAC_I_NEGATIVE_K, REG_EXT_DAC_I_NEGATIVE_P0, REG_EXT_DAC_I_NEGATIVE_P1, 0);
+	CU_LoadSingleConvertParams(&V_AdcToVSenParams, REG_ADC_V_V_SEN_K, REG_ADC_V_V_SEN_P0, REG_ADC_V_V_SEN_P1, REG_ADC_V_V_SEN_P2);
+	CU_LoadSingleConvertParams(&V_AdcToCSenParams, REG_ADC_V_C_SEN_K, REG_ADC_V_C_SEN_P0, REG_ADC_V_C_SEN_P1, REG_ADC_V_C_SEN_P2);
+	CU_LoadSingleConvertParams(&C_AdcToCSenParams, REG_ADC_C_C_SEN_K, REG_ADC_C_C_SEN_P0, REG_ADC_C_C_SEN_P1, REG_ADC_C_C_SEN_P2);
+	CU_LoadSingleConvertParams(&V_VToDACParams, REG_DAC_V_V_SET_K, REG_DAC_V_V_SET_P0, REG_DAC_V_V_SET_P1, 0);
+	CU_LoadSingleConvertParams(&C_CToDACParams, REG_DAC_C_C_SET_K, REG_DAC_C_C_SET_P0, REG_DAC_C_C_SET_P1, 0);
+	CU_LoadSingleConvertParams(&C_VCutoffToExtDACParams, REG_C_V_CUTOFF_K, REG_C_V_CUTOFF_P0, REG_C_V_CUTOFF_P1, 0);
+	CU_LoadSingleConvertParams(&C_VNegativeToExtDACParams, REG_C_V_NEGATIVE_K, REG_C_V_NEGATIVE_P0, REG_C_V_NEGATIVE_P1, 0);
 }
 //-----------------------------
 

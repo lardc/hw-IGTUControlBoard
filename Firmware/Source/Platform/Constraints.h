@@ -33,13 +33,13 @@
 //
 #define COEF_K_MIN					1
 #define COEF_K_MAX					INT16U_MAX
-#define COEF_I_I_GATE_K_DEF			122			// [мА*1000 / код]
-#define COEF_U_I_SEN_K_DEF			141			// [мА*1000 / код]
-#define COEF_U_U_SEN_K_DEF			7324		// [мВ*1000 / код]
-#define COEF_I_I_K_DEF				6827		// [код*1000 / мА]
-#define COEF_U_U_K_DEF				204			// [код*1000 / мВ]
-#define COEF_I_CUTOFF_K_DEF			162			// [код*1000 / мВ]
-#define COEF_I_NEGATIVE_K_DEF		201			// [код*1000 / мВ]
+#define COEF_C_C_SEN_K_DEF			122			// [мА*1000 / код]
+#define COEF_V_C_SEN_K_DEF			141			// [мА*1000 / код]
+#define COEF_V_V_SEN_K_DEF			7324		// [мВ*1000 / код]
+#define COEF_C_C_K_DEF				6827		// [код*1000 / мА]
+#define COEF_V_V_K_DEF				204			// [код*1000 / мВ]
+#define COEF_C_V_CUTOFF_K_DEF		162			// [код*1000 / мВ]
+#define COEF_C_V_NEGATIVE_K_DEF		201			// [код*1000 / мВ]
 //
 #define OFFSET_MIN					0
 #define OFFSET_MAX					INT16U_MAX
@@ -53,32 +53,50 @@
 #define REGULATOR_KI_MAX			INT16U_MAX
 #define REGULATOR_KI_DEF			0
 //
-
-#define CURRENT_TRIG_MIN			1			// [мА]
-#define CURRENT_TRIG_MAX			300			// [мА]
+// VGS
+#define VGS_C_TRIG_MIN				1			// [мА]
+#define VGS_C_TRIG_MAX				300			// [мА]
 //
-#define T_UCONSTANT_MIN				1			// [мс]
-#define T_UCONSTANT_MAX				20			// [мс]
+#define VGS_T_V_CONSTANT_MIN		1			// [мс]
+#define VGS_T_V_CONSTANT_MAX		20			// [мс]
 //
-#define T_UFRONT_MIN				1			// [мс]
-#define T_UFRONT_MAX				20			// [мс]
+#define VGS_T_V_FRONT_MIN			1			// [мс]
+#define VGS_T_V_FRONT_MAX			20			// [мс]
 //
-#define U_DEST_MIN					100			// [мВ]
-#define U_DEST_MAX					20000		// [мВ]
+#define VGS_V_DEST_MIN				100			// [мВ]
+#define VGS_V_DEST_MAX				20000		// [мВ]
 //
-#define I_U_CUTOFF_MIN				0			// [мВ]
-#define I_U_CUTOFF_MAX				20000		// [мВ]
-#define I_U_CUTOFF_DEF				15000		// [мВ]
+// QG
+#define QG_V_CUTOFF_MIN				0			// [мВ]
+#define QG_V_CUTOFF_MAX				20000		// [мВ]
+#define QG_V_CUTOFF_DEF				15000		// [мВ]
 //
-#define I_U_NEGATIVE_MIN			0			// [мВ]
-#define I_U_NEGATIVE_MAX			20000		// [мВ]
-#define I_U_NEGATIVE_DEF			8000		// [мВ]
+#define QG_V_NEGATIVE_MIN			0			// [мВ]
+#define QG_V_NEGATIVE_MAX			20000		// [мВ]
+#define QG_V_NEGATIVE_DEF			8000		// [мВ]
 //
-#define I_I_SET_MIN					20			// [мА]
-#define I_I_SET_MAX					500			// [мА]
+#define QG_C_SET_MIN				20			// [мА]
+#define QG_C_SET_MAX				500			// [мА]
 //
-#define I_T_CURRENT_MIN				20			// [мс]
-#define I_T_CURRENT_MAX				500			// [мс]
+#define QG_T_CURRENT_MIN			20			// [мс]
+#define QG_T_CURRENT_MAX			500			// [мс]
+//
+#define QG_C_POWER_SET_MIN			0			// [A]
+#define QG_C_POWER_SET_MAX			1000		// [A]
+//
+#define QG_V_POWER_SET_MIN			0			// [В]
+#define QG_V_POWER_SET_MAX			1800		// [В]
+//
+// IGES
+#define IGES_V_CONSTANT_MIN			0			// [мВ]
+#define IGES_V_CONSTANT_MAX			30000		// [мВ]
+//
+#define IGES_T_V_CONSTANT_MIN		1			// [мс]
+#define IGES_T_V_CONSTANT_MAX		5000		// [мс]
+//
+#define IGES_T_V_FRONT_MIN			1			// [мс]
+#define IGES_T_V_FRONT_MAX			100			// [мс]
+//
 
 // Types
 typedef struct __TableItemConstraint

@@ -31,10 +31,12 @@
 // ----------------------------------------------
 
 // ADC
-#define DMA_ADC_I_GATE_CHANNEL			DMA1_Channel1	// Канал DMA для АЦП тока затвора (источник I)
-#define ADC1_I_SEN_CHANNEL				1				// АЦП1 номер канала тока (источник V)
-#define ADC1_I_GATE_CHANNEL				4				// АЦП1 номер канала тока (источник I)
-#define ADC3_U_SEN_CHANNEL				1				// АЦП3 номер канала напряжения (источник V)
+#define DMA_ADC_C_C_SEN_CHANNEL			DMA1_Channel1	// Канал DMA для АЦП тока затвора (источник C)
+#define ADC1_C_C_SEN_CHANNEL			1				// АЦП1 номер канала тока (источник C)
+#define ADC1_C_V_SEN_CHANNEL			2				// АЦП1 номер канала напряжения (источник C)
+#define ADC1_V_V_SEN_CHANNEL			3				// АЦП1 номер канала напряжения (источник V)
+#define ADC1_V_C_SEN_CHANNEL			4				// АЦП1 номер канала тока (источник V)
+#define ADC3_V_POT_CHANNEL				1				// АЦП3 номер канала напряжения (источник V)
 #define ADC_DMA_BUFF_SIZE				5				// Количество данных для DMA
 // ----------------------------------------------
 

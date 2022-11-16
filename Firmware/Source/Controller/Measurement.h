@@ -8,15 +8,15 @@
 #include "Regulator.h"
 
 // Variables
-extern volatile Int16U MEASURE_ADC_IGateRaw[I_VALUES_x_SIZE];
+extern volatile Int16U MEASURE_C_CSenRaw[C_VALUES_x_SIZE];
 
 // Functions
-Int16U MEASURE_UUSen();
-Int16U MEASURE_UISen();
-Int16U MEASURE_IIGate();
+Int16U MEASURE_V_VSen();
+Int16U MEASURE_V_CSen();
+Int16U MEASURE_C_CSen();
 Boolean MEASURE_UParams(volatile RegulatorParamsStruct* Regulator);
-//Int16U MEASURE_Average(Int16U InputArray, Int16U ArraySize);
-void MEASURE_DMAIGateBufferClear();
-Int16U MEASURE_DMAExtractIGate();
+Int16U MEASURE_Average(Int16U* InputArray, Int16U ArraySize);
+void MEASURE_C_CDMABufferClear();
+Int16U MEASURE_C_DMAExtractCSen();
 
 #endif /* MEASUREMENT_H_ */

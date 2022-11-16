@@ -6,10 +6,11 @@
 // Definitions
 // 
 #define	SCCI_TIMEOUT_TICKS						1000	// Таймаут интерфейса SCCI (в мс)
+#define	BCCIM_TIMEOUT_TICKS						50		// Таймаут протоколоа мастер BCCI (в мс)
 #define EP_WRITE_COUNT							0		// Количество массивов для записи
 
 #define EP_COUNT								7		// Количество массивов для чтения
-#define FEP_COUNT								0		// Количество массивов для чтения
+#define FEP_COUNT								0		// Количество массивов для чтения типа float
 #define ENABLE_LOCKING							FALSE	// Защита NV регистров паролем
 #define CURRENT_PULSE_WIDTH						300		// Макс длительность импульса тока (мкс)
 #define VOLTAGE_PULSE_WIDTH						20000	// Макс длительность импульса напряжения (мкс)
@@ -20,8 +21,8 @@
 #define EXT_DAC_B								0x8000	// Выбор канала B
 
 // Размер массивов EP
-#define U_VALUES_x_SIZE	(VOLTAGE_PULSE_WIDTH / TIMER15_uS)
-#define I_VALUES_x_SIZE	(1000 * CURRENT_PULSE_WIDTH / TIMER6_nS)
+#define V_VALUES_x_SIZE	(VOLTAGE_PULSE_WIDTH / TIMER15_uS)
+#define C_VALUES_x_SIZE	(1000 * CURRENT_PULSE_WIDTH / TIMER6_nS)
 // Временные параметры
 #define TIME_LED_BLINK							500		// Мигание светодиодом (в мс)
 

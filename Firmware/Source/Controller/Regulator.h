@@ -9,26 +9,26 @@
 
 // Definitions
 //
-#define PULSE_BUFFER_SIZE	U_VALUES_x_SIZE
+#define PULSE_BUFFER_SIZE	V_VALUES_x_SIZE
 #define PULSE_PERIOD		TIMER15_uS
 
 // Structs
 //
 typedef struct __RegulatorParams
 {
-	float UMeasured;
-	float UFormTable[PULSE_BUFFER_SIZE];
-	float UFormMeasured[PULSE_BUFFER_SIZE];
-	float IFormMeasured[PULSE_BUFFER_SIZE];
+	float VSen;
+	float VFormTable[PULSE_BUFFER_SIZE];
+	float VSenForm[PULSE_BUFFER_SIZE];
+	float CSenForm[PULSE_BUFFER_SIZE];
 	float Kp;
 	float Ki;
 	float KiTune;
 	float RegulatorError;
 	bool DebugMode;
 	Int16U RegulatorPulseCounter;
-	Int16U ConstantULastPulse;
-	Int16U ConstantUFirstPulse;
-	Int16U ITrigRegulatorPulse;
+	Int16U ConstantVLastPulse;
+	Int16U ConstantVFirstPulse;
+	Int16U CTrigRegulatorPulse;
 	float RegulatorOutput;
 	Int16U DACOffset;
 	Int16U DACLimitValue;
@@ -39,8 +39,8 @@ typedef struct __RegulatorParams
 //
 bool REGULATOR_Process(volatile RegulatorParamsStruct* Regulator);
 void REGULATOR_CashVariables(volatile RegulatorParamsStruct* Regulator);
-void REGULATOR_UFormConfig(volatile RegulatorParamsStruct* Regulator);
-void REGULATOR_UFormUpdate (volatile RegulatorParamsStruct* Regulator);
+void REGULATOR_VGS_FormConfig(volatile RegulatorParamsStruct* Regulator);
+void REGULATOR_VGS_FormUpdate (volatile RegulatorParamsStruct* Regulator);
 //
 
 #endif /* REGULATOR_H_ */

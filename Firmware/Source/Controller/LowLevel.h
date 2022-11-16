@@ -8,11 +8,10 @@
 // Functions
 //
 void LL_ToggleBoardLED();
-void LL_UShortOut(bool State);
-void LL_IStart(bool State);
-bool LL_ICompState();
-void LL_IISetDAC(Int16U Data);
-void LL_UUSetDAC(Int16U Data);
+void LL_V_ShortOut(bool State);
+void LL_C_CStart(bool State);
+void LL_C_CSetDAC(Int16U Data);
+void LL_V_VSetDAC(Int16U Data);
 void LL_ExtDACSync(bool State);
 void LL_ExtDACLDAC(bool State);
 void LL_ExtDACSendData(Int16U Data);

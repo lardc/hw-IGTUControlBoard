@@ -17,6 +17,9 @@ int main()
 	// Настройка UART
 	INITCFG_ConfigUART();
 	
+	// Настройка CAN
+	INITCFG_ConfigCAN();
+
 	// Настройка SPI внешнего ЦАП
 	INITCFG_ConfigSPI();
 
@@ -28,7 +31,6 @@ int main()
 
 	// Настройка таймера для АЦП тока затвора
 	INITCFG_ConfigTimer6();
-	INITCFG_ConfigTimer4();
 
 	// Настройка DAC
 	INITCFG_ConfigDAC();

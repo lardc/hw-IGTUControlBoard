@@ -16,7 +16,7 @@ bool REGULATOR_Process(volatile RegulatorParamsStruct* Regulator)
 {
 	static float Qi = 0, Qp;
 
-	Regulator->RegulatorError = (Regulator->RegulatorPulseCounter == 0) ? 0 : (Regulator->UFormTable[Regulator->RegulatorPulseCounter] - Regulator->UMeasured);
+	Regulator->RegulatorError = (Regulator->RegulatorPulseCounter == 0) ? 0 : (Regulator->VFormTable[Regulator->RegulatorPulseCounter] - Regulator->VSen);
 
 	Qp = Regulator->RegulatorError * Regulator->Kp;
 	Qi += Regulator->RegulatorError * (Regulator->Ki + Regulator->KiTune);
@@ -27,18 +27,18 @@ bool REGULATOR_Process(volatile RegulatorParamsStruct* Regulator)
 	else if (Qi < -Qi_max)
 		Qi = -Qi_max;
 
-	Regulator->RegulatorOutput = Regulator->UFormTable[Regulator->RegulatorPulseCounter] + Qp + Qi;
+	Regulator->RegulatorOutput = Regulator->VFormTable[Regulator->RegulatorPulseCounter] + Qp + Qi;
 
 	// Выбор источника данных для записи в ЦАП
 	float ValueToDAC;
 	if(Regulator->DebugMode)
-		ValueToDAC = Regulator->UFormTable[Regulator->RegulatorPulseCounter];
+		ValueToDAC = Regulator->VFormTable[Regulator->RegulatorPulseCounter];
 	else
 		ValueToDAC = Regulator->RegulatorOutput;
 
 	// Проверка границ диапазона ЦАП
-	Regulator->DACSetpoint = REGULATOR_DACApplyLimits(CU_UUToDAC(ValueToDAC), Regulator->DACOffset, Regulator->DACLimitValue);
-	LL_UUSetDAC(Regulator->DACSetpoint);
+	Regulator->DACSetpoint = REGULATOR_DACApplyLimits(CU_V_VToDAC(ValueToDAC), Regulator->DACOffset, Regulator->DACLimitValue);
+	LL_V_VSetDAC(Regulator->DACSetpoint);
 
 	if(DataTable[REG_REGULATOR_LOGGING] == 1)
 		REGULATOR_LoggingData(Regulator);
@@ -47,7 +47,7 @@ bool REGULATOR_Process(volatile RegulatorParamsStruct* Regulator)
 	{
 		Regulator->DebugMode = false;
 		Regulator->RegulatorPulseCounter = 0;
-		Regulator->ITrigRegulatorPulse = 0;
+		Regulator->CTrigRegulatorPulse = 0;
 		Qi = 0;
 		return true;
 	}
@@ -73,52 +73,57 @@ void REGULATOR_LoggingData(volatile RegulatorParamsStruct* Regulator)
 	static Int16U ScopeLogStep = 0, LocalCounter = 0;
 
 	// Сброс локального счетчика в начале логгирования
-	if (CONTROL_Values_Counter == 0)
+	if (CONTROL_V_Values_Counter == 0)
 		LocalCounter = 0;
 
 	if (ScopeLogStep++ >= DataTable[REG_SCOPE_STEP])
 	{
 		ScopeLogStep = 0;
 
-		CONTROL_UUValues[LocalCounter] = (Int16U)(Regulator->UFormTable[Regulator->RegulatorPulseCounter]);
-		CONTROL_UUMeasValues[LocalCounter] = (Int16U)(Regulator->UMeasured);
-		CONTROL_UIMeasValues[LocalCounter] = (Int16U)(Regulator->IFormMeasured[Regulator->RegulatorPulseCounter]);
-		CONTROL_RegulatorErr[LocalCounter] = (Int16S)(Regulator->RegulatorError);
-		CONTROL_RegulatorOutput[LocalCounter] = (Int16S)(Regulator->RegulatorOutput);
-		CONTROL_DACRawData[LocalCounter] = (Int16U)(Regulator->DACSetpoint);
+		CONTROL_V_VValues[LocalCounter] = (Int16U)(Regulator->VFormTable[Regulator->RegulatorPulseCounter]);
+		CONTROL_V_VSenValues[LocalCounter] = (Int16U)(Regulator->VSen);
+		CONTROL_V_CSenValues[LocalCounter] = (Int16U)(Regulator->CSenForm[Regulator->RegulatorPulseCounter]);
+		CONTROL_V_RegErrValues[LocalCounter] = (Int16S)(Regulator->RegulatorError);
+		CONTROL_V_RegOutValues[LocalCounter] = (Int16S)(Regulator->RegulatorOutput);
+		CONTROL_V_VDACRawValues[LocalCounter] = (Int16U)(Regulator->DACSetpoint);
 
-		CONTROL_Values_Counter = LocalCounter;
+		CONTROL_V_Values_Counter = LocalCounter;
 
 		LocalCounter++;
 	}
 
 	// Условие обновления глобального счетчика данных
-	if (CONTROL_Values_Counter < U_VALUES_x_SIZE)
-		CONTROL_Values_Counter = LocalCounter;
+	if (CONTROL_V_Values_Counter < V_VALUES_x_SIZE)
+		CONTROL_V_Values_Counter = LocalCounter;
 
 	// Сброс локального счетчика
-	if (LocalCounter >= U_VALUES_x_SIZE)
+	if (LocalCounter >= V_VALUES_x_SIZE)
 		LocalCounter = 0;
 }
 //-----------------------------------------------
 
-void REGULATOR_UFormConfig(volatile RegulatorParamsStruct* Regulator)
+void REGULATOR_VGS_FormConfig(volatile RegulatorParamsStruct* Regulator)
 {
-	Int16U UFrontLastPulse = (Int16U)((float)DataTable[REG_U_T_UFRONT] * 1000 / PULSE_PERIOD);
+	Int16U VGSFrontLastPulse = (Int16U)((float)DataTable[REG_VGS_T_V_FRONT] * 1000 / PULSE_PERIOD);
 	for (Int16U i = 0; i < PULSE_BUFFER_SIZE; i++)
-		Regulator->UFormTable[i] = i < UFrontLastPulse ?  (float)((DataTable[REG_U_UMAX] * (i+1)) / UFrontLastPulse) : 0;
+		Regulator->VFormTable[i] = i < VGSFrontLastPulse ?  (float)((DataTable[REG_VGS_V_MAX] * (i+1)) / VGSFrontLastPulse) : 0;
 }
 //-----------------------------------------------
 
-void REGULATOR_UFormUpdate (volatile RegulatorParamsStruct* Regulator)
+void REGULATOR_IGES_FormConfig(volatile RegulatorParamsStruct* Regulator)
+{
+}
+//-----------------------------------------------
+
+void REGULATOR_VGS_FormUpdate (volatile RegulatorParamsStruct* Regulator)
 {
 	TIM_Stop(TIM15);
-	Regulator->ConstantUFirstPulse = Regulator->RegulatorPulseCounter;
-	Regulator->ConstantULastPulse = Regulator->RegulatorPulseCounter + (Int16U)((float)DataTable[REG_U_T_UCONSTANT] * 1000 / PULSE_PERIOD);
-	if (Regulator->ConstantULastPulse > PULSE_BUFFER_SIZE)
-		Regulator->ConstantULastPulse = PULSE_BUFFER_SIZE;
+	Regulator->ConstantVFirstPulse = Regulator->RegulatorPulseCounter;
+	Regulator->ConstantVLastPulse = Regulator->RegulatorPulseCounter + (Int16U)((float)DataTable[REG_VGS_T_V_CONSTANT] * 1000 / PULSE_PERIOD);
+	if (Regulator->ConstantVLastPulse > PULSE_BUFFER_SIZE)
+		Regulator->ConstantVLastPulse = PULSE_BUFFER_SIZE;
 	for (Int16U i = Regulator->RegulatorPulseCounter; i < PULSE_BUFFER_SIZE; i++)
-		Regulator->UFormTable[i] = i < Regulator->ConstantULastPulse ? Regulator->UFormTable[Regulator->RegulatorPulseCounter] : 0;
+		Regulator->VFormTable[i] = i < Regulator->ConstantVLastPulse ? Regulator->VFormTable[Regulator->RegulatorPulseCounter] : 0;
 	TIM_Start(TIM15);
 }
 //-----------------------------------------------

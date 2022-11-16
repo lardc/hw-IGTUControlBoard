@@ -8,7 +8,7 @@
 #include "Regulator.h"
 
 // Functions
-void ExDAC_IUCutoff(float Value);
-void ExDAC_IUNegative(float Value);
+void ExDAC_C_VCutoff(float Value);
+void ExDAC_C_VNegative(float Value);
 
 #endif /* EXTERNALDAC_H_ */
