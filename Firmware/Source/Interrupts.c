@@ -45,7 +45,7 @@ void TIM15_IRQHandler()
 {
 	if(TIM_StatusCheck(TIM15))
 	{
-		CONTROL_V_HighPriorityProcess();
+		CONTROL_VGS_HighPriorityProcess();
 
 		TIM_StatusClear(TIM15);
 	}

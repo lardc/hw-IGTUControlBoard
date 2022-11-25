@@ -147,7 +147,10 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 	{
 		case ACT_ENABLE_POWER:
 			if(CONTROL_State == DS_None)
-				CONTROL_SetDeviceState(DS_Ready, SS_None);
+			{
+				CONTROL_SetDeviceState(DS_None, SS_SelfTest);
+				DIAG_SelfTest();
+			}
 			else if(CONTROL_State != DS_Ready)
 				*pUserError = ERR_OPERATION_BLOCKED;
 			break;
@@ -162,8 +165,8 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 		case ACT_VGS_START:
 			if (CONTROL_State == DS_Ready)
 			{
-				CONTROL_SetDeviceState(DS_InProcess, SS_PulsePrepare);
-				CONTROL_V_StartProcess();
+				CONTROL_SetDeviceState(DS_InProcess, SS_Pulse);
+				CONTROL_VGS_StartProcess();
 			}
 			else
 				if (CONTROL_State == DS_InProcess)
@@ -222,13 +225,8 @@ void CONTROL_LogicProcess()
 {
 	switch(CONTROL_SubState)
 	{
-		case SS_PulsePrepare:
-			CONTROL_StartPrepare();
-			CONTROL_SetDeviceState(DS_Ready, SS_Pulse);
-			break;
-
-		case SS_WaitAfterUPulse:
-			CONTROL_V_SetResults(&RegulatorParams);
+		case SS_VGS_WaitAfterPulse:
+			CONTROL_VGS_SetResults(&RegulatorParams);
 			break;
 
 		case SS_WaitAfterIPulse:
@@ -241,17 +239,17 @@ void CONTROL_LogicProcess()
 }
 //-----------------------------------------------
 
-void CONTROL_V_HighPriorityProcess()
+void CONTROL_VGS_HighPriorityProcess()
 {
 	if(CONTROL_SubState == SS_Pulse)
 	{
-		if (MEASURE_V_VSen(&RegulatorParams))
+		if (MEASURE_V_VParams(&RegulatorParams))
 							REGULATOR_VGS_FormUpdate(&RegulatorParams);
 
 		if(CONTROL_RegulatorCycle(&RegulatorParams))
 		{
-			CONTROL_V_StopProcess();
-			CONTROL_SetDeviceState(DS_InProcess, SS_WaitAfterUPulse);
+			CONTROL_VGS_StopProcess();
+			CONTROL_SetDeviceState(DS_InProcess, SS_VGS_WaitAfterPulse);
 		}
 	}
 }
@@ -280,7 +278,7 @@ bool CONTROL_RegulatorCycle(volatile RegulatorParamsStruct* Regulator)
 }
 //-----------------------------------------------
 
-void CONTROL_V_SetResults(volatile RegulatorParamsStruct* Regulator)
+void CONTROL_VGS_SetResults(volatile RegulatorParamsStruct* Regulator)
 {
 	float Result = Regulator->VSenForm[Regulator->ConstantVFirstPulse];
 	if ((Regulator->ConstantVFirstPulse) != (Regulator->ConstantVLastPulse))
@@ -353,15 +351,7 @@ void CONTROL_C_Processing()
 }
 //-----------------------------------------------
 
-void CONTROL_StartPrepare()
-{
-	MEASURE_C_CDMABufferClear();
-	REGULATOR_CashVariables(&RegulatorParams);
-	REGULATOR_VGS_FormConfig(&RegulatorParams);
-}
-//-----------------------------------------------
-
-void CONTROL_V_StopProcess()
+void CONTROL_VGS_StopProcess()
 {
 	TIM_Stop(TIM15);
 	LL_V_VSetDAC(0);
@@ -369,10 +359,15 @@ void CONTROL_V_StopProcess()
 }
 //------------------------------------------
 
-void CONTROL_V_StartProcess()
+void CONTROL_VGS_StartProcess()
 {
-	CONTROL_ResetOutputRegisters();
+	LL_V_ShortPAU(true);
 	LL_V_ShortOut(false);
+	MEASURE_C_CDMABufferClear();
+	REGULATOR_CashVariables(&RegulatorParams);
+	REGULATOR_VGS_FormConfig(&RegulatorParams);
+	CONTROL_ResetOutputRegisters();
+
 	TIM_Reset(TIM15);
 	TIM_Start(TIM15);
 }
