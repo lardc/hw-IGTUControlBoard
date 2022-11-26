@@ -165,7 +165,7 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 		case ACT_VGS_START:
 			if (CONTROL_State == DS_Ready)
 			{
-				CONTROL_SetDeviceState(DS_InProcess, SS_Pulse);
+				CONTROL_SetDeviceState(DS_InProcess, SS_VgsPulse);
 				CONTROL_VGS_StartProcess();
 			}
 			else
@@ -189,7 +189,16 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			break;
 
 		case ACT_IGES_START:
-			//
+			if (CONTROL_State == DS_Ready)
+			{
+				CONTROL_SetDeviceState(DS_InProcess, SS_VgsPulse);
+				CONTROL_IGES_StartProcess();
+			}
+			else
+				if (CONTROL_State == DS_InProcess)
+					*pUserError = ERR_OPERATION_BLOCKED;
+				else
+					*pUserError = ERR_DEVICE_NOT_READY;
 			break;
 
 		case ACT_STOP_PROCESS:
@@ -225,8 +234,12 @@ void CONTROL_LogicProcess()
 {
 	switch(CONTROL_SubState)
 	{
-		case SS_VGS_WaitAfterPulse:
+		case SS_VgsWaitAfterPulse:
 			CONTROL_VGS_SetResults(&RegulatorParams);
+			break;
+
+		case SS_IgesWaitAfterPulse:
+			CONTROL_IGES_SetResults(&RegulatorParams);
 			break;
 
 		case SS_WaitAfterIPulse:
@@ -239,18 +252,32 @@ void CONTROL_LogicProcess()
 }
 //-----------------------------------------------
 
-void CONTROL_VGS_HighPriorityProcess()
+void CONTROL_V_HighPriorityProcess()
 {
-	if(CONTROL_SubState == SS_Pulse)
+	switch (CONTROL_SubState)
 	{
-		if (MEASURE_V_VParams(&RegulatorParams))
-							REGULATOR_VGS_FormUpdate(&RegulatorParams);
+	case SS_VgsPulse:
+		if (MEASURE_VGS_Params(&RegulatorParams))
+			REGULATOR_VGS_FormUpdate(&RegulatorParams);
 
 		if(CONTROL_RegulatorCycle(&RegulatorParams))
 		{
-			CONTROL_VGS_StopProcess();
-			CONTROL_SetDeviceState(DS_InProcess, SS_VGS_WaitAfterPulse);
+			CONTROL_V_StopProcess();
+			CONTROL_SetDeviceState(DS_InProcess, SS_VgsWaitAfterPulse);
 		}
+		break;
+
+	case SS_IgesPulse:
+		MEASURE_IGES_Params(&RegulatorParams);
+		if(CONTROL_RegulatorCycle(&RegulatorParams))
+		{
+			CONTROL_V_StopProcess();
+			CONTROL_SetDeviceState(DS_InProcess, SS_IgesWaitAfterPulse);
+		}
+		break;
+
+	default:
+		break;
 	}
 }
 //-----------------------------------------------
@@ -292,6 +319,20 @@ void CONTROL_VGS_SetResults(volatile RegulatorParamsStruct* Regulator)
 	{
 		CONTROL_SetDeviceWarning(DW_CurrentNotReached);
 		DataTable[REG_VGS] = 0;
+	}
+	CONTROL_SetDeviceState(DS_Ready, SS_None);
+}
+//-----------------------------------------------
+
+void CONTROL_IGES_SetResults(volatile RegulatorParamsStruct* Regulator)
+{
+	float Result = PAU_ReadC();
+	if (Result > 0)
+		DataTable[REG_IGES] = (Int16U)Result;
+	else
+	{
+		CONTROL_SetDeviceWarning(DW_CurrentNotReached);
+		DataTable[REG_IGES] = 0;
 	}
 	CONTROL_SetDeviceState(DS_Ready, SS_None);
 }
@@ -351,27 +392,44 @@ void CONTROL_C_Processing()
 }
 //-----------------------------------------------
 
-void CONTROL_VGS_StopProcess()
-{
-	TIM_Stop(TIM15);
-	LL_V_VSetDAC(0);
-	LL_V_ShortOut(true);
-}
-//------------------------------------------
-
 void CONTROL_VGS_StartProcess()
 {
 	LL_V_ShortPAU(true);
 	LL_V_ShortOut(false);
 	MEASURE_C_CDMABufferClear();
-	REGULATOR_CashVariables(&RegulatorParams);
 	REGULATOR_VGS_FormConfig(&RegulatorParams);
+	CONTROL_V_StartProcess();
+}
+//-----------------------------------------------
+
+void CONTROL_IGES_StartProcess()
+{
+	LL_V_ShortPAU(false);
+	LL_V_ShortOut(false);
+	REGULATOR_IGES_FormConfig(&RegulatorParams);
+	CONTROL_V_StartProcess();
+}
+//-----------------------------------------------
+
+void CONTROL_V_StartProcess()
+{
+	MEASURE_C_CDMABufferClear();
+	REGULATOR_CashVariables(&RegulatorParams);
 	CONTROL_ResetOutputRegisters();
 
 	TIM_Reset(TIM15);
 	TIM_Start(TIM15);
 }
 //-----------------------------------------------
+
+void CONTROL_V_StopProcess()
+{
+	TIM_Stop(TIM15);
+	LL_V_VSetDAC(0);
+	LL_V_ShortOut(true);
+	LL_V_ShortPAU(true);
+}
+//------------------------------------------
 
 void CONTROL_C_StartProcess()
 {

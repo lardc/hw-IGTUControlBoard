@@ -91,11 +91,11 @@
 #define IGES_V_CONSTANT_MIN			0			// [мВ]
 #define IGES_V_CONSTANT_MAX			30000		// [мВ]
 //
-#define IGES_T_V_CONSTANT_MIN		1			// [мс]
-#define IGES_T_V_CONSTANT_MAX		5000		// [мс]
+#define IGES_T_V_CONSTANT_MIN		10			// [мс]
+#define IGES_T_V_CONSTANT_MAX		100			// [мс]
 //
 #define IGES_T_V_FRONT_MIN			1			// [мс]
-#define IGES_T_V_FRONT_MAX			100			// [мс]
+#define IGES_T_V_FRONT_MAX			10			// [мс]
 //
 
 // Types

@@ -112,6 +112,21 @@ void REGULATOR_VGS_FormConfig(volatile RegulatorParamsStruct* Regulator)
 
 void REGULATOR_IGES_FormConfig(volatile RegulatorParamsStruct* Regulator)
 {
+	Int16U IGESFrontLastPulse = (Int16U)((float)(DataTable[REG_IGES_T_V_FRONT]) * 1000 / PULSE_PERIOD);
+	Int16U IGESLastPulse = (Int16U)((float)(DataTable[REG_IGES_T_V_FRONT] + DataTable[REG_IGES_T_V_CONSTANT]) * 1000 / PULSE_PERIOD);
+	for (Int16U i = 0; i < PULSE_BUFFER_SIZE; i++)
+	{
+		if (i < IGESFrontLastPulse)
+			Regulator->VFormTable[i] = (float)((DataTable[REG_IGES_V] * (i+1)) / IGESFrontLastPulse);
+		else if (i < IGESLastPulse)
+			Regulator->VFormTable[i] = (float)(DataTable[REG_IGES_V]);
+		else Regulator->VFormTable[i] = 0;
+	}
+}
+//-----------------------------------------------
+
+void REGULATOR_IGES_FormConfig(volatile RegulatorParamsStruct* Regulator)
+{
 }
 //-----------------------------------------------
 

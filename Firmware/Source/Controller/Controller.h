@@ -22,10 +22,12 @@ typedef enum __DeviceSubState
 {
 	SS_None = 0,
 	SS_PulsePrepare = 1,
-	SS_Pulse = 2,
-	SS_VGS_WaitAfterPulse = 3,
-	SS_WaitAfterIPulse = 4,
-	SS_SelfTest = 5
+	SS_VgsPulse = 2,
+	SS_VgsWaitAfterPulse = 3,
+	SS_IgesPulse = 4,
+	SS_IgesWaitAfterPulse = 5,
+	SS_WaitAfterIPulse = 6,
+	SS_SelfTest = 7
 } DeviceSubState;
 
 typedef enum __DeviceWarning

@@ -36,7 +36,7 @@
 #define ADC1_C_V_SEN_CHANNEL			2				// АЦП1 номер канала напряжения (источник C)
 #define ADC1_V_V_SEN_CHANNEL			3				// АЦП1 номер канала напряжения (источник V)
 #define ADC1_V_C_SEN_CHANNEL			4				// АЦП1 номер канала тока (источник V)
-#define ADC3_V_POT_CHANNEL				1				// АЦП3 номер канала напряжения (источник V)
+#define ADC3_POT_CHANNEL				1				// АЦП3 номер канала напряжения
 #define ADC_DMA_BUFF_SIZE				5				// Количество данных для DMA
 // ----------------------------------------------
 

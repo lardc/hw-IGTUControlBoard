@@ -14,6 +14,7 @@ ConvertParams V_VToDACParams;
 ConvertParams C_CToDACParams;
 ConvertParams C_VCutoffToExtDACParams;
 ConvertParams C_VNegativeToExtDACParams;
+ConvertParams PotAdcToVSenParams;
 
 // Functions
 //
@@ -38,6 +39,13 @@ Int16U CU_V_VToDAC(float Value)
 Int16U CU_C_CToDAC(float Value)
 {
 	return (Int16U)(((Value - C_CToDACParams.P0) / C_CToDACParams.P1) * C_CToDACParams.K);
+}
+//-----------------------------
+
+float CU_PotADCVToX(Int16U Data)
+{
+	float Value = Data * PotAdcToVSenParams.K;
+	return (Value * Value * PotAdcToVSenParams.P2 + Value * PotAdcToVSenParams.P1 + PotAdcToVSenParams.P0);
 }
 //-----------------------------
 
@@ -72,6 +80,7 @@ void CU_LoadSingleConvertParams(ConvertParams* StructureName, Int16U RegK, Int16
 
 void CU_LoadConvertParams()
 {
+	CU_LoadSingleConvertParams(&PotAdcToVSenParams, REG_ADC_POT_SEN_K, REG_ADC_POT_SEN_P0, REG_ADC_POT_SEN_P1, REG_ADC_POT_SEN_P2);
 	CU_LoadSingleConvertParams(&V_AdcToVSenParams, REG_ADC_V_V_SEN_K, REG_ADC_V_V_SEN_P0, REG_ADC_V_V_SEN_P1, REG_ADC_V_V_SEN_P2);
 	CU_LoadSingleConvertParams(&V_AdcToCSenParams, REG_ADC_V_C_SEN_K, REG_ADC_V_C_SEN_P0, REG_ADC_V_C_SEN_P1, REG_ADC_V_C_SEN_P2);
 	CU_LoadSingleConvertParams(&C_AdcToCSenParams, REG_ADC_C_C_SEN_K, REG_ADC_C_C_SEN_P0, REG_ADC_C_C_SEN_P1, REG_ADC_C_C_SEN_P2);

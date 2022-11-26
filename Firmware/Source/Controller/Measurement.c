@@ -11,6 +11,13 @@ volatile Int16U MEASURE_C_CSenRaw[C_VALUES_x_SIZE];
 // Functions
 //
 
+Int16U MEASURE_PotSen()
+{
+	Int16U result = ADC_Measure(ADC3, ADC3_POT_CHANNEL);
+	return result;
+}
+//-----------------------------------------------
+
 Int16U MEASURE_V_VSen()
 {
 	Int16U result = ADC_Measure(ADC1, ADC1_V_V_SEN_CHANNEL);
@@ -39,9 +46,9 @@ Int16U MEASURE_C_CSen()
 }
 //-----------------------------------------------
 
-Boolean MEASURE_V_VParams(volatile RegulatorParamsStruct* Regulator)
+Boolean MEASURE_VGS_Params(volatile RegulatorParamsStruct* Regulator, bool SelfMode)
 {
-	float V = CU_V_ADCVToX(MEASURE_V_VSen());
+	float V = SelfMode ? CU_V_ADCVToX(MEASURE_V_VSen()) : CU_PotADCVToX(MEASURE_PotSen());
 	float C = CU_V_ADCCToX(MEASURE_V_CSen());
 
 	if(Regulator->RegulatorPulseCounter == 0)
@@ -60,6 +67,17 @@ Boolean MEASURE_V_VParams(volatile RegulatorParamsStruct* Regulator)
 		return true;
 	}
 	else return false;
+}
+//-----------------------------------------------
+
+void MEASURE_IGES_Params(volatile RegulatorParamsStruct* Regulator, bool SelfMode)
+{
+	float V = SelfMode ? CU_V_ADCVToX(MEASURE_V_VSen()) : CU_PotADCVToX(MEASURE_PotSen());
+
+	if(Regulator->RegulatorPulseCounter == 0)
+		V = 0;
+	Regulator->VSen = V;
+	Regulator->VSenForm[Regulator->RegulatorPulseCounter] = V;
 }
 //-----------------------------------------------
 
