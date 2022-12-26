@@ -31,15 +31,15 @@
 #define COEF_P2_MAX					INT16S_MAX
 #define COEF_P2_DEF					0
 //
-#define COEF_K_MIN					1
+#define COEF_K_MIN					0
 #define COEF_K_MAX					INT16U_MAX
-#define COEF_C_C_SEN_K_DEF			122			// [мА*1000 / код]
-#define COEF_V_C_SEN_K_DEF			141			// [мА*1000 / код]
-#define COEF_V_V_SEN_K_DEF			7324		// [мВ*1000 / код]
-#define COEF_C_C_K_DEF				6827		// [код*1000 / мА]
-#define COEF_V_V_K_DEF				204			// [код*1000 / мВ]
-#define COEF_C_V_CUTOFF_K_DEF		162			// [код*1000 / мВ]
-#define COEF_C_V_NEGATIVE_K_DEF		201			// [код*1000 / мВ]
+#define COEF_C_C_SEN_K_DEF			0.122		// [мА / код]
+#define COEF_V_C_SEN_K_DEF			0.141		// [мА / код]
+#define COEF_V_V_SEN_K_DEF			7.324		// [мВ / код]
+#define COEF_C_C_K_DEF				6.827		// [код / мА]
+#define COEF_V_V_K_DEF				0.204		// [код / мВ]
+#define COEF_C_V_CUTOFF_K_DEF		0.162		// [код / мВ]
+#define COEF_C_V_NEGATIVE_K_DEF		0.201		// [код / мВ]
 //
 #define OFFSET_MIN					0
 #define OFFSET_MAX					INT16U_MAX
@@ -47,7 +47,7 @@
 //
 #define REGULATOR_KP_MIN			0
 #define REGULATOR_KP_MAX			INT16U_MAX
-#define REGULATOR_KP_DEF			1000
+#define REGULATOR_KP_DEF			0.001
 //
 #define REGULATOR_KI_MIN			0
 #define REGULATOR_KI_MAX			INT16U_MAX
@@ -87,6 +87,9 @@
 #define QG_V_POWER_SET_MIN			0			// [В]
 #define QG_V_POWER_SET_MAX			1800		// [В]
 //
+#define QG_C_THRESHOLD_MIN			10			// [%]
+#define QG_C_THRESHOLD_MAX			100			// [%]
+#define QG_C_THRESHOLD_DEF			50			// [%]
 // IGES
 #define IGES_V_CONSTANT_MIN			0			// [мВ]
 #define IGES_V_CONSTANT_MAX			30000		// [мВ]

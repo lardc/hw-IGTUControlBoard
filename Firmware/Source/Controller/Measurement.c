@@ -13,36 +13,31 @@ volatile Int16U MEASURE_C_CSenRaw[C_VALUES_x_SIZE];
 
 Int16U MEASURE_PotSen()
 {
-	Int16U result = ADC_Measure(ADC3, ADC3_POT_CHANNEL);
-	return result;
+	return ADC_Measure(ADC3, ADC3_POT_CHANNEL);
 }
 //-----------------------------------------------
 
 Int16U MEASURE_V_VSen()
 {
-	Int16U result = ADC_Measure(ADC1, ADC1_V_V_SEN_CHANNEL);
-	return result;
+	return ADC_Measure(ADC1, ADC1_V_V_SEN_CHANNEL);
 }
 //-----------------------------------------------
 
 Int16U MEASURE_V_CSen()
 {
-	Int16U result = ADC_Measure(ADC1, ADC1_V_C_SEN_CHANNEL);
-	return result;
+	return ADC_Measure(ADC1, ADC1_V_C_SEN_CHANNEL);
 }
 //-----------------------------------------------
 
 Int16U MEASURE_C_VSen()
 {
-	Int16U result = ADC_Measure(ADC1, ADC1_C_V_SEN_CHANNEL);
-	return result;
+	return ADC_Measure(ADC1, ADC1_C_V_SEN_CHANNEL);
 }
 //-----------------------------------------------
 
 Int16U MEASURE_C_CSen()
 {
-	Int16U result = ADC_Measure(ADC1, ADC1_C_C_SEN_CHANNEL);
-	return result;
+	return ADC_Measure(ADC1, ADC1_C_C_SEN_CHANNEL);
 }
 //-----------------------------------------------
 
@@ -51,22 +46,23 @@ Boolean MEASURE_VGS_Params(volatile RegulatorParamsStruct* Regulator, bool SelfM
 	float V = SelfMode ? CU_V_ADCVToX(MEASURE_V_VSen()) : CU_PotADCVToX(MEASURE_PotSen());
 	float C = CU_V_ADCCToX(MEASURE_V_CSen());
 
-	if(Regulator->RegulatorPulseCounter == 0)
+	if(Regulator->RegulatorStepCounter == 0)
 	{
 		V = 0;
 		C = 0;
 	}
 	Regulator->VSen = V;
-	Regulator->VSenForm[Regulator->RegulatorPulseCounter] = V;
-	Regulator->CSenForm[Regulator->RegulatorPulseCounter] = C;
+	Regulator->VSenForm[Regulator->RegulatorStepCounter] = V;
+	Regulator->CSenForm[Regulator->RegulatorStepCounter] = C;
 
 	// проверка на достижение током порогового значения
-	if ((C >= (float)DataTable[REG_VGS_C_TRIG]) && (Regulator->CTrigRegulatorPulse == 0))
+	if((C >= (float)DataTable[REG_VGS_C_TRIG]) && (Regulator->CTrigRegulatorStep == 0))
 	{
-		Regulator->CTrigRegulatorPulse = Regulator->RegulatorPulseCounter;
+		Regulator->CTrigRegulatorStep = Regulator->RegulatorStepCounter;
 		return true;
 	}
-	else return false;
+	else
+		return false;
 }
 //-----------------------------------------------
 
@@ -74,10 +70,10 @@ void MEASURE_IGES_Params(volatile RegulatorParamsStruct* Regulator, bool SelfMod
 {
 	float V = SelfMode ? CU_V_ADCVToX(MEASURE_V_VSen()) : CU_PotADCVToX(MEASURE_PotSen());
 
-	if(Regulator->RegulatorPulseCounter == 0)
+	if(Regulator->RegulatorStepCounter == 0)
 		V = 0;
 	Regulator->VSen = V;
-	Regulator->VSenForm[Regulator->RegulatorPulseCounter] = V;
+	Regulator->VSenForm[Regulator->RegulatorStepCounter] = V;
 }
 //-----------------------------------------------
 

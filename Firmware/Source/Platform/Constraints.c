@@ -7,8 +7,7 @@
 
 // Constants
 //
-const TableItemConstraint Constraint[DATA_TABLE_WP_START] = {
-		{0, 0, 0},																	// 0
+const TableItemConstraint Constraint[DATA_TABLE_WP_START] = {{0, 0, 0},				// 0
 		{DAC_OUTPUT_LIM_MIN, DAC_OUTPUT_LIM_MAX, DAC_OUTPUT_LIM_DEF},				// 1
 		{0, INT16U_MAX, 0},															// 2
 		{0, INT16U_MAX, 0},															// 3
@@ -58,8 +57,8 @@ const TableItemConstraint Constraint[DATA_TABLE_WP_START] = {
 		{0, 0, 0},																	// 47
 		{0, 0, 0},																	// 48
 		{0, 0, 0},																	// 49
-		{REGULATOR_KP_MIN, REGULATOR_KP_MAX, 1},									// 50
-		{REGULATOR_KI_MIN, REGULATOR_KI_MAX, 0},									// 51
+		{REGULATOR_KP_MIN, REGULATOR_KP_MAX, REGULATOR_KP_DEF},						// 50
+		{REGULATOR_KI_MIN, REGULATOR_KI_MAX, REGULATOR_KI_DEF},						// 51
 		{0, INT16U_MAX, 0},															// 52
 		{0, 0, 0},																	// 53
 		{0, 0, 0},																	// 54
@@ -150,7 +149,7 @@ const TableItemConstraint Constraint[DATA_TABLE_WP_START] = {
 		{QG_T_CURRENT_MIN, QG_T_CURRENT_MAX, QG_T_CURRENT_MIN},						// 138
 		{QG_C_POWER_SET_MIN, QG_C_POWER_SET_MAX, QG_C_POWER_SET_MIN},				// 139
 		{QG_V_POWER_SET_MIN, QG_V_POWER_SET_MAX, QG_V_POWER_SET_MIN},				// 140
-		{0, 0, 0},																	// 141
+		{QG_C_THRESHOLD_MIN, QG_C_THRESHOLD_MAX, QG_C_THRESHOLD_DEF},				// 141
 		{0, 0, 0},																	// 142
 		{0, 0, 0},																	// 143
 		{0, 0, 0},																	// 144

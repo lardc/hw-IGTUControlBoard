@@ -22,25 +22,25 @@ typedef struct __RegulatorParams
 	float CSenForm[PULSE_BUFFER_SIZE];
 	float Kp;
 	float Ki;
-	float KiTune;
 	float RegulatorError;
 	bool DebugMode;
-	Int16U RegulatorPulseCounter;
-	Int16U ConstantVLastPulse;
-	Int16U ConstantVFirstPulse;
-	Int16U CTrigRegulatorPulse;
+	Int16U RegulatorStepCounter;
+	Int16U ConstantVLastStep;
+	Int16U ConstantVFirstStep;
+	Int16U CTrigRegulatorStep;
 	float RegulatorOutput;
 	Int16U DACOffset;
 	Int16U DACLimitValue;
 	Int16U DACSetpoint;
-}RegulatorParamsStruct;
+} RegulatorParamsStruct;
 
 // Functions
 //
 bool REGULATOR_Process(volatile RegulatorParamsStruct* Regulator);
 void REGULATOR_CashVariables(volatile RegulatorParamsStruct* Regulator);
 void REGULATOR_VGS_FormConfig(volatile RegulatorParamsStruct* Regulator);
-void REGULATOR_VGS_FormUpdate (volatile RegulatorParamsStruct* Regulator);
+void REGULATOR_VGS_FormUpdate(volatile RegulatorParamsStruct* Regulator);
+void REGULATOR_IGES_FormConfig(volatile RegulatorParamsStruct* Regulator);
 //
 
 #endif /* REGULATOR_H_ */

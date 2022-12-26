@@ -4,6 +4,7 @@
 #include "Board.h"
 #include "Delay.h"
 #include "Global.h"
+#include "ConvertUtils.h"
 
 // Functions
 //
@@ -70,7 +71,8 @@ void LL_V_VSetDAC(Int16U Data)
 
 void LL_V_CoefCSens(Int16U Data) // 0 - Low current, 1 - High current
 {
-	switch (Data){
+	switch(Data)
+	{
 		case 0:
 			GPIO_SetState(GPIO_V_CURR_K1, false);
 			GPIO_SetState(GPIO_V_CURR_K2, true);
@@ -90,7 +92,8 @@ void LL_V_CoefCSens(Int16U Data) // 0 - Low current, 1 - High current
 
 void LL_V_CLimit(Int16U Data) // 0 - Low current, 1 - High current
 {
-	switch (Data){
+	switch(Data)
+	{
 		case 0:
 			GPIO_SetState(GPIO_V_LOW_CURRENT, false);
 			GPIO_SetState(GPIO_V_HIGH_CURRENT, true);
@@ -158,5 +161,20 @@ void LL_ExtDACSendData(Int16U Data)
 	LL_ExtDACLDAC(false);
 	DELAY_US(1);
 	LL_ExtDACLDAC(true);
+}
+//-----------------------------
+
+void LL_ExDACVCutoff(float Value)
+{
+	Int16U Data = CU_C_VCutoffToExtDAC(Value);
+	LL_ExtDACSendData(Data);
+}
+//-----------------------------
+
+void LL_ExDACVNegative(float Value)
+{
+	Int16U Data = CU_C_VNegativeToExtDAC(Value);
+	Data |= EXT_DAC_B;
+	LL_ExtDACSendData(Data);
 }
 //-----------------------------

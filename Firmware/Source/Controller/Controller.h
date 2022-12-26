@@ -26,19 +26,16 @@ typedef enum __DeviceSubState
 	SS_VgsWaitAfterPulse = 3,
 	SS_IgesPulse = 4,
 	SS_IgesWaitAfterPulse = 5,
-	SS_WaitAfterIPulse = 6,
-	SS_SelfTest = 7
+	SS_QgWaitAfterPulse = 6,
+	SS_QgPulse = 7,
+	SS_SelfTest = 8
 } DeviceSubState;
 
-typedef enum __DeviceWarning
-{
-	DW_None = 0,
-	DW_CurrentNotReached = 1
-} DeviceWarning;
 
 // Variables
 //
 extern volatile DeviceState CONTROL_State;
+extern volatile DeviceSubState CONTROL_SubState;
 extern volatile Int64U CONTROL_TimeCounter;
 extern volatile Int16U CONTROL_TimerMaxCounter;
 extern volatile Int64U CONTROL_I_TimeCounter;
@@ -56,22 +53,29 @@ extern volatile Int16U CONTROL_IIGateValues[C_VALUES_x_SIZE];
 //
 extern volatile RegulatorParamsStruct RegulatorParams;
 
-
 // Functions
 //
 void CONTROL_Init();
 void CONTROL_Idle();
 void CONTROL_SetDeviceState(DeviceState NewState, DeviceSubState NewSubState);
-void CONTROL_SetDeviceWarning(DeviceWarning NewWarning);
 void CONTROL_DelayMs(uint32_t Delay);
+
 void CONTROL_V_HighPriorityProcess();
 void CONTROL_C_HighPriorityProcess();
-void CONTROL_ExternalInterruptProcess();
+
+void CONTROL_VGS_StartProcess();
+void CONTROL_IGES_StartProcess();
 void CONTROL_V_StartProcess();
-void CONTROL_C_StartProcess();
-void CONTROL_V_SetResults(volatile RegulatorParamsStruct* Regulator);
-void CONTROL_C_SetResults();
+
+void CONTROL_QG_StartProcess();
+
+void CONTROL_VGS_SetResults(volatile RegulatorParamsStruct* Regulator);
+void CONTROL_IGES_SetResults(volatile RegulatorParamsStruct* Regulator);
+void CONTROL_QG_SetResults();
+
 void CONTROL_V_StopProcess();
+
+void CONTROL_C_StopProcess();
 void CONTROL_C_Processing();
 
 #endif // __CONTROLLER_H

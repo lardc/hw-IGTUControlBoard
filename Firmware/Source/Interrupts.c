@@ -31,16 +31,6 @@ void USB_LP_CAN_RX0_IRQHandler()
 }
 //-----------------------------------------
 
-void EXTI15_10_IRQHandler(void)
-{
-	/*if (LL_ICompState())
-		CONTROL_C_HighPriorityProcess(true, true);
-	else
-		CONTROL_C_HighPriorityProcess(false, true);
-	EXTI_FlagReset(EXTI_15);*/
-}
-//-----------------------------------------------
-
 void TIM15_IRQHandler()
 {
 	if(TIM_StatusCheck(TIM15))
@@ -87,13 +77,13 @@ void TIM7_IRQHandler()
 void DMA1_Channel1_IRQHandler()
 {
 	/*if (DMA_IsTransferComplete(DMA1, DMA_ISR_TCIF1))
-	{
-		TIM_Stop(TIM6);
-		TIM_Reset(TIM6);
+	 {
+	 TIM_Stop(TIM6);
+	 TIM_Reset(TIM6);
 
-		ADC_SamplingStop(ADC1);
+	 ADC_SamplingStop(ADC1);
 
-		DMA_TransferCompleteReset(DMA1, DMA_ISR_TCIF1);
-	}*/
+	 DMA_TransferCompleteReset(DMA1, DMA_ISR_TCIF1);
+	 }*/
 }
 //-----------------------------------------

@@ -55,38 +55,37 @@
 #define REG_C_V_NEGATIVE_K				16	// Коэффициент преобразования напряжения в код внешнего ЦАП
 #define REG_ADC_POT_SEN_K				17	// Коэффициент преобразования кода АЦП в напряжение
 //
-#define REG_ADC_C_C_SEN_P2				20	// Коэффициент тонкой подстройки Р2 х1е6
-#define REG_ADC_C_C_SEN_P1				21	// Коэффициент тонкой подстройки Р1 x1000
+#define REG_ADC_C_C_SEN_P2				20	// Коэффициент тонкой подстройки Р2
+#define REG_ADC_C_C_SEN_P1				21	// Коэффициент тонкой подстройки Р1
 #define REG_ADC_C_C_SEN_P0				22	// Смещение тонкой подстройки Р0
 //
-#define REG_ADC_V_C_SEN_P2				23	// Коэффициент тонкой подстройки Р2 х1е6
-#define REG_ADC_V_C_SEN_P1				24	// Коэффициент тонкой подстройки Р1 x1000
+#define REG_ADC_V_C_SEN_P2				23	// Коэффициент тонкой подстройки Р2
+#define REG_ADC_V_C_SEN_P1				24	// Коэффициент тонкой подстройки Р1
 #define REG_ADC_V_C_SEN_P0				25	// Смещение тонкой подстройки Р0
 //
-#define REG_ADC_V_V_SEN_P2				26	// Коэффициент тонкой подстройки Р2 х1е6
-#define REG_ADC_V_V_SEN_P1				27	// Коэффициент тонкой подстройки Р1 x1000
+#define REG_ADC_V_V_SEN_P2				26	// Коэффициент тонкой подстройки Р2
+#define REG_ADC_V_V_SEN_P1				27	// Коэффициент тонкой подстройки Р1
 #define REG_ADC_V_V_SEN_P0				28	// Смещение тонкой подстройки Р0
 //
-#define REG_ADC_POT_SEN_P2				29	// Коэффициент тонкой подстройки Р2 х1е6
-#define REG_ADC_POT_SEN_P1				30	// Коэффициент тонкой подстройки Р1 x1000
+#define REG_ADC_POT_SEN_P2				29	// Коэффициент тонкой подстройки Р2
+#define REG_ADC_POT_SEN_P1				30	// Коэффициент тонкой подстройки Р1
 #define REG_ADC_POT_SEN_P0				31	// Смещение тонкой подстройки Р0
 //
-#define REG_DAC_C_C_SET_P1				35	// Коэффициент тонкой подстройки Р1 x1000
+#define REG_DAC_C_C_SET_P1				35	// Коэффициент тонкой подстройки Р1
 #define REG_DAC_C_C_SET_P0				36	// Смещение тонкой подстройки Р0
 //
-#define REG_DAC_V_V_SET_P1				37	// Коэффициент тонкой подстройки Р1 x1000
+#define REG_DAC_V_V_SET_P1				37	// Коэффициент тонкой подстройки Р1
 #define REG_DAC_V_V_SET_P0				38	// Смещение тонкой подстройки Р0
 //
-#define REG_C_V_CUTOFF_P1				39	// Коэффициент тонкой подстройки Р1 x1000
+#define REG_C_V_CUTOFF_P1				39	// Коэффициент тонкой подстройки Р1
 #define REG_C_V_CUTOFF_P0				40	// Смещение тонкой подстройки Р0
 //
-#define REG_C_V_NEGATIVE_P1				41	// Коэффициент тонкой подстройки Р1 x1000
+#define REG_C_V_NEGATIVE_P1				41	// Коэффициент тонкой подстройки Р1
 #define REG_C_V_NEGATIVE_P0				42	// Смещение тонкой подстройки Р0
 //
 #define REG_REGULATOR_Kp				50	// Пропорциональный коэффициент регулятора
 #define REG_REGULATOR_Ki				51	// Интегральный коэффициент регулятора
-#define REG_REGULATOR_TF_Ki				52	// Коэффициент подстройки значения Ki (в ед. (dKi / dU) * 1000)
-
+//
 // Несохраняемые регистры чтения-записи
 //
 // Регистры измерения VGS
@@ -101,6 +100,7 @@
 #define REG_QG_T_CURRENT				138	// Длительность тока затвора [мкс]
 #define REG_QG_C_POWER					139	// Силовой ток коллектор-эммитер (сток-исток) [А]
 #define REG_QG_V_POWER					140	// Напряжение коллектор-эммитер (сток-исток) [В]
+#define REG_QG_C_THRESHOLD				141	// Порог срабатывания триггера тока (в % от REG_QG_C_SET) [%]
 // Регистры измерения IGES
 #define REG_IGES_V						145	// Полка напряжения на затворе [мВ]
 #define REG_IGES_T_V_CONSTANT			146	// Длительность полки напряжения [мс]
@@ -118,18 +118,20 @@
 #define REG_PROBLEM						196	// Регистр Problem
 #define REG_OP_RESULT					197	// Регистр результата операции
 #define REG_SUB_STATE					198	// Регистр вспомогательного состояния
-//
+// Результаты измерения
 #define REG_VGS							200	// Измеренное значение VGS [мВ]
-#define REG_QG							201	// Измеренное значение QG [нКл]
-#define REG_QG_T						202 // Измеренная длительность импульса тока [мкс]
-#define REG_QG_C						203 // Усредненное измеренное значение тока [мА]
+//
+#define REG_QG							205	// Измеренное значение QG [нКл]
+#define REG_QG_T						206 // Измеренная длительность импульса тока [мкс]
+#define REG_QG_C						207 // Усредненное измеренное значение тока [мА]
+//
+#define REG_IGES						210	// Измеренное значение IGES [нА]
 // -----------------------------
 #define REG_FWINFO_SLAVE_NID			256	// Device CAN slave node ID
 #define REG_FWINFO_MASTER_NID			257	// Device CAN master node ID (if presented)
 // 258 - 259
 #define REG_FWINFO_STR_LEN				260	// Length of the information string record
 #define REG_FWINFO_STR_BEGIN			261	// Begining of the information string record
-
 
 // Operation results
 #define OPRESULT_NONE					0	// No information or not finished
@@ -141,7 +143,8 @@
 
 // Problem
 #define PROBLEM_NONE					0
-#define PROBLEM_BATTERY					1
+#define PROBLEM_CURRENT_NOT_REACHED		1
+#define PROBLEM_NEGATIVE_CURRENT		2
 
 //  Warning
 #define WARNING_NONE					0

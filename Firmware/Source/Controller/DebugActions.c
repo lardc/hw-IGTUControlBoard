@@ -12,7 +12,6 @@
 #include "Delay.h"
 #include "ConvertUtils.h"
 #include "Measurement.h"
-#include "ExternalDAC.h"
 
 // Functions
 //
@@ -26,7 +25,7 @@ void DBGACT_V_VSet()
 
 void DBGACT_V_ShortOut()
 {
-	DataTable[REG_DBG] == 0 ? LL_V_ShortOut(false) : LL_V_ShortOut(true);
+	LL_V_ShortOut(DataTable[REG_DBG]);
 }
 //-----------------------------
 
@@ -66,13 +65,13 @@ void DBGACT_C_CSen()
 
 void DBGACT_C_VCutoffSet()
 {
-	ExDAC_C_VCutoff(DataTable[REG_DBG]);
+	LL_ExDACVCutoff(DataTable[REG_DBG]);
 }
 //-----------------------------
 
 void DBGACT_C_VNegativeSet()
 {
-	ExDAC_C_VNegative(DataTable[REG_DBG]);
+	LL_ExDACVNegative(DataTable[REG_DBG]);
 }
 //-----------------------------
 
@@ -87,100 +86,79 @@ void DBGACT_C_TestPulse()
 }
 //-----------------------------
 
-
 //
 bool DIAG_HandleDebugAction(uint16_t ActionID, uint16_t *pUserError)
 {
-	switch (ActionID)
+	switch(ActionID)
 	{
 		case ACT_DBG_V_V_SET:
-			{
-				if(CONTROL_State == DS_None)
-					DBGACT_V_VSet();
-				else
-					*pUserError = ERR_OPERATION_BLOCKED;
-			}
+			if(CONTROL_State == DS_None)
+				DBGACT_V_VSet();
+			else
+				*pUserError = ERR_OPERATION_BLOCKED;
 			break;
 
 		case ACT_DBG_V_SHORT:
-			{
-				if(CONTROL_State == DS_None)
-					DBGACT_V_ShortOut();
-				else
-					*pUserError = ERR_OPERATION_BLOCKED;
-			}
+			if(CONTROL_State == DS_None)
+				DBGACT_V_ShortOut();
+			else
+				*pUserError = ERR_OPERATION_BLOCKED;
 			break;
 
 		case ACT_DBG_V_V_SEN:
-			{
-				if(CONTROL_State == DS_None)
-					DBGACT_V_VSen();
-				else
-					*pUserError = ERR_OPERATION_BLOCKED;
-			}
+			if(CONTROL_State == DS_None)
+				DBGACT_V_VSen();
+			else
+				*pUserError = ERR_OPERATION_BLOCKED;
 			break;
 
 		case ACT_DBG_V_C_SEN:
-			{
-				if(CONTROL_State == DS_None)
-					DBGACT_V_CSen();
-				else
-					*pUserError = ERR_OPERATION_BLOCKED;
-			}
+			if(CONTROL_State == DS_None)
+				DBGACT_V_CSen();
+			else
+				*pUserError = ERR_OPERATION_BLOCKED;
 			break;
-		//
+			//
 		case ACT_DBG_C_C_SET:
-			{
-				if(CONTROL_State == DS_None)
-					DBGACT_C_CSet();
-				else
-					*pUserError = ERR_OPERATION_BLOCKED;
-			}
+			if(CONTROL_State == DS_None)
+				DBGACT_C_CSet();
+			else
+				*pUserError = ERR_OPERATION_BLOCKED;
 			break;
 
 		case ACT_DBG_C_START:
-			{
-				if(CONTROL_State == DS_None)
-					DBGACT_C_CStart();
-				else
-					*pUserError = ERR_OPERATION_BLOCKED;
-			}
+			if(CONTROL_State == DS_None)
+				DBGACT_C_CStart();
+			else
+				*pUserError = ERR_OPERATION_BLOCKED;
 			break;
 
 		case ACT_DBG_C_C_SEN:
-			{
-				if(CONTROL_State == DS_None)
-					DBGACT_C_CSen();
-				else
-					*pUserError = ERR_OPERATION_BLOCKED;
-			}
+			if(CONTROL_State == DS_None)
+				DBGACT_C_CSen();
+			else
+				*pUserError = ERR_OPERATION_BLOCKED;
 			break;
 
 		case ACT_DBG_C_V_CUTOFF:
-			{
-				if(CONTROL_State == DS_None)
-					DBGACT_C_VCutoffSet();
-				else
-					*pUserError = ERR_OPERATION_BLOCKED;
-			}
+			if(CONTROL_State == DS_None)
+				DBGACT_C_VCutoffSet();
+			else
+				*pUserError = ERR_OPERATION_BLOCKED;
 			break;
 
 		case ACT_DBG_C_V_NEGATIVE:
-			{
-				if(CONTROL_State == DS_None)
-					DBGACT_C_VNegativeSet();
-				else
-					*pUserError = ERR_OPERATION_BLOCKED;
-			}
+			if(CONTROL_State == DS_None)
+				DBGACT_C_VNegativeSet();
+			else
+				*pUserError = ERR_OPERATION_BLOCKED;
 			break;
 
 		case ACT_DBG_C_TEST_PULSE:
-			{
-				if(CONTROL_State == DS_None)
-					DBGACT_C_TestPulse();
-				else
-					*pUserError = ERR_OPERATION_BLOCKED;
-			}
+			if(CONTROL_State == DS_None)
+				DBGACT_C_TestPulse();
+			else
+				*pUserError = ERR_OPERATION_BLOCKED;
 			break;
 
 		default:
