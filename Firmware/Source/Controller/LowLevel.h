@@ -5,6 +5,12 @@
 #include "Board.h"
 #include "stdinc.h"
 
+#define LL_V_LOW_CURRENT_LIMIT		0	// 1 mA limit
+#define LL_V_HIGH_CURRENT_LIMIT 	1	// 200 mA limit
+
+#define LL_V_LOW_CURRENT_SENS_COEF	0	// 0 - 20 mA sensing
+#define LL_V_HIGH_CURRENT_SENS_COEF	1	// 20 - 200 mA sensing
+
 // Functions
 //
 void LL_ToggleBoardLED();

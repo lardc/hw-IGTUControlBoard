@@ -24,6 +24,7 @@ volatile DeviceState CONTROL_State = DS_None;
 volatile DeviceSubState CONTROL_SubState = SS_None;
 static Boolean CycleActive = false;
 //
+Boolean CONTROL_SelfMode = false;
 volatile Int64U CONTROL_TimeCounter = 0;
 volatile Int16U CONTROL_TimerMaxCounter = 0;
 volatile Int64U CONTROL_C_TimeCounter = 0;
@@ -62,18 +63,17 @@ void CONTROL_Init()
 {
 	// Переменные для конфигурации EndPoint
 	Int16U EPIndexes[EP_COUNT] = {EP_V_V_FORM, EP_V_V_MEAS_FORM, EP_REGULATOR_ERR,
-			EP_V_C_MEAS_FORM, EP_C_C_FORM};
+	EP_V_C_MEAS_FORM, EP_C_C_FORM};
 
 	Int16U EPSized[EP_COUNT] = {V_VALUES_x_SIZE, V_VALUES_x_SIZE, V_VALUES_x_SIZE, V_VALUES_x_SIZE,
-			C_VALUES_x_SIZE};
+	C_VALUES_x_SIZE};
 
 	pInt16U EPCounters[EP_COUNT] = {(pInt16U)&CONTROL_V_Values_Counter, (pInt16U)&CONTROL_V_Values_Counter,
 			(pInt16U)&CONTROL_V_Values_Counter, (pInt16U)&CONTROL_V_Values_Counter, (pInt16U)&CONTROL_V_Values_Counter,
 			(pInt16U)&CONTROL_C_Values_Counter};
 
 	pInt16U EPDatas[EP_COUNT] = {(pInt16U)CONTROL_V_VValues, (pInt16U)CONTROL_V_VSenValues,
-			(pInt16U)CONTROL_V_RegErrValues,
-			(pInt16U)CONTROL_V_CSenValues, (pInt16U)CONTROL_C_CSenValues};
+			(pInt16U)CONTROL_V_RegErrValues, (pInt16U)CONTROL_V_CSenValues, (pInt16U)CONTROL_C_CSenValues};
 
 	// Конфигурация сервиса работы Data-table и EPROM
 	EPROMServiceConfig EPROMService = {(FUNC_EPROM_WriteValues)&NFLASH_WriteDT, (FUNC_EPROM_ReadValues)&NFLASH_ReadDT};
@@ -192,7 +192,7 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 		case ACT_IGES_START:
 			if(CONTROL_State == DS_Ready)
 			{
-				CONTROL_SetDeviceState(DS_InProcess, SS_VgsPulse);
+				CONTROL_SetDeviceState(DS_InProcess, SS_IgesPulse);
 				CONTROL_IGES_StartProcess();
 			}
 			else if(CONTROL_State == DS_InProcess)
@@ -257,7 +257,7 @@ void CONTROL_V_HighPriorityProcess()
 	switch(CONTROL_SubState)
 	{
 		case SS_VgsPulse:
-			if(MEASURE_VGS_Params(&RegulatorParams, true))
+			if(MEASURE_VGS_Params(&RegulatorParams, CONTROL_SelfMode))
 				REGULATOR_VGS_FormUpdate(&RegulatorParams);
 
 			if(CONTROL_RegulatorCycle(&RegulatorParams))
@@ -268,7 +268,7 @@ void CONTROL_V_HighPriorityProcess()
 			break;
 
 		case SS_IgesPulse:
-			MEASURE_IGES_Params(&RegulatorParams, true);
+			MEASURE_IGES_Params(&RegulatorParams, CONTROL_SelfMode);
 			if(CONTROL_RegulatorCycle(&RegulatorParams))
 			{
 				CONTROL_V_StopProcess();
@@ -307,10 +307,12 @@ bool CONTROL_RegulatorCycle(volatile RegulatorParamsStruct* Regulator)
 
 void CONTROL_VGS_StartProcess()
 {
-	CONTROL_ResetOutputRegisters();
 	LL_V_ShortPAU(true);
 	LL_V_ShortOut(false);
-	MEASURE_C_CDMABufferClear();
+	LL_V_CLimit(LL_V_LOW_CURRENT_LIMIT);
+	LL_V_CoefCSens(LL_V_HIGH_CURRENT_SENS_COEF);
+	if(DataTable[REG_VGS_C_TRIG] <= DataTable[REG_V_C_SENS_THRESHOLD])
+		LL_V_CoefCSens(LL_V_LOW_CURRENT_SENS_COEF);
 	REGULATOR_VGS_FormConfig(&RegulatorParams);
 	CONTROL_V_StartProcess();
 }
@@ -318,7 +320,6 @@ void CONTROL_VGS_StartProcess()
 
 void CONTROL_IGES_StartProcess()
 {
-	CONTROL_ResetOutputRegisters();
 	LL_V_ShortPAU(false);
 	LL_V_ShortOut(false);
 	REGULATOR_IGES_FormConfig(&RegulatorParams);
@@ -328,7 +329,6 @@ void CONTROL_IGES_StartProcess()
 
 void CONTROL_V_StartProcess()
 {
-	MEASURE_C_CDMABufferClear();
 	REGULATOR_CashVariables(&RegulatorParams);
 	CONTROL_ResetOutputRegisters();
 
@@ -448,10 +448,11 @@ void CONTROL_C_Processing()
 
 	for(Int16U i = 0; i < C_VALUES_x_SIZE; i++)
 	{
-		if((CU_C_ADCCToX(MEASURE_C_CSenRaw[i]) > ((DataTable[REG_QG_C_THRESHOLD] / 100) * DataTable[REG_QG_C_SET])) && (CONTROL_C_Start_Counter == 0))
+		if((CU_C_ADCCToX(MEASURE_C_CSenRaw[i]) > ((DataTable[REG_QG_C_THRESHOLD] / 100) * DataTable[REG_QG_C_SET]))
+				&& (CONTROL_C_Start_Counter == 0))
 			CONTROL_C_Start_Counter = i;
-		if((CU_C_ADCCToX(MEASURE_C_CSenRaw[C_VALUES_x_SIZE - i]) > ((DataTable[REG_QG_C_THRESHOLD] / 100) * DataTable[REG_QG_C_SET]))
-				&& (CONTROL_C_Stop_Counter == 0))
+		if((CU_C_ADCCToX(MEASURE_C_CSenRaw[C_VALUES_x_SIZE - i])
+				> ((DataTable[REG_QG_C_THRESHOLD] / 100) * DataTable[REG_QG_C_SET])) && (CONTROL_C_Stop_Counter == 0))
 			CONTROL_C_Stop_Counter = C_VALUES_x_SIZE - i;
 	}
 	CONTROL_C_Values_Counter = CONTROL_C_Stop_Counter;

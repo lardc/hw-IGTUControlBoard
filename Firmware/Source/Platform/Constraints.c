@@ -12,7 +12,7 @@ const TableItemConstraint Constraint[DATA_TABLE_WP_START] = {{0, 0, 0},				// 0
 		{0, INT16U_MAX, 0},															// 2
 		{1, INT16U_MAX, 1},															// 3
 		{DAC_OFFSET_MIN, DAC_OFFSET_MAX, DAC_OFFSET_DEF},							// 4
-		{0, 0, 0},																	// 5
+		{0, V_C_SENS_THRESHOLD_MAX, V_C_SENS_THRESHOLD_MAX},						// 5
 		{0, 0, 0},																	// 6
 		{0, 0, 0},																	// 7
 		{0, 0, 0},																	// 8

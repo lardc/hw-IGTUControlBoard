@@ -45,6 +45,7 @@
 #define REG_REGULATOR_QI_MAX			2	// Ограничение уровня интегральной составляющей
 #define REG_SCOPE_STEP					3	// Шаг сохранения оцифрованных значений
 #define REG_DAC_OFFSET					4	// Смещение сигнала с ЦАП
+#define REG_V_C_SENS_THRESHOLD			5	// Порог переключения диапазонов измерения тока
 //
 #define REG_ADC_C_C_SEN_K				10	// Коэффициент преобразования кода АЦП в ток
 #define REG_ADC_V_C_SEN_K				11	// Коэффициент преобразования кода АЦП в ток

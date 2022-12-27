@@ -58,7 +58,7 @@ Boolean MEASURE_VGS_Params(volatile RegulatorParamsStruct* Regulator, bool SelfM
 	if((C >= (float)DataTable[REG_VGS_C_TRIG]) && (Regulator->CTrigRegulatorStep == 0))
 	{
 		Regulator->CTrigRegulatorStep = Regulator->RegulatorStepCounter;
-		Regulator->VSenForm[Regulator->RegulatorStepCounter] = V;
+		Regulator->VSenForm[Regulator->RegulatorStepCounter] = (Int16U)V;
 		Regulator->CTrigVSen = V;
 		Regulator->CTrigCSen = C;
 		return true;
