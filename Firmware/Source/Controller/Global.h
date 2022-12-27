@@ -13,7 +13,7 @@
 #define FEP_COUNT								0		// Количество массивов для чтения типа float
 #define ENABLE_LOCKING							FALSE	// Защита NV регистров паролем
 #define CURRENT_PULSE_WIDTH						300		// Макс длительность импульса тока (мкс)
-#define VOLTAGE_PULSE_WIDTH						150000	// Макс длительность импульса напряжения (мкс)
+#define VOLTAGE_PULSE_WIDTH						120000	// Макс длительность импульса напряжения (мкс)
 
 #define PI										3.1416f	// Значение числа Пи
 #define DAC_MAX_VAL								0x0FFF	// Максимальное значение ЦАП

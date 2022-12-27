@@ -10,7 +10,7 @@
 const TableItemConstraint Constraint[DATA_TABLE_WP_START] = {{0, 0, 0},				// 0
 		{DAC_OUTPUT_LIM_MIN, DAC_OUTPUT_LIM_MAX, DAC_OUTPUT_LIM_DEF},				// 1
 		{0, INT16U_MAX, 0},															// 2
-		{0, INT16U_MAX, 0},															// 3
+		{1, INT16U_MAX, 1},															// 3
 		{DAC_OFFSET_MIN, DAC_OFFSET_MAX, DAC_OFFSET_DEF},							// 4
 		{0, 0, 0},																	// 5
 		{0, 0, 0},																	// 6

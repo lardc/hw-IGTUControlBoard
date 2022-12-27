@@ -52,13 +52,15 @@ Boolean MEASURE_VGS_Params(volatile RegulatorParamsStruct* Regulator, bool SelfM
 		C = 0;
 	}
 	Regulator->VSen = V;
-	Regulator->VSenForm[Regulator->RegulatorStepCounter] = V;
-	Regulator->CSenForm[Regulator->RegulatorStepCounter] = C;
+	Regulator->CSen = C;
 
 	// проверка на достижение током порогового значения
 	if((C >= (float)DataTable[REG_VGS_C_TRIG]) && (Regulator->CTrigRegulatorStep == 0))
 	{
 		Regulator->CTrigRegulatorStep = Regulator->RegulatorStepCounter;
+		Regulator->VSenForm[Regulator->RegulatorStepCounter] = V;
+		Regulator->CTrigVSen = V;
+		Regulator->CTrigCSen = C;
 		return true;
 	}
 	else

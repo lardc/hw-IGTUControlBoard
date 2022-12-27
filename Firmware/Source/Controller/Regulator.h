@@ -9,26 +9,28 @@
 
 // Definitions
 //
-#define PULSE_BUFFER_SIZE	V_VALUES_x_SIZE
-#define PULSE_PERIOD		TIMER15_uS
+#define STEP_BUFFER_SIZE	V_VALUES_x_SIZE
+#define STEP_PERIOD		TIMER15_uS
 
 // Structs
 //
 typedef struct __RegulatorParams
 {
+	Int16U VFormTable[STEP_BUFFER_SIZE];
+	Int16U VSenForm [STEP_BUFFER_SIZE];
 	float VSen;
-	float VFormTable[PULSE_BUFFER_SIZE];
-	float VSenForm[PULSE_BUFFER_SIZE];
-	float CSenForm[PULSE_BUFFER_SIZE];
+	float CSen;
+	float CTrigVSen;
+	float CTrigCSen;
+	Int16U CTrigRegulatorStep;
 	float Kp;
 	float Ki;
 	float RegulatorError;
+	float RegulatorOutput;
 	bool DebugMode;
 	Int16U RegulatorStepCounter;
 	Int16U ConstantVLastStep;
 	Int16U ConstantVFirstStep;
-	Int16U CTrigRegulatorStep;
-	float RegulatorOutput;
 	Int16U DACOffset;
 	Int16U DACLimitValue;
 	Int16U DACSetpoint;

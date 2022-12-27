@@ -46,7 +46,7 @@ bool REGULATOR_Process(volatile RegulatorParamsStruct* Regulator)
 	if(DataTable[REG_REGULATOR_LOGGING] == 1)
 		REGULATOR_LoggingData(Regulator);
 	Regulator->RegulatorStepCounter++;
-	if(Regulator->RegulatorStepCounter >= PULSE_BUFFER_SIZE)
+	if(Regulator->RegulatorStepCounter >= STEP_BUFFER_SIZE)
 	{
 		Regulator->DebugMode = false;
 		Regulator->RegulatorStepCounter = 0;
@@ -85,11 +85,8 @@ void REGULATOR_LoggingData(volatile RegulatorParamsStruct* Regulator)
 
 		CONTROL_V_VValues[LocalCounter] = (Int16U)(Regulator->VFormTable[Regulator->RegulatorStepCounter]);
 		CONTROL_V_VSenValues[LocalCounter] = (Int16U)(Regulator->VSen);
-		CONTROL_V_CSenValues[LocalCounter] = (Int16U)(Regulator->CSenForm[Regulator->RegulatorStepCounter]);
+		CONTROL_V_CSenValues[LocalCounter] = (Int16U)(Regulator->CSen);
 		CONTROL_V_RegErrValues[LocalCounter] = (Int16S)(Regulator->RegulatorError);
-		CONTROL_V_RegOutValues[LocalCounter] = (Int16S)(Regulator->RegulatorOutput);
-		CONTROL_V_VDACRawValues[LocalCounter] = (Int16U)(Regulator->DACSetpoint);
-
 		CONTROL_V_Values_Counter = LocalCounter;
 
 		LocalCounter++;
@@ -107,24 +104,24 @@ void REGULATOR_LoggingData(volatile RegulatorParamsStruct* Regulator)
 
 void REGULATOR_VGS_FormConfig(volatile RegulatorParamsStruct* Regulator)
 {
-	Int16U VGSFrontLastStep = (Int16U)((float)DataTable[REG_VGS_T_V_FRONT] * 1000 / PULSE_PERIOD);
-	for(Int16U i = 0; i < PULSE_BUFFER_SIZE; i++)
+	Int16U VGSFrontLastStep = (Int16U)((float)DataTable[REG_VGS_T_V_FRONT] * 1000 / STEP_PERIOD);
+	for(Int16U i = 0; i < STEP_BUFFER_SIZE; i++)
 		Regulator->VFormTable[i] =
-				i < VGSFrontLastStep ? (float)((DataTable[REG_VGS_V_MAX] * (i + 1)) / VGSFrontLastStep) : 0;
+				i < VGSFrontLastStep ? (Int16U)((1000 * DataTable[REG_VGS_V_MAX] * (i + 1)) / VGSFrontLastStep) : 0;
 }
 //-----------------------------------------------
 
 void REGULATOR_IGES_FormConfig(volatile RegulatorParamsStruct* Regulator)
 {
-	Int16U IGESFrontLastStep = (Int16U)((float)(DataTable[REG_IGES_T_V_FRONT]) * 1000 / PULSE_PERIOD);
+	Int16U IGESFrontLastStep = (Int16U)((float)(DataTable[REG_IGES_T_V_FRONT]) * 1000 / STEP_PERIOD);
 	Int16U IGESLastStep = (Int16U)((float)(DataTable[REG_IGES_T_V_FRONT] + DataTable[REG_IGES_T_V_CONSTANT]) * 1000
-			/ PULSE_PERIOD);
-	for(Int16U i = 0; i < PULSE_BUFFER_SIZE; i++)
+			/ STEP_PERIOD);
+	for(Int16U i = 0; i < STEP_BUFFER_SIZE; i++)
 	{
 		if(i < IGESFrontLastStep)
-			Regulator->VFormTable[i] = (float)((DataTable[REG_IGES_V] * (i + 1)) / IGESFrontLastStep);
+			Regulator->VFormTable[i] = (Int16U)((1000 * DataTable[REG_IGES_V] * (i + 1)) / IGESFrontLastStep);
 		else if(i < IGESLastStep)
-			Regulator->VFormTable[i] = (float)(DataTable[REG_IGES_V]);
+			Regulator->VFormTable[i] = (Int16U)(1000 * DataTable[REG_IGES_V]);
 		else
 			Regulator->VFormTable[i] = 0;
 	}
@@ -136,10 +133,10 @@ void REGULATOR_VGS_FormUpdate(volatile RegulatorParamsStruct* Regulator)
 	TIM_Stop(TIM15);
 	Regulator->ConstantVFirstStep = Regulator->RegulatorStepCounter;
 	Regulator->ConstantVLastStep = Regulator->RegulatorStepCounter
-			+ (Int16U)((float)DataTable[REG_VGS_T_V_CONSTANT] * 1000 / PULSE_PERIOD);
-	if(Regulator->ConstantVLastStep > PULSE_BUFFER_SIZE)
-		Regulator->ConstantVLastStep = PULSE_BUFFER_SIZE;
-	for(Int16U i = Regulator->RegulatorStepCounter; i < PULSE_BUFFER_SIZE; i++)
+			+ (Int16U)((Int16U) DataTable[REG_VGS_T_V_CONSTANT] * 1000 / STEP_PERIOD);
+	if(Regulator->ConstantVLastStep > STEP_BUFFER_SIZE)
+		Regulator->ConstantVLastStep = STEP_BUFFER_SIZE;
+	for(Int16U i = Regulator->RegulatorStepCounter; i < STEP_BUFFER_SIZE; i++)
 		Regulator->VFormTable[i] =
 				i < Regulator->ConstantVLastStep ? Regulator->VFormTable[Regulator->RegulatorStepCounter] : 0;
 	TIM_Start(TIM15);

@@ -47,9 +47,8 @@ extern volatile Int16U CONTROL_V_VValues[];
 extern volatile Int16U CONTROL_V_VSenValues[];
 extern volatile Int16U CONTROL_V_RegOutValues[];
 extern volatile Int16U CONTROL_V_RegErrValues[];
-extern volatile Int16U CONTROL_V_VDACRawValues[];
 extern volatile Int16U CONTROL_V_CSenValues[];
-extern volatile Int16U CONTROL_IIGateValues[C_VALUES_x_SIZE];
+extern volatile float CONTROL_C_CSenValues[C_VALUES_x_SIZE];
 //
 extern volatile RegulatorParamsStruct RegulatorParams;
 

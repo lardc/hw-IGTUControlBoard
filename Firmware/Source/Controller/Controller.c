@@ -30,15 +30,14 @@ volatile Int64U CONTROL_C_TimeCounter = 0;
 volatile Int64U CONTROL_C_Start_Counter = 0;
 volatile Int64U CONTROL_C_Stop_Counter = 0;
 //
+//
 volatile Int16U CONTROL_V_Values_Counter = 0;
 volatile Int16U CONTROL_C_Values_Counter = 0;
 volatile Int16U CONTROL_V_VValues[V_VALUES_x_SIZE];
 volatile Int16U CONTROL_V_VSenValues[V_VALUES_x_SIZE];
-volatile Int16U CONTROL_V_RegOutValues[V_VALUES_x_SIZE];
 volatile Int16U CONTROL_V_RegErrValues[V_VALUES_x_SIZE];
-volatile Int16U CONTROL_V_VDACRawValues[V_VALUES_x_SIZE];
 volatile Int16U CONTROL_V_CSenValues[V_VALUES_x_SIZE];
-volatile Int16U CONTROL_C_CSenValues[C_VALUES_x_SIZE];
+volatile float CONTROL_C_CSenValues[C_VALUES_x_SIZE];
 //
 volatile RegulatorParamsStruct RegulatorParams;
 static FUNC_AsyncDelegate LowPriorityHandle = NULL;
@@ -62,19 +61,18 @@ bool CONTROL_BatteryVoltageCheck();
 void CONTROL_Init()
 {
 	// Переменные для конфигурации EndPoint
-	Int16U EPIndexes[EP_COUNT] = {EP_V_V_FORM, EP_V_V_MEAS_FORM, EP_REGULATOR_OUTPUT, EP_REGULATOR_ERR,
-			EP_V_DAC_RAW_DATA,
+	Int16U EPIndexes[EP_COUNT] = {EP_V_V_FORM, EP_V_V_MEAS_FORM, EP_REGULATOR_ERR,
 			EP_V_C_MEAS_FORM, EP_C_C_FORM};
 
-	Int16U EPSized[EP_COUNT] = {V_VALUES_x_SIZE, V_VALUES_x_SIZE, V_VALUES_x_SIZE, V_VALUES_x_SIZE, V_VALUES_x_SIZE,
-			V_VALUES_x_SIZE, C_VALUES_x_SIZE};
+	Int16U EPSized[EP_COUNT] = {V_VALUES_x_SIZE, V_VALUES_x_SIZE, V_VALUES_x_SIZE, V_VALUES_x_SIZE,
+			C_VALUES_x_SIZE};
 
 	pInt16U EPCounters[EP_COUNT] = {(pInt16U)&CONTROL_V_Values_Counter, (pInt16U)&CONTROL_V_Values_Counter,
 			(pInt16U)&CONTROL_V_Values_Counter, (pInt16U)&CONTROL_V_Values_Counter, (pInt16U)&CONTROL_V_Values_Counter,
-			(pInt16U)&CONTROL_V_Values_Counter, (pInt16U)&CONTROL_C_Values_Counter};
+			(pInt16U)&CONTROL_C_Values_Counter};
 
 	pInt16U EPDatas[EP_COUNT] = {(pInt16U)CONTROL_V_VValues, (pInt16U)CONTROL_V_VSenValues,
-			(pInt16U)CONTROL_V_RegOutValues, (pInt16U)CONTROL_V_RegErrValues, (pInt16U)CONTROL_V_VDACRawValues,
+			(pInt16U)CONTROL_V_RegErrValues,
 			(pInt16U)CONTROL_V_CSenValues, (pInt16U)CONTROL_C_CSenValues};
 
 	// Конфигурация сервиса работы Data-table и EPROM
@@ -363,13 +361,13 @@ void CONTROL_QG_StartProcess()
 
 void CONTROL_VGS_SetResults(volatile RegulatorParamsStruct* Regulator)
 {
-	float Result = Regulator->VSenForm[Regulator->ConstantVFirstStep];
+	float Vgs = Regulator->CTrigVSen;
 	if((Regulator->ConstantVFirstStep) != (Regulator->ConstantVLastStep))
 	{
 		for(Int16U i = Regulator->ConstantVFirstStep++; i < Regulator->ConstantVLastStep; i++)
-			Result += Regulator->VSenForm[i];
-		Result /= (Regulator->ConstantVLastStep - Regulator->ConstantVFirstStep);
-		DataTable[REG_VGS] = (Int16U)Result;
+			Vgs += Regulator->VSenForm[i];
+		Vgs /= (Regulator->ConstantVLastStep - Regulator->ConstantVFirstStep);
+		DataTable[REG_VGS] = Vgs;
 		DataTable[REG_OP_RESULT] = OPRESULT_OK;
 		DataTable[REG_PROBLEM] = PROBLEM_NONE;
 	}
