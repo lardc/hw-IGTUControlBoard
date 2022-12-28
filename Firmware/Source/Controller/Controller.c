@@ -13,6 +13,7 @@
 #include "Measurement.h"
 #include "math.h"
 #include "Delay.h"
+#include "PAU.h"
 
 // Types
 //
@@ -269,6 +270,8 @@ void CONTROL_V_HighPriorityProcess()
 
 		case SS_IgesPulse:
 			MEASURE_IGES_Params(&RegulatorParams, CONTROL_SelfMode);
+			LL_SyncPAU(false);
+			if (REGULATOR_IGES_CheckVConstant(&RegulatorParams)) LL_SyncPAU(true);
 			if(CONTROL_RegulatorCycle(&RegulatorParams))
 			{
 				CONTROL_V_StopProcess();
@@ -307,23 +310,32 @@ bool CONTROL_RegulatorCycle(volatile RegulatorParamsStruct* Regulator)
 
 void CONTROL_VGS_StartProcess()
 {
-	LL_V_ShortPAU(true);
-	LL_V_ShortOut(false);
 	LL_V_CLimit(LL_V_LOW_CURRENT_LIMIT);
 	LL_V_CoefCSens(LL_V_HIGH_CURRENT_SENS_COEF);
 	if(DataTable[REG_VGS_C_TRIG] <= DataTable[REG_V_C_SENS_THRESHOLD])
 		LL_V_CoefCSens(LL_V_LOW_CURRENT_SENS_COEF);
 	REGULATOR_VGS_FormConfig(&RegulatorParams);
+	LL_V_ShortPAU(true);
+	LL_V_ShortOut(false);
 	CONTROL_V_StartProcess();
 }
 //-----------------------------------------------
 
 void CONTROL_IGES_StartProcess()
 {
-	LL_V_ShortPAU(false);
-	LL_V_ShortOut(false);
-	REGULATOR_IGES_FormConfig(&RegulatorParams);
-	CONTROL_V_StartProcess();
+	if (PAU_Configure(PAU_CHANNEL_IGTU, PAU_AUTO_RANGE, DataTable[REG_IGES_T_V_CONSTANT]))
+	{
+		REGULATOR_IGES_FormConfig(&RegulatorParams);
+		LL_V_ShortPAU(false);
+		LL_V_ShortOut(false);
+		CONTROL_V_StartProcess();
+	}
+	else
+	{
+		CONTROL_V_StopProcess();
+		DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
+		DataTable[REG_PROBLEM] = PROBLEM_PAU_REQEST_ERROR;
+	}
 }
 //-----------------------------------------------
 
@@ -383,18 +395,25 @@ void CONTROL_VGS_SetResults(volatile RegulatorParamsStruct* Regulator)
 
 void CONTROL_IGES_SetResults(volatile RegulatorParamsStruct* Regulator)
 {
-	float Result = 0;
-	if(Result > 0)
+	float Iges = 0;
+	if(PAU_ReadMeasuredData(&Iges))
 	{
-		DataTable[REG_IGES] = (Int16U)Result;
-		DataTable[REG_OP_RESULT] = OPRESULT_OK;
-		DataTable[REG_PROBLEM] = PROBLEM_NONE;
+		if(Iges > 0)
+		{
+			DataTable[REG_IGES] = (Int16U)Iges;
+			DataTable[REG_OP_RESULT] = OPRESULT_OK;
+			DataTable[REG_PROBLEM] = PROBLEM_NONE;
+		}
+		else
+		{
+			DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
+			DataTable[REG_PROBLEM] = PROBLEM_NEGATIVE_CURRENT;
+			}
 	}
 	else
 	{
-		DataTable[REG_IGES] = 0;
 		DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
-		DataTable[REG_PROBLEM] = PROBLEM_NEGATIVE_CURRENT;
+		DataTable[REG_PROBLEM] = PROBLEM_PAU_REQEST_ERROR;
 	}
 	CONTROL_SetDeviceState(DS_Ready, SS_None);
 }

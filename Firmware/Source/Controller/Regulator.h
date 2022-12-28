@@ -43,6 +43,7 @@ void REGULATOR_CashVariables(volatile RegulatorParamsStruct* Regulator);
 void REGULATOR_VGS_FormConfig(volatile RegulatorParamsStruct* Regulator);
 void REGULATOR_VGS_FormUpdate(volatile RegulatorParamsStruct* Regulator);
 void REGULATOR_IGES_FormConfig(volatile RegulatorParamsStruct* Regulator);
+bool REGULATOR_IGES_CheckVConstant(volatile RegulatorParamsStruct* Regulator);
 //
 
 #endif /* REGULATOR_H_ */

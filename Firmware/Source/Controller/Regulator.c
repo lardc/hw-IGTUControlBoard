@@ -114,6 +114,7 @@ void REGULATOR_VGS_FormConfig(volatile RegulatorParamsStruct* Regulator)
 void REGULATOR_IGES_FormConfig(volatile RegulatorParamsStruct* Regulator)
 {
 	Int16U IGESFrontLastStep = (Int16U)((float)(DataTable[REG_IGES_T_V_FRONT]) * 1000 / STEP_PERIOD);
+	Regulator->ConstantVFirstStep = IGESFrontLastStep + 1;
 	Int16U IGESLastStep = (Int16U)((float)(DataTable[REG_IGES_T_V_FRONT] + DataTable[REG_IGES_T_V_CONSTANT]) * 1000
 			/ STEP_PERIOD);
 	for(Int16U i = 0; i < STEP_BUFFER_SIZE; i++)
@@ -140,6 +141,12 @@ void REGULATOR_VGS_FormUpdate(volatile RegulatorParamsStruct* Regulator)
 		Regulator->VFormTable[i] =
 				i < Regulator->ConstantVLastStep ? Regulator->VFormTable[Regulator->RegulatorStepCounter] : 0;
 	TIM_Start(TIM15);
+}
+//-----------------------------------------------
+
+bool REGULATOR_IGES_CheckVConstant(volatile RegulatorParamsStruct* Regulator)
+{
+	return Regulator->ConstantVFirstStep == Regulator->RegulatorStepCounter;
 }
 //-----------------------------------------------
 

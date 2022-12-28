@@ -19,6 +19,10 @@
 #define DAC_OFFSET_MAX				4095
 #define DAC_OFFSET_DEF				0
 //
+#define V_C_SENS_THRESHOLD_MAX		20
+//
+#define PAU_CAN_ID_DEF				101
+//
 #define COEF_P0_MIN					INT16S_MIN
 #define COEF_P0_MAX					INT16S_MAX
 #define COEF_P0_DEF					0
