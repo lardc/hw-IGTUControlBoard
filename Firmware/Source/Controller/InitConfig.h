@@ -9,6 +9,7 @@ Boolean INITCFG_ConfigSystemClock();
 void INITCFG_ConfigDAC();
 void INITCFG_ConfigIO();
 void INITCFG_ConfigUART();
+void INITCFG_ConfigCAN();
 void INITCFG_ConfigTimer7();
 void INITCFG_ConfigTimer15();
 void INITCFG_ConfigTimer6();
