@@ -15,7 +15,8 @@ typedef enum __DeviceState
 	DS_Fault = 1,
 	DS_Disabled = 2,
 	DS_Ready = 3,
-	DS_InProcess = 4
+	DS_InProcess = 4,
+	DS_Selftest = 5
 } DeviceState;
 
 typedef enum __DeviceSubState
@@ -27,8 +28,7 @@ typedef enum __DeviceSubState
 	SS_IgesPulse = 4,
 	SS_IgesWaitAfterPulse = 5,
 	SS_QgWaitAfterPulse = 6,
-	SS_QgPulse = 7,
-	SS_SelfTest = 8
+	SS_QgPulse = 7
 } DeviceSubState;
 
 

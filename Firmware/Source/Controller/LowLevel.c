@@ -20,9 +20,15 @@ void LL_Indication(bool State)
 }
 //-----------------------------
 
-void LL_OutMultiplex(bool State)	// true - Current, false - Voltage
+void LL_OutMultiplexCurrent()
 {
-	GPIO_SetState(GPIO_OUT_MULTIPLEX, !State);
+	GPIO_SetState(GPIO_OUT_MULTIPLEX, false);
+}
+//-----------------------------
+
+void LL_OutMultiplexVoltage()
+{
+	GPIO_SetState(GPIO_OUT_MULTIPLEX, true);
 }
 //-----------------------------
 
@@ -69,44 +75,27 @@ void LL_V_VSetDAC(Int16U Data)
 }
 //-----------------------------
 
-void LL_V_CoefCSens(Int16U Data) // 0 - Low current, 1 - High current
-{
-	switch(Data)
-	{
-		case 0:
-			GPIO_SetState(GPIO_V_CURR_K1, false);
-			GPIO_SetState(GPIO_V_CURR_K2, true);
-
-			break;
-		case 1:
-			GPIO_SetState(GPIO_V_CURR_K2, false);
-			GPIO_SetState(GPIO_V_CURR_K1, true);
-			break;
-		default:
-			GPIO_SetState(GPIO_V_CURR_K1, false);
-			GPIO_SetState(GPIO_V_CURR_K2, false);
-			break;
-	}
+void LL_V_CoefCSensLowRange() {
+	GPIO_SetState(GPIO_V_CURR_K1, false);
+	GPIO_SetState(GPIO_V_CURR_K2, true);
 }
 //-----------------------------
 
-void LL_V_CLimit(Int16U Data) // 0 - Low current, 1 - High current
-{
-	switch(Data)
-	{
-		case 0:
-			GPIO_SetState(GPIO_V_LOW_CURRENT, false);
-			GPIO_SetState(GPIO_V_HIGH_CURRENT, true);
-			break;
-		case 1:
-			GPIO_SetState(GPIO_V_HIGH_CURRENT, false);
-			GPIO_SetState(GPIO_V_LOW_CURRENT, true);
-			break;
-		default:
-			GPIO_SetState(GPIO_V_LOW_CURRENT, false);
-			GPIO_SetState(GPIO_V_HIGH_CURRENT, true);
-			break;
-	}
+void LL_V_CoefCSensHighRange() {
+	GPIO_SetState(GPIO_V_CURR_K2, false);
+	GPIO_SetState(GPIO_V_CURR_K1, true);
+}
+//-----------------------------
+
+void LL_V_CLimitLowRange() {
+	GPIO_SetState(GPIO_V_LOW_CURRENT, false);
+	GPIO_SetState(GPIO_V_HIGH_CURRENT, true);
+}
+//-----------------------------
+
+void LL_V_CLimitHighRange() {
+	GPIO_SetState(GPIO_V_HIGH_CURRENT, false);
+	GPIO_SetState(GPIO_V_LOW_CURRENT, true);
 }
 //-----------------------------
 

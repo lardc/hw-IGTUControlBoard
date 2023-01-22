@@ -153,7 +153,7 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 		case ACT_ENABLE_POWER:
 			if(CONTROL_State == DS_None)
 			{
-				CONTROL_SetDeviceState(DS_None, SS_SelfTest);
+				CONTROL_SetDeviceState(DS_None, SS_None);
 			}
 			else if(CONTROL_State != DS_Ready)
 				*pUserError = ERR_OPERATION_BLOCKED;
@@ -237,6 +237,9 @@ void CONTROL_LogicProcess()
 	{
 		case SS_VgsWaitAfterPulse:
 			CONTROL_VGS_SetResults(&RegulatorParams);
+			if(CONTROL_State == DS_Selftest)
+				DIAG_V_SelfTestFinished();
+			CONTROL_SetDeviceState(DS_Ready, SS_None);
 			break;
 
 		case SS_IgesWaitAfterPulse:
@@ -245,6 +248,9 @@ void CONTROL_LogicProcess()
 
 		case SS_QgWaitAfterPulse:
 			CONTROL_QG_SetResults();
+			if(CONTROL_State == DS_Selftest)
+				DIAG_C_SelfTestFinished();
+			CONTROL_SetDeviceState(DS_Ready, SS_None);
 			break;
 
 		default:
@@ -264,18 +270,19 @@ void CONTROL_V_HighPriorityProcess()
 			if(CONTROL_RegulatorCycle(&RegulatorParams))
 			{
 				CONTROL_V_StopProcess();
-				CONTROL_SetDeviceState(DS_InProcess, SS_VgsWaitAfterPulse);
+				CONTROL_SetDeviceState(CONTROL_State, SS_VgsWaitAfterPulse);
 			}
 			break;
 
 		case SS_IgesPulse:
 			MEASURE_IGES_Params(&RegulatorParams, CONTROL_SelfMode);
 			LL_SyncPAU(false);
-			if (REGULATOR_IGES_CheckVConstant(&RegulatorParams)) LL_SyncPAU(true);
+			if(REGULATOR_IGES_CheckVConstant(&RegulatorParams))
+				LL_SyncPAU(true);
 			if(CONTROL_RegulatorCycle(&RegulatorParams))
 			{
 				CONTROL_V_StopProcess();
-				CONTROL_SetDeviceState(DS_InProcess, SS_IgesWaitAfterPulse);
+				CONTROL_SetDeviceState(CONTROL_State, SS_IgesWaitAfterPulse);
 			}
 			break;
 
@@ -297,7 +304,7 @@ void CONTROL_C_HighPriorityProcess()
 		ADC_SamplingStop(ADC1);
 		DMA_TransferCompleteReset(DMA1, DMA_ISR_TCIF1);
 		TIM_StatusClear(TIM4);
-		CONTROL_SetDeviceState(DS_InProcess, SS_QgWaitAfterPulse);
+		CONTROL_SetDeviceState(CONTROL_State, SS_QgWaitAfterPulse);
 	}
 }
 //-----------------------------------------------
@@ -310,10 +317,11 @@ bool CONTROL_RegulatorCycle(volatile RegulatorParamsStruct* Regulator)
 
 void CONTROL_VGS_StartProcess()
 {
-	LL_V_CLimit(LL_V_LOW_CURRENT_LIMIT);
-	LL_V_CoefCSens(LL_V_HIGH_CURRENT_SENS_COEF);
+	LL_V_CLimitHighRange();
 	if(DataTable[REG_VGS_C_TRIG] <= DataTable[REG_V_C_SENS_THRESHOLD])
-		LL_V_CoefCSens(LL_V_LOW_CURRENT_SENS_COEF);
+		LL_V_CoefCSensLowRange();
+	else
+		LL_V_CoefCSensHighRange();
 	REGULATOR_VGS_FormConfig(&RegulatorParams);
 	LL_V_ShortPAU(true);
 	LL_V_ShortOut(false);
@@ -323,7 +331,8 @@ void CONTROL_VGS_StartProcess()
 
 void CONTROL_IGES_StartProcess()
 {
-	if (PAU_Configure(PAU_CHANNEL_IGTU, PAU_AUTO_RANGE, DataTable[REG_IGES_T_V_CONSTANT]))
+	LL_V_CLimitLowRange();
+	if(PAU_Configure(PAU_CHANNEL_IGTU, PAU_AUTO_RANGE, DataTable[REG_IGES_T_V_CONSTANT]))
 	{
 		REGULATOR_IGES_FormConfig(&RegulatorParams);
 		LL_V_ShortPAU(false);
@@ -389,7 +398,6 @@ void CONTROL_VGS_SetResults(volatile RegulatorParamsStruct* Regulator)
 		DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
 		DataTable[REG_PROBLEM] = PROBLEM_CURRENT_NOT_REACHED;
 	}
-	CONTROL_SetDeviceState(DS_Ready, SS_None);
 }
 //-----------------------------------------------
 
@@ -408,7 +416,7 @@ void CONTROL_IGES_SetResults(volatile RegulatorParamsStruct* Regulator)
 		{
 			DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
 			DataTable[REG_PROBLEM] = PROBLEM_NEGATIVE_CURRENT;
-			}
+		}
 	}
 	else
 	{
@@ -456,7 +464,6 @@ void CONTROL_QG_SetResults()
 
 	CONTROL_C_Start_Counter = 0;
 	CONTROL_C_Stop_Counter = 0;
-	CONTROL_SetDeviceState(DS_Ready, SS_None);
 }
 //-----------------------------------------------
 
