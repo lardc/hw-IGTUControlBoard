@@ -31,46 +31,26 @@ void USB_LP_CAN_RX0_IRQHandler()
 }
 //-----------------------------------------
 
-void EXTI15_10_IRQHandler(void)
-{
-	/*if (LL_ICompState())
-		CONTROL_IHighPriorityProcess(true, true);
-	else
-		CONTROL_IHighPriorityProcess(false, true);
-	EXTI_FlagReset(EXTI_15);*/
-}
-//-----------------------------------------------
-
 void TIM15_IRQHandler()
 {
 	if(TIM_StatusCheck(TIM15))
 	{
-		CONTROL_UHighPriorityProcess();
+		CONTROL_V_HighPriorityProcess();
 
 		TIM_StatusClear(TIM15);
 	}
 }
 //-----------------------------------------
 
-/*void TIM6_IRQHandler()
+void TIM6_IRQHandler()
 {
 	if(TIM_StatusCheck(TIM6))
 	{
-		if(++CONTROL_I_TimeCounter > (Int16U)((float)DataTable[REG_I_T_CURRENT] / (float)TIMER6_uS))
-			CONTROL_IHighPriorityProcess(false, false);
+		if(++CONTROL_I_TimeCounter > (Int16U)((float)DataTable[REG_QG_T_CURRENT] / (float)TIMER6_uS))
+			CONTROL_C_HighPriorityProcess(false, false);
 		else
-			CONTROL_IHighPriorityProcess(true, false);
+			CONTROL_C_HighPriorityProcess(true, false);
 		TIM_StatusClear(TIM6);
-	}
-}*/
-void TIM4_IRQHandler()
-{
-	if(TIM_StatusCheck(TIM4))
-	{
-		CONTROL_I_TimeCounter++;
-		if(CONTROL_I_TimeCounter > CONTROL_TimerMaxCounter)
-			CONTROL_IHighPriorityProcess();
-		TIM_StatusClear(TIM4);
 	}
 }
 //-----------------------------------------
@@ -91,19 +71,5 @@ void TIM7_IRQHandler()
 
 		TIM_StatusClear(TIM7);
 	}
-}
-//-----------------------------------------
-
-void DMA1_Channel1_IRQHandler()
-{
-	/*if (DMA_IsTransferComplete(DMA1, DMA_ISR_TCIF1))
-	{
-		TIM_Stop(TIM6);
-		TIM_Reset(TIM6);
-
-		ADC_SamplingStop(ADC1);
-
-		DMA_TransferCompleteReset(DMA1, DMA_ISR_TCIF1);
-	}*/
 }
 //-----------------------------------------

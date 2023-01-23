@@ -15,61 +15,66 @@ typedef enum __DeviceState
 	DS_Fault = 1,
 	DS_Disabled = 2,
 	DS_Ready = 3,
-	DS_InProcess = 4
+	DS_InProcess = 4,
+	DS_Selftest = 5
 } DeviceState;
 
 typedef enum __DeviceSubState
 {
 	SS_None = 0,
 	SS_PulsePrepare = 1,
-	SS_Pulse = 2,
-	SS_WaitAfterUPulse = 3,
-	SS_WaitAfterIPulse = 4
+	SS_VgsPulse = 2,
+	SS_VgsWaitAfterPulse = 3,
+	SS_IgesPulse = 4,
+	SS_IgesWaitAfterPulse = 5,
+	SS_QgWaitAfterPulse = 6,
+	SS_QgPulse = 7
 } DeviceSubState;
 
-typedef enum __DeviceWarning
-{
-	DW_None = 0,
-	DW_CurrentNotReached = 1
-} DeviceWarning;
 
 // Variables
 //
 extern volatile DeviceState CONTROL_State;
+extern volatile DeviceSubState CONTROL_SubState;
 extern volatile Int64U CONTROL_TimeCounter;
 extern volatile Int16U CONTROL_TimerMaxCounter;
 extern volatile Int64U CONTROL_I_TimeCounter;
 extern Int64U CONTROL_LEDTimeout;
-extern volatile Int16U CONTROL_Values_Counter;
+extern volatile Int16U CONTROL_V_Values_Counter;
 extern volatile Int16U CONTROL_I_Values_Counter;
-extern volatile Int16U CONTROL_RegulatorErr_Counter;
-extern volatile Int16U CONTROL_UUValues[];
-extern volatile Int16U CONTROL_UUMeasValues[];
-extern volatile Int16U CONTROL_RegulatorOutput[];
-extern volatile Int16U CONTROL_RegulatorErr[];
-extern volatile Int16U CONTROL_DACRawData[];
-extern volatile Int16U CONTROL_UIMeasValues[];
-extern volatile Int16U CONTROL_IIGateValues[I_VALUES_x_SIZE];
+extern volatile Int16U CONTROL_V_RegErrValues_Counter;
+extern volatile Int16U CONTROL_V_VValues[];
+extern volatile Int16U CONTROL_V_VSenValues[];
+extern volatile Int16U CONTROL_V_RegOutValues[];
+extern volatile Int16U CONTROL_V_RegErrValues[];
+extern volatile Int16U CONTROL_V_CSenValues[];
+extern volatile float CONTROL_C_CSenValues[C_VALUES_x_SIZE];
 //
 extern volatile RegulatorParamsStruct RegulatorParams;
-
 
 // Functions
 //
 void CONTROL_Init();
 void CONTROL_Idle();
 void CONTROL_SetDeviceState(DeviceState NewState, DeviceSubState NewSubState);
-void CONTROL_SetDeviceWarning(DeviceWarning NewWarning);
 void CONTROL_DelayMs(uint32_t Delay);
-void CONTROL_UHighPriorityProcess();
-void CONTROL_IHighPriorityProcess();
-void CONTROL_ExternalInterruptProcess();
-void CONTROL_UStartProcess();
-void CONTROL_IStartProcess();
-void CONTROL_USetResults(volatile RegulatorParamsStruct* Regulator);
-void CONTROL_ISetResults();
-void CONTROL_UStartProcess();
-void CONTROL_UStopProcess();
-void CONTROL_IProcessing();
+
+void CONTROL_V_HighPriorityProcess();
+void CONTROL_C_HighPriorityProcess();
+
+void CONTROL_VGS_StartProcess();
+void CONTROL_IGES_StartProcess();
+void CONTROL_V_StartProcess();
+
+void CONTROL_QG_StartProcess();
+
+void CONTROL_VGS_SetResults(volatile RegulatorParamsStruct* Regulator);
+void CONTROL_IGES_SetResults(volatile RegulatorParamsStruct* Regulator);
+void CONTROL_QG_SetResults();
+
+void CONTROL_V_StopProcess();
+
+void CONTROL_C_StopProcess();
+void CONTROL_C_Processing();
 
 #endif // __CONTROLLER_H

@@ -6,75 +6,98 @@
 #include "Global.h"
 
 // Variables
-volatile Int16U MEASURE_ADC_IGateRaw[I_VALUES_x_SIZE];
+volatile Int16U MEASURE_C_CSenRaw[C_VALUES_x_SIZE];
 
 // Functions
 //
 
-Int16U MEASURE_UUSen()
+Int16U MEASURE_PotSen()
 {
-	Int16U result = ADC_Measure(ADC3, ADC3_U_SEN_CHANNEL);
-	return result;
+	return ADC_Measure(ADC3, ADC3_POT_CHANNEL);
 }
 //-----------------------------------------------
 
-Int16U MEASURE_UISen()
+Int16U MEASURE_V_VSen()
 {
-	Int16U result = ADC_Measure(ADC1, ADC1_I_SEN_CHANNEL);
-	return result;
+	return ADC_Measure(ADC1, ADC1_V_V_SEN_CHANNEL);
 }
 //-----------------------------------------------
 
-Int16U MEASURE_IIGate()
+Int16U MEASURE_V_CSen()
 {
-	Int16U result = ADC_Measure(ADC1, ADC1_I_GATE_CHANNEL);
-	return result;
+	return ADC_Measure(ADC1, ADC1_V_C_SEN_CHANNEL);
 }
 //-----------------------------------------------
 
-Boolean MEASURE_UParams(volatile RegulatorParamsStruct* Regulator)
+Int16U MEASURE_C_VSen()
 {
-	float U = CU_UADCUToX(MEASURE_UUSen());
-	float I = CU_UADCIToX(MEASURE_UISen());
+	return ADC_Measure(ADC1, ADC1_C_V_SEN_CHANNEL);
+}
+//-----------------------------------------------
 
-	if(Regulator->RegulatorPulseCounter == 0)
+Int16U MEASURE_C_CSen()
+{
+	return ADC_Measure(ADC1, ADC1_C_C_SEN_CHANNEL);
+}
+//-----------------------------------------------
+
+Boolean MEASURE_VGS_Params(volatile RegulatorParamsStruct* Regulator, bool SelfMode)
+{
+	float V = SelfMode ? CU_V_ADCVToX(MEASURE_V_VSen()) : CU_PotADCVToX(MEASURE_PotSen());
+	float C = CU_V_ADCCToX(MEASURE_V_CSen());
+
+	if(Regulator->RegulatorStepCounter == 0)
 	{
-		U = 0;
-		I = 0;
+		V = 0;
+		C = 0;
 	}
-	Regulator->UMeasured = U;
-	Regulator->UFormMeasured[Regulator->RegulatorPulseCounter] = U;
-	Regulator->IFormMeasured[Regulator->RegulatorPulseCounter] = I;
+	Regulator->VSen = V;
+	Regulator->CSen = C;
 
 	// проверка на достижение током порогового значения
-	if ((I >= (float)DataTable[REG_U_I_TRIG]) && (Regulator->ITrigRegulatorPulse == 0))
+	if((C >= (float)DataTable[REG_VGS_C_TRIG]) && (Regulator->CTrigRegulatorStep == 0))
 	{
-		Regulator->ITrigRegulatorPulse = Regulator->RegulatorPulseCounter;
+		Regulator->CTrigRegulatorStep = Regulator->RegulatorStepCounter;
+		Regulator->VSenForm[Regulator->RegulatorStepCounter] = (Int16U)V;
+		Regulator->CTrigVSen = V;
+		Regulator->CTrigCSen = C;
 		return true;
 	}
-	else return false;
+	else
+		return false;
 }
 //-----------------------------------------------
 
-void MEASURE_DMAIGateBufferClear()
+void MEASURE_IGES_Params(volatile RegulatorParamsStruct* Regulator, bool SelfMode)
 {
-	for(int i = 0; i < I_VALUES_x_SIZE; i++)
-		MEASURE_ADC_IGateRaw[i] = 0;
+	float V = SelfMode ? CU_V_ADCVToX(MEASURE_V_VSen()) : CU_PotADCVToX(MEASURE_PotSen());
+
+	if(Regulator->RegulatorStepCounter == 0)
+		V = 0;
+	Regulator->VSen = V;
+	Regulator->VSenForm[Regulator->RegulatorStepCounter] = V;
 }
 //-----------------------------------------------
 
-/*Int16U MEASURE_DMAExtractIGate()
+void MEASURE_C_CDMABufferClear()
 {
-	return MEASURE_Average(&MEASURE_ADC_IGateRaw[1], I_VALUES_x_SIZE - 1);
-}*/
+	for(int i = 0; i < C_VALUES_x_SIZE; i++)
+		MEASURE_C_CSenRaw[i] = 0;
+}
 //-----------------------------------------------
 
-Int16U MEASURE_Average(Int16U* InputArray, Int16U ArraySize)
+Int16U MEASURE_C_DMAExtractCSen()
+{
+	return MEASURE_Average((Int16U*)&MEASURE_C_CSenRaw[1], C_VALUES_x_SIZE - 1);
+}
+//-----------------------------------------------
+
+Int16U MEASURE_Average(Int16U* InputArrayAddr, Int16U ArraySize)
 {
 	Int32U AverageData = 0;
 
 	for(int i = 0; i < ArraySize; i++)
-		AverageData += *(InputArray + i);
+		AverageData += *(InputArrayAddr + i);
 
 	return (Int16U)((float)AverageData / ArraySize);
 }
