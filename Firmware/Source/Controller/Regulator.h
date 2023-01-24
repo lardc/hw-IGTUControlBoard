@@ -10,7 +10,7 @@
 // Definitions
 //
 #define STEP_BUFFER_SIZE	V_VALUES_x_SIZE
-#define STEP_PERIOD		TIMER15_uS
+#define STEP_PERIOD			TIMER15_uS
 
 // Structs
 //
@@ -43,7 +43,7 @@ void REGULATOR_CashVariables(volatile RegulatorParamsStruct* Regulator);
 void REGULATOR_VGS_FormConfig(volatile RegulatorParamsStruct* Regulator);
 void REGULATOR_VGS_FormUpdate(volatile RegulatorParamsStruct* Regulator);
 void REGULATOR_IGES_FormConfig(volatile RegulatorParamsStruct* Regulator);
-bool REGULATOR_IGES_CheckVConstant(volatile RegulatorParamsStruct* Regulator);
+bool REGULATOR_IGES_SyncPAU(volatile RegulatorParamsStruct* Regulator);
 //
 
 #endif /* REGULATOR_H_ */

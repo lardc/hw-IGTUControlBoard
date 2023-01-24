@@ -92,7 +92,7 @@
 #define REG_REGULATOR_Kp				50	// Пропорциональный коэффициент регулятора
 #define REG_REGULATOR_Ki				51	// Интегральный коэффициент регулятора
 
-#define REG_PAU_SNC_DELAY				60	// Задержка синхронизации PAU с момента выхода на полку импульса
+#define REG_PAU_SNC_DELAY				60	// Задержка синхронизации PAU с момента выхода на полку импульса [ms]
 #define REG_PAU_EMULATED				61	// Эмуляция работы PAU
 //
 // Несохраняемые регистры чтения-записи
@@ -182,7 +182,8 @@
 #define PROBLEM_NONE					0
 #define PROBLEM_CURRENT_NOT_REACHED		1
 #define PROBLEM_NEGATIVE_CURRENT		2
-#define PROBLEM_PAU_REQEST_ERROR		3
+#define PROBLEM_PAU_REQUEST_ERROR		3
+#define PROBLEM_TOCUHP_REQUEST_ERROR	4
 
 //  Warning
 #define WARNING_NONE					0

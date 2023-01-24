@@ -278,7 +278,7 @@ void CONTROL_V_HighPriorityProcess()
 		case SS_IgesPulse:
 			MEASURE_IGES_Params(&RegulatorParams, CONTROL_State);
 			LL_SyncPAU(false);
-			if(REGULATOR_IGES_CheckVConstant(&RegulatorParams))
+			if(REGULATOR_IGES_SyncPAU(&RegulatorParams))
 				LL_SyncPAU(true);
 			if(CONTROL_RegulatorCycle(&RegulatorParams))
 			{
@@ -356,7 +356,7 @@ void CONTROL_IGES_StartProcess()
 	{
 		CONTROL_V_StopProcess();
 		DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
-		DataTable[REG_PROBLEM] = PROBLEM_PAU_REQEST_ERROR;
+		DataTable[REG_PROBLEM] = PROBLEM_PAU_REQUEST_ERROR;
 	}
 }
 //-----------------------------------------------
@@ -434,7 +434,7 @@ void CONTROL_IGES_SetResults(volatile RegulatorParamsStruct* Regulator)
 	else
 	{
 		DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
-		DataTable[REG_PROBLEM] = PROBLEM_PAU_REQEST_ERROR;
+		DataTable[REG_PROBLEM] = PROBLEM_PAU_REQUEST_ERROR;
 	}
 	CONTROL_SetDeviceState(DS_Ready, SS_None);
 }

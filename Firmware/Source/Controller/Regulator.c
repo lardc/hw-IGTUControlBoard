@@ -144,9 +144,9 @@ void REGULATOR_VGS_FormUpdate(volatile RegulatorParamsStruct* Regulator)
 }
 //-----------------------------------------------
 
-bool REGULATOR_IGES_CheckVConstant(volatile RegulatorParamsStruct* Regulator)
+bool REGULATOR_IGES_SyncPAU(volatile RegulatorParamsStruct* Regulator)
 {
-	return Regulator->ConstantVFirstStep == Regulator->RegulatorStepCounter;
+	return Regulator->ConstantVFirstStep == (Regulator->RegulatorStepCounter + (Int16U)(1000 * DataTable[REG_PAU_SNC_DELAY] / STEP_PERIOD));
 }
 //-----------------------------------------------
 
