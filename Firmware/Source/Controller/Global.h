@@ -22,7 +22,7 @@
 
 // Размер массивов EP
 #define V_VALUES_x_SIZE	(VOLTAGE_PULSE_WIDTH / TIMER15_uS)
-#define C_VALUES_x_SIZE	(1000 * CURRENT_PULSE_WIDTH / TIMER6_nS)
+#define C_VALUES_x_SIZE	(CURRENT_PULSE_WIDTH / TIMER4_uS)
 // Временные параметры
 #define TIME_LED_BLINK							500		// Мигание светодиодом (в мс)
 

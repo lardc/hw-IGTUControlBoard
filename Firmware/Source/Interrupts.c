@@ -42,15 +42,15 @@ void TIM15_IRQHandler()
 }
 //-----------------------------------------
 
-void TIM6_IRQHandler()
+void TIM4_IRQHandler()
 {
-	if(TIM_StatusCheck(TIM6))
+	if(TIM_StatusCheck(TIM4))
 	{
-		if(++CONTROL_I_TimeCounter > (Int16U)((float)DataTable[REG_QG_T_CURRENT] / (float)TIMER6_uS))
-			CONTROL_C_HighPriorityProcess(false, false);
+		if(++CONTROL_C_TimeCounter > (Int16U)((float)DataTable[REG_QG_T_CURRENT] / (float)TIMER4_uS))
+			CONTROL_C_HighPriorityProcess(false);
 		else
-			CONTROL_C_HighPriorityProcess(true, false);
-		TIM_StatusClear(TIM6);
+			CONTROL_C_HighPriorityProcess(true);
+		TIM_StatusClear(TIM4);
 	}
 }
 //-----------------------------------------

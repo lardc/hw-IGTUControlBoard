@@ -38,7 +38,7 @@ extern volatile DeviceState CONTROL_State;
 extern volatile DeviceSubState CONTROL_SubState;
 extern volatile Int64U CONTROL_TimeCounter;
 extern volatile Int16U CONTROL_TimerMaxCounter;
-extern volatile Int64U CONTROL_I_TimeCounter;
+extern volatile Int64U CONTROL_C_TimeCounter;
 extern Int64U CONTROL_LEDTimeout;
 extern volatile Int16U CONTROL_V_Values_Counter;
 extern volatile Int16U CONTROL_I_Values_Counter;
@@ -49,6 +49,7 @@ extern volatile Int16U CONTROL_V_RegOutValues[];
 extern volatile Int16U CONTROL_V_RegErrValues[];
 extern volatile Int16U CONTROL_V_CSenValues[];
 extern volatile float CONTROL_C_CSenValues[C_VALUES_x_SIZE];
+extern volatile float CONTROL_C_VSenValues[C_VALUES_x_SIZE];
 //
 extern volatile RegulatorParamsStruct RegulatorParams;
 
@@ -60,7 +61,7 @@ void CONTROL_SetDeviceState(DeviceState NewState, DeviceSubState NewSubState);
 void CONTROL_DelayMs(uint32_t Delay);
 
 void CONTROL_V_HighPriorityProcess();
-void CONTROL_C_HighPriorityProcess();
+void CONTROL_C_HighPriorityProcess(bool IsInProgress);
 
 void CONTROL_VGS_StartProcess();
 void CONTROL_IGES_StartProcess();

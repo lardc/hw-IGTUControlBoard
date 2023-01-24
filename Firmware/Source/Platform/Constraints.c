@@ -36,20 +36,20 @@ const TableItemConstraint Constraint[DATA_TABLE_WP_START] = {{0, 0, 0},				// 0
 		{COEF_P2_MIN, COEF_P2_MAX, COEF_P2_DEF},									// 26
 		{COEF_P1_MIN, COEF_P1_MAX, COEF_P1_DEF},									// 27
 		{COEF_P0_MIN, COEF_P0_MAX, COEF_P0_DEF},									// 28
-		{0, 0, 0},																	// 29
+		{COEF_P2_MIN, COEF_P2_MAX, COEF_P2_DEF},									// 29
 		{COEF_P1_MIN, COEF_P1_MAX, COEF_P1_DEF},									// 30
 		{COEF_P0_MIN, COEF_P0_MAX, COEF_P0_DEF},									// 31
-		{0, 0, 0},																	// 32
+		{COEF_P2_MIN, COEF_P2_MAX, COEF_P2_DEF},									// 32
 		{COEF_P1_MIN, COEF_P1_MAX, COEF_P1_DEF},									// 33
 		{COEF_P0_MIN, COEF_P0_MAX, COEF_P0_DEF},									// 34
-		{0, 0, 0},																	// 35
-		{COEF_P1_MIN, COEF_P1_MAX, COEF_P1_DEF},									// 36
-		{COEF_P0_MIN, COEF_P0_MAX, COEF_P0_DEF},									// 37
-		{0, 0, 0},																	// 38
+		{COEF_P1_MIN, COEF_P1_MAX, COEF_P1_DEF},									// 35
+		{COEF_P0_MIN, COEF_P0_MAX, COEF_P0_DEF},									// 36
+		{COEF_P1_MIN, COEF_P1_MAX, COEF_P1_DEF},									// 37
+		{COEF_P0_MIN, COEF_P0_MAX, COEF_P0_DEF},									// 38
 		{COEF_P1_MIN, COEF_P1_MAX, COEF_P1_DEF},									// 39
 		{COEF_P0_MIN, COEF_P0_MAX, COEF_P0_DEF},									// 40
-		{0, 0, 0},																	// 41
-		{0, 0, 0},																	// 42
+		{COEF_P1_MIN, COEF_P1_MAX, COEF_P1_DEF},									// 41
+		{COEF_P0_MIN, COEF_P0_MAX, COEF_P0_DEF},									// 42
 		{0, 0, 0},																	// 43
 		{0, 0, 0},																	// 44
 		{0, 0, 0},																	// 45
@@ -59,7 +59,7 @@ const TableItemConstraint Constraint[DATA_TABLE_WP_START] = {{0, 0, 0},				// 0
 		{0, 0, 0},																	// 49
 		{REGULATOR_KP_MIN, REGULATOR_KP_MAX, REGULATOR_KP_DEF},						// 50
 		{REGULATOR_KI_MIN, REGULATOR_KI_MAX, REGULATOR_KI_DEF},						// 51
-		{0, INT16U_MAX, 0},															// 52
+		{0, 0, 0},																	// 52
 		{0, 0, 0},																	// 53
 		{0, 0, 0},																	// 54
 		{0, 0, 0},																	// 55
@@ -67,8 +67,8 @@ const TableItemConstraint Constraint[DATA_TABLE_WP_START] = {{0, 0, 0},				// 0
 		{0, 0, 0},																	// 57
 		{0, 0, 0},																	// 58
 		{0, 0, 0},																	// 59
-		{0, 0, 0},																	// 60
-		{0, 0, 0},																	// 61
+		{0, INT16U_MAX, PAU_SNC_DELAY_DEF},											// 60
+		{0, 1, 0},																	// 61
 		{0, 0, 0},																	// 62
 		{0, 0, 0},																	// 63
 		{0, 0, 0},																	// 64

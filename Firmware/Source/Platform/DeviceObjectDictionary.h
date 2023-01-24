@@ -55,6 +55,7 @@
 #define REG_C_V_CUTOFF_K				15	// Коэффициент преобразования напряжения в код внешнего ЦАП
 #define REG_C_V_NEGATIVE_K				16	// Коэффициент преобразования напряжения в код внешнего ЦАП
 #define REG_ADC_POT_SEN_K				17	// Коэффициент преобразования кода АЦП в напряжение
+#define REG_ADC_C_V_SEN_K				18	// Коэффициент преобразования кода АЦП в напряжение
 //
 #define REG_ADC_C_C_SEN_P2				20	// Коэффициент тонкой подстройки Р2
 #define REG_ADC_C_C_SEN_P1				21	// Коэффициент тонкой подстройки Р1
@@ -71,6 +72,10 @@
 #define REG_ADC_POT_SEN_P2				29	// Коэффициент тонкой подстройки Р2
 #define REG_ADC_POT_SEN_P1				30	// Коэффициент тонкой подстройки Р1
 #define REG_ADC_POT_SEN_P0				31	// Смещение тонкой подстройки Р0
+//
+#define REG_ADC_C_V_SEN_P2				32	// Коэффициент тонкой подстройки Р2
+#define REG_ADC_C_V_SEN_P1				33	// Коэффициент тонкой подстройки Р1
+#define REG_ADC_C_V_SEN_P0				34	// Смещение тонкой подстройки Р0
 //
 #define REG_DAC_C_C_SET_P1				35	// Коэффициент тонкой подстройки Р1
 #define REG_DAC_C_C_SET_P0				36	// Смещение тонкой подстройки Р0
@@ -143,7 +148,6 @@
 // 258 - 259
 #define REG_FWINFO_STR_LEN				260	// Length of the information string record
 #define REG_FWINFO_STR_BEGIN			261	// Begining of the information string record
-
 
 // PAU commands
 #define ACT_PAU_FAULT_CLEAR				3	// Очистка fault

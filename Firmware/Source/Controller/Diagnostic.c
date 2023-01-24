@@ -6,6 +6,7 @@
 #include "LowLevel.h"
 #include "Controller.h"
 #include "DebugActions.h"
+#include "Delay.h"
 
 // Functions
 bool DIAG_HandleDiagnosticAction(uint16_t ActionID, uint16_t *pUserError)
@@ -15,11 +16,12 @@ bool DIAG_HandleDiagnosticAction(uint16_t ActionID, uint16_t *pUserError)
 		case ACT_DIAG_V:
 			if(CONTROL_State == DS_Ready)
 			{
-				LL_V_Diagnostic(true);
 				DataTable[REG_VGS_C_TRIG] = DIAG_REG_VGS_C_TRIG;
 				DataTable[REG_VGS_T_V_CONSTANT] = DIAG_REG_VGS_T_V_CONSTANT;
 				DataTable[REG_VGS_T_V_FRONT] = DIAG_REG_VGS_T_V_FRONT;
 				DataTable[REG_VGS_V_MAX] = DIAG_REG_VGS_V_MAX;
+				LL_V_Diagnostic(true);
+				DELAY_MS(10);
 				CONTROL_SetDeviceState(DS_Selftest, SS_VgsPulse);
 				CONTROL_VGS_StartProcess();
 			}
@@ -40,6 +42,7 @@ bool DIAG_HandleDiagnosticAction(uint16_t ActionID, uint16_t *pUserError)
 				DataTable[REG_QG_V_POWER] = DIAG_REG_QG_V_POWER;
 				DataTable[REG_QG_C_THRESHOLD] = DIAG_REG_QG_C_THRESHOLD;
 				LL_C_Diagnostic(true);
+				DELAY_MS(10);
 				CONTROL_SetDeviceState(DS_Selftest, SS_QgPulse);
 				CONTROL_QG_StartProcess();
 			}

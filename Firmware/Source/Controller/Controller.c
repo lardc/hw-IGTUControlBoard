@@ -40,6 +40,7 @@ volatile Int16U CONTROL_V_VSenValues[V_VALUES_x_SIZE];
 volatile Int16U CONTROL_V_RegErrValues[V_VALUES_x_SIZE];
 volatile Int16U CONTROL_V_CSenValues[V_VALUES_x_SIZE];
 volatile float CONTROL_C_CSenValues[C_VALUES_x_SIZE];
+volatile float CONTROL_C_VSenValues[C_VALUES_x_SIZE];
 //
 volatile RegulatorParamsStruct RegulatorParams;
 static FUNC_AsyncDelegate LowPriorityHandle = NULL;
@@ -264,7 +265,7 @@ void CONTROL_V_HighPriorityProcess()
 	switch(CONTROL_SubState)
 	{
 		case SS_VgsPulse:
-			if(MEASURE_VGS_Params(&RegulatorParams, CONTROL_SelfMode))
+			if(MEASURE_VGS_Params(&RegulatorParams, CONTROL_State))
 				REGULATOR_VGS_FormUpdate(&RegulatorParams);
 
 			if(CONTROL_RegulatorCycle(&RegulatorParams))
@@ -275,7 +276,7 @@ void CONTROL_V_HighPriorityProcess()
 			break;
 
 		case SS_IgesPulse:
-			MEASURE_IGES_Params(&RegulatorParams, CONTROL_SelfMode);
+			MEASURE_IGES_Params(&RegulatorParams, CONTROL_State);
 			LL_SyncPAU(false);
 			if(REGULATOR_IGES_CheckVConstant(&RegulatorParams))
 				LL_SyncPAU(true);
@@ -292,19 +293,31 @@ void CONTROL_V_HighPriorityProcess()
 }
 //-----------------------------------------------
 
-void CONTROL_C_HighPriorityProcess()
+void CONTROL_C_HighPriorityProcess(bool IsInProgress)
 {
 	if(CONTROL_SubState == SS_QgPulse)
 	{
-		TIM_Stop(TIM4);
-		LL_C_CStart(true);
-		LL_C_CSetDAC(0);
-		TIM_Stop(TIM6);
-		TIM_Reset(TIM6);
-		ADC_SamplingStop(ADC1);
-		DMA_TransferCompleteReset(DMA1, DMA_ISR_TCIF1);
-		TIM_StatusClear(TIM4);
-		CONTROL_SetDeviceState(CONTROL_State, SS_QgWaitAfterPulse);
+		if(IsInProgress)
+		{
+			CONTROL_C_CSenValues[CONTROL_C_Values_Counter] = MEASURE_C_DMAExtractCSen();
+			CONTROL_C_VSenValues[CONTROL_C_Values_Counter] = MEASURE_C_DMAExtractVSen();
+			MEASURE_C_DMABufferClear();
+			CONTROL_C_Values_Counter++;
+		}
+		else
+		{
+			TIM_Stop(TIM6);
+			TIM_StatusClear(TIM6);
+			TIM_Stop(TIM4);
+			TIM_StatusClear(TIM4);
+			LL_C_CStart(true);
+			LL_C_CSetDAC(0);
+			LL_ExDACVCutoff(0);
+			LL_ExDACVNegative(0);
+			ADC_SamplingStop(ADC1);
+			DMA_TransferCompleteReset(DMA1, DMA_ISR_TCIF1);
+			CONTROL_SetDeviceState(CONTROL_State, SS_QgWaitAfterPulse);
+		}
 	}
 }
 //-----------------------------------------------
@@ -370,8 +383,8 @@ void CONTROL_QG_StartProcess()
 	DELAY_US(5);
 	CONTROL_C_TimeCounter = 0;
 	TIM_Reset(TIM4);
-	DMA_ChannelReload(DMA_ADC_C_C_SEN_CHANNEL, C_VALUES_x_SIZE);
-	DMA_ChannelEnable(DMA_ADC_C_C_SEN_CHANNEL, true);
+	DMA_ChannelReload(DMA_ADC_C_SEN_CHANNEL, C_VALUES_x_SIZE);
+	DMA_ChannelEnable(DMA_ADC_C_SEN_CHANNEL, true);
 	ADC_SamplingStart(ADC1);
 	TIM_Reset(TIM6);
 	TIM_Start(TIM6);
@@ -433,22 +446,16 @@ void CONTROL_QG_SetResults()
 	if(CONTROL_C_Start_Counter != CONTROL_C_Stop_Counter)
 	{
 		Int16U C_Counter = CONTROL_C_Stop_Counter - CONTROL_C_Start_Counter;
-		float Result = 0;
+		float C = 0;
 		for(Int16U i = CONTROL_C_Start_Counter; i < CONTROL_C_Stop_Counter; i++)
-			Result += MEASURE_C_CSenRaw[i];
-		Result /= C_Counter;
-
-		for(Int16U i = 0; i < C_VALUES_x_SIZE; i++)
-		{
-			CONTROL_C_CSenValues[i] = CU_C_ADCCToX(MEASURE_C_CSenRaw[i]);
-		}
-		Result = CU_C_ADCCToX((Int16U)Result);
+			C += CONTROL_C_CSenValues[i];
+		C /= C_Counter;
 
 		float Time = C_Counter * TIMER6_uS;
-		float Qgate = Result * Time;
+		float Qgate = C * Time;
 
 		DataTable[REG_QG_T] = (Int16U)(Time);
-		DataTable[REG_QG_C] = (Int16U)(Result);
+		DataTable[REG_QG_C] = (Int16U)(C);
 		DataTable[REG_QG] = (Int16U)(Qgate);
 		DataTable[REG_OP_RESULT] = OPRESULT_OK;
 		DataTable[REG_PROBLEM] = PROBLEM_NONE;
@@ -474,14 +481,15 @@ void CONTROL_C_Processing()
 
 	for(Int16U i = 0; i < C_VALUES_x_SIZE; i++)
 	{
-		if((CU_C_ADCCToX(MEASURE_C_CSenRaw[i]) > ((DataTable[REG_QG_C_THRESHOLD] / 100) * DataTable[REG_QG_C_SET]))
+		CONTROL_C_CSenValues[i] = CU_C_ADCCToX(CONTROL_C_CSenValues[i]);
+		CONTROL_C_VSenValues[i] = CU_C_ADCVToX(CONTROL_C_VSenValues[i]);
+		if(((CONTROL_C_CSenValues[i]) > ((DataTable[REG_QG_C_THRESHOLD] / 100) * DataTable[REG_QG_C_SET]))
 				&& (CONTROL_C_Start_Counter == 0))
 			CONTROL_C_Start_Counter = i;
-		if((CU_C_ADCCToX(MEASURE_C_CSenRaw[C_VALUES_x_SIZE - i])
+		if(((CONTROL_C_CSenValues[C_VALUES_x_SIZE - i])
 				> ((DataTable[REG_QG_C_THRESHOLD] / 100) * DataTable[REG_QG_C_SET])) && (CONTROL_C_Stop_Counter == 0))
 			CONTROL_C_Stop_Counter = C_VALUES_x_SIZE - i;
 	}
-	CONTROL_C_Values_Counter = CONTROL_C_Stop_Counter;
 }
 //-----------------------------------------------
 

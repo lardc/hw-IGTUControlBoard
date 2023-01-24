@@ -57,6 +57,8 @@
 #define REGULATOR_KI_MAX			INT16U_MAX
 #define REGULATOR_KI_DEF			0
 //
+#define PAU_SNC_DELAY_DEF			5
+//
 // VGS
 #define VGS_C_TRIG_MIN				1			// [мА]
 #define VGS_C_TRIG_MAX				300			// [мА]

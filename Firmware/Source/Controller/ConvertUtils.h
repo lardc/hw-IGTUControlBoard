@@ -21,6 +21,7 @@ Int16U CU_C_CToDAC(float Value);
 float CU_V_ADCVToX(Int16U Data);
 float CU_V_ADCCToX(Int16U Data);
 float CU_C_ADCCToX(Int16U Data);
+float CU_C_ADCVToX(Int16U Data);
 void CU_LoadSingleConvertParams(ConvertParams* StructureName, Int16U RegK, Int16U RegP0, Int16U RegP1, Int16U RegP2);
 void CU_LoadConvertParams();
 float CU_PotADCVToX(Int16U Data);

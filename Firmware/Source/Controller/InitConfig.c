@@ -153,16 +153,16 @@ void INITCFG_ConfigADC()
 
 	// ADC1
 	ADC_Calibration(ADC1);
-	ADC_Enable(ADC1);
 	ADC_SoftTrigConfig(ADC1);
-	ADC_DMAConfig(ADC1);
 
 	ADC_TrigConfig(ADC1, ADC12_TIM6_TRGO, RISE);
 	ADC_ChannelSeqReset(ADC1);
 
 	ADC_ChannelSet_Sequence(ADC1, ADC1_C_C_SEN_CHANNEL, 1);
+	ADC_ChannelSet_Sequence(ADC1, ADC1_C_V_SEN_CHANNEL, 1);
 	ADC_ChannelSeqLen(ADC1, 1);
-
+	ADC_DMAConfig(ADC1);
+	ADC_Enable(ADC1);
 	ADC_DMAEnable(ADC1, true);
 
 	// ADC3
@@ -178,13 +178,13 @@ void INITCFG_ConfigDMA()
 {
 	DMA_Clk_Enable(DMA1_ClkEN);
 	// DMA для АЦП тока затвора
-	DMA_Reset(DMA_ADC_C_C_SEN_CHANNEL);
-	DMA_Interrupt(DMA_ADC_C_C_SEN_CHANNEL, DMA_TRANSFER_COMPLETE, 0, true);
-	DMAChannelX_DataConfig(DMA_ADC_C_C_SEN_CHANNEL, (uint32_t)MEASURE_C_CSenRaw, (uint32_t)(&ADC1->DR),
+	DMA_Reset(DMA_ADC_C_SEN_CHANNEL);
+	DMA_Interrupt(DMA_ADC_C_SEN_CHANNEL, DMA_TRANSFER_COMPLETE, 0, true);
+	DMAChannelX_DataConfig(DMA_ADC_C_SEN_CHANNEL, (uint32_t)MEASURE_C_SenRaw, (uint32_t)(&ADC1->DR),
 	C_VALUES_x_SIZE);
-	DMAChannelX_Config(DMA_ADC_C_C_SEN_CHANNEL, DMA_MEM2MEM_DIS, DMA_LvlPriority_LOW, DMA_MSIZE_16BIT, DMA_PSIZE_16BIT,
+	DMAChannelX_Config(DMA_ADC_C_SEN_CHANNEL, DMA_MEM2MEM_DIS, DMA_LvlPriority_LOW, DMA_MSIZE_16BIT, DMA_PSIZE_16BIT,
 	DMA_MINC_EN, DMA_PINC_DIS, DMA_CIRCMODE_DIS, DMA_READ_FROM_PERIPH);
-	DMA_ChannelEnable(DMA_ADC_C_C_SEN_CHANNEL, true);
+	DMA_ChannelEnable(DMA_ADC_C_SEN_CHANNEL, true);
 }
 //------------------------------------------------
 

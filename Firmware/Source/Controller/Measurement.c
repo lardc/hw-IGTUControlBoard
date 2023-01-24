@@ -6,7 +6,7 @@
 #include "Global.h"
 
 // Variables
-volatile Int16U MEASURE_C_CSenRaw[C_VALUES_x_SIZE];
+volatile Int16U MEASURE_C_SenRaw[ADC_DMA_BUFF_SIZE];
 
 // Functions
 //
@@ -41,9 +41,9 @@ Int16U MEASURE_C_CSen()
 }
 //-----------------------------------------------
 
-Boolean MEASURE_VGS_Params(volatile RegulatorParamsStruct* Regulator, bool SelfMode)
+Boolean MEASURE_VGS_Params(volatile RegulatorParamsStruct* Regulator, Int16U State)
 {
-	float V = SelfMode ? CU_V_ADCVToX(MEASURE_V_VSen()) : CU_PotADCVToX(MEASURE_PotSen());
+	float V = (State == DS_Selftest) ? CU_V_ADCVToX(MEASURE_V_VSen()) : CU_PotADCVToX(MEASURE_PotSen());
 	float C = CU_V_ADCCToX(MEASURE_V_CSen());
 
 	if(Regulator->RegulatorStepCounter == 0)
@@ -68,9 +68,9 @@ Boolean MEASURE_VGS_Params(volatile RegulatorParamsStruct* Regulator, bool SelfM
 }
 //-----------------------------------------------
 
-void MEASURE_IGES_Params(volatile RegulatorParamsStruct* Regulator, bool SelfMode)
+void MEASURE_IGES_Params(volatile RegulatorParamsStruct* Regulator, Int16U State)
 {
-	float V = SelfMode ? CU_V_ADCVToX(MEASURE_V_VSen()) : CU_PotADCVToX(MEASURE_PotSen());
+	float V = (State == DS_Selftest) ? CU_V_ADCVToX(MEASURE_V_VSen()) : CU_PotADCVToX(MEASURE_PotSen());
 
 	if(Regulator->RegulatorStepCounter == 0)
 		V = 0;
@@ -79,25 +79,33 @@ void MEASURE_IGES_Params(volatile RegulatorParamsStruct* Regulator, bool SelfMod
 }
 //-----------------------------------------------
 
-void MEASURE_C_CDMABufferClear()
+void MEASURE_C_DMABufferClear()
 {
-	for(int i = 0; i < C_VALUES_x_SIZE; i++)
-		MEASURE_C_CSenRaw[i] = 0;
+	for(int i = 0; i < ADC_DMA_BUFF_SIZE; i++)
+		MEASURE_C_SenRaw[i] = 0;
 }
 //-----------------------------------------------
 
 Int16U MEASURE_C_DMAExtractCSen()
 {
-	return MEASURE_Average((Int16U*)&MEASURE_C_CSenRaw[1], C_VALUES_x_SIZE - 1);
+	return MEASURE_Average((Int16U*)&MEASURE_C_SenRaw[0], ADC_DMA_BUFF_SIZE, ADC_NUMBER_OF_CHANNELS, ADC1_C_C_SEN_CHANNEL);
 }
 //-----------------------------------------------
 
-Int16U MEASURE_Average(Int16U* InputArrayAddr, Int16U ArraySize)
+Int16U MEASURE_C_DMAExtractVSen()
+{
+	return MEASURE_Average((Int16U*)&MEASURE_C_SenRaw[0], ADC_DMA_BUFF_SIZE, ADC_NUMBER_OF_CHANNELS, ADC1_C_V_SEN_CHANNEL);
+}
+//-----------------------------------------------
+
+Int16U MEASURE_Average(Int16U* InputArrayAddr, Int16U ArraySize, Int16U NumberOfChannels, Int16U Channel)
 {
 	Int32U AverageData = 0;
 
-	for(int i = 0; i < ArraySize; i++)
-		AverageData += *(InputArrayAddr + i);
+	for(int i = 0; i < ArraySize; i += NumberOfChannels)
+	{
+		AverageData += *(InputArrayAddr + (Channel - 1) + i);
+	}
 
-	return (Int16U)((float)AverageData / ArraySize);
+	return (Int16U)((float)NumberOfChannels * AverageData / ArraySize);
 }
