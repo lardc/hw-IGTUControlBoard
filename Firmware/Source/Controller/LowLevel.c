@@ -56,6 +56,12 @@ bool LL_FeedbackPAU()
 }
 //-----------------------------
 
+bool LL_SafetyState()
+{
+	return GPIO_GetState(GPIO_SYNC_SAFETY);
+}
+//-----------------------------
+
 // V source
 void LL_V_ShortOut(bool State)
 {
@@ -108,7 +114,7 @@ void LL_V_Diagnostic(bool State)
 // C source
 void LL_C_CStart(bool State)
 {
-	GPIO_SetState(GPIO_C_C_START, State);
+	GPIO_SetState(GPIO_C_C_START, !State);
 }
 //-----------------------------
 

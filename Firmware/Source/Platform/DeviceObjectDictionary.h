@@ -94,6 +94,12 @@
 
 #define REG_PAU_SNC_DELAY				60	// Задержка синхронизации PAU с момента выхода на полку импульса [ms]
 #define REG_PAU_EMULATED				61	// Эмуляция работы PAU
+
+#define REG_TOCUHP_EMULATED				65	// Эмуляция работы TOCUHP
+#define REG_TOCUHP_CAN_ID				66	// CAN ID TOCUHP
+#define REG_TOCUHP_RES_PER_BIT			67	// Сопротивление одного бита блока TOCU (Ом)
+
+#define REG_MUTE_SAFETY_MONITOR			70	// Отключение проверки контакта безопасности
 //
 // Несохраняемые регистры чтения-записи
 //
@@ -129,6 +135,8 @@
 #define REG_OP_RESULT					197	// Регистр результата операции
 #define REG_SUB_STATE					198	// Регистр вспомогательного состояния
 
+#define REG_SAFETY_STATE				199	// Регистр состояния контакта безопасности
+
 // Результаты измерения
 #define REG_VGS							200	// Измеренное значение VGS [мВ]
 //
@@ -148,19 +156,18 @@
 // 258 - 259
 #define REG_FWINFO_STR_LEN				260	// Length of the information string record
 #define REG_FWINFO_STR_BEGIN			261	// Begining of the information string record
+// -----------------------------
 
 // PAU commands
 #define ACT_PAU_FAULT_CLEAR				3	// Очистка fault
 #define ACT_PAU_WARNING_CLEAR			4	// Очистка warning
 //
 #define ACT_PAU_PULSE_CONFIG			100	// Конфигурация PAU
-// -----------------------------
 
-// Регистры PAU
+// PAU registers
 #define REG_PAU_CHANNEL					128	// Выбор канала измерения PAU
 #define REG_PAU_RANGE					129	// Диапазон измерения тока (мА)
 #define REG_PAU_MEASUREMENT_TIME		130	// Время измерения (мс)
-//
 #define REG_PAU_RESULT_CURRENT			200	// Измеренное значение тока
 //
 #define REG_PAU_DEV_STATE				192	// Состояние блока
@@ -168,6 +175,24 @@
 #define REG_PAU_DISABLE_REASON			194
 #define REG_PAU_WARNING					195
 #define REG_PAU_PROBLEM					196
+// -----------------------------
+
+// TOCUHP commands
+#define ACT_TOCUHP_ENABLE_POWER			1	// Переход в состояние ожидания
+#define ACT_TOCUHP_DISABLE_POWER		2	// Отключение блока
+#define ACT_TOCUHP_FAULT_CLEAR			3	// Очистка fault
+#define ACT_TOCUHP_WARNING_CLEAR		4	// Очистка warning
+#define ACT_TOCUHP_VOLTAGE_CONFIG		100	// Конфигурация напряжения блока
+#define ACT_TOCUHP_PULSE_CONFIG			101	// Конфигурация блока под требуемый ток
+// TOCUHP registers
+#define REG_TOCUHP_VOLTAGE_SETPOINT		128	// Значение задания напряжения (В)
+#define REG_TOCUHP_GATE_REGISTER		129	// Значение-маска конфигурации затворов
+//
+#define REG_TOCUHP_DEV_STATE			192	// Состояние блока
+#define REG_TOCUHP_FAULT_REASON			193
+#define REG_TOCUHP_DISABLE_REASON		194
+#define REG_TOCUHP_WARNING				195
+#define REG_TOCUHP_PROBLEM				196
 // -----------------------------
 
 // Operation results
@@ -184,6 +209,8 @@
 #define PROBLEM_NEGATIVE_CURRENT		2
 #define PROBLEM_PAU_REQUEST_ERROR		3
 #define PROBLEM_TOCUHP_REQUEST_ERROR	4
+#define PROBLEM_TOCUHP_FAULT			5
+#define PROBLEM_SAFETY_VIOLATION		6
 
 //  Warning
 #define WARNING_NONE					0

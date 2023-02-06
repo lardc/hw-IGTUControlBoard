@@ -20,6 +20,8 @@ void LL_SyncTOCUHP(bool State);
 void LL_SyncOSC(bool State);
 void LL_SyncPAU(bool State);
 bool LL_FeedbackPAU();
+bool LL_SafetyState();
+//
 void LL_V_ShortOut(bool State);
 void LL_V_ShortPAU(bool State);
 void LL_V_VSetDAC(Int16U Data);
@@ -28,6 +30,7 @@ void LL_V_CoefCSensHighRange();
 void LL_V_CLimitLowRange();
 void LL_V_CLimitHighRange();
 void LL_V_Diagnostic(bool State);
+//
 void LL_C_CStart(bool State);
 void LL_C_CEnable(bool State);
 void LL_C_CSetDAC(Int16U Data);

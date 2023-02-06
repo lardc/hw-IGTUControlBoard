@@ -14,6 +14,7 @@
 #include "math.h"
 #include "Delay.h"
 #include "PAU.h"
+#include "TOCUHP.h"
 
 // Types
 //
@@ -23,6 +24,7 @@ typedef void (*FUNC_AsyncDelegate)();
 //
 volatile DeviceState CONTROL_State = DS_None;
 volatile DeviceSubState CONTROL_SubState = SS_None;
+Int16U CONTROL_TOCUHPState;
 static Boolean CycleActive = false;
 //
 Boolean CONTROL_SelfMode = false;
@@ -137,6 +139,8 @@ void CONTROL_Idle()
 	DEVPROFILE_ProcessRequests();
 	CONTROL_UpdateWatchDog();
 
+	CONTROL_MonitorSafety();
+
 	if(LowPriorityHandle)
 	{
 		LowPriorityHandle();
@@ -232,6 +236,35 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 }
 //-----------------------------------------------
 
+void CONTROL_MonitorSafety()
+{
+	bool SystemIsSafe = CONTROL_GetSafetyState();
+
+	if(CONTROL_State == DS_InProcess)
+	{
+		if(!SystemIsSafe)
+		{
+			CONTROL_ForceResetHardware();
+			CONTROL_SetDeviceState(DS_Ready, SS_None);
+			DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
+			DataTable[REG_PROBLEM] = PROBLEM_SAFETY_VIOLATION;
+		}
+	}
+}
+//-----------------------------------------------
+
+bool CONTROL_GetSafetyState()
+{
+	bool SafetyInput = LL_SafetyState();
+	DataTable[REG_SAFETY_STATE] = SafetyInput ? 1 : 0;
+
+	if(DataTable[REG_MUTE_SAFETY_MONITOR])
+		return true;
+	else
+		return SafetyInput;
+}
+//-----------------------------------------------
+
 void CONTROL_LogicProcess()
 {
 	switch(CONTROL_SubState)
@@ -306,11 +339,12 @@ void CONTROL_C_HighPriorityProcess(bool IsInProgress)
 		}
 		else
 		{
+			LL_SyncTOCUHP(false);
 			TIM_Stop(TIM6);
 			TIM_StatusClear(TIM6);
 			TIM_Stop(TIM4);
 			TIM_StatusClear(TIM4);
-			LL_C_CStart(true);
+			LL_C_CStart(false);
 			LL_C_CSetDAC(0);
 			LL_ExDACVCutoff(0);
 			LL_ExDACVNegative(0);
@@ -377,19 +411,29 @@ void CONTROL_QG_StartProcess()
 	CONTROL_C_ResetArray();
 	CONTROL_C_Values_Counter = 0;
 	CONTROL_TimerMaxCounter = (Int16U)((float)DataTable[REG_QG_T_CURRENT] / (float)TIMER4_uS);
-	LL_ExDACVCutoff((float)DataTable[REG_QG_V_CUTOFF]);
-	LL_ExDACVNegative((float)DataTable[REG_QG_V_NEGATIVE]);
-	LL_C_CSetDAC(CU_C_CToDAC((float)DataTable[REG_QG_C_SET]));
-	DELAY_US(5);
-	CONTROL_C_TimeCounter = 0;
-	TIM_Reset(TIM4);
-	DMA_ChannelReload(DMA_ADC_C_SEN_CHANNEL, C_VALUES_x_SIZE);
-	DMA_ChannelEnable(DMA_ADC_C_SEN_CHANNEL, true);
-	ADC_SamplingStart(ADC1);
-	TIM_Reset(TIM6);
-	TIM_Start(TIM6);
-	LL_C_CStart(false);
-	TIM_Start(TIM4);
+	if ((TOCUHP_ReadState(&CONTROL_TOCUHPState)) && (TOCUHP_Configure(DataTable[REG_QG_V_POWER], DataTable[REG_QG_V_POWER])))
+	{
+		LL_SyncTOCUHP(true);
+		LL_ExDACVCutoff((float)DataTable[REG_QG_V_CUTOFF]);
+		LL_ExDACVNegative((float)DataTable[REG_QG_V_NEGATIVE]);
+		LL_C_CSetDAC(CU_C_CToDAC((float)DataTable[REG_QG_C_SET]));
+		DELAY_US(5);
+		CONTROL_C_TimeCounter = 0;
+		TIM_Reset(TIM4);
+		DMA_ChannelReload(DMA_ADC_C_SEN_CHANNEL, C_VALUES_x_SIZE);
+		DMA_ChannelEnable(DMA_ADC_C_SEN_CHANNEL, true);
+		ADC_SamplingStart(ADC1);
+		TIM_Reset(TIM6);
+		TIM_Start(TIM6);
+		LL_C_CStart(true);
+		TIM_Start(TIM4);
+	}
+	else
+	{
+		DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
+		DataTable[REG_PROBLEM] = PROBLEM_TOCUHP_REQUEST_ERROR;
+		CONTROL_SetDeviceState(DS_Ready, SS_None);
+	}
 }
 //-----------------------------------------------
 
@@ -443,7 +487,12 @@ void CONTROL_IGES_SetResults(volatile RegulatorParamsStruct* Regulator)
 void CONTROL_QG_SetResults()
 {
 	CONTROL_C_Processing();
-	if(CONTROL_C_Start_Counter != CONTROL_C_Stop_Counter)
+	if(TOCUHP_IsInFaultOrDisabled())
+	{
+		DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
+		DataTable[REG_PROBLEM] = PROBLEM_TOCUHP_FAULT;
+	}
+	else if(CONTROL_C_Start_Counter != CONTROL_C_Stop_Counter)
 	{
 		Int16U C_Counter = CONTROL_C_Stop_Counter - CONTROL_C_Start_Counter;
 		float C = 0;
@@ -462,9 +511,6 @@ void CONTROL_QG_SetResults()
 	}
 	else
 	{
-		DataTable[REG_QG_T] = 0;
-		DataTable[REG_QG_C] = 0;
-		DataTable[REG_QG] = 0;
 		DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
 		DataTable[REG_PROBLEM] = PROBLEM_CURRENT_NOT_REACHED;
 	}
@@ -511,6 +557,12 @@ void CONTROL_C_StopProcess()
 	LL_C_CStart(false);
 }
 //------------------------------------------
+
+void CONTROL_ForceResetHardware()
+{
+	CONTROL_C_StopProcess();
+	CONTROL_V_StopProcess();
+}
 
 void CONTROL_SwitchToFault(Int16U Reason)
 {

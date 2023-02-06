@@ -59,6 +59,8 @@ void CONTROL_Init();
 void CONTROL_Idle();
 void CONTROL_SetDeviceState(DeviceState NewState, DeviceSubState NewSubState);
 void CONTROL_DelayMs(uint32_t Delay);
+void CONTROL_MonitorSafety();
+bool CONTROL_GetSafetyState();
 
 void CONTROL_V_HighPriorityProcess();
 void CONTROL_C_HighPriorityProcess(bool IsInProgress);
@@ -74,8 +76,9 @@ void CONTROL_IGES_SetResults(volatile RegulatorParamsStruct* Regulator);
 void CONTROL_QG_SetResults();
 
 void CONTROL_V_StopProcess();
-
 void CONTROL_C_StopProcess();
+void CONTROL_ForceResetHardware();
+
 void CONTROL_C_Processing();
 
 #endif // __CONTROLLER_H
