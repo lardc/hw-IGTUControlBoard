@@ -107,7 +107,7 @@
 #define REG_VGS_C_TRIG					128	// Задание триггера тока [мА]
 #define REG_VGS_T_V_CONSTANT			129	// Длительность полки напряжения [мс]
 #define REG_VGS_T_V_FRONT				130	// Длительность фронта напряжения [мс]
-#define	REG_VGS_V_MAX					131 // Макс значение напряжения [мВ]
+#define	REG_VGS_V_MAX					131	// Макс значение напряжения [мВ]
 // Регистры измерения QG
 #define REG_QG_V_CUTOFF					135	// Ограничение напряжения затвора [мВ]
 #define REG_QG_V_NEGATIVE				136	// Отрицательное напряжение, приложенное к затвору [мВ]
@@ -228,5 +228,6 @@
 #define EP_REGULATOR_ERR				3
 #define EP_V_C_MEAS_FORM				4
 #define EP_C_C_FORM						5
+#define EP_C_V_FORM						6
 
 #endif //  __DEV_OBJ_DIC_H

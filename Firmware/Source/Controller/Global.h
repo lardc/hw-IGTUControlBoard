@@ -9,7 +9,7 @@
 #define	BCCIM_TIMEOUT_TICKS						50		// Таймаут протоколоа мастер BCCI (в мс)
 #define EP_WRITE_COUNT							0		// Количество массивов для записи
 
-#define EP_COUNT								7		// Количество массивов для чтения
+#define EP_COUNT								6		// Количество массивов для чтения
 #define FEP_COUNT								0		// Количество массивов для чтения типа float
 #define ENABLE_LOCKING							FALSE	// Защита NV регистров паролем
 #define CURRENT_PULSE_WIDTH						300		// Макс длительность импульса тока (мкс)

@@ -68,17 +68,18 @@ void CONTROL_Init()
 {
 	// Переменные для конфигурации EndPoint
 	Int16U EPIndexes[EP_COUNT] = {EP_V_V_FORM, EP_V_V_MEAS_FORM, EP_REGULATOR_ERR,
-	EP_V_C_MEAS_FORM, EP_C_C_FORM};
+	EP_V_C_MEAS_FORM, EP_C_C_FORM, EP_C_V_FORM};
 
 	Int16U EPSized[EP_COUNT] = {V_VALUES_x_SIZE, V_VALUES_x_SIZE, V_VALUES_x_SIZE, V_VALUES_x_SIZE,
-	C_VALUES_x_SIZE};
+	C_VALUES_x_SIZE, C_VALUES_x_SIZE};
 
 	pInt16U EPCounters[EP_COUNT] = {(pInt16U)&CONTROL_V_Values_Counter, (pInt16U)&CONTROL_V_Values_Counter,
-			(pInt16U)&CONTROL_V_Values_Counter, (pInt16U)&CONTROL_V_Values_Counter, (pInt16U)&CONTROL_V_Values_Counter,
+			(pInt16U)&CONTROL_V_Values_Counter, (pInt16U)&CONTROL_V_Values_Counter, (pInt16U)&CONTROL_C_Values_Counter,
 			(pInt16U)&CONTROL_C_Values_Counter};
 
 	pInt16U EPDatas[EP_COUNT] = {(pInt16U)CONTROL_V_VValues, (pInt16U)CONTROL_V_VSenValues,
-			(pInt16U)CONTROL_V_RegErrValues, (pInt16U)CONTROL_V_CSenValues, (pInt16U)CONTROL_C_CSenValues};
+			(pInt16U)CONTROL_V_RegErrValues, (pInt16U)CONTROL_V_CSenValues, (pInt16U)CONTROL_C_CSenValues,
+			(pInt16U)CONTROL_C_VSenValues};
 
 	// Конфигурация сервиса работы Data-table и EPROM
 	EPROMServiceConfig EPROMService = {(FUNC_EPROM_WriteValues)&NFLASH_WriteDT, (FUNC_EPROM_ReadValues)&NFLASH_ReadDT};
@@ -211,7 +212,7 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 		case ACT_STOP_PROCESS:
 			if(CONTROL_State == DS_InProcess)
 			{
-				if (CONTROL_SubState == SS_QgPulse)
+				if(CONTROL_SubState == SS_QgPulse)
 					CONTROL_C_StopProcess();
 				else
 					CONTROL_V_StopProcess();
