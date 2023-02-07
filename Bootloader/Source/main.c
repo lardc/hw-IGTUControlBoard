@@ -89,6 +89,12 @@ void ConfigGPIO()
 	GPIO_Config(GPIOA, Pin_10, AltFn, PushPull, HighSpeed, NoPull); //PA10(USART1 RX)
 	GPIO_AltFn(GPIOA, Pin_10, AltFn_7);
 	
+	GPIO_Config(GPIOA, Pin_11, AltFn, PushPull, HighSpeed, NoPull); //PA11 (CAN RX)
+	GPIO_AltFn(GPIOA, Pin_11, AltFn_9);
+
+	GPIO_Config(GPIOA, Pin_12, AltFn, PushPull, HighSpeed, NoPull); //PA12 (CAN TX)
+	GPIO_AltFn(GPIOA, Pin_12, AltFn_9);
+
 }
 //--------------------------------------------
 
