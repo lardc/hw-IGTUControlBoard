@@ -16,7 +16,7 @@ void LL_ToggleBoardLED()
 
 void LL_Indication(bool State)
 {
-	GPIO_SetState(GPIO_INDICATION, State);
+	GPIO_SetState(GPIO_INDICATION, !State);
 }
 //-----------------------------
 

@@ -41,6 +41,7 @@ volatile Int16U CONTROL_V_VValues[V_VALUES_x_SIZE];
 volatile Int16U CONTROL_V_VSenValues[V_VALUES_x_SIZE];
 volatile Int16U CONTROL_V_RegErrValues[V_VALUES_x_SIZE];
 volatile Int16U CONTROL_V_CSenValues[V_VALUES_x_SIZE];
+//
 volatile float CONTROL_C_CSenValues[C_VALUES_x_SIZE];
 volatile float CONTROL_C_VSenValues[C_VALUES_x_SIZE];
 //
@@ -339,17 +340,7 @@ void CONTROL_C_HighPriorityProcess(bool IsInProgress)
 		}
 		else
 		{
-			LL_SyncTOCUHP(false);
-			TIM_Stop(TIM6);
-			TIM_StatusClear(TIM6);
-			TIM_Stop(TIM4);
-			TIM_StatusClear(TIM4);
-			LL_C_CStart(false);
-			LL_C_CSetDAC(0);
-			LL_ExDACVCutoff(0);
-			LL_ExDACVNegative(0);
-			ADC_SamplingStop(ADC1);
-			DMA_TransferCompleteReset(DMA1, DMA_ISR_TCIF1);
+			CONTROL_C_StopProcess();
 			CONTROL_SetDeviceState(CONTROL_State, SS_QgWaitAfterPulse);
 		}
 	}
@@ -364,6 +355,7 @@ bool CONTROL_RegulatorCycle(volatile RegulatorParamsStruct* Regulator)
 
 void CONTROL_VGS_StartProcess()
 {
+	LL_Indication(true);
 	LL_V_CLimitHighRange();
 	if(DataTable[REG_VGS_C_TRIG] <= DataTable[REG_V_C_SENS_THRESHOLD])
 		LL_V_CoefCSensLowRange();
@@ -378,6 +370,7 @@ void CONTROL_VGS_StartProcess()
 
 void CONTROL_IGES_StartProcess()
 {
+	LL_Indication(true);
 	LL_V_CLimitLowRange();
 	if(PAU_Configure(PAU_CHANNEL_IGTU, PAU_AUTO_RANGE, DataTable[REG_IGES_T_V_CONSTANT]))
 	{
@@ -411,8 +404,10 @@ void CONTROL_QG_StartProcess()
 	CONTROL_C_ResetArray();
 	CONTROL_C_Values_Counter = 0;
 	CONTROL_TimerMaxCounter = (Int16U)((float)DataTable[REG_QG_T_CURRENT] / (float)TIMER4_uS);
-	if ((TOCUHP_ReadState(&CONTROL_TOCUHPState)) && (TOCUHP_Configure(DataTable[REG_QG_V_POWER], DataTable[REG_QG_V_POWER])))
+	if((TOCUHP_ReadState(&CONTROL_TOCUHPState))
+			&& (TOCUHP_Configure(DataTable[REG_QG_V_POWER], DataTable[REG_QG_V_POWER])))
 	{
+		LL_Indication(true);
 		LL_SyncTOCUHP(true);
 		LL_ExDACVCutoff((float)DataTable[REG_QG_V_CUTOFF]);
 		LL_ExDACVNegative((float)DataTable[REG_QG_V_NEGATIVE]);
@@ -542,19 +537,29 @@ void CONTROL_C_Processing()
 void CONTROL_V_StopProcess()
 {
 	TIM_Stop(TIM15);
+	TIM_StatusClear(TIM15);
 	LL_V_VSetDAC(0);
 	LL_V_ShortOut(true);
 	LL_V_ShortPAU(true);
+	LL_Indication(false);
 }
 //------------------------------------------
 
 void CONTROL_C_StopProcess()
 {
+	LL_SyncTOCUHP(false);
 	TIM_Stop(TIM6);
+	TIM_StatusClear(TIM6);
 	TIM_Stop(TIM4);
+	TIM_StatusClear(TIM4);
 	LL_C_CSetDAC(0);
-	LL_C_CEnable(false);
 	LL_C_CStart(false);
+	LL_C_CEnable(false);
+	LL_ExDACVCutoff(0);
+	LL_ExDACVNegative(0);
+	ADC_SamplingStop(ADC1);
+	DMA_TransferCompleteReset(DMA1, DMA_ISR_TCIF1);
+	LL_Indication(false);
 }
 //------------------------------------------
 

@@ -13,11 +13,11 @@
 //
 typedef enum __TOCUHPState
 {
-	TOCUHP_DS_None 				= 0,
-	TOCUHP_DS_Fault 			= 1,
-	TOCUHP_DS_Disabled 			= 2,
-	TOCUHP_DS_Ready 			= 3,
-	TOCUHP_DS_InProcess 		= 4
+	TOCUHP_DS_None = 0,
+	TOCUHP_DS_Fault = 1,
+	TOCUHP_DS_Disabled = 2,
+	TOCUHP_DS_Ready = 3,
+	TOCUHP_DS_InProcess = 4
 } TOCUHPState;
 
 // Functions

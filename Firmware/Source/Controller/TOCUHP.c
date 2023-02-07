@@ -8,7 +8,6 @@
 #include "DeviceObjectDictionary.h"
 #include "BCCIMHighLevel.h"
 
-
 // Functions
 //
 bool TOCUHP_ReadState(Int16U* Register)
@@ -64,12 +63,12 @@ bool TOCUHP_AreInStateX(uint16_t State)
 bool TOCUHP_IsInFaultOrDisabled()
 {
 	if(DataTable[REG_TOCUHP_EMULATED])
-			return false;
+		return false;
 
 	Int16U readFault, readDisable;
 
-	if(BHL_ReadRegister(DataTable[REG_TOCUHP_CAN_ID], REG_TOCUHP_FAULT_REASON, &readFault) &&
-			BHL_ReadRegister(DataTable[REG_TOCUHP_CAN_ID], TOCUHP_DS_Disabled, &readDisable))
+	if(BHL_ReadRegister(DataTable[REG_TOCUHP_CAN_ID], REG_TOCUHP_FAULT_REASON, &readFault)
+			&& BHL_ReadRegister(DataTable[REG_TOCUHP_CAN_ID], TOCUHP_DS_Disabled, &readDisable))
 		return ((readDisable == TOCUHP_DS_Disabled) || (readFault == TOCUHP_DS_Fault));
 
 	return false;
