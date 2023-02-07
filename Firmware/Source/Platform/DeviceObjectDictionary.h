@@ -46,6 +46,7 @@
 #define REG_DAC_OFFSET					4	// Смещение сигнала с ЦАП
 #define REG_V_C_SENS_THRESHOLD			5	// Порог переключения диапазонов измерения тока
 #define REG_PAU_CAN_ID					6	// CAN ID PAU
+#define REG_TOCUHP_CAN_ID				7	// CAN ID TOCUHP
 //
 #define REG_ADC_C_C_SEN_K				10	// Коэффициент преобразования кода АЦП в ток
 #define REG_ADC_V_C_SEN_K				11	// Коэффициент преобразования кода АЦП в ток
@@ -92,12 +93,11 @@
 #define REG_REGULATOR_Kp				50	// Пропорциональный коэффициент регулятора
 #define REG_REGULATOR_Ki				51	// Интегральный коэффициент регулятора
 
-#define REG_PAU_SNC_DELAY				60	// Задержка синхронизации PAU с момента выхода на полку импульса [ms]
+#define REG_PAU_SNC_DELAY				60	// Задержка синхронизации PAU с момента выхода на полку импульса [мс]
 #define REG_PAU_EMULATED				61	// Эмуляция работы PAU
 
 #define REG_TOCUHP_EMULATED				65	// Эмуляция работы TOCUHP
-#define REG_TOCUHP_CAN_ID				66	// CAN ID TOCUHP
-#define REG_TOCUHP_RES_PER_BIT			67	// Сопротивление одного бита блока TOCU (Ом)
+#define REG_TOCUHP_RES_PER_BIT			66	// Сопротивление одного бита блока TOCU [Ом]
 
 #define REG_MUTE_SAFETY_MONITOR			70	// Отключение проверки контакта безопасности
 //
