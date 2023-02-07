@@ -14,7 +14,7 @@ const TableItemConstraint Constraint[DATA_TABLE_WP_START] = {{0, 0, 0},				// 0
 		{DAC_OFFSET_MIN, DAC_OFFSET_MAX, DAC_OFFSET_DEF},							// 4
 		{0, V_C_SENS_THRESHOLD_MAX, V_C_SENS_THRESHOLD_MAX},						// 5
 		{0, INT16U_MAX, PAU_CAN_ID_DEF},											// 6
-		{0, 0, 0},																	// 7
+		{0, INT16U_MAX, TOCUHP_CAN_ID_DEF},											// 7
 		{0, 0, 0},																	// 8
 		{0, 0, 0},																	// 9
 		{COEF_K_MIN, COEF_K_MAX, COEF_C_C_SEN_K_DEF},								// 10
@@ -24,8 +24,8 @@ const TableItemConstraint Constraint[DATA_TABLE_WP_START] = {{0, 0, 0},				// 0
 		{COEF_K_MIN, COEF_K_MAX, COEF_V_V_K_DEF},									// 14
 		{COEF_K_MIN, COEF_K_MAX, COEF_C_V_CUTOFF_K_DEF},							// 15
 		{COEF_K_MIN, COEF_K_MAX, COEF_C_V_NEGATIVE_K_DEF},							// 16
-		{0, 0, 0},																	// 17
-		{0, 0, 0},																	// 18
+		{COEF_K_MIN, COEF_K_MAX, COEF_POT_SEN_K_DEF},								// 17
+		{COEF_K_MIN, COEF_K_MAX, COEF_C_V_SEN_K_DEF},								// 18
 		{0, 0, 0},																	// 19
 		{COEF_P2_MIN, COEF_P2_MAX, COEF_P2_DEF},									// 20
 		{COEF_P1_MIN, COEF_P1_MAX, COEF_P1_DEF},									// 21
@@ -68,16 +68,16 @@ const TableItemConstraint Constraint[DATA_TABLE_WP_START] = {{0, 0, 0},				// 0
 		{0, 0, 0},																	// 58
 		{0, 0, 0},																	// 59
 		{0, INT16U_MAX, PAU_SNC_DELAY_DEF},											// 60
-		{0, 1, 0},																	// 61
+		{NO, YES, NO},																// 61
 		{0, 0, 0},																	// 62
 		{0, 0, 0},																	// 63
 		{0, 0, 0},																	// 64
-		{0, 0, 0},																	// 65
-		{0, 0, 0},																	// 66
+		{NO, YES, NO},																// 65
+		{TOCUHP_RES_PER_BIT_MIN, TOCUHP_RES_PER_BIT_MAX, TOCUHP_RES_PER_BIT_DEF},	// 66
 		{0, 0, 0},																	// 67
 		{0, 0, 0},																	// 68
 		{0, 0, 0},																	// 69
-		{0, 0, 0},																	// 70
+		{NO, YES, NO},																// 70
 		{0, 0, 0},																	// 71
 		{0, 0, 0},																	// 72
 		{0, 0, 0},																	// 73
@@ -160,8 +160,8 @@ const TableItemConstraint Constraint[DATA_TABLE_WP_START] = {{0, 0, 0},				// 0
 		{0, 0, 0},																	// 149
 		{0, INT16U_MAX, 0},															// 150
 		{NO, YES, YES},																// 151
-		{0, 1, 0},																	// 152
-		{0, 0, 0},																	// 153
+		{NO, YES, NO},																// 152
+		{NO, YES, NO},																// 153
 		{0, 0, 0},																	// 154
 		{0, 0, 0},																	// 155
 		{0, 0, 0},																	// 156

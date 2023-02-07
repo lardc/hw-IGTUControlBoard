@@ -22,6 +22,7 @@
 #define V_C_SENS_THRESHOLD_MAX		20
 //
 #define PAU_CAN_ID_DEF				101
+#define TOCUHP_CAN_ID_DEF			102
 //
 #define COEF_P0_MIN					INT16S_MIN
 #define COEF_P0_MAX					INT16S_MAX
@@ -44,6 +45,8 @@
 #define COEF_V_V_K_DEF				0.204		// [код / мВ]
 #define COEF_C_V_CUTOFF_K_DEF		0.162		// [код / мВ]
 #define COEF_C_V_NEGATIVE_K_DEF		0.201		// [код / мВ]
+#define COEF_POT_SEN_K_DEF			3.002		// [мВ / код]
+#define COEF_C_V_SEN_K_DEF			13.47		// [мВ / код]
 //
 #define OFFSET_MIN					0
 #define OFFSET_MAX					INT16U_MAX
@@ -58,6 +61,10 @@
 #define REGULATOR_KI_DEF			0
 //
 #define PAU_SNC_DELAY_DEF			5
+//
+#define TOCUHP_RES_PER_BIT_MIN		1			// [Ом]
+#define TOCUHP_RES_PER_BIT_MAX		10000		// [Ом]
+#define TOCUHP_RES_PER_BIT_DEF		1000		// [Ом]
 //
 // VGS
 #define VGS_C_TRIG_MIN				1			// [мА]

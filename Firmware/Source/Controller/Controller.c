@@ -211,8 +211,11 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 		case ACT_STOP_PROCESS:
 			if(CONTROL_State == DS_InProcess)
 			{
-				CONTROL_V_StopProcess();
-				CONTROL_C_StopProcess();
+				if (CONTROL_SubState == SS_QgPulse)
+					CONTROL_C_StopProcess();
+				else
+					CONTROL_V_StopProcess();
+				LL_SyncOSC(false);
 				CONTROL_SetDeviceState(DS_Ready, SS_None);
 			}
 			break;
@@ -304,6 +307,7 @@ void CONTROL_V_HighPriorityProcess()
 
 			if(CONTROL_RegulatorCycle(&RegulatorParams))
 			{
+				LL_SyncOSC(false);
 				CONTROL_V_StopProcess();
 				CONTROL_SetDeviceState(CONTROL_State, SS_VgsWaitAfterPulse);
 			}
@@ -313,7 +317,10 @@ void CONTROL_V_HighPriorityProcess()
 			MEASURE_IGES_Params(&RegulatorParams, CONTROL_State);
 			LL_SyncPAU(false);
 			if(REGULATOR_IGES_SyncPAU(&RegulatorParams))
+			{
 				LL_SyncPAU(true);
+				LL_SyncOSC(false);
+			}
 			if(CONTROL_RegulatorCycle(&RegulatorParams))
 			{
 				CONTROL_V_StopProcess();
@@ -355,6 +362,8 @@ bool CONTROL_RegulatorCycle(volatile RegulatorParamsStruct* Regulator)
 
 void CONTROL_VGS_StartProcess()
 {
+	LL_OutMultiplexVoltage();
+	DELAY_MS(5);
 	LL_Indication(true);
 	LL_V_CLimitHighRange();
 	if(DataTable[REG_VGS_C_TRIG] <= DataTable[REG_V_C_SENS_THRESHOLD])
@@ -370,6 +379,8 @@ void CONTROL_VGS_StartProcess()
 
 void CONTROL_IGES_StartProcess()
 {
+	LL_OutMultiplexVoltage();
+	DELAY_MS(5);
 	LL_Indication(true);
 	LL_V_CLimitLowRange();
 	if(PAU_Configure(PAU_CHANNEL_IGTU, PAU_AUTO_RANGE, DataTable[REG_IGES_T_V_CONSTANT]))
@@ -395,11 +406,15 @@ void CONTROL_V_StartProcess()
 
 	TIM_Reset(TIM15);
 	TIM_Start(TIM15);
+
+	LL_SyncOSC(true);
 }
 //-----------------------------------------------
 
 void CONTROL_QG_StartProcess()
 {
+	LL_OutMultiplexCurrent();
+	DELAY_MS(5);
 	CONTROL_ResetOutputRegisters();
 	CONTROL_C_ResetArray();
 	CONTROL_C_Values_Counter = 0;
@@ -422,6 +437,7 @@ void CONTROL_QG_StartProcess()
 		TIM_Start(TIM6);
 		LL_C_CStart(true);
 		TIM_Start(TIM4);
+		LL_SyncOSC(true);
 	}
 	else
 	{
@@ -552,6 +568,7 @@ void CONTROL_C_StopProcess()
 	TIM_StatusClear(TIM6);
 	TIM_Stop(TIM4);
 	TIM_StatusClear(TIM4);
+	LL_SyncOSC(false);
 	LL_C_CSetDAC(0);
 	LL_C_CStart(false);
 	LL_C_CEnable(false);
