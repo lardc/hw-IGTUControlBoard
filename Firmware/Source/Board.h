@@ -49,6 +49,8 @@ GPIO_PortPinSettingMacro GPIO_SYNC_SAFETY = {GPIOB, Pin_15};
 // Определения для портов альтернативных функций
 GPIO_PortPinSettingMacro GPIO_ALT_UART1_TX = {GPIOA, Pin_9};
 GPIO_PortPinSettingMacro GPIO_ALT_UART1_RX = {GPIOA, Pin_10};
+GPIO_PortPinSettingMacro GPIO_ALT_CAN1_TX  = {GPIOA, Pin_12};
+GPIO_PortPinSettingMacro GPIO_ALT_CAN1_RX  = {GPIOA, Pin_11};
 GPIO_PortPinSettingMacro GPIO_ALT_SPI1_CLK = {GPIOB, Pin_3};
 GPIO_PortPinSettingMacro GPIO_ALT_SPI1_DAT = {GPIOA, Pin_7};
 

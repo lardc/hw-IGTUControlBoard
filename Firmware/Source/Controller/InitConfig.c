@@ -80,6 +80,8 @@ void INITCFG_ConfigIO()
 	GPIO_InitAltFunction(GPIO_ALT_UART1_TX, AltFn_7);
 	GPIO_InitAltFunction(GPIO_ALT_SPI1_CLK, AltFn_5);
 	GPIO_InitAltFunction(GPIO_ALT_SPI1_DAT, AltFn_5);
+	GPIO_InitAltFunction(GPIO_ALT_CAN1_TX, AltFn_9);
+	GPIO_InitAltFunction(GPIO_ALT_CAN1_RX, AltFn_9);
 
 	// Аналоговые выходы
 	GPIO_InitAnalog(GPIO_C_C_SET);
