@@ -52,6 +52,76 @@ bool DIAG_HandleDiagnosticAction(uint16_t ActionID, uint16_t *pUserError)
 				*pUserError = ERR_DEVICE_NOT_READY;
 			break;
 
+		case ACT_DBG_V_V_SET:
+			if(CONTROL_State == DS_None)
+				DBGACT_V_VSet();
+			else
+				*pUserError = ERR_OPERATION_BLOCKED;
+			break;
+
+		case ACT_DBG_V_SHORT:
+			if(CONTROL_State == DS_None)
+				DBGACT_V_ShortOut();
+			else
+				*pUserError = ERR_OPERATION_BLOCKED;
+			break;
+
+		case ACT_DBG_V_V_SEN:
+			if(CONTROL_State == DS_None)
+				DBGACT_V_VSen();
+			else
+				*pUserError = ERR_OPERATION_BLOCKED;
+			break;
+
+		case ACT_DBG_V_C_SEN:
+			if(CONTROL_State == DS_None)
+				DBGACT_V_CSen();
+			else
+				*pUserError = ERR_OPERATION_BLOCKED;
+			break;
+			//
+		case ACT_DBG_C_C_SET:
+			if(CONTROL_State == DS_None)
+				DBGACT_C_CSet();
+			else
+				*pUserError = ERR_OPERATION_BLOCKED;
+			break;
+
+		case ACT_DBG_C_START:
+			if(CONTROL_State == DS_None)
+				DBGACT_C_CStart();
+			else
+				*pUserError = ERR_OPERATION_BLOCKED;
+			break;
+
+		case ACT_DBG_C_C_SEN:
+			if(CONTROL_State == DS_None)
+				DBGACT_C_CSen();
+			else
+				*pUserError = ERR_OPERATION_BLOCKED;
+			break;
+
+		case ACT_DBG_C_V_CUTOFF:
+			if(CONTROL_State == DS_None)
+				DBGACT_C_VCutoffSet();
+			else
+				*pUserError = ERR_OPERATION_BLOCKED;
+			break;
+
+		case ACT_DBG_C_V_NEGATIVE:
+			if(CONTROL_State == DS_None)
+				DBGACT_C_VNegativeSet();
+			else
+				*pUserError = ERR_OPERATION_BLOCKED;
+			break;
+
+		case ACT_DBG_C_TEST_PULSE:
+			if(CONTROL_State == DS_None)
+				DBGACT_C_TestPulse();
+			else
+				*pUserError = ERR_OPERATION_BLOCKED;
+			break;
+
 		default:
 			return false;
 	}
