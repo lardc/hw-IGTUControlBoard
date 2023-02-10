@@ -31,7 +31,7 @@ void USB_LP_CAN_RX0_IRQHandler()
 }
 //-----------------------------------------
 
-void TIM15_IRQHandler()
+void TIM1_BRK_TIM15_IRQHandler()
 {
 	if(TIM_StatusCheck(TIM15))
 	{
