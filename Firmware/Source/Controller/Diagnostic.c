@@ -13,6 +13,15 @@ bool DIAG_HandleDiagnosticAction(uint16_t ActionID, uint16_t *pUserError)
 {
 	switch(ActionID)
 	{
+		case ACT_DBG_SYNC_PAU:
+			LL_SyncPAU(true);
+			DELAY_US(1000);
+			LL_SyncPAU(false);
+			break;
+
+
+
+		//------------------------------------------------------
 		case ACT_DIAG_V:
 			if(CONTROL_State == DS_Ready)
 			{
