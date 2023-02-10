@@ -7,16 +7,17 @@
 
 // Functions
 //
-void DBGACT_UUSet();
-void DBGACT_UShortOut();
-void DBGACT_UUSen();
-void DBGACT_UISen();
-
-void DBGACT_IISet();
-void DBGACT_IStart();
-void DBGACT_IIGate();
-void DBGACT_UUCutoffSet();
-void DBGACT_UUNegativeSet();
-void DBGACT_ITestPulse();
+void DBGACT_C_CSen();
+void DBGACT_C_CSet();
+void DBGACT_C_CStart();
+void DBGACT_C_TestPulse();
+void DBGACT_C_VCutoffSet();
+void DBGACT_C_VNegativeSet();
+void DBGACT_V_CSen();
+void DBGACT_V_ShortOut();
+void DBGACT_V_ShortOut();
+void DBGACT_V_VSen();
+void DBGACT_V_VSen();
+void DBGACT_V_VSet();
 
 #endif //__DEBUGACTIONS_H
