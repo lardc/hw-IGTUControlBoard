@@ -19,7 +19,7 @@
 
 // Timers
 #define TIMER15_uS						80			// в мкс
-#define TIMER7_uS						100			// в мкс
+#define TIMER7_uS						1000		// в мкс
 #define TIMER6_nS						500			// в нс
 #define TIMER6_uS						((float)TIMER6_nS / 1000)
 #define TIMER4_uS						2			// в мкс
