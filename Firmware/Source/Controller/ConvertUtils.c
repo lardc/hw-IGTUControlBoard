@@ -80,7 +80,7 @@ float CU_C_ADCVToX(Int16U Data)
 //
 Int16U CU_DACConvert(ConvertParams *Params, float Value)
 {
-	return (Int16U)(((Value - Params->P0) / Params->P1) * Params->K);
+	return (Int16U)(Value * Params->K);
 }
 //-----------------------------
 
