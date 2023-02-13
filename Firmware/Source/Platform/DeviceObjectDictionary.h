@@ -22,6 +22,10 @@
 #define ACT_DBG_C_TEST_PULSE			65	// Тестовый импульс тока из регистра DBG [mA] на нагрузку, длительность 20 мкс
 //
 #define ACT_DBG_SYNC_PAU				66	// Тест синхронизации PAU
+#define ACT_DBG_SYNC_TOCUHP				67	// Тест синхронизации TOCU HP
+#define ACT_DBG_SYNC_OSC				68	// Тест синхронизации осциллографа
+#define ACT_DBG_EXT_IND					69	// Тест внешнего индикатора
+#define ACT_DBG_SWITCH_MUX				70	// Тест переключения выходного мультиплексора на реле
 
 // Команды самодиагностики
 #define ACT_DIAG_V						90	// Старт диагностики источника напряжения

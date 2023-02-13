@@ -19,9 +19,28 @@ bool DIAG_HandleDiagnosticAction(uint16_t ActionID, uint16_t *pUserError)
 			LL_SyncPAU(false);
 			break;
 
+		case ACT_DBG_SYNC_TOCUHP:
+			LL_SyncTOCUHP(true);
+			DELAY_US(1000);
+			LL_SyncTOCUHP(false);
+			break;
 
+		case ACT_DBG_SYNC_OSC:
+			LL_SyncOSC(true);
+			DELAY_US(1000);
+			LL_SyncOSC(false);
+			break;
 
-		//------------------------------------------------------
+		case ACT_DBG_EXT_IND:
+			LL_Indication(true);
+			DELAY_MS(1000);
+			LL_Indication(false);
+			break;
+
+		case ACT_DBG_SWITCH_MUX:
+			(DataTable[REG_DBG]) ? LL_OutMultiplexVoltage() : LL_OutMultiplexCurrent();
+			break;
+
 		case ACT_DIAG_V:
 			if(CONTROL_State == DS_Ready)
 			{
