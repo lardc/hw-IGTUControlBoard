@@ -102,20 +102,6 @@ bool DIAG_HandleDiagnosticAction(uint16_t ActionID, uint16_t *pUserError)
 				*pUserError = ERR_OPERATION_BLOCKED;
 			break;
 
-		case ACT_DBG_V_V_SEN:
-			if(CONTROL_State == DS_None)
-				DBGACT_V_VSen();
-			else
-				*pUserError = ERR_OPERATION_BLOCKED;
-			break;
-
-		case ACT_DBG_V_C_SEN:
-			if(CONTROL_State == DS_None)
-				DBGACT_V_CSen();
-			else
-				*pUserError = ERR_OPERATION_BLOCKED;
-			break;
-			//
 		case ACT_DBG_C_C_SET:
 			if(CONTROL_State == DS_None)
 				DBGACT_C_CSet();
@@ -126,13 +112,6 @@ bool DIAG_HandleDiagnosticAction(uint16_t ActionID, uint16_t *pUserError)
 		case ACT_DBG_C_START:
 			if(CONTROL_State == DS_None)
 				DBGACT_C_CStart();
-			else
-				*pUserError = ERR_OPERATION_BLOCKED;
-			break;
-
-		case ACT_DBG_C_C_SEN:
-			if(CONTROL_State == DS_None)
-				DBGACT_C_CSen();
 			else
 				*pUserError = ERR_OPERATION_BLOCKED;
 			break;

@@ -29,18 +29,6 @@ void DBGACT_V_ShortOut()
 }
 //-----------------------------
 
-void DBGACT_V_VSen()
-{
-	DataTable[REG_DBG] = (Int16U)CU_V_ADCVToX(MEASURE_V_VSen());
-}
-//-----------------------------
-
-void DBGACT_V_CSen()
-{
-	DataTable[REG_DBG] = (Int16U)CU_V_ADCCToX(MEASURE_V_CSen());
-}
-//-----------------------------
-
 // Источник тока
 //
 void DBGACT_C_CSet()
@@ -54,12 +42,6 @@ void DBGACT_C_CSet()
 void DBGACT_C_CStart()
 {
 	DataTable[REG_DBG] == 1 ? LL_C_CStart(false) : LL_C_CStart(true);
-}
-//-----------------------------
-
-void DBGACT_C_CSen()
-{
-	DataTable[REG_DBG] = (Int16U)CU_C_ADCCToX(MEASURE_C_CSen());
 }
 //-----------------------------
 
