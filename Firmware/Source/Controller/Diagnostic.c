@@ -7,6 +7,7 @@
 #include "Controller.h"
 #include "DebugActions.h"
 #include "Delay.h"
+#include "ConvertUtils.h"
 
 // Functions
 bool DIAG_HandleDiagnosticAction(uint16_t ActionID, uint16_t *pUserError)
@@ -82,7 +83,14 @@ bool DIAG_HandleDiagnosticAction(uint16_t ActionID, uint16_t *pUserError)
 
 		case ACT_DBG_V_V_SET:
 			if(CONTROL_State == DS_None)
+			{
+				LL_OutMultiplexVoltage();
+				LL_V_ShortPAU(true);
+				LL_V_ShortOut(false);
+				LL_V_Diagnostic(false);
+				CU_LoadConvertParams();
 				DBGACT_V_VSet();
+			}
 			else
 				*pUserError = ERR_OPERATION_BLOCKED;
 			break;
