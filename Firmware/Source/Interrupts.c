@@ -61,8 +61,8 @@ void TIM7_IRQHandler()
 
 	if(TIM_StatusCheck(TIM7))
 	{
-
 		CONTROL_TimeCounter++;
+
 		if(++LED_BlinkTimeCounter > TIME_LED_BLINK)
 		{
 			LL_ToggleBoardLED();
@@ -71,5 +71,17 @@ void TIM7_IRQHandler()
 
 		TIM_StatusClear(TIM7);
 	}
+}
+//-----------------------------------------
+
+void EXTI2_TSC_IRQHandler()
+{
+	EXTI_FlagReset(EXTI_2);
+}
+//-----------------------------------------
+
+void EXTI15_10_IRQHandler()
+{
+	EXTI_FlagReset(EXTI_15);
 }
 //-----------------------------------------
