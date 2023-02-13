@@ -16,10 +16,20 @@ void INITCFG_ConfigDAC()
 {
 	DACx_Clk_Enable(DAC_1_ClkEN);
 	DACx_Reset();
+	DAC_TriggerConfigCh1(DAC1, TRIG1_TIMER4, TRIG1_ENABLE);
 	DAC_BufferCh1(DAC1, true);
 	DAC_EnableCh1(DAC1);
 	DAC_BufferCh2(DAC1, true);
 	DAC_EnableCh2(DAC1);
+}
+//------------------------------------------------
+
+void INITCFG_ConfigTimer4()
+{
+	TIM_Clock_En(TIM_4);
+	TIM_Config(TIM4, SYSCLK, TIMER4_uS);
+	TIM_MasterMode(TIM4, MMS_UPDATE);
+	TIM_Start(TIM4);
 }
 //------------------------------------------------
 
@@ -122,14 +132,6 @@ void INITCFG_ConfigTimer6()
 	TIM_Config(TIM6, SYSCLK, TIMER6_uS);
 	TIM_DMA(TIM6, DMAEN);
 	TIM_MasterMode(TIM6, MMS_UPDATE);
-}
-//------------------------------------------------
-
-void INITCFG_ConfigTimer4()
-{
-	TIM_Clock_En(TIM_4);
-	TIM_Config(TIM4, SYSCLK, TIMER4_uS);
-	TIM_Interupt(TIM4, 1, true);
 }
 //------------------------------------------------
 

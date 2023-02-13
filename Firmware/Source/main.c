@@ -32,6 +32,9 @@ int main()
 	// Настройка таймера для АЦП тока затвора
 	INITCFG_ConfigTimer6();
 
+	// Настройка таймера для триггера ЦАП
+	INITCFG_ConfigTimer4();
+
 	// Настройка DAC
 	INITCFG_ConfigDAC();
 
