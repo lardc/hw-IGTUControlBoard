@@ -73,7 +73,7 @@ void INITCFG_ConfigIO()
 	GPIO_SetState(GPIO_V_SHORT_PAU, false);
 	GPIO_SetState(GPIO_V_SHORT_OUT, false);
 
-	GPIO_SetState(GPIO_C_C_START, false);
+	GPIO_SetState(GPIO_C_C_START, true);
 	GPIO_SetState(GPIO_C_ENABLE, false);
 	GPIO_SetState(GPIO_C_DIAG_CTRL, true);
 	GPIO_SetState(GPIO_C_EXT_DAC_CS, true);

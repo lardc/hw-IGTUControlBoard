@@ -11,18 +11,19 @@
 // Источник напряжения
 #define ACT_DBG_V_V_SET					50	// Установить значение напряжения затвора из регистра DBG [mV]
 #define ACT_DBG_V_SHORT					51	// Закоротить выход источника напряжения (регистр DBG = 1 -> закоротка, DBG = 0 -> разрыв)
+#define ACT_DBG_PAU_SHORT				52	// Управление шунтированием PAU
+#define ACT_DBG_C_LIM_LOW_TEST			53	// Тест на проверку ограничения тока младшего диапазона
+#define ACT_DBG_C_LIM_HIGH_TEST			54	// Тест на проверку ограничения тока старшего диапазона
 // Источник тока
-#define ACT_DBG_C_C_SET					52	// Импульс тока затвора из регистра DBG [mA]
-#define ACT_DBG_C_START					53	// Подача тока на нагрузку (регистр DBG = 1 -> ток через нагрузку, DBG = 0 -> ток через внутренний транзистор)
-#define ACT_DBG_C_V_CUTOFF				54	// Установить значение напряжения отсечки из регистра DBG [mV]
-#define ACT_DBG_C_V_NEGATIVE			55	// Установить значение отрицательного напряжения смещения из регистра DBG [mV]
-#define ACT_DBG_C_TEST_PULSE			56	// Тестовый импульс тока из регистра DBG [mA] на нагрузку, длительность 20 мкс
+#define ACT_DBG_C_V_CUTOFF				55	// Установить значение напряжения отсечки из регистра DBG [mV]
+#define ACT_DBG_C_V_NEGATIVE			56	// Установить значение отрицательного напряжения смещения из регистра DBG [mV]
+#define ACT_DBG_C_TEST_PULSE			57	// Тестовый импульс тока из регистра DBG [mA] на нагрузку, длительность 20 мкс
 //
-#define ACT_DBG_SYNC_PAU				57	// Тест синхронизации PAU
-#define ACT_DBG_SYNC_TOCUHP				58	// Тест синхронизации TOCU HP
-#define ACT_DBG_SYNC_OSC				59	// Тест синхронизации осциллографа
-#define ACT_DBG_EXT_IND					60	// Тест внешнего индикатора
-#define ACT_DBG_SWITCH_MUX				61	// Тест переключения выходного мультиплексора на реле
+#define ACT_DBG_SYNC_PAU				60	// Тест синхронизации PAU
+#define ACT_DBG_SYNC_TOCUHP				61	// Тест синхронизации TOCU HP
+#define ACT_DBG_SYNC_OSC				62	// Тест синхронизации осциллографа
+#define ACT_DBG_EXT_IND					63	// Тест внешнего индикатора
+#define ACT_DBG_SWITCH_MUX				64	// Тест переключения выходного мультиплексора на реле
 
 // Команды самодиагностики
 #define ACT_DIAG_V						90	// Старт диагностики источника напряжения

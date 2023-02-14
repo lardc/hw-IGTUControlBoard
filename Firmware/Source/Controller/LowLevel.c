@@ -50,12 +50,6 @@ void LL_SyncPAU(bool State)
 }
 //-----------------------------
 
-bool LL_FeedbackPAU()
-{
-	return GPIO_GetState(GPIO_FB_PAU);
-}
-//-----------------------------
-
 bool LL_SafetyState()
 {
 	return GPIO_GetState(GPIO_SYNC_SAFETY);
@@ -81,25 +75,29 @@ void LL_V_VSetDAC(Int16U Data)
 }
 //-----------------------------
 
-void LL_V_CoefCSensLowRange() {
+void LL_V_CoefCSensLowRange()
+{
 	GPIO_SetState(GPIO_V_CURR_K1, false);
 	GPIO_SetState(GPIO_V_CURR_K2, true);
 }
 //-----------------------------
 
-void LL_V_CoefCSensHighRange() {
+void LL_V_CoefCSensHighRange()
+{
 	GPIO_SetState(GPIO_V_CURR_K2, false);
 	GPIO_SetState(GPIO_V_CURR_K1, true);
 }
 //-----------------------------
 
-void LL_V_CLimitLowRange() {
+void LL_V_CLimitLowRange()
+{
 	GPIO_SetState(GPIO_V_LOW_CURRENT, false);
 	GPIO_SetState(GPIO_V_HIGH_CURRENT, true);
 }
 //-----------------------------
 
-void LL_V_CLimitHighRange() {
+void LL_V_CLimitHighRange()
+{
 	GPIO_SetState(GPIO_V_HIGH_CURRENT, false);
 	GPIO_SetState(GPIO_V_LOW_CURRENT, true);
 }
@@ -114,7 +112,7 @@ void LL_V_Diagnostic(bool State)
 // C source
 void LL_C_CStart(bool State)
 {
-	GPIO_SetState(GPIO_C_C_START, !State);
+	GPIO_SetState(GPIO_C_C_START, State);
 }
 //-----------------------------
 
@@ -136,40 +134,26 @@ void LL_C_Diagnostic(bool State)
 }
 //-----------------------------
 
-void LL_ExtDACSync(bool State)
-{
-	GPIO_SetState(GPIO_C_EXT_DAC_CS, State);
-}
-//-----------------------------
-
-void LL_ExtDACLDAC(bool State)
-{
-	GPIO_SetState(GPIO_C_EXT_DAC_LDAC, State);
-}
-//-----------------------------
-
 void LL_ExtDACSendData(Int16U Data)
 {
-	LL_ExtDACSync(false);
+	GPIO_SetState(GPIO_C_EXT_DAC_CS, false);
 	SPI_WriteByte(SPI1, Data);
-	LL_ExtDACSync(true);
-	LL_ExtDACLDAC(false);
+	GPIO_SetState(GPIO_C_EXT_DAC_CS, true);
+
+	GPIO_SetState(GPIO_C_EXT_DAC_LDAC, false);
 	DELAY_US(1);
-	LL_ExtDACLDAC(true);
+	GPIO_SetState(GPIO_C_EXT_DAC_LDAC, true);
 }
 //-----------------------------
 
-void LL_ExDACVCutoff(float Value)
+void LL_ExDACVCutoff(Int16U Value)
 {
-	Int16U Data = CU_C_VCutoffToExtDAC(Value);
-	LL_ExtDACSendData(Data);
+	LL_ExtDACSendData(Value);
 }
 //-----------------------------
 
-void LL_ExDACVNegative(float Value)
+void LL_ExDACVNegative(Int16U Value)
 {
-	Int16U Data = CU_C_VNegativeToExtDAC(Value);
-	Data |= EXT_DAC_B;
-	LL_ExtDACSendData(Data);
+	LL_ExtDACSendData(Value | EXT_DAC_B);
 }
 //-----------------------------

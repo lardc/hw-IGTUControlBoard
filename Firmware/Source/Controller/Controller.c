@@ -232,8 +232,10 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			break;
 
 		default:
-			return DIAG_HandleDiagnosticAction(ActionID, pUserError);
-			
+			if(CONTROL_State == DS_None)
+				return DIAG_HandleDiagnosticAction(ActionID, pUserError);
+			else
+				*pUserError = ERR_OPERATION_BLOCKED;
 	}
 	return true;
 }

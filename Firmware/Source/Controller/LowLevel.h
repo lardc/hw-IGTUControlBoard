@@ -17,11 +17,9 @@ void LL_ToggleBoardLED();
 void LL_Indication(bool State);
 void LL_OutMultiplexCurrent();
 void LL_OutMultiplexVoltage();
-void LL_OutMultiplex(bool State);
 void LL_SyncTOCUHP(bool State);
 void LL_SyncOSC(bool State);
 void LL_SyncPAU(bool State);
-bool LL_FeedbackPAU();
 bool LL_SafetyState();
 //
 void LL_V_ShortOut(bool State);
@@ -37,10 +35,8 @@ void LL_C_CStart(bool State);
 void LL_C_CEnable(bool State);
 void LL_C_CSetDAC(Int16U Data);
 void LL_C_Diagnostic(bool State);
-void LL_ExtDACSync(bool State);
-void LL_ExtDACLDAC(bool State);
 void LL_ExtDACSendData(Int16U Data);
-void LL_ExDACVCutoff(float Value);
-void LL_ExDACVNegative(float Value);
+void LL_ExDACVCutoff(Int16U Value);
+void LL_ExDACVNegative(Int16U Value);
 
 #endif //__LOWLEVEL_H

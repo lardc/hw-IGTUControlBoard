@@ -11,15 +11,54 @@
 #include "Controller.h"
 #include "Delay.h"
 #include "ConvertUtils.h"
-#include "Measurement.h"
+
+// Definitions
+//
+#define DBG_DAC_TEST_VALUE		3000
 
 // Functions
 //
-// Источник напряжения
-//
-void DBGACT_V_VSet()
+void DBGACT_SyncPAU()
 {
-	LL_V_VSetDAC(CU_V_VToDAC((float)DataTable[REG_DBG]));
+	LL_SyncPAU(true);
+	DELAY_US(1000);
+	LL_SyncPAU(false);
+}
+//-----------------------------
+
+void DBGACT_SyncTOCUHP()
+{
+	LL_SyncTOCUHP(true);
+	DELAY_US(1000);
+	LL_SyncTOCUHP(false);
+}
+//-----------------------------
+
+void DBGACT_SyncOSC()
+{
+	LL_SyncOSC(true);
+	DELAY_US(1000);
+	LL_SyncOSC(false);
+}
+//-----------------------------
+
+void DBGACT_BlinkExtIndication()
+{
+	LL_Indication(true);
+	DELAY_MS(1000);
+	LL_Indication(false);
+}
+//-----------------------------
+
+void DBGACT_SwitchMUX()
+{
+	(DataTable[REG_DBG]) ? LL_OutMultiplexVoltage() : LL_OutMultiplexCurrent();
+}
+//-----------------------------
+
+void DBGACT_ShortPAU()
+{
+	LL_V_ShortPAU(DataTable[REG_DBG]);
 }
 //-----------------------------
 
@@ -29,19 +68,51 @@ void DBGACT_V_ShortOut()
 }
 //-----------------------------
 
-// Источник тока
-//
-void DBGACT_C_CSet()
+void DBGACT_V_VSet()
 {
-	LL_C_CSetDAC(CU_C_CToDAC((float)DataTable[REG_DBG]));
-	DELAY_US(20);
-	LL_C_CSetDAC(0);
+	CU_LoadConvertParams();
+
+	LL_OutMultiplexVoltage();
+	LL_V_CLimitLowRange();
+	LL_V_ShortPAU(true);
+	LL_V_ShortOut(false);
+	LL_V_Diagnostic(false);
+	LL_V_VSetDAC(CU_V_VToDAC((float)DataTable[REG_DBG]));
 }
 //-----------------------------
 
-void DBGACT_C_CStart()
+void DBGACT_V_TestClimLow()
 {
-	DataTable[REG_DBG] == 1 ? LL_C_CStart(false) : LL_C_CStart(true);
+	LL_OutMultiplexVoltage();
+	DELAY_MS(20);
+
+	LL_V_ShortPAU(true);
+	LL_V_ShortOut(false);
+	LL_V_Diagnostic(false);
+	LL_V_CLimitLowRange();
+
+	LL_V_VSetDAC(DBG_DAC_TEST_VALUE);
+	DELAY_US(1000);
+	LL_V_VSetDAC(0);
+}
+//-----------------------------
+
+void DBGACT_V_TestClimHigh()
+{
+	LL_OutMultiplexVoltage();
+	DELAY_MS(20);
+
+	LL_V_ShortPAU(true);
+	LL_V_ShortOut(false);
+	LL_V_Diagnostic(false);
+	LL_V_CoefCSensLowRange();
+	LL_V_CLimitHighRange();
+
+	LL_V_VSetDAC(DBG_DAC_TEST_VALUE);
+	DELAY_US(1000);
+	LL_V_CoefCSensHighRange();
+	DELAY_US(1000);
+	LL_V_VSetDAC(0);
 }
 //-----------------------------
 
@@ -59,11 +130,22 @@ void DBGACT_C_VNegativeSet()
 
 void DBGACT_C_TestPulse()
 {
-	LL_C_CSetDAC(CU_C_CToDAC((float)DataTable[REG_DBG]));
-	DELAY_US(5);
+	LL_OutMultiplexCurrent();
+	LL_C_Diagnostic(false);
+	LL_ExDACVNegative(0);
+	LL_C_CEnable(true);
+	LL_ExDACVCutoff(DBG_DAC_TEST_VALUE);
+	DELAY_MS(20);
+
+	LL_C_CSetDAC(DataTable[REG_DBG]);
+	DELAY_US(10);
+
 	LL_C_CStart(false);
 	DELAY_US(20);
 	LL_C_CStart(true);
+
+	LL_C_CEnable(false);
 	LL_C_CSetDAC(0);
+	LL_ExDACVCutoff(0);
 }
 //-----------------------------
