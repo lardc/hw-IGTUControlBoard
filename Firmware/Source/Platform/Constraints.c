@@ -135,7 +135,6 @@ const TableItemConstraint Constraint[DATA_TABLE_WP_START] = {{0, 0, 0},				// 0
 		{0, 0, 0},																	// 125
 		{0, 0, 0},																	// 126
 		{0, 0, 0},																	// 127
-
 		{VGS_C_TRIG_MIN, VGS_C_TRIG_MAX, VGS_C_TRIG_MIN},							// 128
 		{VGS_T_V_CONSTANT_MIN, VGS_T_V_CONSTANT_MAX, VGS_T_V_CONSTANT_MIN},			// 129
 		{VGS_T_V_FRONT_MIN, VGS_T_V_FRONT_MAX, VGS_T_V_FRONT_MIN},					// 130

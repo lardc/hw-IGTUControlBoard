@@ -15,6 +15,8 @@
 #include "Delay.h"
 #include "PAU.h"
 #include "TOCUHP.h"
+#include "ConvertUtils.h"
+#include "Regulator.h"
 
 // Types
 //
@@ -31,29 +33,30 @@ typedef void (*FUNC_AsyncDelegate)();
 //
 volatile DeviceState CONTROL_State = DS_None;
 volatile DeviceSubState CONTROL_SubState = SS_None;
-Int16U CONTROL_TOCUHPState;
+volatile Int64U CONTROL_TimeCounter = 0;
 static Boolean CycleActive = false;
 //
+volatile float CONTROL_RegulatorOutputValues[VALUES_x_SIZE];
+volatile float CONTROL_RegulatorErrValues[VALUES_x_SIZE];
+volatile float CONTROL_VoltageValues[VALUES_x_SIZE];
+volatile float CONTROL_CurrentValues[VALUES_x_SIZE];
+//
+volatile Int16U CONTROL_RegulatorValues_Counter = 0;
+volatile Int16U CONTROL_Values_Counter = 0;
+//
+float TrigCurrentLow = 0, TrigCurrentHigh = 0;
+
+
+
+Int16U CONTROL_TOCUHPState;
 Boolean CONTROL_SelfMode = false;
-volatile Int64U CONTROL_TimeCounter = 0;
 volatile Int16U CONTROL_TimerMaxCounter = 0;
 volatile Int64U CONTROL_C_TimeCounter = 0;
 volatile Int64U CONTROL_C_Start_Counter = 0;
 volatile Int64U CONTROL_C_Stop_Counter = 0;
 //
-//
-volatile Int16U CONTROL_V_Values_Counter = 0;
-volatile Int16U CONTROL_C_Values_Counter = 0;
-volatile Int16U CONTROL_V_VValues[V_VALUES_x_SIZE];
-volatile Int16U CONTROL_V_VSenValues[V_VALUES_x_SIZE];
-volatile Int16U CONTROL_V_RegErrValues[V_VALUES_x_SIZE];
-volatile Int16U CONTROL_V_CSenValues[V_VALUES_x_SIZE];
-//
-volatile float CONTROL_C_CSenValues[C_VALUES_x_SIZE];
-volatile float CONTROL_C_VSenValues[C_VALUES_x_SIZE];
-//
-volatile RegulatorParamsStruct RegulatorParams;
-static FUNC_AsyncDelegate LowPriorityHandle = NULL;
+
+
 /// Forward functions
 //
 static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError);
@@ -64,33 +67,22 @@ void CONTROL_ResetHardwareToDefaultState();
 void CONTROL_LogicProcess();
 void CONTROL_SwitchOutMUX(CommutationState Commutation);
 void CONTROL_CacheVariables();
-
-
-void CONTROL_StopProcess();
-void CONTROL_PostPulseSlowSequence();
+void CONTROL_VgsProcess(MeasureSample SampledData);
 void CONTROL_ResetOutputRegisters();
-void CONTROL_StartPrepare();
-void CONTROL_CashVariables();
-bool CONTROL_BatteryVoltageCheck();
+void CONTROL_CacheVariables();
 
 // Functions
 //
 void CONTROL_Init()
 {
 	// Переменные для конфигурации EndPoint
-	Int16U EPIndexes[EP_COUNT] = {EP_V_V_FORM, EP_V_V_MEAS_FORM, EP_REGULATOR_ERR,
-	EP_V_C_MEAS_FORM, EP_C_C_FORM, EP_C_V_FORM};
+	Int16U EPIndexes[FEP_COUNT] = {EP_VOLTAGE, EP_CURRENT, EP_REGULATOR_ERR, EP_REGULATOR_OUTPUT};
+	Int16U EPSized[FEP_COUNT] = {VALUES_x_SIZE, VALUES_x_SIZE, VALUES_x_SIZE, VALUES_x_SIZE};
+	pInt16U EPCounters[FEP_COUNT] = {(pInt16U)&CONTROL_Values_Counter, (pInt16U)&CONTROL_Values_Counter,
+			(pInt16U)&CONTROL_RegulatorValues_Counter, (pInt16U)&CONTROL_RegulatorValues_Counter};
 
-	Int16U EPSized[EP_COUNT] = {V_VALUES_x_SIZE, V_VALUES_x_SIZE, V_VALUES_x_SIZE, V_VALUES_x_SIZE,
-	C_VALUES_x_SIZE, C_VALUES_x_SIZE};
-
-	pInt16U EPCounters[EP_COUNT] = {(pInt16U)&CONTROL_V_Values_Counter, (pInt16U)&CONTROL_V_Values_Counter,
-			(pInt16U)&CONTROL_V_Values_Counter, (pInt16U)&CONTROL_V_Values_Counter, (pInt16U)&CONTROL_C_Values_Counter,
-			(pInt16U)&CONTROL_C_Values_Counter};
-
-	pInt16U EPDatas[EP_COUNT] = {(pInt16U)CONTROL_V_VValues, (pInt16U)CONTROL_V_VSenValues,
-			(pInt16U)CONTROL_V_RegErrValues, (pInt16U)CONTROL_V_CSenValues, (pInt16U)CONTROL_C_CSenValues,
-			(pInt16U)CONTROL_C_VSenValues};
+	pFloat32 EPDatas[FEP_COUNT] = {(pFloat32)CONTROL_VoltageValues, (pFloat32)CONTROL_CurrentValues,
+			(pFloat32)CONTROL_RegulatorErrValues, (pFloat32)CONTROL_RegulatorOutputValues};
 
 	// Конфигурация сервиса работы Data-table и EPROM
 	EPROMServiceConfig EPROMService = {(FUNC_EPROM_WriteValues)&NFLASH_WriteDT, (FUNC_EPROM_ReadValues)&NFLASH_ReadDT};
@@ -100,7 +92,7 @@ void CONTROL_Init()
 
 	// Инициализация device profile
 	DEVPROFILE_Init(&CONTROL_DispatchAction, &CycleActive);
-	DEVPROFILE_InitEPService(EPIndexes, EPSized, EPCounters, EPDatas);
+	DEVPROFILE_InitFEPService(EPIndexes, EPSized, EPCounters, EPDatas);
 	// Сброс значений
 	DEVPROFILE_ResetControlSection();
 
@@ -138,7 +130,6 @@ void CONTROL_ResetOutputRegisters()
 
 void CONTROL_ResetHardwareToDefaultState()
 {
-	LL_Indication(false);
 	LL_SyncTOCUHP(false);
 	LL_SyncOSC(false);
 	LL_SyncPAU(false);
@@ -154,12 +145,6 @@ void CONTROL_ResetHardwareToDefaultState()
 void CONTROL_Idle()
 {
 	CONTROL_LogicProcess();
-
-	if(LowPriorityHandle)
-	{
-		LowPriorityHandle();
-		LowPriorityHandle = NULL;
-	}
 
 	DEVPROFILE_ProcessRequests();
 	CONTROL_UpdateWatchDog();
@@ -190,7 +175,7 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			if(CONTROL_State == DS_Ready)
 			{
 				CONTROL_ResetOutputRegisters();
-				CONTROL_SetDeviceState(DS_InProcess, SS_VgsPulse);
+				CONTROL_SetDeviceState(DS_InProcess, SS_VgsPrepare);
 			}
 			else if(CONTROL_State == DS_InProcess)
 				*pUserError = ERR_OPERATION_BLOCKED;
@@ -258,7 +243,7 @@ void CONTROL_LogicProcess()
 	switch(CONTROL_SubState)
 	{
 	case SS_VgsPrepare:
-		(DataTable[REG_VGS_C_TRIG] <= DataTable[REG_V_C_SENS_THRESHOLD]) ? LL_V_CoefCSensLowRange() : LL_V_CoefCSensHighRange();
+		(DataTable[REG_VGS_I_TRIG] < DataTable[REG_V_I_SENS_THRESHOLD]) ? LL_V_CoefCSensLowRange() : LL_V_CoefCSensHighRange();
 
 		LL_V_CLimitHighRange();
 		LL_V_ShortOut(false);
@@ -266,21 +251,19 @@ void CONTROL_LogicProcess()
 		CONTROL_SwitchOutMUX(Voltage);
 
 		CONTROL_CacheVariables();
+		REGULATOR_CacheVgsVariables(&RegulatorParams);
+
 		CONTROL_SetDeviceState(DS_Ready, SS_VgsPulse);
 		CONTROL_V_StartProcess();
 		break;
 
-
-
-
-
-
-		case SS_VgsWaitAfterPulse:
-			CONTROL_VGS_SetResults(&RegulatorParams);
-			if(CONTROL_State == DS_Selftest)
-				DIAG_V_SelfTestFinished();
+		case SS_VgsSaveResults:
+			CONTROL_VGS_SaveResults(&RegulatorParams);
 			CONTROL_SetDeviceState(DS_Ready, SS_None);
 			break;
+
+
+
 
 		case SS_IgesWaitAfterPulse:
 			CONTROL_IGES_SetResults(&RegulatorParams);
@@ -320,63 +303,25 @@ void CONTROL_SwitchOutMUX(CommutationState Commutation)
 void CONTROL_CacheVariables()
 {
 	CU_LoadConvertParams();
-	REGULATOR_CacheVariables(&RegulatorParams);
+	REGULATOR_ResetVariables(&RegulatorParams);
+	REGULATOR_CacheCommonVariables(&RegulatorParams);
+
+	TrigCurrentHigh = DataTable[REG_VGS_I_TRIG];
+	TrigCurrentLow = DataTable[REG_VGS_I_TRIG] - DataTable[REG_VGS_I_TRIG] * DataTable[REG_VGS_dI_TRIG] / 100;
 }
 //-----------------------------------------------
 
-
-
-
-
-
-
-
-
-
-
-
-
-void CONTROL_C_ResetArray()
+void CONTROL_HighPriorityProcess()
 {
-	for(Int16U i = 0; i < C_VALUES_x_SIZE; i++)
-	{
-		CONTROL_C_CSenValues[i] = 0;
-	}
-}
-//------------------------------------------
+	MeasureSample SampledData = MEASURE_SampleVgsIges();
 
-void CONTROL_V_HighPriorityProcess()
-{
 	switch(CONTROL_SubState)
 	{
 		case SS_VgsPulse:
-			MeasureSample SampledData = MEASURE_SampleVgsIges();
-			REGULATOR_Process(&RegulatorParams);
-
-			if(MEASURE_VGS_Params(&RegulatorParams, CONTROL_State))
-				REGULATOR_VGS_FormUpdate(&RegulatorParams);
-
-			if(CONTROL_RegulatorCycle(&RegulatorParams))
-			{
-				LL_SyncOSC(false);
-				CONTROL_V_StopProcess();
-				CONTROL_SetDeviceState(CONTROL_State, SS_VgsWaitAfterPulse);
-			}
+			CONTROL_VgsProcess(SampledData);
 			break;
 
 		case SS_IgesPulse:
-			MEASURE_IGES_Params(&RegulatorParams, CONTROL_State);
-			LL_SyncPAU(false);
-			if(REGULATOR_IGES_SyncPAU(&RegulatorParams))
-			{
-				LL_SyncPAU(true);
-				LL_SyncOSC(false);
-			}
-			if(CONTROL_RegulatorCycle(&RegulatorParams))
-			{
-				CONTROL_V_StopProcess();
-				CONTROL_SetDeviceState(CONTROL_State, SS_IgesWaitAfterPulse);
-			}
 			break;
 
 		default:
@@ -385,30 +330,61 @@ void CONTROL_V_HighPriorityProcess()
 }
 //-----------------------------------------------
 
-
-
-void CONTROL_IGES_StartProcess()
+void CONTROL_VgsProcess(MeasureSample SampledData)
 {
-	LL_OutMultiplexVoltage();
-	LL_Indication(true);
-	LL_V_CLimitLowRange();
-	DELAY_MS(5);
+	if(SampledData.Current >= TrigCurrentLow)
+		RegulatorParams.dVg = DataTable[REG_VGS_SLOW_RATE] * TIMER15_uS;
 
-	if(PAU_Configure(PAU_CHANNEL_IGTU, PAU_AUTO_RANGE, DataTable[REG_IGES_T_V_CONSTANT]))
+	if(SampledData.Current < TrigCurrentHigh)
 	{
-		REGULATOR_IGES_FormConfig(&RegulatorParams);
-		LL_V_ShortPAU(false);
-		LL_V_ShortOut(false);
-		CONTROL_V_StartProcess();
+		if(RegulatorParams.Target < DataTable[REG_VGS_V_MAX])
+			RegulatorParams.Target += RegulatorParams.dVg;
+		else
+			RegulatorParams.Target = DataTable[REG_VGS_V_MAX];
+
+		RegulatorParams.SampledData = SampledData.Voltage;
 	}
 	else
 	{
 		CONTROL_V_StopProcess();
+		CONTROL_SetDeviceState(CONTROL_State, SS_VgsSaveResults);
+	}
+
+	if(REGULATOR_Process(&RegulatorParams))
+	{
+		CONTROL_V_StopProcess();
+
+		DataTable[REG_VGS] = 0;
 		DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
-		DataTable[REG_PROBLEM] = DF_PAU_REQUEST_ERROR;
+
+		if(RegulatorParams.FollowingError)
+		{
+			if(SampledData.Current > TrigCurrentHigh)
+			{
+				DataTable[REG_PROBLEM] = PROBLEM_GATE_SHORT;
+				CONTROL_SetDeviceState(DS_Ready, SS_None);
+			}
+			else
+				CONTROL_SwitchToFault(DF_FOLLOWING_ERROR);
+		}
+
+		if(SampledData.Current < TrigCurrentHigh)
+		{
+			DataTable[REG_PROBLEM] = PROBLEM_CURRENT_NOT_REACHED;
+			CONTROL_SetDeviceState(DS_Ready, SS_None);
+		}
 	}
 }
 //-----------------------------------------------
+
+void CONTROL_V_StopProcess()
+{
+	TIM_Stop(TIM15);
+	LL_V_VSetDAC(0);
+
+	CONTROL_ResetHardwareToDefaultState();
+}
+//------------------------------------------
 
 void CONTROL_V_StartProcess()
 {
@@ -419,174 +395,17 @@ void CONTROL_V_StartProcess()
 }
 //-----------------------------------------------
 
-void CONTROL_QG_StartProcess()
+void CONTROL_VGS_SaveResults(volatile RegulatorParamsStruct* Regulator)
 {
-	LL_OutMultiplexCurrent();
-	DELAY_MS(5);
-	CONTROL_ResetOutputRegisters();
-	CONTROL_C_ResetArray();
-	CONTROL_C_Values_Counter = 0;
-	CONTROL_TimerMaxCounter = (Int16U)((float)DataTable[REG_QG_T_CURRENT] / (float)TIMER4_uS);
-	if((TOCUHP_ReadState(&CONTROL_TOCUHPState))
-			&& (TOCUHP_Configure(DataTable[REG_QG_V_POWER], DataTable[REG_QG_V_POWER])))
-	{
-		LL_Indication(true);
-		LL_SyncTOCUHP(true);
-		LL_ExDACVCutoff((float)DataTable[REG_QG_V_CUTOFF]);
-		LL_ExDACVNegative((float)DataTable[REG_QG_V_NEGATIVE]);
-		LL_C_CSetDAC(CU_C_CToDAC((float)DataTable[REG_QG_C_SET]));
-		DELAY_US(5);
-		CONTROL_C_TimeCounter = 0;
-		TIM_Reset(TIM4);
-		//DMA_ChannelReload(DMA_ADC_C_SEN_CHANNEL, C_VALUES_x_SIZE);
-		//DMA_ChannelEnable(DMA_ADC_C_SEN_CHANNEL, true);
-		ADC_SamplingStart(ADC1);
-		TIM_Reset(TIM6);
-		TIM_Start(TIM6);
-		LL_C_CStart(true);
-		TIM_Start(TIM4);
-		LL_SyncOSC(true);
-	}
-	else
-	{
-		DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
-		DataTable[REG_PROBLEM] = DF_TOCUHP_REQUEST_ERROR;
-		CONTROL_SetDeviceState(DS_Ready, SS_None);
-	}
+	float Sum = 0;
+
+	for(Int16U i = 0; i < REGULATOR_RING_BUFFER_SIZE; i++)
+		Sum += Regulator->RingBuffer[i];
+
+	DataTable[REG_VGS] = Sum / REGULATOR_RING_BUFFER_SIZE;
+	DataTable[REG_OP_RESULT] = OPRESULT_OK;
 }
 //-----------------------------------------------
-
-void CONTROL_VGS_SetResults(volatile RegulatorParamsStruct* Regulator)
-{
-	float Vgs = Regulator->CTrigVSen;
-	if((Regulator->ConstantVFirstStep) != (Regulator->ConstantVLastStep))
-	{
-		for(Int16U i = Regulator->ConstantVFirstStep++; i < Regulator->ConstantVLastStep; i++)
-			Vgs += Regulator->VSenForm[i];
-		Vgs /= (Regulator->ConstantVLastStep - Regulator->ConstantVFirstStep);
-		DataTable[REG_VGS] = Vgs;
-		DataTable[REG_OP_RESULT] = OPRESULT_OK;
-		DataTable[REG_PROBLEM] = PROBLEM_NONE;
-	}
-	else
-	{
-		DataTable[REG_VGS] = 0;
-		DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
-		DataTable[REG_PROBLEM] = DF_CURRENT_NOT_REACHED;
-	}
-}
-//-----------------------------------------------
-
-void CONTROL_IGES_SetResults(volatile RegulatorParamsStruct* Regulator)
-{
-	float Iges = 0;
-	if(PAU_ReadMeasuredData(&Iges))
-	{
-		if(Iges > 0)
-		{
-			DataTable[REG_IGES] = (Int16U)Iges;
-			DataTable[REG_OP_RESULT] = OPRESULT_OK;
-			DataTable[REG_PROBLEM] = PROBLEM_NONE;
-		}
-		else
-		{
-			DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
-			DataTable[REG_PROBLEM] = DF_NEGATIVE_CURRENT;
-		}
-	}
-	else
-	{
-		DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
-		DataTable[REG_PROBLEM] = DF_PAU_REQUEST_ERROR;
-	}
-	CONTROL_SetDeviceState(DS_Ready, SS_None);
-}
-//-----------------------------------------------
-
-void CONTROL_QG_SetResults()
-{
-	CONTROL_C_Processing();
-	if(TOCUHP_IsInFaultOrDisabled())
-	{
-		DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
-		DataTable[REG_PROBLEM] = DF_TOCUHP_FAULT;
-	}
-	else if(CONTROL_C_Start_Counter != CONTROL_C_Stop_Counter)
-	{
-		Int16U C_Counter = CONTROL_C_Stop_Counter - CONTROL_C_Start_Counter;
-		float C = 0;
-		for(Int16U i = CONTROL_C_Start_Counter; i < CONTROL_C_Stop_Counter; i++)
-			C += CONTROL_C_CSenValues[i];
-		C /= C_Counter;
-
-		float Time = C_Counter * TIMER6_uS;
-		float Qgate = C * Time;
-
-		DataTable[REG_QG_T] = (Int16U)(Time);
-		DataTable[REG_QG_C] = (Int16U)(C);
-		DataTable[REG_QG] = (Int16U)(Qgate);
-		DataTable[REG_OP_RESULT] = OPRESULT_OK;
-		DataTable[REG_PROBLEM] = PROBLEM_NONE;
-	}
-	else
-	{
-		DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
-		DataTable[REG_PROBLEM] = DF_CURRENT_NOT_REACHED;
-	}
-
-	CONTROL_C_Start_Counter = 0;
-	CONTROL_C_Stop_Counter = 0;
-}
-//-----------------------------------------------
-
-void CONTROL_C_Processing()
-{
-	CONTROL_C_Start_Counter = 0;
-	CONTROL_C_Stop_Counter = 0;
-
-	for(Int16U i = 0; i < C_VALUES_x_SIZE; i++)
-	{
-		CONTROL_C_CSenValues[i] = CU_C_ADCCToX(CONTROL_C_CSenValues[i]);
-		CONTROL_C_VSenValues[i] = CU_C_ADCVToX(CONTROL_C_VSenValues[i]);
-		if(((CONTROL_C_CSenValues[i]) > ((DataTable[REG_QG_C_THRESHOLD] / 100) * DataTable[REG_QG_C_SET]))
-				&& (CONTROL_C_Start_Counter == 0))
-			CONTROL_C_Start_Counter = i;
-		if(((CONTROL_C_CSenValues[C_VALUES_x_SIZE - i])
-				> ((DataTable[REG_QG_C_THRESHOLD] / 100) * DataTable[REG_QG_C_SET])) && (CONTROL_C_Stop_Counter == 0))
-			CONTROL_C_Stop_Counter = C_VALUES_x_SIZE - i;
-	}
-}
-//-----------------------------------------------
-
-void CONTROL_V_StopProcess()
-{
-	TIM_Stop(TIM15);
-	TIM_StatusClear(TIM15);
-	LL_V_VSetDAC(0);
-	LL_V_ShortOut(true);
-	LL_V_ShortPAU(true);
-	LL_Indication(false);
-}
-//------------------------------------------
-
-void CONTROL_C_StopProcess()
-{
-	LL_SyncTOCUHP(false);
-	TIM_Stop(TIM6);
-	TIM_StatusClear(TIM6);
-	TIM_Stop(TIM4);
-	TIM_StatusClear(TIM4);
-	LL_SyncOSC(false);
-	LL_C_CSetDAC(0);
-	LL_C_CStart(false);
-	LL_C_CEnable(false);
-	LL_ExDACVCutoff(0);
-	LL_ExDACVNegative(0);
-	ADC_SamplingStop(ADC1);
-	DMA_TransferCompleteReset(DMA1, DMA_ISR_TCIF1);
-	LL_Indication(false);
-}
-//------------------------------------------
 
 void CONTROL_ForceStopProcess()
 {
@@ -619,4 +438,196 @@ void CONTROL_UpdateWatchDog()
 		IWDG_Refresh();
 }
 //------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+void CONTROL_C_ResetArray()
+{
+	/*for(Int16U i = 0; i < C_VALUES_x_SIZE; i++)
+	{
+		CONTROL_C_CSenValues[i] = 0;
+	}*/
+}
+//------------------------------------------
+
+
+
+
+void CONTROL_IGES_StartProcess()
+{
+	/*LL_OutMultiplexVoltage();
+	LL_Indication(true);
+	LL_V_CLimitLowRange();
+	DELAY_MS(5);
+
+	if(PAU_Configure(PAU_CHANNEL_IGTU, PAU_AUTO_RANGE, DataTable[REG_IGES_T_V_CONSTANT]))
+	{
+		REGULATOR_IGES_FormConfig(&RegulatorParams);
+		LL_V_ShortPAU(false);
+		LL_V_ShortOut(false);
+		CONTROL_V_StartProcess();
+	}
+	else
+	{
+		CONTROL_V_StopProcess();
+		DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
+		DataTable[REG_PROBLEM] = DF_PAU_REQUEST_ERROR;
+	}*/
+}
+//-----------------------------------------------
+
+
+
+void CONTROL_QG_StartProcess()
+{
+	/*LL_OutMultiplexCurrent();
+	DELAY_MS(5);
+	CONTROL_ResetOutputRegisters();
+	CONTROL_C_ResetArray();
+	CONTROL_C_Values_Counter = 0;
+	CONTROL_TimerMaxCounter = (Int16U)((float)DataTable[REG_QG_T_CURRENT] / (float)TIMER4_uS);
+	if((TOCUHP_ReadState(&CONTROL_TOCUHPState))
+			&& (TOCUHP_Configure(DataTable[REG_QG_V_POWER], DataTable[REG_QG_V_POWER])))
+	{
+		LL_Indication(true);
+		LL_SyncTOCUHP(true);
+		LL_ExDACVCutoff((float)DataTable[REG_QG_V_CUTOFF]);
+		LL_ExDACVNegative((float)DataTable[REG_QG_V_NEGATIVE]);
+		LL_C_CSetDAC(CU_C_CToDAC((float)DataTable[REG_QG_C_SET]));
+		DELAY_US(5);
+		CONTROL_C_TimeCounter = 0;
+		TIM_Reset(TIM4);
+		//DMA_ChannelReload(DMA_ADC_C_SEN_CHANNEL, C_VALUES_x_SIZE);
+		//DMA_ChannelEnable(DMA_ADC_C_SEN_CHANNEL, true);
+		ADC_SamplingStart(ADC1);
+		TIM_Reset(TIM6);
+		TIM_Start(TIM6);
+		LL_C_CStart(true);
+		TIM_Start(TIM4);
+		LL_SyncOSC(true);
+	}
+	else
+	{
+		DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
+		DataTable[REG_PROBLEM] = DF_TOCUHP_REQUEST_ERROR;
+		CONTROL_SetDeviceState(DS_Ready, SS_None);
+	}*/
+}
+//-----------------------------------------------
+
+
+
+void CONTROL_IGES_SetResults(volatile RegulatorParamsStruct* Regulator)
+{
+	float Iges = 0;
+	if(PAU_ReadMeasuredData(&Iges))
+	{
+		if(Iges > 0)
+		{
+			DataTable[REG_IGES] = (Int16U)Iges;
+			DataTable[REG_OP_RESULT] = OPRESULT_OK;
+			DataTable[REG_PROBLEM] = PROBLEM_NONE;
+		}
+		else
+		{
+			DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
+			DataTable[REG_PROBLEM] = DF_NEGATIVE_CURRENT;
+		}
+	}
+	else
+	{
+		DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
+		DataTable[REG_PROBLEM] = DF_PAU_REQUEST_ERROR;
+	}
+	CONTROL_SetDeviceState(DS_Ready, SS_None);
+}
+//-----------------------------------------------
+
+void CONTROL_QG_SetResults()
+{
+	/*CONTROL_C_Processing();
+	if(TOCUHP_IsInFaultOrDisabled())
+	{
+		DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
+		DataTable[REG_PROBLEM] = DF_TOCUHP_FAULT;
+	}
+	else if(CONTROL_C_Start_Counter != CONTROL_C_Stop_Counter)
+	{
+		Int16U C_Counter = CONTROL_C_Stop_Counter - CONTROL_C_Start_Counter;
+		float C = 0;
+		for(Int16U i = CONTROL_C_Start_Counter; i < CONTROL_C_Stop_Counter; i++)
+			C += CONTROL_C_CSenValues[i];
+		C /= C_Counter;
+
+		float Time = C_Counter * TIMER6_uS;
+		float Qgate = C * Time;
+
+		DataTable[REG_QG_T] = (Int16U)(Time);
+		DataTable[REG_QG_C] = (Int16U)(C);
+		DataTable[REG_QG] = (Int16U)(Qgate);
+		DataTable[REG_OP_RESULT] = OPRESULT_OK;
+		DataTable[REG_PROBLEM] = PROBLEM_NONE;
+	}
+	else
+	{
+		DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
+		DataTable[REG_PROBLEM] = DF_CURRENT_NOT_REACHED;
+	}
+
+	CONTROL_C_Start_Counter = 0;
+	CONTROL_C_Stop_Counter = 0;*/
+}
+//-----------------------------------------------
+
+void CONTROL_C_Processing()
+{
+	/*CONTROL_C_Start_Counter = 0;
+	CONTROL_C_Stop_Counter = 0;
+
+	for(Int16U i = 0; i < C_VALUES_x_SIZE; i++)
+	{
+		CONTROL_C_CSenValues[i] = CU_C_ADCCToX(CONTROL_C_CSenValues[i]);
+		CONTROL_C_VSenValues[i] = CU_C_ADCVToX(CONTROL_C_VSenValues[i]);
+		if(((CONTROL_C_CSenValues[i]) > ((DataTable[REG_QG_C_THRESHOLD] / 100) * DataTable[REG_QG_C_SET]))
+				&& (CONTROL_C_Start_Counter == 0))
+			CONTROL_C_Start_Counter = i;
+		if(((CONTROL_C_CSenValues[C_VALUES_x_SIZE - i])
+				> ((DataTable[REG_QG_C_THRESHOLD] / 100) * DataTable[REG_QG_C_SET])) && (CONTROL_C_Stop_Counter == 0))
+			CONTROL_C_Stop_Counter = C_VALUES_x_SIZE - i;
+	}*/
+}
+//-----------------------------------------------
+
+
+
+void CONTROL_C_StopProcess()
+{
+	/*LL_SyncTOCUHP(false);
+	TIM_Stop(TIM6);
+	TIM_StatusClear(TIM6);
+	TIM_Stop(TIM4);
+	TIM_StatusClear(TIM4);
+	LL_SyncOSC(false);
+	LL_C_CSetDAC(0);
+	LL_C_CStart(false);
+	LL_C_CEnable(false);
+	LL_ExDACVCutoff(0);
+	LL_ExDACVNegative(0);
+	ADC_SamplingStop(ADC1);
+	DMA_TransferCompleteReset(DMA1, DMA_ISR_TCIF1);
+	LL_Indication(false);*/
+}
+//------------------------------------------
+
+
 

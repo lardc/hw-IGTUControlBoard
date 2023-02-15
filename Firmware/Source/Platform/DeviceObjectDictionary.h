@@ -243,11 +243,9 @@
 #define ERR_WRONG_PWD					4	//  Неправильный ключ
 
 // Endpoints
-#define EP_V_V_FORM						1
-#define	EP_V_V_MEAS_FORM				2
+#define EP_VOLTAGE						1
+#define	EP_CURRENT						2
 #define EP_REGULATOR_ERR				3
-#define EP_V_C_MEAS_FORM				4
-#define EP_C_C_FORM						5
-#define EP_C_V_FORM						6
+#define EP_REGULATOR_OUTPUT				4
 
 #endif //  __DEV_OBJ_DIC_H
