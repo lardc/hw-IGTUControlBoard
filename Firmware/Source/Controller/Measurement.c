@@ -3,16 +3,16 @@
 #include "Board.h"
 #include "DataTable.h"
 #include "Global.h"
+#include "ConvertUtils.h"
 
 // Variables
-volatile Int16U MEASURE_V_CsensRaw[ADC_DMA_BUFF_SIZE_VGS_IGES] = {0};
-volatile Int16U MEASURE_V_VsensRaw[ADC_DMA_BUFF_SIZE_VGS_IGES] = {0};
-volatile Int16U MEASURE_C_Raw[ADC_DMA_BUFF_SIZE_QG] = {0};
+volatile Int16U MEASURE_VoltageRaw[ADC_DMA_BUFF_SIZE_VGS_IGES] = {0};
+volatile Int16U MEASURE_CurrentRaw[ADC_DMA_BUFF_SIZE_VGS_IGES] = {0};
+volatile Int16U MEASURE_Qg_DataRaw[ADC_DMA_BUFF_SIZE_QG] = {0};
 
 // Functions prototypes
 //
-float MEASURE_ExtractX(Int16U* InputArray, Int16U ArraySize);
-float MEASURE_ExtractVgsIges(Int16U* InputArray);
+float MEASURE_ExtractX(volatile Int16U* InputArray, Int16U ArraySize);
 void MEASURE_StartNewSampling();
 
 // Functions
@@ -21,15 +21,15 @@ MeasureSample MEASURE_SampleVgsIges()
 {
 	MeasureSample Sample;
 
-	Sample.Voltage = CU_ADCtoV(MEASURE_DMAExtract(&MEASURE_V_VsensRaw[0]));
-	Sample.Current = CU_ADCtoI(MEASURE_DMAExtract(&MEASURE_V_CsensRaw[0]));
+	Sample.Voltage = CU_V_ADCtoV(MEASURE_ExtractX(&MEASURE_VoltageRaw[0], ADC_DMA_BUFF_SIZE_VGS_IGES - 1));
+	Sample.Current = CU_V_ADCtoI(MEASURE_ExtractX(&MEASURE_CurrentRaw[0], ADC_DMA_BUFF_SIZE_VGS_IGES - 1));
 	MEASURE_StartNewSampling();
 
 	return Sample;
 }
 //-----------------------------------------------
 
-float MEASURE_ExtractX(Int16U* InputArray, Int16U ArraySize)
+float MEASURE_ExtractX(volatile Int16U* InputArray, Int16U ArraySize)
 {
 	Int32U AverageData = 0;
 
@@ -37,12 +37,6 @@ float MEASURE_ExtractX(Int16U* InputArray, Int16U ArraySize)
 		AverageData += *(InputArray + i);
 
 	return (float)AverageData / ArraySize;
-}
-//-----------------------------------------------
-
-float MEASURE_ExtractVgsIges(Int16U* InputArray)
-{
-	return MEASURE_DMAExtractX(InputArray, ADC_DMA_BUFF_SIZE_VGS_IGES - 1);
 }
 //-----------------------------------------------
 

@@ -77,7 +77,7 @@ void DBGACT_V_VSet()
 	LL_V_ShortPAU(true);
 	LL_V_ShortOut(false);
 	LL_V_Diagnostic(false);
-	LL_V_VSetDAC(CU_V_VToDAC((float)DataTable[REG_DBG]));
+	LL_V_VSetDAC(CU_V_VtoDAC((float)DataTable[REG_DBG]));
 }
 //-----------------------------
 

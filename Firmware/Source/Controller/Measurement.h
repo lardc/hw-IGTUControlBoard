@@ -5,6 +5,10 @@
 #include "SysConfig.h"
 #include "ZwBase.h"
 
+// Definitions
+//
+#define MEASURE_BUFFERS_SIZE		ADC_DMA_BUFF_SIZE_QG
+
 // Types
 //
 typedef struct __MeasureSample
@@ -15,9 +19,9 @@ typedef struct __MeasureSample
 
 // Variables
 //
-extern volatile Int16U MEASURE_V_CsensRaw[ADC_DMA_BUFF_SIZE_VGS_IGES];
-extern volatile Int16U MEASURE_V_VsensRaw[ADC_DMA_BUFF_SIZE_VGS_IGES];
-extern volatile Int16U MEASURE_C_Raw[ADC_DMA_BUFF_SIZE_QG];
+extern volatile Int16U MEASURE_VoltageRaw[ADC_DMA_BUFF_SIZE_VGS_IGES];
+extern volatile Int16U MEASURE_CurrentRaw[ADC_DMA_BUFF_SIZE_VGS_IGES];
+extern volatile Int16U MEASURE_Qg_DataRaw[ADC_DMA_BUFF_SIZE_QG];
 
 // Functions
 //

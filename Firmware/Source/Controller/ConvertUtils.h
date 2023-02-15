@@ -17,7 +17,7 @@ typedef struct __ConvertParams
 // Functions
 Int16U CU_I_VcutoffToDAC(float Value);
 Int16U CU_I_VnegativeToDAC(float Value);
-Int16U CU_U_VtoDAC(float Value);
+Int16U CU_V_VtoDAC(float Value);
 Int16U CU_I_ItoDAC(float Value);
 float CU_V_ADCtoV(Int16U Data);
 float CU_V_ADCtoI(Int16U Data);
