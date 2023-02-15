@@ -102,6 +102,7 @@ void CONTROL_ResetToDefaultState()
 {
 	CONTROL_ResetOutputRegisters();
 	CONTROL_ResetHardwareToDefaultState();
+
 	CONTROL_SetDeviceState(DS_None, SS_None);
 }
 //------------------------------------------
@@ -144,16 +145,14 @@ void CONTROL_Idle()
 {
 	CONTROL_LogicProcess();
 
-	DEVPROFILE_ProcessRequests();
-	CONTROL_UpdateWatchDog();
-
-	CONTROL_MonitorSafety();
-
 	if(LowPriorityHandle)
 	{
 		LowPriorityHandle();
 		LowPriorityHandle = NULL;
 	}
+
+	DEVPROFILE_ProcessRequests();
+	CONTROL_UpdateWatchDog();
 }
 //------------------------------------------
 
@@ -216,21 +215,18 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 		case ACT_STOP_PROCESS:
 			if(CONTROL_State == DS_InProcess)
 			{
-				if(CONTROL_SubState == SS_QgPulse)
-					CONTROL_C_StopProcess();
-				else
-					CONTROL_V_StopProcess();
-				LL_SyncOSC(false);
+				CONTROL_ForceStopProcess();
+
+				DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
+				DataTable[REG_PROBLEM] = PROBLEM_FORCED_STOP;
+
 				CONTROL_SetDeviceState(DS_Ready, SS_None);
 			}
 			break;
 
 		case ACT_CLR_FAULT:
 			if(CONTROL_State == DS_Fault)
-			{
-				CONTROL_SetDeviceState(DS_None, SS_None);
-				DataTable[REG_FAULT_REASON] = DF_NONE;
-			}
+				CONTROL_ResetToDefaultState();
 			break;
 
 		case ACT_CLR_WARNING:
@@ -394,7 +390,7 @@ void CONTROL_IGES_StartProcess()
 	{
 		CONTROL_V_StopProcess();
 		DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
-		DataTable[REG_PROBLEM] = PROBLEM_PAU_REQUEST_ERROR;
+		DataTable[REG_PROBLEM] = DF_PAU_REQUEST_ERROR;
 	}
 }
 //-----------------------------------------------
@@ -431,8 +427,8 @@ void CONTROL_QG_StartProcess()
 		DELAY_US(5);
 		CONTROL_C_TimeCounter = 0;
 		TIM_Reset(TIM4);
-		DMA_ChannelReload(DMA_ADC_C_SEN_CHANNEL, C_VALUES_x_SIZE);
-		DMA_ChannelEnable(DMA_ADC_C_SEN_CHANNEL, true);
+		//DMA_ChannelReload(DMA_ADC_C_SEN_CHANNEL, C_VALUES_x_SIZE);
+		//DMA_ChannelEnable(DMA_ADC_C_SEN_CHANNEL, true);
 		ADC_SamplingStart(ADC1);
 		TIM_Reset(TIM6);
 		TIM_Start(TIM6);
@@ -443,7 +439,7 @@ void CONTROL_QG_StartProcess()
 	else
 	{
 		DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
-		DataTable[REG_PROBLEM] = PROBLEM_TOCUHP_REQUEST_ERROR;
+		DataTable[REG_PROBLEM] = DF_TOCUHP_REQUEST_ERROR;
 		CONTROL_SetDeviceState(DS_Ready, SS_None);
 	}
 }
@@ -465,7 +461,7 @@ void CONTROL_VGS_SetResults(volatile RegulatorParamsStruct* Regulator)
 	{
 		DataTable[REG_VGS] = 0;
 		DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
-		DataTable[REG_PROBLEM] = PROBLEM_CURRENT_NOT_REACHED;
+		DataTable[REG_PROBLEM] = DF_CURRENT_NOT_REACHED;
 	}
 }
 //-----------------------------------------------
@@ -484,13 +480,13 @@ void CONTROL_IGES_SetResults(volatile RegulatorParamsStruct* Regulator)
 		else
 		{
 			DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
-			DataTable[REG_PROBLEM] = PROBLEM_NEGATIVE_CURRENT;
+			DataTable[REG_PROBLEM] = DF_NEGATIVE_CURRENT;
 		}
 	}
 	else
 	{
 		DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
-		DataTable[REG_PROBLEM] = PROBLEM_PAU_REQUEST_ERROR;
+		DataTable[REG_PROBLEM] = DF_PAU_REQUEST_ERROR;
 	}
 	CONTROL_SetDeviceState(DS_Ready, SS_None);
 }
@@ -502,7 +498,7 @@ void CONTROL_QG_SetResults()
 	if(TOCUHP_IsInFaultOrDisabled())
 	{
 		DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
-		DataTable[REG_PROBLEM] = PROBLEM_TOCUHP_FAULT;
+		DataTable[REG_PROBLEM] = DF_TOCUHP_FAULT;
 	}
 	else if(CONTROL_C_Start_Counter != CONTROL_C_Stop_Counter)
 	{
@@ -524,7 +520,7 @@ void CONTROL_QG_SetResults()
 	else
 	{
 		DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
-		DataTable[REG_PROBLEM] = PROBLEM_CURRENT_NOT_REACHED;
+		DataTable[REG_PROBLEM] = DF_CURRENT_NOT_REACHED;
 	}
 
 	CONTROL_C_Start_Counter = 0;
@@ -585,6 +581,8 @@ void CONTROL_ForceStopProcess()
 {
 	CONTROL_C_StopProcess();
 	CONTROL_V_StopProcess();
+
+	CONTROL_ResetHardwareToDefaultState();
 }
 //------------------------------------------
 

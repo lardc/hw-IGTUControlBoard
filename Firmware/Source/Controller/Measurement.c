@@ -83,20 +83,20 @@ void MEASURE_IGES_Params(volatile RegulatorParamsStruct* Regulator, Int16U State
 
 void MEASURE_C_DMABufferClear()
 {
-	for(int i = 0; i < ADC_DMA_BUFF_SIZE; i++)
-		MEASURE_C_SenRaw[i] = 0;
+	//for(int i = 0; i < ADC_DMA_BUFF_SIZE; i++)
+	//	MEASURE_C_SenRaw[i] = 0;
 }
 //-----------------------------------------------
 
 Int16U MEASURE_C_DMAExtractCSen()
 {
-	return MEASURE_Average((Int16U*)&MEASURE_C_SenRaw[0], ADC_DMA_BUFF_SIZE, ADC_NUMBER_OF_CHANNELS, ADC1_C_C_SEN_CHANNEL);
+	//return MEASURE_Average((Int16U*)&MEASURE_C_SenRaw[0], ADC_DMA_BUFF_SIZE, ADC_NUMBER_OF_CHANNELS, ADC1_C_C_SEN_CHANNEL);
 }
 //-----------------------------------------------
 
 Int16U MEASURE_C_DMAExtractVSen()
 {
-	return MEASURE_Average((Int16U*)&MEASURE_C_SenRaw[0], ADC_DMA_BUFF_SIZE, ADC_NUMBER_OF_CHANNELS, ADC1_C_V_SEN_CHANNEL);
+	//return MEASURE_Average((Int16U*)&MEASURE_C_SenRaw[0], ADC_DMA_BUFF_SIZE, ADC_NUMBER_OF_CHANNELS, ADC1_C_V_SEN_CHANNEL);
 }
 //-----------------------------------------------
 

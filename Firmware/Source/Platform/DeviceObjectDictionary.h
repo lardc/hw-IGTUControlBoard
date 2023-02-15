@@ -206,15 +206,16 @@
 
 //  Fault and disable codes
 #define DF_NONE							0
+#define DF_CURRENT_NOT_REACHED			1
+#define DF_NEGATIVE_CURRENT				2
+#define DF_PAU_REQUEST_ERROR			3
+#define DF_TOCUHP_REQUEST_ERROR			4
+#define DF_TOCUHP_FAULT					5
 
 // Problem
 #define PROBLEM_NONE					0
-#define PROBLEM_CURRENT_NOT_REACHED		1
-#define PROBLEM_NEGATIVE_CURRENT		2
-#define PROBLEM_PAU_REQUEST_ERROR		3
-#define PROBLEM_TOCUHP_REQUEST_ERROR	4
-#define PROBLEM_TOCUHP_FAULT			5
-#define PROBLEM_SAFETY_VIOLATION		6
+#define PROBLEM_FORCED_STOP				1
+#define PROBLEM_SAFETY_VIOLATION		2
 
 //  Warning
 #define WARNING_NONE					0
