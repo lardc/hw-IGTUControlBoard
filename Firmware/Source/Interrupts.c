@@ -82,6 +82,16 @@ void EXTI2_TSC_IRQHandler()
 
 void EXTI15_10_IRQHandler()
 {
+	if(CONTROL_State == DS_InProcess)
+	{
+		CONTROL_ForceStopProcess();
+
+		DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
+		DataTable[REG_PROBLEM] = PROBLEM_SAFETY_VIOLATION;
+
+		CONTROL_SetDeviceState(DS_Ready, SS_None);
+	}
+
 	EXTI_FlagReset(EXTI_15);
 }
 //-----------------------------------------

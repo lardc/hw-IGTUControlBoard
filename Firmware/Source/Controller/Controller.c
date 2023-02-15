@@ -53,6 +53,7 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError);
 void CONTROL_SwitchToFault(Int16U Reason);
 void CONTROL_UpdateWatchDog();
 void CONTROL_ResetToDefaultState();
+void CONTROL_ResetHardwareToDefaultState();
 void CONTROL_LogicProcess();
 void CONTROL_StopProcess();
 void CONTROL_PostPulseSlowSequence();
@@ -92,7 +93,16 @@ void CONTROL_Init()
 	DEVPROFILE_InitEPService(EPIndexes, EPSized, EPCounters, EPDatas);
 	// Сброс значений
 	DEVPROFILE_ResetControlSection();
+
 	CONTROL_ResetToDefaultState();
+}
+//------------------------------------------
+
+void CONTROL_ResetToDefaultState()
+{
+	CONTROL_ResetOutputRegisters();
+	CONTROL_ResetHardwareToDefaultState();
+	CONTROL_SetDeviceState(DS_None, SS_None);
 }
 //------------------------------------------
 
@@ -115,20 +125,18 @@ void CONTROL_ResetOutputRegisters()
 }
 //------------------------------------------
 
-void CONTROL_C_ResetArray()
+void CONTROL_ResetHardwareToDefaultState()
 {
-	for(Int16U i = 0; i < C_VALUES_x_SIZE; i++)
-	{
-		CONTROL_C_CSenValues[i] = 0;
-	}
-}
-//------------------------------------------
-
-void CONTROL_ResetToDefaultState()
-{
-	CONTROL_ResetOutputRegisters();
+	LL_Indication(false);
+	LL_SyncTOCUHP(false);
+	LL_SyncOSC(false);
+	LL_SyncPAU(false);
 	LL_V_ShortOut(true);
-	CONTROL_SetDeviceState(DS_None, SS_None);
+	LL_V_ShortPAU(true);
+	LL_V_Diagnostic(false);
+	LL_C_Diagnostic(false);
+	LL_C_CStart(false);
+	LL_C_CEnable(false);
 }
 //------------------------------------------
 
@@ -239,22 +247,14 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 }
 //-----------------------------------------------
 
-void CONTROL_MonitorSafety()
+void CONTROL_C_ResetArray()
 {
-	bool SystemIsSafe = CONTROL_GetSafetyState();
-
-	if(CONTROL_State == DS_InProcess)
+	for(Int16U i = 0; i < C_VALUES_x_SIZE; i++)
 	{
-		if(!SystemIsSafe)
-		{
-			CONTROL_ForceResetHardware();
-			CONTROL_SetDeviceState(DS_Ready, SS_None);
-			DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
-			DataTable[REG_PROBLEM] = PROBLEM_SAFETY_VIOLATION;
-		}
+		CONTROL_C_CSenValues[i] = 0;
 	}
 }
-//-----------------------------------------------
+//------------------------------------------
 
 bool CONTROL_GetSafetyState()
 {
@@ -379,9 +379,10 @@ void CONTROL_VGS_StartProcess()
 void CONTROL_IGES_StartProcess()
 {
 	LL_OutMultiplexVoltage();
-	DELAY_MS(5);
 	LL_Indication(true);
 	LL_V_CLimitLowRange();
+	DELAY_MS(5);
+
 	if(PAU_Configure(PAU_CHANNEL_IGTU, PAU_AUTO_RANGE, DataTable[REG_IGES_T_V_CONSTANT]))
 	{
 		REGULATOR_IGES_FormConfig(&RegulatorParams);
@@ -400,6 +401,7 @@ void CONTROL_IGES_StartProcess()
 
 void CONTROL_V_StartProcess()
 {
+	CU_LoadConvertParams();
 	REGULATOR_CashVariables(&RegulatorParams);
 	CONTROL_ResetOutputRegisters();
 
@@ -579,11 +581,12 @@ void CONTROL_C_StopProcess()
 }
 //------------------------------------------
 
-void CONTROL_ForceResetHardware()
+void CONTROL_ForceStopProcess()
 {
 	CONTROL_C_StopProcess();
 	CONTROL_V_StopProcess();
 }
+//------------------------------------------
 
 void CONTROL_SwitchToFault(Int16U Reason)
 {
