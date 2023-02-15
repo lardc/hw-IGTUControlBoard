@@ -18,6 +18,13 @@
 
 // Types
 //
+typedef enum __CommutationState
+{
+	Current = 0,
+	Voltage = 1
+} CommutationState;
+//
+
 typedef void (*FUNC_AsyncDelegate)();
 
 // Variables
@@ -55,10 +62,13 @@ void CONTROL_UpdateWatchDog();
 void CONTROL_ResetToDefaultState();
 void CONTROL_ResetHardwareToDefaultState();
 void CONTROL_LogicProcess();
+void CONTROL_SwitchOutMUX(CommutationState Commutation);
+void CONTROL_CacheVariables();
+
+
 void CONTROL_StopProcess();
 void CONTROL_PostPulseSlowSequence();
 void CONTROL_ResetOutputRegisters();
-bool CONTROL_RegulatorCycle(volatile RegulatorParamsStruct* Regulator);
 void CONTROL_StartPrepare();
 void CONTROL_CashVariables();
 bool CONTROL_BatteryVoltageCheck();
@@ -179,8 +189,8 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 		case ACT_VGS_START:
 			if(CONTROL_State == DS_Ready)
 			{
+				CONTROL_ResetOutputRegisters();
 				CONTROL_SetDeviceState(DS_InProcess, SS_VgsPulse);
-				CONTROL_VGS_StartProcess();
 			}
 			else if(CONTROL_State == DS_InProcess)
 				*pUserError = ERR_OPERATION_BLOCKED;
@@ -243,31 +253,28 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 }
 //-----------------------------------------------
 
-void CONTROL_C_ResetArray()
-{
-	for(Int16U i = 0; i < C_VALUES_x_SIZE; i++)
-	{
-		CONTROL_C_CSenValues[i] = 0;
-	}
-}
-//------------------------------------------
-
-bool CONTROL_GetSafetyState()
-{
-	bool SafetyInput = LL_SafetyState();
-	DataTable[REG_SAFETY_STATE] = SafetyInput ? 1 : 0;
-
-	if(DataTable[REG_MUTE_SAFETY_MONITOR])
-		return true;
-	else
-		return SafetyInput;
-}
-//-----------------------------------------------
-
 void CONTROL_LogicProcess()
 {
 	switch(CONTROL_SubState)
 	{
+	case SS_VgsPrepare:
+		(DataTable[REG_VGS_C_TRIG] <= DataTable[REG_V_C_SENS_THRESHOLD]) ? LL_V_CoefCSensLowRange() : LL_V_CoefCSensHighRange();
+
+		LL_V_CLimitHighRange();
+		LL_V_ShortOut(false);
+		LL_V_ShortPAU(true);
+		CONTROL_SwitchOutMUX(Voltage);
+
+		CONTROL_CacheVariables();
+		CONTROL_SetDeviceState(DS_Ready, SS_VgsPulse);
+		CONTROL_V_StartProcess();
+		break;
+
+
+
+
+
+
 		case SS_VgsWaitAfterPulse:
 			CONTROL_VGS_SetResults(&RegulatorParams);
 			if(CONTROL_State == DS_Selftest)
@@ -292,11 +299,60 @@ void CONTROL_LogicProcess()
 }
 //-----------------------------------------------
 
+void CONTROL_SwitchOutMUX(CommutationState Commutation)
+{
+	static CommutationState LastCommutation = Current;
+
+	if(LastCommutation != Commutation)
+	{
+		if(Commutation == Current)
+			LL_OutMultiplexCurrent();
+		else
+			LL_OutMultiplexVoltage();
+
+		LastCommutation = Commutation;
+
+		DELAY_MS(20);
+	}
+}
+//-----------------------------------------------
+
+void CONTROL_CacheVariables()
+{
+	CU_LoadConvertParams();
+	REGULATOR_CacheVariables(&RegulatorParams);
+}
+//-----------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+void CONTROL_C_ResetArray()
+{
+	for(Int16U i = 0; i < C_VALUES_x_SIZE; i++)
+	{
+		CONTROL_C_CSenValues[i] = 0;
+	}
+}
+//------------------------------------------
+
 void CONTROL_V_HighPriorityProcess()
 {
 	switch(CONTROL_SubState)
 	{
 		case SS_VgsPulse:
+			MeasureSample SampledData = MEASURE_SampleVgsIges();
+			REGULATOR_Process(&RegulatorParams);
+
 			if(MEASURE_VGS_Params(&RegulatorParams, CONTROL_State))
 				REGULATOR_VGS_FormUpdate(&RegulatorParams);
 
@@ -329,48 +385,7 @@ void CONTROL_V_HighPriorityProcess()
 }
 //-----------------------------------------------
 
-void CONTROL_C_HighPriorityProcess(bool IsInProgress)
-{
-	if(CONTROL_SubState == SS_QgPulse)
-	{
-		if(IsInProgress)
-		{
-			CONTROL_C_CSenValues[CONTROL_C_Values_Counter] = MEASURE_C_DMAExtractCSen();
-			CONTROL_C_VSenValues[CONTROL_C_Values_Counter] = MEASURE_C_DMAExtractVSen();
-			MEASURE_C_DMABufferClear();
-			CONTROL_C_Values_Counter++;
-		}
-		else
-		{
-			CONTROL_C_StopProcess();
-			CONTROL_SetDeviceState(CONTROL_State, SS_QgWaitAfterPulse);
-		}
-	}
-}
-//-----------------------------------------------
 
-bool CONTROL_RegulatorCycle(volatile RegulatorParamsStruct* Regulator)
-{
-	return REGULATOR_Process(Regulator);
-}
-//-----------------------------------------------
-
-void CONTROL_VGS_StartProcess()
-{
-	LL_OutMultiplexVoltage();
-	DELAY_MS(5);
-	LL_Indication(true);
-	LL_V_CLimitHighRange();
-	if(DataTable[REG_VGS_C_TRIG] <= DataTable[REG_V_C_SENS_THRESHOLD])
-		LL_V_CoefCSensLowRange();
-	else
-		LL_V_CoefCSensHighRange();
-	REGULATOR_VGS_FormConfig(&RegulatorParams);
-	LL_V_ShortPAU(true);
-	LL_V_ShortOut(false);
-	CONTROL_V_StartProcess();
-}
-//-----------------------------------------------
 
 void CONTROL_IGES_StartProcess()
 {
@@ -397,14 +412,10 @@ void CONTROL_IGES_StartProcess()
 
 void CONTROL_V_StartProcess()
 {
-	CU_LoadConvertParams();
-	REGULATOR_CashVariables(&RegulatorParams);
-	CONTROL_ResetOutputRegisters();
+	LL_SyncOSC(true);
 
 	TIM_Reset(TIM15);
 	TIM_Start(TIM15);
-
-	LL_SyncOSC(true);
 }
 //-----------------------------------------------
 

@@ -36,21 +36,7 @@ void TIM1_BRK_TIM15_IRQHandler()
 	if(TIM_StatusCheck(TIM15))
 	{
 		CONTROL_V_HighPriorityProcess();
-
 		TIM_StatusClear(TIM15);
-	}
-}
-//-----------------------------------------
-
-void TIM4_IRQHandler()
-{
-	if(TIM_StatusCheck(TIM4))
-	{
-		if(++CONTROL_C_TimeCounter > (Int16U)((float)DataTable[REG_QG_T_CURRENT] / (float)TIMER4_uS))
-			CONTROL_C_HighPriorityProcess(false);
-		else
-			CONTROL_C_HighPriorityProcess(true);
-		TIM_StatusClear(TIM4);
 	}
 }
 //-----------------------------------------
@@ -82,7 +68,7 @@ void EXTI2_TSC_IRQHandler()
 
 void EXTI15_10_IRQHandler()
 {
-	if(CONTROL_State == DS_InProcess)
+	if(CONTROL_State == DS_InProcess && !DataTable[REG_MUTE_SAFETY_MONITOR])
 	{
 		CONTROL_ForceStopProcess();
 

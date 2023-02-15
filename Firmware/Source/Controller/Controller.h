@@ -22,13 +22,14 @@ typedef enum __DeviceState
 typedef enum __DeviceSubState
 {
 	SS_None = 0,
-	SS_PulsePrepare = 1,
+	SS_VgsPrepare = 1,
 	SS_VgsPulse = 2,
-	SS_VgsWaitAfterPulse = 3,
-	SS_IgesPulse = 4,
-	SS_IgesWaitAfterPulse = 5,
-	SS_QgWaitAfterPulse = 6,
-	SS_QgPulse = 7
+
+	SS_VgsWaitAfterPulse = 2,
+	SS_IgesPulse = 3,
+	SS_IgesWaitAfterPulse = 4,
+	SS_QgWaitAfterPulse = 5,
+	SS_QgPulse = 6
 } DeviceSubState;
 
 
@@ -51,20 +52,18 @@ extern volatile Int16U CONTROL_V_CSenValues[];
 extern volatile float CONTROL_C_CSenValues[C_VALUES_x_SIZE];
 extern volatile float CONTROL_C_VSenValues[C_VALUES_x_SIZE];
 //
-extern volatile RegulatorParamsStruct RegulatorParams;
+
 
 // Functions
 //
 void CONTROL_Init();
 void CONTROL_Idle();
 void CONTROL_SetDeviceState(DeviceState NewState, DeviceSubState NewSubState);
-void CONTROL_DelayMs(uint32_t Delay);
-bool CONTROL_GetSafetyState();
+void CONTROL_ForceStopProcess();
 
 void CONTROL_V_HighPriorityProcess();
-void CONTROL_C_HighPriorityProcess(bool IsInProgress);
 
-void CONTROL_VGS_StartProcess();
+
 void CONTROL_IGES_StartProcess();
 void CONTROL_V_StartProcess();
 
@@ -76,7 +75,7 @@ void CONTROL_QG_SetResults();
 
 void CONTROL_V_StopProcess();
 void CONTROL_C_StopProcess();
-void CONTROL_ForceStopProcess();
+
 
 void CONTROL_C_Processing();
 
