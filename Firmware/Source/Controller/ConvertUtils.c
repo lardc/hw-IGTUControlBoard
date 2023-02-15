@@ -6,117 +6,104 @@
 #include "Global.h"
 
 // Variables
-ConvertParams V_AdcToVSenParams;
-ConvertParams V_AdcToCSenParams;
-ConvertParams C_AdcToCSenParams;
-ConvertParams C_AdcToVSenParams;
-ConvertParams V_VToDACParams;
-ConvertParams C_CToDACParams;
-ConvertParams C_VCutoffToExtDACParams;
-ConvertParams C_VNegativeToExtDACParams;
-ConvertParams PotAdcToVSenParams;
+ConvertParams V_ADCtoVParams;
+ConvertParams V_ADCtoIParams;
+ConvertParams V_VtoDACParams;
+//
+ConvertParams I_ItoDACParams;
+ConvertParams I_VCutoffToDACParams;
+ConvertParams I_VnegativeToDACParams;
+ConvertParams I_ADCtoVParams;
+ConvertParams I_ADCtoIParams;
 
 // Functions
 //
-Int16U CU_DACConvert(ConvertParams *Params, float Value);
-float CU_ADCConvert(ConvertParams *Params, Int16U Data);
+Int16U CU_XtoDAC(ConvertParams *Params, float Value);
+float CU_ADCtoX(ConvertParams *Params, Int16U Data);
 //-----------------------------
 //
-// DACs:
-Int16U CU_C_VCutoffToExtDAC(float Value)
+Int16U CU_I_VcutoffToDAC(float Value)
 {
-	return CU_DACConvert(&C_VCutoffToExtDACParams, Value);
+	return CU_XtoDAC(&I_VCutoffToDACParams, Value);
 }
 //-----------------------------
 
-Int16U CU_C_VNegativeToExtDAC(float Value)
+Int16U CU_I_VnegativeToDAC(float Value)
 {
-	return CU_DACConvert(&C_VNegativeToExtDACParams, Value);
+	return CU_XtoDAC(&I_VnegativeToDACParams, Value);
 }
 //-----------------------------
 
-Int16U CU_V_VToDAC(float Value)
+Int16U CU_V_VtoDAC(float Value)
 {
-	return CU_DACConvert(&V_VToDACParams, Value);
+	return CU_XtoDAC(&V_VtoDACParams, Value);
 }
 //-----------------------------
 
-Int16U CU_C_CToDAC(float Value)
+Int16U CU_I_ItoDAC(float Value)
 {
-	return CU_DACConvert(&C_CToDACParams, Value);
-}
-//-----------------------------
-//
-// ADCs:
-float CU_PotADCVToX(Int16U Data)
-{
-	return CU_ADCConvert(&PotAdcToVSenParams, Data);
+	return CU_XtoDAC(&I_ItoDACParams, Value);
 }
 //-----------------------------
 
-float CU_V_ADCVToX(Int16U Data)
+float CU_V_ADCtoV(Int16U Data)
 {
-	return CU_ADCConvert(&V_AdcToVSenParams, Data);
+	return CU_ADCtoX(&V_ADCtoVParams, Data);
 }
 //-----------------------------
 
-float CU_V_ADCCToX(Int16U Data)
+float CU_V_ADCtoI(Int16U Data)
 {
-	return CU_ADCConvert(&V_AdcToCSenParams, Data);
+	return CU_ADCtoX(&V_ADCtoIParams, Data);
 }
 //-----------------------------
 
-float CU_C_ADCCToX(Int16U Data)
+float CU_I_ADCtoI(Int16U Data)
 {
-	return CU_ADCConvert(&C_AdcToCSenParams, Data);
+	return CU_ADCtoX(&I_ADCtoIParams, Data);
 }
 //-----------------------------
 
-float CU_C_ADCVToX(Int16U Data)
+float CU_I_ADCtoV(Int16U Data)
 {
-	return CU_ADCConvert(&C_AdcToVSenParams, Data);
+	return CU_ADCtoX(&I_ADCtoVParams, Data);
 }
 //-----------------------------
 //
-Int16U CU_DACConvert(ConvertParams *Params, float Value)
+Int16U CU_XtoDAC(ConvertParams *Params, float Value)
 {
-	return (Int16U)(Value * Params->K);
+	float Result = Value * Value * Params->P2 + Value * Params->P1 + Params->P0;
+	return (Int16U)(Result + Params->B) * Params->K;
 }
 //-----------------------------
 
-float CU_ADCConvert(ConvertParams *Params, Int16U Data)
+float CU_ADCtoX(ConvertParams *Params, Int16U Data)
 {
-	float Value = Data * Params->K;
+	float Value = Data * Params->K + Params->B;
 	return (Value * Value * Params->P2 + Value * Params->P1 + Params->P0);
 }
 //-----------------------------
 
-void CU_LoadSingleConvertParams(ConvertParams* StructureName, Int16U RegK, Int16U RegP0, Int16U RegP1, Int16U RegP2)
+void CU_LoadSingleParams(ConvertParams* Params, Int16U RegB, Int16U RegK, Int16U RegP0, Int16U RegP1, Int16U RegP2)
 {
-	StructureName->K = (float)DataTable[RegK];
-	StructureName->P0 = (float)(Int16S)DataTable[RegP0];
-	StructureName->P1 = (float)DataTable[RegP1];
-	StructureName->P2 = (RegP2 == 0) ? 0 : (float)((Int16S)DataTable[RegP2]);
+	Params->B = DataTable[RegB];
+	Params->K = DataTable[RegK];
+	Params->P0 = DataTable[RegP0];
+	Params->P1 = DataTable[RegP1];
+	Params->P2 = DataTable[RegP2];
 }
 //-----------------------------
 
 void CU_LoadConvertParams()
 {
-	CU_LoadSingleConvertParams(&PotAdcToVSenParams, REG_ADC_POT_SEN_K, REG_ADC_POT_SEN_P0, REG_ADC_POT_SEN_P1,
-			REG_ADC_POT_SEN_P2);
-	CU_LoadSingleConvertParams(&V_AdcToVSenParams, REG_ADC_V_V_SEN_K, REG_ADC_V_V_SEN_P0, REG_ADC_V_V_SEN_P1,
-			REG_ADC_V_V_SEN_P2);
-	CU_LoadSingleConvertParams(&V_AdcToCSenParams, REG_ADC_V_C_SEN_K, REG_ADC_V_C_SEN_P0, REG_ADC_V_C_SEN_P1,
-			REG_ADC_V_C_SEN_P2);
-	CU_LoadSingleConvertParams(&C_AdcToCSenParams, REG_ADC_C_C_SEN_K, REG_ADC_C_C_SEN_P0, REG_ADC_C_C_SEN_P1,
-			REG_ADC_C_C_SEN_P2);
-	CU_LoadSingleConvertParams(&C_AdcToVSenParams, REG_ADC_C_V_SEN_K, REG_ADC_C_V_SEN_P0, REG_ADC_C_V_SEN_P1,
-				REG_ADC_C_V_SEN_P2);
-	CU_LoadSingleConvertParams(&V_VToDACParams, REG_DAC_V_V_SET_K, REG_DAC_V_V_SET_P0, REG_DAC_V_V_SET_P1, 0);
-	CU_LoadSingleConvertParams(&C_CToDACParams, REG_DAC_C_C_SET_K, REG_DAC_C_C_SET_P0, REG_DAC_C_C_SET_P1, 0);
-	CU_LoadSingleConvertParams(&C_VCutoffToExtDACParams, REG_C_V_CUTOFF_K, REG_C_V_CUTOFF_P0, REG_C_V_CUTOFF_P1, 0);
-	CU_LoadSingleConvertParams(&C_VNegativeToExtDACParams, REG_C_V_NEGATIVE_K, REG_C_V_NEGATIVE_P0, REG_C_V_NEGATIVE_P1,
-			0);
+	CU_LoadSingleParams(&V_ADCtoVParams, REG_V_ADC_TO_V_B, REG_V_ADC_TO_V_K, REG_V_ADC_TO_V_P0, REG_V_ADC_TO_V_P1, REG_V_ADC_TO_V_P2);
+	CU_LoadSingleParams(&V_ADCtoIParams, REG_V_ADC_TO_I_B, REG_V_ADC_TO_I_K, REG_V_ADC_TO_I_P0, REG_V_ADC_TO_I_P1, REG_V_ADC_TO_I_P2);
+	CU_LoadSingleParams(&V_VtoDACParams, REG_V_V_TO_DAC_B, REG_V_V_TO_DAC_K, REG_V_V_TO_DAC_P0, REG_V_V_TO_DAC_P1, REG_V_V_TO_DAC_P2);
+	CU_LoadSingleParams(&I_ItoDACParams, REG_I_I_TO_DAC_B, REG_I_I_TO_DAC_K, REG_I_I_TO_DAC_P0, REG_I_I_TO_DAC_P1, REG_I_I_TO_DAC_P2);
+	CU_LoadSingleParams(&I_VCutoffToDACParams, REG_I_VC_TO_DAC_B, REG_I_VC_TO_DAC_K, REG_I_VC_TO_DAC_P0, REG_I_VC_TO_DAC_P1, REG_I_VC_TO_DAC_P2);
+	CU_LoadSingleParams(&I_VnegativeToDACParams, REG_I_VN_TO_DAC_B, REG_I_VN_TO_DAC_K, REG_I_VN_TO_DAC_P0, REG_I_VN_TO_DAC_P1, REG_I_VN_TO_DAC_P2);
+	CU_LoadSingleParams(&I_ADCtoVParams, REG_I_ADC_TO_V_B, REG_I_ADC_TO_V_K, REG_I_ADC_TO_V_P0, REG_I_ADC_TO_V_P1, REG_I_ADC_TO_V_P2);
+	CU_LoadSingleParams(&I_ADCtoIParams, REG_I_ADC_TO_I_B, REG_I_ADC_TO_I_K, REG_I_ADC_TO_I_P0, REG_I_ADC_TO_I_P1, REG_I_ADC_TO_I_P2);
 }
 //-----------------------------
 

@@ -48,51 +48,58 @@
 #define REG_REGULATOR_QI_MAX			2	// Ограничение уровня интегральной составляющей
 #define REG_SCOPE_STEP					3	// Шаг сохранения оцифрованных значений
 #define REG_DAC_OFFSET					4	// Смещение сигнала с ЦАП
-#define REG_V_C_SENS_THRESHOLD			5	// Порог переключения диапазонов измерения тока
+#define REG_V_I_SENS_THRESHOLD			5	// Порог переключения диапазонов измерения тока
 #define REG_PAU_CAN_ID					6	// CAN ID PAU
 #define REG_TOCUHP_CAN_ID				7	// CAN ID TOCUHP
 //
-#define REG_ADC_C_C_SEN_K				10	// Коэффициент преобразования кода АЦП в ток
-#define REG_ADC_V_C_SEN_K				11	// Коэффициент преобразования кода АЦП в ток
-#define REG_ADC_V_V_SEN_K				12	// Коэффициент преобразования кода АЦП в напряжение
-#define REG_DAC_C_C_SET_K				13	// Коэффициент преобразования тока в код ЦАП
-#define REG_DAC_V_V_SET_K				14	// Коэффициент преобразования напряжения в код ЦАП
-#define REG_C_V_CUTOFF_K				15	// Коэффициент преобразования напряжения в код внешнего ЦАП
-#define REG_C_V_NEGATIVE_K				16	// Коэффициент преобразования напряжения в код внешнего ЦАП
-#define REG_ADC_POT_SEN_K				17	// Коэффициент преобразования кода АЦП в напряжение
-#define REG_ADC_C_V_SEN_K				18	// Коэффициент преобразования кода АЦП в напряжение
+#define REG_V_ADC_TO_V_P2				20	// Коэффициент тонкой подстройки Р2
+#define REG_V_ADC_TO_V_P1				21	// Коэффициент тонкой подстройки Р1
+#define REG_V_ADC_TO_V_P0				22	// Смещение тонкой подстройки Р0
+#define REG_V_ADC_TO_V_K				23	// Коэффициент преобразования K
+#define REG_V_ADC_TO_V_B				24	// Коэффициент преобразования B
 //
-#define REG_ADC_C_C_SEN_P2				20	// Коэффициент тонкой подстройки Р2
-#define REG_ADC_C_C_SEN_P1				21	// Коэффициент тонкой подстройки Р1
-#define REG_ADC_C_C_SEN_P0				22	// Смещение тонкой подстройки Р0
+#define REG_V_ADC_TO_I_P2				20	// Коэффициент тонкой подстройки Р2
+#define REG_V_ADC_TO_I_P1				21	// Коэффициент тонкой подстройки Р1
+#define REG_V_ADC_TO_I_P0				22	// Смещение тонкой подстройки Р0
+#define REG_V_ADC_TO_I_K				23	// Коэффициент преобразования K
+#define REG_V_ADC_TO_I_B				24	// Коэффициент преобразования B
 //
-#define REG_ADC_V_C_SEN_P2				23	// Коэффициент тонкой подстройки Р2
-#define REG_ADC_V_C_SEN_P1				24	// Коэффициент тонкой подстройки Р1
-#define REG_ADC_V_C_SEN_P0				25	// Смещение тонкой подстройки Р0
+#define REG_V_V_TO_DAC_P2				20	// Коэффициент тонкой подстройки Р2
+#define REG_V_V_TO_DAC_P1				21	// Коэффициент тонкой подстройки Р1
+#define REG_V_V_TO_DAC_P0				22	// Смещение тонкой подстройки Р0
+#define REG_V_V_TO_DAC_K				23	// Коэффициент преобразования K
+#define REG_V_V_TO_DAC_B				24	// Коэффициент преобразования B
 //
-#define REG_ADC_V_V_SEN_P2				26	// Коэффициент тонкой подстройки Р2
-#define REG_ADC_V_V_SEN_P1				27	// Коэффициент тонкой подстройки Р1
-#define REG_ADC_V_V_SEN_P0				28	// Смещение тонкой подстройки Р0
+#define REG_I_I_TO_DAC_P2				20	// Коэффициент тонкой подстройки Р2
+#define REG_I_I_TO_DAC_P1				21	// Коэффициент тонкой подстройки Р1
+#define REG_I_I_TO_DAC_P0				22	// Смещение тонкой подстройки Р0
+#define REG_I_I_TO_DAC_K				23	// Коэффициент преобразования K
+#define REG_I_I_TO_DAC_B				24	// Коэффициент преобразования B
 //
-#define REG_ADC_POT_SEN_P2				29	// Коэффициент тонкой подстройки Р2
-#define REG_ADC_POT_SEN_P1				30	// Коэффициент тонкой подстройки Р1
-#define REG_ADC_POT_SEN_P0				31	// Смещение тонкой подстройки Р0
+#define REG_I_VC_TO_DAC_P2				20	// Коэффициент тонкой подстройки Р2
+#define REG_I_VC_TO_DAC_P1				21	// Коэффициент тонкой подстройки Р1
+#define REG_I_VC_TO_DAC_P0				22	// Смещение тонкой подстройки Р0
+#define REG_I_VC_TO_DAC_K				23	// Коэффициент преобразования K
+#define REG_I_VC_TO_DAC_B				24	// Коэффициент преобразования B
 //
-#define REG_ADC_C_V_SEN_P2				32	// Коэффициент тонкой подстройки Р2
-#define REG_ADC_C_V_SEN_P1				33	// Коэффициент тонкой подстройки Р1
-#define REG_ADC_C_V_SEN_P0				34	// Смещение тонкой подстройки Р0
+#define REG_I_VN_TO_DAC_P2				20	// Коэффициент тонкой подстройки Р2
+#define REG_I_VN_TO_DAC_P1				21	// Коэффициент тонкой подстройки Р1
+#define REG_I_VN_TO_DAC_P0				22	// Смещение тонкой подстройки Р0
+#define REG_I_VN_TO_DAC_K				23	// Коэффициент преобразования K
+#define REG_I_VN_TO_DAC_B				24	// Коэффициент преобразования B
 //
-#define REG_DAC_C_C_SET_P1				35	// Коэффициент тонкой подстройки Р1
-#define REG_DAC_C_C_SET_P0				36	// Смещение тонкой подстройки Р0
+#define REG_I_ADC_TO_V_P2				20	// Коэффициент тонкой подстройки Р2
+#define REG_I_ADC_TO_V_P1				21	// Коэффициент тонкой подстройки Р1
+#define REG_I_ADC_TO_V_P0				22	// Смещение тонкой подстройки Р0
+#define REG_I_ADC_TO_V_K				23	// Коэффициент преобразования K
+#define REG_I_ADC_TO_V_B				24	// Коэффициент преобразования B
 //
-#define REG_DAC_V_V_SET_P1				37	// Коэффициент тонкой подстройки Р1
-#define REG_DAC_V_V_SET_P0				38	// Смещение тонкой подстройки Р0
-//
-#define REG_C_V_CUTOFF_P1				39	// Коэффициент тонкой подстройки Р1
-#define REG_C_V_CUTOFF_P0				40	// Смещение тонкой подстройки Р0
-//
-#define REG_C_V_NEGATIVE_P1				41	// Коэффициент тонкой подстройки Р1
-#define REG_C_V_NEGATIVE_P0				42	// Смещение тонкой подстройки Р0
+#define REG_I_ADC_TO_I_P2				20	// Коэффициент тонкой подстройки Р2
+#define REG_I_ADC_TO_I_P1				21	// Коэффициент тонкой подстройки Р1
+#define REG_I_ADC_TO_I_P0				22	// Смещение тонкой подстройки Р0
+#define REG_I_ADC_TO_I_K				23	// Коэффициент преобразования K
+#define REG_I_ADC_TO_I_B				24	// Коэффициент преобразования B
+
 //
 #define REG_REGULATOR_Kp				50	// Пропорциональный коэффициент регулятора
 #define REG_REGULATOR_Ki				51	// Интегральный коэффициент регулятора
@@ -104,11 +111,17 @@
 #define REG_TOCUHP_RES_PER_BIT			66	// Сопротивление одного бита блока TOCU [Ом]
 
 #define REG_MUTE_SAFETY_MONITOR			70	// Отключение проверки контакта безопасности
+#define REG_VGS_PULSE_PLATE				71	// Длительность полки напряжения Vgs (мкс)
+#define REG_VGS_FAST_RATE				72	// Скорость нарастания напряжения Vg (мВ/мкс)
+#define REG_VGS_SLOW_RATE				73	// Скорость нарастания напряжения Vg (мВ/мкс)
+#define REG_VGS_dI_TRIG					74	// (%)
+#define REG_REGULATOR_ERR_MAX			75
+#define REG_FE_COUNTER_MAX				76
 //
 // Несохраняемые регистры чтения-записи
 //
 // Регистры измерения VGS
-#define REG_VGS_C_TRIG					128	// Задание триггера тока [мА]
+#define REG_VGS_I_TRIG					128	// Задание триггера тока [мА]
 #define REG_VGS_T_V_CONSTANT			129	// Длительность полки напряжения [мс]
 #define REG_VGS_T_V_FRONT				130	// Длительность фронта напряжения [мс]
 #define	REG_VGS_V_MAX					131	// Макс значение напряжения [мВ]
@@ -206,7 +219,7 @@
 
 //  Fault and disable codes
 #define DF_NONE							0
-#define DF_CURRENT_NOT_REACHED			1
+#define DF_FOLLOWING_ERROR				1
 #define DF_NEGATIVE_CURRENT				2
 #define DF_PAU_REQUEST_ERROR			3
 #define DF_TOCUHP_REQUEST_ERROR			4
@@ -216,6 +229,8 @@
 #define PROBLEM_NONE					0
 #define PROBLEM_FORCED_STOP				1
 #define PROBLEM_SAFETY_VIOLATION		2
+#define PROBLEM_CURRENT_NOT_REACHED		3
+#define PROBLEM_GATE_SHORT				4
 
 //  Warning
 #define WARNING_NONE					0
