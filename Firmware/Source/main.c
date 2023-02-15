@@ -29,20 +29,17 @@ int main()
 	// Настройка таймера для Регулятора
 	INITCFG_ConfigTimer15();
 
-	// Настройка таймера для АЦП тока затвора
-	INITCFG_ConfigTimer6();
-
 	// Настройка таймера для триггера ЦАП
 	INITCFG_ConfigTimer4();
-
-	// Настройка DAC
-	INITCFG_ConfigDAC();
 
 	// Настройка АЦП
 	INITCFG_ConfigADC();
 
 	// Настройка DMA
 	INITCFG_ConfigDMA();
+
+	// Настройка DAC
+	INITCFG_ConfigDAC();
 
 	// Настройка сторожевого таймера
 	INITCFG_ConfigWatchDog();

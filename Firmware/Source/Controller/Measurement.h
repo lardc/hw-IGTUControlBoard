@@ -9,7 +9,9 @@
 
 #define ADC_NUMBER_OF_CHANNELS		2
 // Variables
-extern volatile Int16U MEASURE_C_SenRaw[ADC_DMA_BUFF_SIZE];
+extern volatile Int16U MEASURE_V_CsensRaw[ADC_DMA_BUFF_SIZE_VGS_IGES];
+extern volatile Int16U MEASURE_V_VsensRaw[ADC_DMA_BUFF_SIZE_VGS_IGES];
+extern volatile Int16U MEASURE_C_Raw[ADC_DMA_BUFF_SIZE_QG];
 
 // Functions
 Int16U MEASURE_V_VSen();

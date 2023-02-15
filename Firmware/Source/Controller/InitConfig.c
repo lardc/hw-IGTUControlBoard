@@ -126,15 +126,6 @@ void INITCFG_ConfigTimer7()
 }
 //------------------------------------------------
 
-void INITCFG_ConfigTimer6()
-{
-	TIM_Clock_En(TIM_6);
-	TIM_Config(TIM6, SYSCLK, TIMER6_uS);
-	TIM_DMA(TIM6, DMAEN);
-	TIM_MasterMode(TIM6, MMS_UPDATE);
-}
-//------------------------------------------------
-
 void INITCFG_ConfigTimer15()
 {
 	TIM_Clock_En(TIM_15);
@@ -150,45 +141,102 @@ void INITCFG_ConfigWatchDog()
 }
 //------------------------------------------------
 
-void INITCFG_ConfigADC()
+void INITCFG_ConfigADC_Qg()
 {
-	RCC_ADC_Clk_EN(ADC_12_ClkEN);
-	RCC_ADC_Clk_EN(ADC_34_ClkEN);
-
 	// ADC1
+	ADC_ResetConfig(ADC1);
 	ADC_Calibration(ADC1);
 	ADC_SoftTrigConfig(ADC1);
-
-	ADC_TrigConfig(ADC1, ADC12_TIM6_TRGO, RISE);
 	ADC_ChannelSeqReset(ADC1);
 
 	ADC_ChannelSet_Sequence(ADC1, ADC1_C_C_SEN_CHANNEL, 1);
-	ADC_ChannelSet_Sequence(ADC1, ADC1_C_V_SEN_CHANNEL, 1);
-	ADC_ChannelSeqLen(ADC1, 1);
+	ADC_ChannelSet_Sequence(ADC1, ADC1_C_V_SEN_CHANNEL, 2);
+
+	ADC_ChannelSeqLen(ADC1, 2);
 	ADC_DMAConfig(ADC1);
 	ADC_Enable(ADC1);
 	ADC_DMAEnable(ADC1, true);
 
 	// ADC3
+	ADC_ResetConfig(ADC3);
+}
+//------------------------------------------------
+
+void INITCFG_ConfigADC_VgsIges()
+{
+	// ADC1
+	ADC_ResetConfig(ADC1);
+	ADC_Calibration(ADC1);
+	ADC_SoftTrigConfig(ADC1);
+	ADC_ChannelSeqReset(ADC1);
+
+	for (uint8_t i = 1; i <= ADC_DMA_BUFF_SIZE; ++i)
+		ADC_ChannelSet_Sequence(ADC1, ADC1_V_C_SEN_CHANNEL, i);
+
+	ADC_ChannelSeqLen(ADC1, ADC_DMA_BUFF_SIZE);
+	ADC_DMAConfig(ADC1);
+	ADC_Enable(ADC1);
+	ADC_DMAEnable(ADC1, true);
+
+	// ADC3
+	ADC_ResetConfig(ADC3);
 	ADC_Calibration(ADC3);
 	ADC_SoftTrigConfig(ADC3);
+	ADC_ChannelSeqReset(ADC3);
+
+	for (uint8_t i = 1; i <= ADC_DMA_BUFF_SIZE; ++i)
+		ADC_ChannelSet_Sequence(ADC3, ADC3_POT_CHANNEL, i);
+
+	ADC_ChannelSeqLen(ADC3, ADC_DMA_BUFF_SIZE);
 	ADC_DMAConfig(ADC3);
 	ADC_Enable(ADC3);
-	ADC_DMAEnable(ADC3, false);
+	ADC_DMAEnable(ADC3, true);
+}
+//------------------------------------------------
+
+void INITCFG_ConfigDMA_VgsIges()
+{
+	// DMA1
+	DMA_Reset(DMA1_Channel1);
+	DMAChannelX_DataConfig(DMA1_Channel1, (uint32_t)&MEASURE_V_CsensRaw, (uint32_t)(&ADC1->DR), ADC_DMA_BUFF_SIZE_VGS_IGES);
+	DMAChannelX_Config(DMA1_Channel1, DMA_MEM2MEM_DIS, DMA_LvlPriority_LOW, DMA_MSIZE_16BIT, DMA_PSIZE_16BIT,
+															DMA_MINC_EN, DMA_PINC_DIS, DMA_CIRCMODE_DIS, DMA_READ_FROM_PERIPH);
+	DMA_ChannelEnable(DMA1_Channel1, true);
+
+	// DMA2
+	DMA_Reset(DMA1_Channel2);
+	DMAChannelX_DataConfig(DMA1_Channel2, (uint32_t)&MEASURE_V_VsensRaw, (uint32_t)(&ADC2->DR), ADC_DMA_BUFF_SIZE_VGS_IGES);
+	DMAChannelX_Config(DMA1_Channel2, DMA_MEM2MEM_DIS, DMA_LvlPriority_LOW, DMA_MSIZE_16BIT, DMA_PSIZE_16BIT,
+															DMA_MINC_EN, DMA_PINC_DIS, DMA_CIRCMODE_DIS, DMA_READ_FROM_PERIPH);
+	DMA_ChannelEnable(DMA1_Channel2, true);
+}
+//------------------------------------------------
+
+void INITCFG_ConfigDMA_Qg()
+{
+	// DMA1
+	DMA_Reset(DMA1_Channel1);
+	DMAChannelX_DataConfig(DMA1_Channel1, (uint32_t)&MEASURE_V_CsensRaw, (uint32_t)(&ADC1->DR), ADC_DMA_BUFF_SIZE_VGS_IGES);
+	DMAChannelX_Config(DMA1_Channel1, DMA_MEM2MEM_DIS, DMA_LvlPriority_LOW, DMA_MSIZE_16BIT, DMA_PSIZE_16BIT,
+															DMA_MINC_EN, DMA_PINC_DIS, DMA_CIRCMODE_DIS, DMA_READ_FROM_PERIPH);
+	DMA_ChannelEnable(DMA1_Channel1, true);
+
+	// DMA2
+	DMA_Reset(DMA1_Channel2);
+}
+//------------------------------------------------
+
+void INITCFG_ConfigADC()
+{
+	RCC_ADC_Clk_EN(ADC_12_ClkEN);
+	RCC_ADC_Clk_EN(ADC_34_ClkEN);
 }
 //------------------------------------------------
 
 void INITCFG_ConfigDMA()
 {
 	DMA_Clk_Enable(DMA1_ClkEN);
-	// DMA для АЦП тока затвора
-	DMA_Reset(DMA_ADC_C_SEN_CHANNEL);
-	DMA_Interrupt(DMA_ADC_C_SEN_CHANNEL, DMA_TRANSFER_COMPLETE, 0, true);
-	DMAChannelX_DataConfig(DMA_ADC_C_SEN_CHANNEL, (uint32_t)MEASURE_C_SenRaw, (uint32_t)(&ADC1->DR),
-	C_VALUES_x_SIZE);
-	DMAChannelX_Config(DMA_ADC_C_SEN_CHANNEL, DMA_MEM2MEM_DIS, DMA_LvlPriority_LOW, DMA_MSIZE_16BIT, DMA_PSIZE_16BIT,
-	DMA_MINC_EN, DMA_PINC_DIS, DMA_CIRCMODE_DIS, DMA_READ_FROM_PERIPH);
-	DMA_ChannelEnable(DMA_ADC_C_SEN_CHANNEL, true);
+	DMA_Clk_Enable(DMA2_ClkEN);
 }
 //------------------------------------------------
 

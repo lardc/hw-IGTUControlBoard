@@ -6,7 +6,9 @@
 #include "Global.h"
 
 // Variables
-volatile Int16U MEASURE_C_SenRaw[ADC_DMA_BUFF_SIZE];
+volatile Int16U MEASURE_V_CsensRaw[ADC_DMA_BUFF_SIZE_VGS_IGES];
+volatile Int16U MEASURE_V_VsensRaw[ADC_DMA_BUFF_SIZE_VGS_IGES];
+volatile Int16U MEASURE_C_Raw[ADC_DMA_BUFF_SIZE_QG];
 
 // Functions
 //

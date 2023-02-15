@@ -12,12 +12,15 @@ void INITCFG_ConfigUART();
 void INITCFG_ConfigCAN();
 void INITCFG_ConfigTimer7();
 void INITCFG_ConfigTimer15();
-void INITCFG_ConfigTimer6();
 void INITCFG_ConfigTimer4();
 void INITCFG_ConfigWatchDog();
-void INITCFG_ConfigADC();
-void INITCFG_ConfigDMA();
 void INITCFG_ConfigExtInterrupt();
 void INITCFG_ConfigSPI();
+void INITCFG_ConfigDMA_VgsIges();
+void INITCFG_ConfigADC_VgsIges();
+void INITCFG_ConfigDMA_Qg();
+void INITCFG_ConfigADC_Qg();
+void INITCFG_ConfigADC();
+void INITCFG_ConfigDMA();
 
 #endif //__INITCONFIG_H
