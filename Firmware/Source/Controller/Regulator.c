@@ -12,6 +12,7 @@ volatile RegulatorParamsStruct RegulatorParams;
 //
 void REGULATOR_LoggingData(volatile RegulatorParamsStruct* Regulator);
 Int16U REGULATOR_DACApplyLimits(Int16S Value, Int16U Offset, Int16U LimitValue);
+void REGULATOR_SaveSampleToRingBuffer(volatile RegulatorParamsStruct* Regulator);
 
 // Functions
 //
@@ -44,7 +45,7 @@ bool REGULATOR_Process(volatile RegulatorParamsStruct* Regulator)
 
 	float ValueToDAC = (Regulator->DebugMode) ? Regulator->Target : Regulator->Out;
 
-	Regulator->DACSetpoint = REGULATOR_DACApplyLimits(CU_V_VToDAC(ValueToDAC), Regulator->DACOffset, Regulator->DACLimitValue);
+	Regulator->DACSetpoint = REGULATOR_DACApplyLimits(CU_V_VtoDAC(ValueToDAC), Regulator->DACOffset, Regulator->DACLimitValue);
 
 	LL_V_VSetDAC(Regulator->DACSetpoint);
 
@@ -56,6 +57,17 @@ bool REGULATOR_Process(volatile RegulatorParamsStruct* Regulator)
 		return true;
 	else
 		return false;
+}
+//-----------------------------------------------
+
+void REGULATOR_SaveSampleToRingBuffer(volatile RegulatorParamsStruct* Regulator)
+{
+	static Int16U RingCounter = 0;
+
+	RingCounter++;
+	RingCounter &= RING_COUNTER_MASK;
+
+	Regulator->RingBuffer[RingCounter] = Regulator->SampledData;
 }
 //-----------------------------------------------
 
@@ -79,34 +91,34 @@ void REGULATOR_LoggingData(volatile RegulatorParamsStruct* Regulator)
 {
 	static Int16U ScopeLogStep = 0, LocalCounter = 0;
 
+	REGULATOR_SaveSampleToRingBuffer(Regulator);
+
 	// Сброс локального счетчика в начале логгирования
-	if(CONTROL_V_Values_Counter == 0)
+	if(CONTROL_RegulatorValues_Counter == 0)
 		LocalCounter = 0;
 
 	if(ScopeLogStep++ >= DataTable[REG_SCOPE_STEP])
 	{
 		ScopeLogStep = 0;
 
-		CONTROL_V_VValues[LocalCounter] = (Int16U)(Regulator->VFormTable[Regulator->RegulatorStepCounter]);
-		CONTROL_V_VSenValues[LocalCounter] = (Int16U)(Regulator->VSen);
-		CONTROL_V_CSenValues[LocalCounter] = (Int16U)(Regulator->CSen);
-		CONTROL_V_RegErrValues[LocalCounter] = (Int16S)(Regulator->RegulatorError);
-		CONTROL_V_Values_Counter = LocalCounter;
+		CONTROL_RegulatorOutputValues[LocalCounter] = Regulator->Target;
+		CONTROL_RegulatorErrValues[LocalCounter] = (Int16S)(Regulator->Error);
+		CONTROL_RegulatorValues_Counter = LocalCounter;
 
 		LocalCounter++;
 	}
 
 	// Условие обновления глобального счетчика данных
-	if(CONTROL_V_Values_Counter < V_VALUES_x_SIZE)
-		CONTROL_V_Values_Counter = LocalCounter;
+	if(CONTROL_RegulatorValues_Counter < VALUES_x_SIZE)
+		CONTROL_RegulatorValues_Counter = LocalCounter;
 
 	// Сброс локального счетчика
-	if(LocalCounter >= V_VALUES_x_SIZE)
+	if(LocalCounter >= VALUES_x_SIZE)
 		LocalCounter = 0;
 }
 //-----------------------------------------------
 
-void REGULATOR_CacheVariables(volatile RegulatorParamsStruct* Regulator)
+void REGULATOR_CacheCommonVariables(volatile RegulatorParamsStruct* Regulator)
 {
 	Regulator->Kp = DataTable[REG_REGULATOR_Kp];
 	Regulator->Ki = DataTable[REG_REGULATOR_Ki];
@@ -115,14 +127,19 @@ void REGULATOR_CacheVariables(volatile RegulatorParamsStruct* Regulator)
 	Regulator->FECounterMax = DataTable[REG_FE_COUNTER_MAX];
 	Regulator->DACLimitValue = DataTable[REG_DAC_OUTPUT_LIMIT_VALUE];
 	Regulator->DACOffset = DataTable[REG_DAC_OFFSET];
-	Regulator->DebugMode = (bool)DataTable[REG_REGULATOR_DEBUG];
+	Regulator->DebugMode = DataTable[REG_REGULATOR_DEBUG];
 }
 //-----------------------------------------------
 
-void REGULATOR_ResetVariables()
+void REGULATOR_CacheVgsVariables(volatile RegulatorParamsStruct* Regulator)
 {
-	Regulator->Counter = 0;
-	Regulator->dVg = 0;
+	Regulator->dVg = DataTable[REG_VGS_FAST_RATE];
+	Regulator->Counter = DataTable[REG_VGS_V_MAX] / (DataTable[REG_VGS_FAST_RATE] + DataTable[REG_VGS_SLOW_RATE]) / TIMER15_uS;
+}
+//-----------------------------------------------
+
+void REGULATOR_ResetVariables(volatile RegulatorParamsStruct* Regulator)
+{
 	Regulator->Target = 0;
 	Regulator->SampledData = 0;
 	Regulator->DACSetpoint = 0;
