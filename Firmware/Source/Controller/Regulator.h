@@ -7,43 +7,42 @@
 #include "Global.h"
 #include "SysConfig.h"
 
-// Definitions
-//
-#define STEP_BUFFER_SIZE	V_VALUES_x_SIZE
-#define STEP_PERIOD			TIMER15_uS
-
 // Structs
 //
 typedef struct __RegulatorParams
 {
-	Int16U VFormTable[STEP_BUFFER_SIZE];
-	Int16U VSenForm [STEP_BUFFER_SIZE];
-	float VSen;
-	float CSen;
-	float CTrigVSen;
-	float CTrigCSen;
-	Int16U CTrigRegulatorStep;
 	float Kp;
 	float Ki;
-	float RegulatorError;
-	float RegulatorOutput;
-	bool DebugMode;
-	Int16U RegulatorStepCounter;
-	Int16U ConstantVLastStep;
-	Int16U ConstantVFirstStep;
-	Int16U DACOffset;
+	float ErrorMax;
+	float Qimax;
+	Int16U FECounterMax;
 	Int16U DACLimitValue;
+	Int16U DACOffset;
+	bool DebugMode;
+//
+	Int16S Counter;
+	float dVg;
+	float Target;
+	float SampledData;
+//
 	Int16U DACSetpoint;
+	float Error;
+	float Qi;
+	float Qp;
+	float Out;
+	Int16U FECounter;
+	bool FollowingError;
 } RegulatorParamsStruct;
+
+// Variables
+//
+extern volatile RegulatorParamsStruct RegulatorParams;
 
 // Functions
 //
 bool REGULATOR_Process(volatile RegulatorParamsStruct* Regulator);
-void REGULATOR_CashVariables(volatile RegulatorParamsStruct* Regulator);
-void REGULATOR_VGS_FormConfig(volatile RegulatorParamsStruct* Regulator);
-void REGULATOR_VGS_FormUpdate(volatile RegulatorParamsStruct* Regulator);
-void REGULATOR_IGES_FormConfig(volatile RegulatorParamsStruct* Regulator);
-bool REGULATOR_IGES_SyncPAU(volatile RegulatorParamsStruct* Regulator);
+void REGULATOR_CacheVariables(volatile RegulatorParamsStruct* Regulator);
+void REGULATOR_ResetVariables();
 //
 
 #endif /* REGULATOR_H_ */
