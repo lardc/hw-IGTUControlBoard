@@ -4,7 +4,6 @@
 // Include
 //
 #include "stdinc.h"
-#include "Global.h"
 #include "Regulator.h"
 
 // Types
@@ -22,15 +21,29 @@ typedef enum __DeviceState
 typedef enum __DeviceSubState
 {
 	SS_None = 0,
-	SS_VgsPrepare = 1,
-	SS_VgsPulse = 2,
-	SS_VgsSaveResults = 3,
 
-	SS_IgesPulse = 3,
-	SS_IgesWaitAfterPulse = 4,
-	SS_QgWaitAfterPulse = 5,
-	SS_QgPulse = 6
+	SS_VcalPrepare = 1,
+	SS_Vcal,
+
+	SS_VgsPrepare = 10,
+	SS_VgsPulse,
+	SS_VgsSaveResults,
+
+	SS_IgesPrepare = 20,
+	SS_IgesPulse,
+	SS_IgesSaveResults,
+
+	SS_QgPrepare = 30,
+	SS_QgPulse,
+	SS_QgSaveResults
 } DeviceSubState;
+
+typedef enum __CommutationState
+{
+	Current = 0,
+	Voltage = 1
+} CommutationState;
+//
 
 
 // Variables
@@ -45,15 +58,6 @@ extern volatile float CONTROL_CurrentValues[VALUES_x_SIZE];
 extern volatile float CONTROL_RegulatorErrValues[VALUES_x_SIZE];
 extern volatile Int16U CONTROL_RegulatorValues_Counter;
 extern volatile Int16U CONTROL_Values_Counter;
-
-
-
-extern volatile Int16U CONTROL_TimerMaxCounter;
-extern volatile Int64U CONTROL_C_TimeCounter;
-extern Int64U CONTROL_LEDTimeout;
-extern volatile Int16U CONTROL_V_Values_Counter;
-extern volatile Int16U CONTROL_I_Values_Counter;
-extern volatile Int16U CONTROL_V_RegErrValues_Counter;
 //
 
 
@@ -64,18 +68,11 @@ void CONTROL_Idle();
 void CONTROL_SetDeviceState(DeviceState NewState, DeviceSubState NewSubState);
 void CONTROL_ForceStopProcess();
 void CONTROL_HighPriorityProcess();
-void CONTROL_VGS_SaveResults(volatile RegulatorParamsStruct* Regulator);
-void CONTROL_V_StartProcess();
-void CONTROL_V_StopProcess();
-
-
-
-
-void CONTROL_IGES_StartProcess();
-void CONTROL_QG_StartProcess();
-void CONTROL_IGES_SetResults(volatile RegulatorParamsStruct* Regulator);
-void CONTROL_QG_SetResults();
-void CONTROL_C_StopProcess();
-void CONTROL_C_Processing();
+void CONTROL_V_Start();
+void CONTROL_V_Stop();
+void CONTROL_I_Start();
+void CONTROL_I_Stop();
+void CONTROL_SwitchOutMUX(CommutationState Commutation);
+void CONTROL_SwitchToFault(Int16U Reason);
 
 #endif // __CONTROLLER_H
