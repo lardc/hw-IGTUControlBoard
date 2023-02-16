@@ -11,7 +11,7 @@ volatile RegulatorParamsStruct RegulatorParams;
 // Functions prototypes
 //
 void REGULATOR_LoggingData(volatile RegulatorParamsStruct* Regulator);
-Int16U REGULATOR_DACApplyLimits(Int16S Value, Int16U Offset, Int16U LimitValue);
+Int16U REGULATOR_DACApplyLimits(Int16S Value, Int16U LimitValue);
 void REGULATOR_SaveSampleToRingBuffer(volatile RegulatorParamsStruct* Regulator);
 
 // Functions
@@ -45,13 +45,13 @@ bool REGULATOR_Process(volatile RegulatorParamsStruct* Regulator)
 
 	float ValueToDAC = (Regulator->DebugMode) ? Regulator->Target : Regulator->Out;
 
-	Regulator->DACSetpoint = REGULATOR_DACApplyLimits(CU_V_VtoDAC(ValueToDAC), Regulator->DACOffset, Regulator->DACLimitValue);
+	Regulator->DACSetpoint = REGULATOR_DACApplyLimits(CU_V_VtoDAC(ValueToDAC), Regulator->DACLimitValue);
 
 	LL_V_VSetDAC(Regulator->DACSetpoint);
 
 	REGULATOR_LoggingData(Regulator);
 
-	Regulator->Counter++;
+	Regulator->Counter--;
 
 	if(!Regulator->Counter)
 		return true;
@@ -71,19 +71,17 @@ void REGULATOR_SaveSampleToRingBuffer(volatile RegulatorParamsStruct* Regulator)
 }
 //-----------------------------------------------
 
-Int16U REGULATOR_DACApplyLimits(Int16S Value, Int16U Offset, Int16U LimitValue)
+Int16U REGULATOR_DACApplyLimits(Int16S Value, Int16U LimitValue)
 {
-	Int16S Result = (Int16S)Value + Offset;
-
-	if(Result < 0)
-		Result = 0;
+	if(Value < 0)
+		Value = 0;
 	else
 	{
-		if(Result > LimitValue)
-			Result = LimitValue;
+		if(Value > LimitValue)
+			Value = LimitValue;
 	}
 
-	return Result;
+	return Value;
 }
 //-----------------------------------------------
 
@@ -126,7 +124,6 @@ void REGULATOR_CacheCommonVariables(volatile RegulatorParamsStruct* Regulator)
 	Regulator->Qimax = DataTable[REG_REGULATOR_QI_MAX];
 	Regulator->FECounterMax = DataTable[REG_FE_COUNTER_MAX];
 	Regulator->DACLimitValue = DataTable[REG_DAC_OUTPUT_LIMIT_VALUE];
-	Regulator->DACOffset = DataTable[REG_DAC_OFFSET];
 	Regulator->DebugMode = DataTable[REG_REGULATOR_DEBUG];
 }
 //-----------------------------------------------

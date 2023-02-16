@@ -22,7 +22,6 @@ typedef struct __RegulatorParams
 	float Qimax;
 	Int16U FECounterMax;
 	Int16U DACLimitValue;
-	Int16U DACOffset;
 	bool DebugMode;
 //
 	Int16S Counter;
