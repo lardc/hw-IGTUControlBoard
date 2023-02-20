@@ -65,6 +65,10 @@ bool DIAG_HandleDiagnosticAction(uint16_t ActionID, uint16_t *pUserError)
 			DBGACT_C_TestPulse();
 			break;
 
+		case ACT_DBG_SWITCH_TO_DIAG:
+			DBGACT_SwitchToDIAG();
+			break;
+
 		default:
 			return false;
 	}
