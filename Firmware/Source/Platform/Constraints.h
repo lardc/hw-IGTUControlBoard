@@ -10,10 +10,91 @@
 #define NO		0
 #define YES		1
 //
-
+#define V_ADC_TO_V_K_DEF			0.008409
+#define V_ADC_TO_V_B_DEF			0.166985
+#define V_V_TO_DAC_K_DEF			123.072
+#define V_V_TO_DAC_B_DEF			7.385
+#define V_ADC_TO_I_R0_K_DEF			6.472063e-003
+#define V_ADC_TO_I_R0_B_DEF			3.707259e-002
+#define V_ADC_TO_I_R1_K_DEF			5.937186e-002
+#define V_ADC_TO_I_R1_B_DEF			1.861462e-001
+//
+#define COEF_P2_MIN					INT16S_MIN
+#define COEF_P2_MAX					INT16S_MAX
+#define COEF_P2_DEF					0
+//
+#define COEF_P1_MIN					INT16S_MIN
+#define COEF_P1_MAX					INT16S_MAX
+#define COEF_P1_DEF					1
+//
+#define COEF_P0_MIN					INT16S_MIN
+#define COEF_P0_MAX					INT16S_MAX
+#define COEF_P0_DEF					0
+//
+#define COEF_K_MIN					INT16S_MIN
+#define COEF_K_MAX					INT16S_MAX
+//
+#define COEF_B_MIN					INT16S_MIN
+#define COEF_B_MAX					INT16S_MAX
+//
+#define REGULATOR_KP_MIN			INT16S_MIN
+#define REGULATOR_KP_MAX			INT16S_MAX
+#define REGULATOR_KP_DEF			0.01
+//
+#define REGULATOR_KI_MIN			INT16S_MIN
+#define REGULATOR_KI_MAX			INT16S_MAX
+#define REGULATOR_KI_DEF			0.3
+//
+#define REGULATOR_QI_MAX_DEF		30000
+//
+#define REGULATOR_ERR_MIN			1
+#define REGULATOR_ERR_MAX			10
+#define REGULATOR_ERR_DEF			5
+//
+#define REGULATOR_FE_CNT_MIN		0
+#define REGULATOR_FE_CNT_MAX		10
+#define REGULATOR_FE_CNT_DEF		5
+//
 #define DAC_OUTPUT_LIM_MIN			0
 #define DAC_OUTPUT_LIM_MAX			4095
 #define DAC_OUTPUT_LIM_DEF			4095
+//
+#define VGS_PLATE_MIN				0
+#define VGS_PLATE_MAX				5000		// мкс
+#define VGS_PLATE_DEF				0
+
+#define VGS_RATE_MIN				0.1			// мВ/мкс
+#define VGS_RATE_MAX				10
+#define VGS_RATE_DEF				1
+
+#define VGS_dI_TRIG_MIN				1			// %
+#define VGS_dI_TRIG_MAX				10			// %
+#define VGS_dI_TRIG_DEF				5			// %
+//
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //
 #define DAC_OFFSET_MIN				0
 #define DAC_OFFSET_MAX				4095
@@ -24,20 +105,8 @@
 #define PAU_CAN_ID_DEF				101
 #define TOCUHP_CAN_ID_DEF			102
 //
-#define COEF_P0_MIN					INT16S_MIN
-#define COEF_P0_MAX					INT16S_MAX
-#define COEF_P0_DEF					0
+
 //
-#define COEF_P1_MIN					1
-#define COEF_P1_MAX					INT16U_MAX
-#define COEF_P1_DEF					1000
-//
-#define COEF_P2_MIN					INT16S_MIN
-#define COEF_P2_MAX					INT16S_MAX
-#define COEF_P2_DEF					0
-//
-#define COEF_K_MIN					0
-#define COEF_K_MAX					INT16U_MAX
 #define COEF_C_C_SEN_K_DEF			0.122		// [мА / код]
 #define COEF_V_C_SEN_K_DEF			0.141		// [мА / код]
 #define COEF_V_V_SEN_K_DEF			7.324		// [мВ / код]
@@ -52,13 +121,7 @@
 #define OFFSET_MAX					INT16U_MAX
 #define OFFSET_DEF					0
 //
-#define REGULATOR_KP_MIN			0
-#define REGULATOR_KP_MAX			INT16U_MAX
-#define REGULATOR_KP_DEF			0.001
-//
-#define REGULATOR_KI_MIN			0
-#define REGULATOR_KI_MAX			INT16U_MAX
-#define REGULATOR_KI_DEF			0
+
 //
 #define PAU_SNC_DELAY_DEF			5
 //
