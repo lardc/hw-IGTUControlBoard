@@ -8,6 +8,8 @@
 // Definitions
 //
 #define MEASURE_BUFFERS_SIZE		ADC_DMA_BUFF_SIZE_QG
+//
+#define MEASURE_IGES_MAX			0.3	// мА
 
 // Types
 //
@@ -27,5 +29,7 @@ extern volatile Int16U MEASURE_Qg_DataRaw[ADC_DMA_BUFF_SIZE_QG];
 //
 MeasureSample MEASURE_SampleVgsIges();
 float MEASURE_ExtractAveragedDatas(float* Buffer, Int16U BufferLength);
+void MEASURE_ResetDMABuffers();
+void MEASURE_V_SetCurrentRange(float Current);
 
 #endif /* MEASUREMENT_H_ */
