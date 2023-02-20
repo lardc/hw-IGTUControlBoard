@@ -20,7 +20,7 @@ bool REGULATOR_Process(volatile RegulatorParamsStruct* Regulator)
 {
 	Regulator->Error = (Regulator->Counter == 0) ? 0 : (Regulator->Target - Regulator->SampledData);
 
-	if(Regulator->Error > Regulator->ErrorMax)
+	if(!Regulator->DebugMode && Regulator->Error > Regulator->ErrorMax)
 	{
 		Regulator->FECounter++;
 
@@ -99,8 +99,8 @@ void REGULATOR_LoggingData(volatile RegulatorParamsStruct* Regulator)
 	{
 		ScopeLogStep = 0;
 
-		CONTROL_RegulatorOutputValues[LocalCounter] = Regulator->Target;
-		CONTROL_RegulatorErrValues[LocalCounter] = (Int16S)(Regulator->Error);
+		CONTROL_RegulatorOutputValues[LocalCounter] = Regulator->Out;
+		CONTROL_RegulatorErrValues[LocalCounter] = Regulator->Error;
 		CONTROL_RegulatorValues_Counter = LocalCounter;
 
 		LocalCounter++;
@@ -122,16 +122,10 @@ void REGULATOR_CacheCommonVariables(volatile RegulatorParamsStruct* Regulator)
 	Regulator->Ki = DataTable[REG_REGULATOR_Ki];
 	Regulator->ErrorMax = DataTable[REG_REGULATOR_ERR_MAX];
 	Regulator->Qimax = DataTable[REG_REGULATOR_QI_MAX];
-	Regulator->FECounterMax = DataTable[REG_FE_COUNTER_MAX];
+	Regulator->FECounterMax = DataTable[REG_REGULATOR_FE_COUNTER];
 	Regulator->DACLimitValue = DataTable[REG_DAC_OUTPUT_LIMIT_VALUE];
 	Regulator->DebugMode = DataTable[REG_REGULATOR_DEBUG];
-}
-//-----------------------------------------------
-
-void REGULATOR_CacheVgsVariables(volatile RegulatorParamsStruct* Regulator)
-{
-	Regulator->dVg = DataTable[REG_VGS_FAST_RATE];
-	Regulator->Counter = DataTable[REG_VGS_V_MAX] / (DataTable[REG_VGS_FAST_RATE] + DataTable[REG_VGS_SLOW_RATE]) / TIMER15_uS;
+	Regulator->DACLimitValue = DataTable[REG_DAC_OUTPUT_LIMIT_VALUE];
 }
 //-----------------------------------------------
 

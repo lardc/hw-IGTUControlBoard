@@ -47,7 +47,6 @@ extern volatile RegulatorParamsStruct RegulatorParams;
 //
 bool REGULATOR_Process(volatile RegulatorParamsStruct* Regulator);
 void REGULATOR_CacheCommonVariables(volatile RegulatorParamsStruct* Regulator);
-void REGULATOR_CacheVgsVariables(volatile RegulatorParamsStruct* Regulator);
 void REGULATOR_ResetVariables(volatile RegulatorParamsStruct* Regulator);
 //
 
