@@ -20,5 +20,6 @@ void DBGACT_V_TestClimHigh();
 void DBGACT_C_VCutoffSet();
 void DBGACT_C_VNegativeSet();
 void DBGACT_C_TestPulse();
+void DBGACT_SwitchToDIAG();
 
 #endif //__DEBUGACTIONS_H

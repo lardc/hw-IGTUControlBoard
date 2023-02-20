@@ -11,6 +11,7 @@
 #include "Controller.h"
 #include "Delay.h"
 #include "ConvertUtils.h"
+#include "Measurement.h"
 
 // Definitions
 //
@@ -89,6 +90,7 @@ void DBGACT_V_TestClimLow()
 	LL_V_ShortPAU(true);
 	LL_V_ShortOut(false);
 	LL_V_Diagnostic(false);
+	MEASURE_V_SetCurrentRange(0);
 	LL_V_CLimitLowRange();
 
 	LL_V_VSetDAC(DBG_DAC_TEST_VALUE);
@@ -105,12 +107,10 @@ void DBGACT_V_TestClimHigh()
 	LL_V_ShortPAU(true);
 	LL_V_ShortOut(false);
 	LL_V_Diagnostic(false);
-	LL_V_CoefCSensLowRange();
+	MEASURE_V_SetCurrentRange(DataTable[REG_V_I_SENS_THRESHOLD]);
 	LL_V_CLimitHighRange();
 
 	LL_V_VSetDAC(DBG_DAC_TEST_VALUE);
-	DELAY_US(1000);
-	LL_V_CoefCSensHighRange();
 	DELAY_US(1000);
 	LL_V_VSetDAC(0);
 }
@@ -125,6 +125,13 @@ void DBGACT_C_VCutoffSet()
 void DBGACT_C_VNegativeSet()
 {
 	LL_ExDACVNegative(DataTable[REG_DBG]);
+}
+//-----------------------------
+
+void DBGACT_SwitchToDIAG()
+{
+	LL_V_Diagnostic(DataTable[REG_DBG]);
+	LL_C_Diagnostic(DataTable[REG_DBG]);
 }
 //-----------------------------
 
