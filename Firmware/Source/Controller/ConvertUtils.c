@@ -3,7 +3,7 @@
 #include "ConvertUtils.h"
 #include "LowLevel.h"
 #include "DataTable.h"
-#include "Global.h"
+#include "Measurement.h"
 
 // Variables
 ConvertParams V_ADCtoVParams;

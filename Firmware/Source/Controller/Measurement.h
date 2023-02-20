@@ -7,9 +7,9 @@
 
 // Definitions
 //
-#define MEASURE_BUFFERS_SIZE		ADC_DMA_BUFF_SIZE_QG
+#define MEASURE_BUFFERS_SIZE			ADC_DMA_BUFF_SIZE_QG
 //
-#define MEASURE_IGES_MAX			0.3	// мА
+#define MEASURE_V_I_RANGES				2		// Количество диапазонов измерения тока в источнике напряжения
 
 // Types
 //
