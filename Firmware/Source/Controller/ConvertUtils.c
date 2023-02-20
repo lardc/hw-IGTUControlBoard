@@ -7,7 +7,7 @@
 
 // Variables
 ConvertParams V_ADCtoVParams;
-ConvertParams V_ADCtoIParams;
+ConvertParams V_ADCtoIParams[MEASURE_V_I_RANGES];
 ConvertParams V_VtoDACParams;
 //
 ConvertParams I_ItoDACParams;
@@ -52,9 +52,9 @@ float CU_V_ADCtoV(Int16U Data)
 }
 //-----------------------------
 
-float CU_V_ADCtoI(Int16U Data)
+float CU_V_ADCtoI(Int16U Data, Int16U CurrentRange)
 {
-	return CU_ADCtoX(&V_ADCtoIParams, Data);
+	return CU_ADCtoX(&V_ADCtoIParams[CurrentRange], Data);
 }
 //-----------------------------
 
@@ -73,7 +73,7 @@ float CU_I_ADCtoV(Int16U Data)
 Int16U CU_XtoDAC(ConvertParams *Params, float Value)
 {
 	float Result = Value * Value * Params->P2 + Value * Params->P1 + Params->P0;
-	return (Int16U)(Result + Params->B) * Params->K;
+	return (Int16U)(Result * Params->K + Params->B);
 }
 //-----------------------------
 
@@ -97,7 +97,8 @@ void CU_LoadSingleParams(ConvertParams* Params, Int16U RegB, Int16U RegK, Int16U
 void CU_LoadConvertParams()
 {
 	CU_LoadSingleParams(&V_ADCtoVParams, REG_V_ADC_TO_V_B, REG_V_ADC_TO_V_K, REG_V_ADC_TO_V_P0, REG_V_ADC_TO_V_P1, REG_V_ADC_TO_V_P2);
-	CU_LoadSingleParams(&V_ADCtoIParams, REG_V_ADC_TO_I_B, REG_V_ADC_TO_I_K, REG_V_ADC_TO_I_P0, REG_V_ADC_TO_I_P1, REG_V_ADC_TO_I_P2);
+	CU_LoadSingleParams(&V_ADCtoIParams[0], REG_V_ADC_TO_I_R0_B, REG_V_ADC_TO_I_R0_K, REG_V_ADC_TO_I_R0_P0, REG_V_ADC_TO_I_R0_P1, REG_V_ADC_TO_I_R0_P2);
+	CU_LoadSingleParams(&V_ADCtoIParams[1], REG_V_ADC_TO_I_R1_B, REG_V_ADC_TO_I_R1_K, REG_V_ADC_TO_I_R1_P0, REG_V_ADC_TO_I_R1_P1, REG_V_ADC_TO_I_R1_P2);
 	CU_LoadSingleParams(&V_VtoDACParams, REG_V_V_TO_DAC_B, REG_V_V_TO_DAC_K, REG_V_V_TO_DAC_P0, REG_V_V_TO_DAC_P1, REG_V_V_TO_DAC_P2);
 	CU_LoadSingleParams(&I_ItoDACParams, REG_I_I_TO_DAC_B, REG_I_I_TO_DAC_K, REG_I_I_TO_DAC_P0, REG_I_I_TO_DAC_P1, REG_I_I_TO_DAC_P2);
 	CU_LoadSingleParams(&I_VCutoffToDACParams, REG_I_VC_TO_DAC_B, REG_I_VC_TO_DAC_K, REG_I_VC_TO_DAC_P0, REG_I_VC_TO_DAC_P1, REG_I_VC_TO_DAC_P2);
