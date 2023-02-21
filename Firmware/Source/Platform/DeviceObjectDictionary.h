@@ -27,13 +27,9 @@
 #define ACT_DBG_SWITCH_TO_DIAG			65	// Тест переключения в режим самодиагностики
 
 // Команды для калибровки
-#define ACT_CAL_V						70
-#define ACT_CAL_I						71
+#define ACT_CAL_V						70	// Калибровка источника напряжения
+#define ACT_CAL_I						71	// Калибровка источника тока
 
-// Команды самодиагностики
-#define ACT_DIAG_V						90	// Старт диагностики источника напряжения
-#define ACT_DIAG_C						91	// Старт диагностики источника тока
-//
 // Команды измерений
 #define ACT_VGS_START					100	// Старт измерения порогового напряжения затвора
 #define ACT_QG_START					101	// Старт измерения заряда затвора
@@ -109,50 +105,48 @@
 #define REG_REGULATOR_ERR_MAX			48	// Уровень ошибки регулятора для Following Error (%)
 #define REG_REGULATOR_FE_COUNTER		49	// Счетчик Following Error
 #define REG_REGULATOR_DEBUG				50	// Режим отладки регулятора (1 = параметрическое формирование, 0 = ПИ регулятор)
-
-
+//
 #define REG_DAC_OUTPUT_LIMIT_VALUE		51	// Ограничение выхода ЦАП (0 - 4095)
-
 #define REG_SCOPE_STEP					52	// Шаг сохранения оцифрованных значений
 #define REG_V_I_SENS_THRESHOLD			53	// Порог переключения диапазонов измерения тока
-#define REG_PAU_CAN_ID					54	// CAN ID PAU
-#define REG_TOCUHP_CAN_ID				55	// CAN ID TOCUHP
-
-#define REG_PAU_SNC_DELAY				56	// Задержка синхронизации PAU с момента выхода на полку импульса [мс]
-#define REG_PAU_EMULATED				57	// Эмуляция работы PAU
-#define REG_TOCUHP_EMULATED				58	// Эмуляция работы TOCUHP
-#define REG_TOCUHP_RES_PER_BIT			59	// Сопротивление одного бита блока TOCU [Ом]
-#define REG_MUTE_SAFETY_MONITOR			60	// Отключение проверки контакта безопасности
-
-
-
+#define REG_MUTE_SAFETY					54	// Отключение проверки контакта безопасности
+//
+#define REG_PAU_CAN_ID					55	// CAN ID PAU
+#define REG_PAU_EMULATED				56	// Эмуляция работы PAU
+//
+#define REG_TOCUHP_CAN_ID				60	// CAN ID TOCUHP
+#define REG_TOCUHP_EMULATED				61	// Эмуляция работы TOCUHP
+#define REG_TOCUHP_RES_PER_BIT			62	// Сопротивление одного бита блока TOCU [Ом]
 //
 #define REG_VGS_PULSE_PLATE				70	// Длительность полки напряжения Vgs (мкс)
 #define REG_VGS_FAST_RATE				71	// Скорость нарастания напряжения Vg (мВ/мкс)
 #define REG_VGS_SLOW_RATE				72	// Скорость нарастания напряжения Vg (мВ/мкс)
 #define REG_VGS_dI_TRIG					73	// (%)
 //
+#define REG_IGES_V_RATE					75	// Скорость нарастания напряжения, [В/мкс]
+#define REG_IGES_PLATE_TIME				76	// Длительность полки напряжения, [мс]
+//
+
+
 // Несохраняемые регистры чтения-записи
 //
 // Регистры измерения VGS
 #define REG_VGS_I_TRIG					128	// Задание триггера тока [мА]
 #define	REG_VGS_V_MAX					129	// Макс значение напряжения [мВ]
+
 // Регистры измерения QG
 #define REG_QG_V_CUTOFF					135	// Ограничение напряжения затвора [мВ]
 #define REG_QG_V_NEGATIVE				136	// Отрицательное напряжение, приложенное к затвору [мВ]
-#define REG_QG_C_SET					137	// Ток затвора [мА]
+#define REG_QG_I_SET					137	// Ток затвора [мА]
 #define REG_QG_T_CURRENT				138	// Длительность тока затвора [мкс]
-#define REG_QG_C_POWER					139	// Силовой ток коллектор-эммитер (сток-исток) [А]
+#define REG_QG_I_POWER					139	// Силовой ток коллектор-эммитер (сток-исток) [А]
 #define REG_QG_V_POWER					140	// Напряжение коллектор-эммитер (сток-исток) [В]
-#define REG_QG_C_THRESHOLD				141	// Порог срабатывания триггера тока (в % от REG_QG_C_SET) [%]
+#define REG_QG_I_THRESHOLD				141	// Порог срабатывания триггера тока (в % от REG_QG_C_SET) [%]
+
 // Регистры измерения IGES
 #define REG_IGES_V						145	// Полка напряжения на затворе [мВ]
-#define REG_IGES_T_V_CONSTANT			146	// Длительность полки напряжения [мс]
-#define REG_IGES_T_V_FRONT				147	// Длительность фронта напряжения [мс]
 //
 #define REG_DBG							150	// Регистр режима Отладки
-#define REG_REGULATOR_LOGGING			151	// Логгирование работы регулятора
-#define REG_DIAG_RESULT					153	// Регистр результата самодиагностики
 //
 #define REG_CAL_V						160	// Задание напряжения при калибровке, мВ
 #define REG_CAL_I						161	// Задание тока при калибровке, мА
@@ -165,7 +159,7 @@
 #define REG_PROBLEM						196	// Регистр Problem
 #define REG_OP_RESULT					197	// Регистр результата операции
 #define REG_SUB_STATE					198	// Регистр вспомогательного состояния
-
+//
 #define REG_SAFETY_STATE				199	// Регистр состояния контакта безопасности
 
 // Результаты измерения
@@ -237,20 +231,22 @@
 //  Fault and disable codes
 #define DF_NONE							0
 #define DF_FOLLOWING_ERROR				1
-#define DF_NEGATIVE_CURRENT				2
-#define DF_PAU_INTERFACE				3
-#define DF_TOCUHP_REQUEST_ERROR			4
+#define DF_PAU_INTERFACE				2
+#define DF_PAU_FAULT					3
+#define DF_TOCUHP_INTERFACE				4
 #define DF_TOCUHP_FAULT					5
 
 // Problem
 #define PROBLEM_NONE					0
 #define PROBLEM_FORCED_STOP				1
 #define PROBLEM_SAFETY_VIOLATION		2
-#define PROBLEM_CURRENT_NOT_REACHED		3
+#define PROBLEM_VGS_CURRENT_NOT_REACHED	3
 #define PROBLEM_GATE_SHORT				4
 
 //  Warning
 #define WARNING_NONE					0
+#define WARNING_IGES_TOO_LOW			1
+#define WARNING_IGES_TOO_HIGH			2
 
 //  User Errors
 #define ERR_NONE						0

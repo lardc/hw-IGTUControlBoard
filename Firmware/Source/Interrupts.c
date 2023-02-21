@@ -69,7 +69,7 @@ void EXTI2_TSC_IRQHandler()
 
 void EXTI15_10_IRQHandler()
 {
-	if(CONTROL_State == DS_InProcess && !DataTable[REG_MUTE_SAFETY_MONITOR])
+	if(CONTROL_State == DS_InProcess && !DataTable[REG_MUTE_SAFETY])
 	{
 		CONTROL_StopHighPriorityProcesses();
 

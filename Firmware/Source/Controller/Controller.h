@@ -32,6 +32,7 @@ typedef enum __DeviceSubState
 
 	SS_IgesPrepare = 20,
 	SS_IgesProcess,
+	SS_IgesSaveResult,
 
 	SS_QgPrepare = 30,
 	SS_QgProcess

@@ -134,7 +134,7 @@ void CAL_V_CalProcess()
 			DataTable[REG_CAL_V_RESULT] = 0;
 			DataTable[REG_CAL_I_RESULT] = 0;
 
-			if(CalSampledData.Current > MEASURE_CURRENT_MAX)
+			if(CalSampledData.Current > MEASURE_VGS_CURRENT_MAX)
 			{
 				DataTable[REG_PROBLEM] = PROBLEM_GATE_SHORT;
 				CONTROL_SetDeviceState(DS_Ready, SS_None);

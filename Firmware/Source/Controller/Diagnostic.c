@@ -75,22 +75,3 @@ bool DIAG_HandleDiagnosticAction(uint16_t ActionID, uint16_t *pUserError)
 
 	return true;
 }
-
-void DIAG_V_SelfTestFinished()
-{
-	LL_V_Diagnostic(false);
-	if((DataTable[REG_VGS] > DIAG_VGS_THRESHOLD_MIN) && (DataTable[REG_VGS] < DIAG_VGS_THRESHOLD_MAX))
-		DataTable[REG_DIAG_RESULT] = DIAG_SUCCESS;
-	else
-		DataTable[REG_DIAG_RESULT] = DIAG_FAULT;
-}
-
-void DIAG_C_SelfTestFinished()
-{
-	LL_I_Diagnostic(false);
-	if((DataTable[REG_QG] > DIAG_QG_THRESHOLD_MIN) && (DataTable[REG_QG] < DIAG_QG_THRESHOLD_MAX))
-		DataTable[REG_DIAG_RESULT] = DIAG_SUCCESS;
-	else
-		DataTable[REG_DIAG_RESULT] = DIAG_FAULT;
-}
-

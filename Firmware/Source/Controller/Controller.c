@@ -9,6 +9,7 @@
 #include "Delay.h"
 #include "Calibration.h"
 #include "Vgs.h"
+#include "Iges.h"
 
 
 // Variables
@@ -247,6 +248,7 @@ void CONTROL_LogicProcess()
 			break;
 
 		case SS_IgesPrepare:
+			IGES_Prepare();
 			break;
 
 		case SS_QgPrepare:
@@ -290,6 +292,17 @@ void CONTROL_HighPriorityProcess()
 
 		case SS_VgsProcess:
 			VGS_Process();
+			break;
+
+		case SS_IgesProcess:
+			IGES_Process();
+			break;
+
+		case SS_IgesSaveResult:
+			IGES_SaveResults();
+			break;
+
+		case SS_QgProcess:
 			break;
 
 		default:
