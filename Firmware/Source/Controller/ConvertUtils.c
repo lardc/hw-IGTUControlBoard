@@ -24,25 +24,25 @@ float CU_ADCtoX(ConvertParams *Params, Int16U Data);
 //
 Int16U CU_I_VcutoffToDAC(float Value)
 {
-	return CU_XtoDAC(&I_VCutoffToDACParams, Value);
+	return (Value) ? CU_XtoDAC(&I_VCutoffToDACParams, Value) : 0;
 }
 //-----------------------------
 
 Int16U CU_I_VnegativeToDAC(float Value)
 {
-	return CU_XtoDAC(&I_VnegativeToDACParams, Value);
+	return (Value) ? CU_XtoDAC(&I_VnegativeToDACParams, Value) : 0;
 }
 //-----------------------------
 
 Int16U CU_V_VtoDAC(float Value)
 {
-	return CU_XtoDAC(&V_VtoDACParams, Value);
+	return (Value) ? CU_XtoDAC(&V_VtoDACParams, Value) : 0;
 }
 //-----------------------------
 
 Int16U CU_I_ItoDAC(float Value)
 {
-	return CU_XtoDAC(&I_ItoDACParams, Value);
+	return (Value) ? CU_XtoDAC(&I_ItoDACParams, Value) : 0;
 }
 //-----------------------------
 
