@@ -74,7 +74,7 @@ void DBGACT_V_VSet()
 	CU_LoadConvertParams();
 
 	LL_OutMultiplexVoltage();
-	LL_V_CLimitLowRange();
+	LL_V_IlimLowRange();
 	LL_V_ShortPAU(true);
 	LL_V_ShortOut(false);
 	LL_V_Diagnostic(false);
@@ -91,7 +91,7 @@ void DBGACT_V_TestClimLow()
 	LL_V_ShortOut(false);
 	LL_V_Diagnostic(false);
 	MEASURE_V_SetCurrentRange(0);
-	LL_V_CLimitLowRange();
+	LL_V_IlimLowRange();
 
 	LL_V_VSetDAC(DBG_DAC_TEST_VALUE);
 	DELAY_US(1000);
@@ -108,7 +108,7 @@ void DBGACT_V_TestClimHigh()
 	LL_V_ShortOut(false);
 	LL_V_Diagnostic(false);
 	MEASURE_V_SetCurrentRange(DataTable[REG_V_I_SENS_THRESHOLD]);
-	LL_V_CLimitHighRange();
+	LL_V_IlimHighRange();
 
 	LL_V_VSetDAC(DBG_DAC_TEST_VALUE);
 	DELAY_US(1000);
@@ -131,28 +131,28 @@ void DBGACT_C_VNegativeSet()
 void DBGACT_SwitchToDIAG()
 {
 	LL_V_Diagnostic(DataTable[REG_DBG]);
-	LL_C_Diagnostic(DataTable[REG_DBG]);
+	LL_I_Diagnostic(DataTable[REG_DBG]);
 }
 //-----------------------------
 
 void DBGACT_C_TestPulse()
 {
 	LL_OutMultiplexCurrent();
-	LL_C_Diagnostic(false);
+	LL_I_Diagnostic(false);
 	LL_ExDACVNegative(0);
-	LL_C_CEnable(true);
+	LL_I_Enable(true);
 	LL_ExDACVCutoff(DBG_DAC_TEST_VALUE);
 	DELAY_MS(20);
 
-	LL_C_CSetDAC(DataTable[REG_DBG]);
+	LL_I_SetDAC(DataTable[REG_DBG]);
 	DELAY_US(10);
 
-	LL_C_CStart(false);
+	LL_I_Start(false);
 	DELAY_US(20);
-	LL_C_CStart(true);
+	LL_I_Start(true);
 
-	LL_C_CEnable(false);
-	LL_C_CSetDAC(0);
+	LL_I_Enable(false);
+	LL_I_SetDAC(0);
 	LL_ExDACVCutoff(0);
 }
 //-----------------------------

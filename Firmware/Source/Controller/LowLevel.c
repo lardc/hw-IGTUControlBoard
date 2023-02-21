@@ -75,7 +75,7 @@ void LL_V_VSetDAC(Int16U Data)
 }
 //-----------------------------
 
-void LL_V_CsenseSetRange(bool Range)
+void LL_V_IsenseSetRange(bool Range)
 {
 	if(Range)
 	{
@@ -90,14 +90,14 @@ void LL_V_CsenseSetRange(bool Range)
 }
 //-----------------------------
 
-void LL_V_CLimitLowRange()
+void LL_V_IlimLowRange()
 {
 	GPIO_SetState(GPIO_V_LOW_CURRENT, false);
 	GPIO_SetState(GPIO_V_HIGH_CURRENT, true);
 }
 //-----------------------------
 
-void LL_V_CLimitHighRange()
+void LL_V_IlimHighRange()
 {
 	GPIO_SetState(GPIO_V_HIGH_CURRENT, false);
 	GPIO_SetState(GPIO_V_LOW_CURRENT, true);
@@ -111,25 +111,25 @@ void LL_V_Diagnostic(bool State)
 //-----------------------------
 
 // C source
-void LL_C_CStart(bool State)
+void LL_I_Start(bool State)
 {
 	GPIO_SetState(GPIO_C_C_START, State);
 }
 //-----------------------------
 
-void LL_C_CEnable(bool State)
+void LL_I_Enable(bool State)
 {
 	GPIO_SetState(GPIO_C_ENABLE, State);
 }
 //-----------------------------
 
-void LL_C_CSetDAC(Int16U Data)
+void LL_I_SetDAC(Int16U Data)
 {
 	DAC_SetValueCh1(DAC1, Data);
 }
 //-----------------------------
 
-void LL_C_Diagnostic(bool State)
+void LL_I_Diagnostic(bool State)
 {
 	GPIO_SetState(GPIO_C_DIAG_CTRL, State);
 }

@@ -87,7 +87,7 @@ void DIAG_V_SelfTestFinished()
 
 void DIAG_C_SelfTestFinished()
 {
-	LL_C_Diagnostic(false);
+	LL_I_Diagnostic(false);
 	if((DataTable[REG_QG] > DIAG_QG_THRESHOLD_MIN) && (DataTable[REG_QG] < DIAG_QG_THRESHOLD_MAX))
 		DataTable[REG_DIAG_RESULT] = DIAG_SUCCESS;
 	else
