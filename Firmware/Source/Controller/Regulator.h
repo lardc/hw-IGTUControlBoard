@@ -41,13 +41,13 @@ typedef struct __RegulatorParams
 
 // Variables
 //
-extern volatile RegulatorParamsStruct RegulatorParams;
+extern RegulatorParamsStruct RegulatorParams;
 
 // Functions
 //
-bool REGULATOR_Process(volatile RegulatorParamsStruct* Regulator);
-void REGULATOR_CacheCommonVariables(volatile RegulatorParamsStruct* Regulator);
-void REGULATOR_ResetVariables(volatile RegulatorParamsStruct* Regulator);
+bool REGULATOR_Process(RegulatorParamsStruct* Regulator);
+void REGULATOR_CacheVariables(RegulatorParamsStruct* Regulator);
+void REGULATOR_ResetVariables(RegulatorParamsStruct* Regulator);
 //
 
 #endif /* REGULATOR_H_ */

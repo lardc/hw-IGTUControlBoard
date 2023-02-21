@@ -1,22 +1,27 @@
 ﻿// Header
 //
 #include "Regulator.h"
+
+// Includes
+//
 #include "DataTable.h"
 #include "LowLevel.h"
 #include "ConvertUtils.h"
+#include "Logging.h"
 
 // Variables
-volatile RegulatorParamsStruct RegulatorParams;
+//
+RegulatorParamsStruct RegulatorParams;
+LogParamsStruct RegulatorLog;
+
 
 // Functions prototypes
 //
-void REGULATOR_LoggingData(volatile RegulatorParamsStruct* Regulator);
 Int16U REGULATOR_DACApplyLimits(Int16S Value, Int16U LimitValue);
-void REGULATOR_SaveSampleToRingBuffer(volatile RegulatorParamsStruct* Regulator);
 
 // Functions
 //
-bool REGULATOR_Process(volatile RegulatorParamsStruct* Regulator)
+bool REGULATOR_Process(RegulatorParamsStruct* Regulator)
 {
 	Regulator->Error = (Regulator->Counter == 0) ? 0 : (Regulator->Target - Regulator->SampledData);
 
@@ -49,7 +54,7 @@ bool REGULATOR_Process(volatile RegulatorParamsStruct* Regulator)
 
 	LL_V_VSetDAC(Regulator->DACSetpoint);
 
-	REGULATOR_LoggingData(Regulator);
+	LOG_LoggingData(&RegulatorLog);
 
 	Regulator->Counter--;
 
@@ -57,17 +62,6 @@ bool REGULATOR_Process(volatile RegulatorParamsStruct* Regulator)
 		return true;
 	else
 		return false;
-}
-//-----------------------------------------------
-
-void REGULATOR_SaveSampleToRingBuffer(volatile RegulatorParamsStruct* Regulator)
-{
-	static Int16U RingCounter = 0;
-
-	RingCounter++;
-	RingCounter &= RING_COUNTER_MASK;
-
-	Regulator->RingBuffer[RingCounter] = Regulator->SampledData;
 }
 //-----------------------------------------------
 
@@ -85,38 +79,7 @@ Int16U REGULATOR_DACApplyLimits(Int16S Value, Int16U LimitValue)
 }
 //-----------------------------------------------
 
-void REGULATOR_LoggingData(volatile RegulatorParamsStruct* Regulator)
-{
-	static Int16U ScopeLogStep = 0, LocalCounter = 0;
-
-	REGULATOR_SaveSampleToRingBuffer(Regulator);
-
-	// Сброс локального счетчика в начале логгирования
-	if(CONTROL_RegulatorValues_Counter == 0)
-		LocalCounter = 0;
-
-	if(ScopeLogStep++ >= DataTable[REG_SCOPE_STEP])
-	{
-		ScopeLogStep = 0;
-
-		CONTROL_RegulatorOutputValues[LocalCounter] = Regulator->Out;
-		CONTROL_RegulatorErrValues[LocalCounter] = Regulator->Error;
-		CONTROL_RegulatorValues_Counter = LocalCounter;
-
-		LocalCounter++;
-	}
-
-	// Условие обновления глобального счетчика данных
-	if(CONTROL_RegulatorValues_Counter < VALUES_x_SIZE)
-		CONTROL_RegulatorValues_Counter = LocalCounter;
-
-	// Сброс локального счетчика
-	if(LocalCounter >= VALUES_x_SIZE)
-		LocalCounter = 0;
-}
-//-----------------------------------------------
-
-void REGULATOR_CacheCommonVariables(volatile RegulatorParamsStruct* Regulator)
+void REGULATOR_CacheVariables(RegulatorParamsStruct* Regulator)
 {
 	Regulator->Kp = DataTable[REG_REGULATOR_Kp];
 	Regulator->Ki = DataTable[REG_REGULATOR_Ki];
@@ -126,10 +89,16 @@ void REGULATOR_CacheCommonVariables(volatile RegulatorParamsStruct* Regulator)
 	Regulator->DACLimitValue = DataTable[REG_DAC_OUTPUT_LIMIT_VALUE];
 	Regulator->DebugMode = DataTable[REG_REGULATOR_DEBUG];
 	Regulator->DACLimitValue = DataTable[REG_DAC_OUTPUT_LIMIT_VALUE];
+
+	RegulatorLog.DataA = &Regulator->Out;
+	RegulatorLog.DataB = &Regulator->Error;
+	RegulatorLog.LogBufferA = &CONTROL_RegulatorOutputValues[0];
+	RegulatorLog.LogBufferB = &CONTROL_RegulatorErrValues[0];
+	RegulatorLog.LogBufferCounter = &CONTROL_RegulatorValues_Counter;
 }
 //-----------------------------------------------
 
-void REGULATOR_ResetVariables(volatile RegulatorParamsStruct* Regulator)
+void REGULATOR_ResetVariables(RegulatorParamsStruct* Regulator)
 {
 	Regulator->Target = 0;
 	Regulator->SampledData = 0;

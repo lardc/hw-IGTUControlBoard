@@ -17,13 +17,13 @@ volatile DeviceSubState CONTROL_SubState = SS_None;
 volatile Int64U CONTROL_TimeCounter = 0;
 static Boolean CycleActive = false;
 //
-volatile float CONTROL_RegulatorOutputValues[VALUES_x_SIZE];
-volatile float CONTROL_RegulatorErrValues[VALUES_x_SIZE];
-volatile float CONTROL_VoltageValues[VALUES_x_SIZE];
-volatile float CONTROL_CurrentValues[VALUES_x_SIZE];
+float CONTROL_RegulatorOutputValues[VALUES_x_SIZE];
+float CONTROL_RegulatorErrValues[VALUES_x_SIZE];
+float CONTROL_VoltageValues[VALUES_x_SIZE];
+float CONTROL_CurrentValues[VALUES_x_SIZE];
 //
-volatile Int16U CONTROL_RegulatorValues_Counter = 0;
-volatile Int16U CONTROL_Values_Counter = 0;
+Int16U CONTROL_RegulatorValues_Counter = 0;
+Int16U CONTROL_Values_Counter = 0;
 //
 
 
@@ -190,11 +190,11 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			DataTable[REG_WARNING] = WARNING_NONE;
 			break;
 
-		case ACT_CAL_VG:
+		case ACT_CAL_V_V:
 			if(CONTROL_State == DS_Ready)
 			{
 				CONTROL_ResetOutputRegisters();
-				CONTROL_SetDeviceState(DS_InProcess, SS_VcalPrepare);
+				CONTROL_SetDeviceState(DS_InProcess, SS_Cal_V_Prepare);
 			}
 			else if(CONTROL_State == DS_InProcess)
 				*pUserError = ERR_OPERATION_BLOCKED;
@@ -216,10 +216,10 @@ void CONTROL_LogicProcess()
 {
 	switch(CONTROL_SubState)
 	{
-		case SS_VcalPrepare:
+		case SS_Cal_V_Prepare:
 			CAL_Prepare();
 
-			CONTROL_SetDeviceState(DS_Ready, SS_Vcal);
+			CONTROL_SetDeviceState(DS_Ready, SS_Cal_V_Process);
 			CONTROL_V_Start();
 			break;
 
@@ -249,12 +249,10 @@ void CONTROL_SwitchOutMUX(CommutationState Commutation)
 
 void CONTROL_HighPriorityProcess()
 {
-	MeasureSample SampledData = MEASURE_SampleVgsIges();
-
 	switch(CONTROL_SubState)
 	{
-		case SS_Vcal:
-			CAL_VgsProcess(SampledData);
+		case SS_Cal_V_Process:
+			CAL_Calibration(CONTROL_SubState);
 			break;
 
 		default:
