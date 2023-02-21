@@ -8,6 +8,7 @@
 #include "BCCIxParams.h"
 #include "Delay.h"
 #include "Calibration.h"
+#include "Vgs.h"
 
 
 // Variables
@@ -104,6 +105,11 @@ void CONTROL_ResetHardwareToDefaultState()
 	LL_I_Diagnostic(false);
 	LL_I_Start(false);
 	LL_I_Enable(false);
+
+	LL_V_VSetDAC(0);
+	LL_I_SetDAC(0);
+	LL_ExDACVCutoff(0);
+	LL_ExDACVNegative(0);
 }
 //------------------------------------------
 
@@ -172,7 +178,7 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 		case ACT_STOP_PROCESS:
 			if(CONTROL_State == DS_InProcess)
 			{
-				CONTROL_ForceStopProcess();
+				CONTROL_StopHighPriorityProcesses();
 
 				DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
 				DataTable[REG_PROBLEM] = PROBLEM_FORCED_STOP;
@@ -236,6 +242,16 @@ void CONTROL_LogicProcess()
 			CAL_I_Prepare();
 			break;
 
+		case SS_VgsPrepare:
+			VGS_Prepare();
+			break;
+
+		case SS_IgesPrepare:
+			break;
+
+		case SS_QgPrepare:
+			break;
+
 		default:
 			break;
 	}
@@ -272,17 +288,19 @@ void CONTROL_HighPriorityProcess()
 			CAL_I_CalProcess();
 			break;
 
+		case SS_VgsProcess:
+			VGS_Process();
+			break;
+
 		default:
 			break;
 	}
 }
 //-----------------------------------------------
 
-void CONTROL_V_Stop()
+void CONTROL_StopHighPriorityProcesses()
 {
 	TIM_Stop(TIM15);
-	LL_V_VSetDAC(0);
-
 	CONTROL_ResetHardwareToDefaultState();
 }
 //------------------------------------------
@@ -295,27 +313,6 @@ void CONTROL_StartHighPriorityProcesses()
 	TIM_Start(TIM15);
 }
 //-----------------------------------------------
-
-void CONTROL_I_Start()
-{
-
-}
-//-----------------------------------------------
-
-void CONTROL_I_Stop()
-{
-
-}
-//-----------------------------------------------
-
-void CONTROL_ForceStopProcess()
-{
-	CONTROL_I_Stop();
-	CONTROL_V_Stop();
-
-	CONTROL_ResetHardwareToDefaultState();
-}
-//------------------------------------------
 
 void CONTROL_SwitchToFault(Int16U Reason)
 {

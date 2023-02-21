@@ -127,7 +127,7 @@ void CAL_V_CalProcess()
 
 	if(REGULATOR_Process(&RegulatorParams))
 	{
-		CONTROL_V_Stop();
+		CONTROL_StopHighPriorityProcesses();
 
 		if(RegulatorParams.FollowingError)
 		{

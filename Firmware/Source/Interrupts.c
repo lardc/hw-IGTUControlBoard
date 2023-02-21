@@ -71,7 +71,7 @@ void EXTI15_10_IRQHandler()
 {
 	if(CONTROL_State == DS_InProcess && !DataTable[REG_MUTE_SAFETY_MONITOR])
 	{
-		CONTROL_ForceStopProcess();
+		CONTROL_StopHighPriorityProcesses();
 
 		DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
 		DataTable[REG_PROBLEM] = PROBLEM_SAFETY_VIOLATION;

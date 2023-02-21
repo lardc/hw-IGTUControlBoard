@@ -28,16 +28,13 @@ typedef enum __DeviceSubState
 	SS_Cal_I_Process,
 
 	SS_VgsPrepare = 10,
-	SS_VgsPulse,
-	SS_VgsSaveResults,
+	SS_VgsProcess,
 
 	SS_IgesPrepare = 20,
-	SS_IgesPulse,
-	SS_IgesSaveResults,
+	SS_IgesProcess,
 
 	SS_QgPrepare = 30,
-	SS_QgPulse,
-	SS_QgSaveResults
+	SS_QgProcess
 } DeviceSubState;
 
 typedef enum __CommutationState
@@ -68,12 +65,9 @@ extern Int16U CONTROL_Values_Counter;
 void CONTROL_Init();
 void CONTROL_Idle();
 void CONTROL_SetDeviceState(DeviceState NewState, DeviceSubState NewSubState);
-void CONTROL_ForceStopProcess();
 void CONTROL_HighPriorityProcess();
 void CONTROL_StartHighPriorityProcesses();
-void CONTROL_V_Stop();
-void CONTROL_I_Start();
-void CONTROL_I_Stop();
+void CONTROL_StopHighPriorityProcesses();
 void CONTROL_SwitchOutMUX(CommutationState Commutation);
 void CONTROL_SwitchToFault(Int16U Reason);
 
