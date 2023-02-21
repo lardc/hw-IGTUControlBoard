@@ -12,8 +12,8 @@
 #define MEASURE_V_I_RANGE1			1
 
 // Variables
-volatile Int16U MEASURE_VoltageRaw[ADC_DMA_BUFF_SIZE_VGS_IGES] = {0};
-volatile Int16U MEASURE_CurrentRaw[ADC_DMA_BUFF_SIZE_VGS_IGES] = {0};
+volatile Int16U MEASURE_VoltageRaw[ADC_V_DMA_BUFF_SIZE] = {0};
+volatile Int16U MEASURE_CurrentRaw[ADC_V_DMA_BUFF_SIZE] = {0};
 volatile Int16U MEASURE_Qg_DataRaw[ADC_DMA_BUFF_SIZE_QG] = {0};
 //
 bool CurrentRange = MEASURE_V_I_RANGE0;
@@ -21,16 +21,15 @@ bool CurrentRange = MEASURE_V_I_RANGE0;
 // Functions prototypes
 //
 float MEASURE_ExtractX(volatile Int16U* InputArray, Int16U ArraySize);
-void MEASURE_StartNewSampling();
 
 // Functions
 //
-MeasureSample MEASURE_SampleVgsIges()
+MeasureSample MEASURE_V_SampleVI()
 {
 	MeasureSample Sample;
 
-	Sample.Voltage = CU_V_ADCtoV(MEASURE_ExtractX(&MEASURE_VoltageRaw[1], ADC_DMA_BUFF_SIZE_VGS_IGES - 1));
-	Sample.Current = CU_V_ADCtoI(MEASURE_ExtractX(&MEASURE_CurrentRaw[1], ADC_DMA_BUFF_SIZE_VGS_IGES - 1), CurrentRange);
+	Sample.Voltage = CU_V_ADCtoV(MEASURE_ExtractX(&MEASURE_VoltageRaw[1], ADC_V_DMA_BUFF_SIZE - 1));
+	Sample.Current = CU_V_ADCtoI(MEASURE_ExtractX(&MEASURE_CurrentRaw[1], ADC_V_DMA_BUFF_SIZE - 1), CurrentRange);
 	MEASURE_StartNewSampling();
 
 	return Sample;
@@ -70,7 +69,7 @@ float MEASURE_ExtractAveragedDatas(float* Buffer, Int16U BufferLength)
 
 void MEASURE_ResetDMABuffers()
 {
-	for(int i = 0; i < ADC_DMA_BUFF_SIZE_VGS_IGES; i++)
+	for(int i = 0; i < ADC_V_DMA_BUFF_SIZE; i++)
 	{
 		MEASURE_VoltageRaw[i] = 0;
 		MEASURE_CurrentRaw[i] = 0;
@@ -84,6 +83,6 @@ void MEASURE_ResetDMABuffers()
 void MEASURE_V_SetCurrentRange(float Current)
 {
 	CurrentRange = (Current > DataTable[REG_V_I_SENS_THRESHOLD]) ? MEASURE_V_I_RANGE1 : MEASURE_V_I_RANGE0;
-	LL_V_CsenseSetRange(CurrentRange);
+	LL_V_IsenseSetRange(CurrentRange);
 }
 //-----------------------------

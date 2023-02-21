@@ -7,8 +7,6 @@
 
 // Definitions
 //
-#define MEASURE_BUFFERS_SIZE			ADC_DMA_BUFF_SIZE_QG
-//
 #define MEASURE_V_I_RANGES				2		// Количество диапазонов измерения тока в источнике напряжения
 
 // Types
@@ -21,15 +19,16 @@ typedef struct __MeasureSample
 
 // Variables
 //
-extern volatile Int16U MEASURE_VoltageRaw[ADC_DMA_BUFF_SIZE_VGS_IGES];
-extern volatile Int16U MEASURE_CurrentRaw[ADC_DMA_BUFF_SIZE_VGS_IGES];
+extern volatile Int16U MEASURE_VoltageRaw[ADC_V_DMA_BUFF_SIZE];
+extern volatile Int16U MEASURE_CurrentRaw[ADC_V_DMA_BUFF_SIZE];
 extern volatile Int16U MEASURE_Qg_DataRaw[ADC_DMA_BUFF_SIZE_QG];
 
 // Functions
 //
-MeasureSample MEASURE_SampleVgsIges();
+MeasureSample MEASURE_V_SampleVI();
 float MEASURE_ExtractAveragedDatas(float* Buffer, Int16U BufferLength);
 void MEASURE_ResetDMABuffers();
 void MEASURE_V_SetCurrentRange(float Current);
+void MEASURE_StartNewSampling();
 
 #endif /* MEASUREMENT_H_ */

@@ -1,6 +1,7 @@
 // Header
 //
 #include "Logging.h"
+#include "ConvertUtils.h"
 
 // Includes
 //
@@ -47,19 +48,54 @@ void LOG_SaveSampleToRingBuffer(RingBuffersParams* Log)
 }
 //-----------------------------------------------
 
-MeasureSample LOG_GetAverage(RingBuffersParams* Log)
+MeasureSample LOG_RingBufferGetAverage(RingBuffersParams* Log)
 {
 	MeasureSample AverageSamples;
 
-	AverageSamples.Current = 0;
-	AverageSamples.Voltage = 0;
-
-	for(Int16U i = 0; i < LOG_RING_BUFFER_SIZE; i++)
-	{
-		AverageSamples.Voltage += *(Log->RingBufferA + i) / LOG_RING_BUFFER_SIZE;
-		AverageSamples.Current += *(Log->RingBufferA + i) / LOG_RING_BUFFER_SIZE;
-	}
+	AverageSamples.Voltage = LOG_GetAverageFromBuffer(&Log->RingBufferA[0], LOG_RING_BUFFER_SIZE);
+	AverageSamples.Current = LOG_GetAverageFromBuffer(&Log->RingBufferB[0], LOG_RING_BUFFER_SIZE);
 
 	return AverageSamples;
+}
+//-----------------------------------------------
+
+float LOG_GetAverageFromBuffer(pFloat32 Buffer, Int16U BufferSize)
+{
+	float Result = 0;
+
+	for(Int16U i = 0; i < BufferSize; i++)
+		Result += *(Buffer + i) / BufferSize;
+
+	return Result;
+}
+//-----------------------------------------------
+
+void LOG_CopyVoltageToEndpoints(pFloat32 Endpoint, volatile Int16U* Buffer, Int16U BufferSize, Int16U SkipStep)
+{
+	Int16U Counter = 0;
+
+	for(Int16U i = 0; i < BufferSize; i += (SkipStep + 1))
+	{
+		if(Counter < VALUES_x_SIZE)
+		{
+			*(Endpoint + Counter) = CU_I_ADCtoV(*(Buffer + i));
+			Counter++;
+		}
+	}
+}
+//-----------------------------------------------
+
+void LOG_CopyCurrentToEndpoints(pFloat32 Endpoint, volatile Int16U* Buffer, Int16U BufferSize, Int16U SkipStep)
+{
+	Int16U Counter = 0;
+
+	for(Int16U i = 0; i < BufferSize; i += (SkipStep + 1))
+	{
+		if(Counter < VALUES_x_SIZE)
+		{
+			*(Endpoint + Counter) = CU_I_ADCtoI(*(Buffer + i));
+			Counter++;
+		}
+	}
 }
 //-----------------------------------------------

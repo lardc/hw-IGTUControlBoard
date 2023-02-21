@@ -101,9 +101,9 @@ void CONTROL_ResetHardwareToDefaultState()
 	LL_V_ShortOut(true);
 	LL_V_ShortPAU(true);
 	LL_V_Diagnostic(false);
-	LL_C_Diagnostic(false);
-	LL_C_CStart(false);
-	LL_C_CEnable(false);
+	LL_I_Diagnostic(false);
+	LL_I_Start(false);
+	LL_I_Enable(false);
 }
 //------------------------------------------
 
@@ -202,6 +202,18 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 				*pUserError = ERR_DEVICE_NOT_READY;
 			break;
 
+		case ACT_CAL_I:
+			if(CONTROL_State == DS_Ready)
+			{
+				CONTROL_ResetOutputRegisters();
+				CONTROL_SetDeviceState(DS_InProcess, SS_Cal_I_Prepare);
+			}
+			else if(CONTROL_State == DS_InProcess)
+				*pUserError = ERR_OPERATION_BLOCKED;
+			else
+				*pUserError = ERR_DEVICE_NOT_READY;
+			break;
+
 		default:
 			if(CONTROL_State == DS_None)
 				return DIAG_HandleDiagnosticAction(ActionID, pUserError);
@@ -218,6 +230,10 @@ void CONTROL_LogicProcess()
 	{
 		case SS_Cal_V_Prepare:
 			CAL_V_Prepare();
+			break;
+
+		case SS_Cal_I_Prepare:
+			CAL_I_Prepare();
 			break;
 
 		default:
@@ -252,6 +268,10 @@ void CONTROL_HighPriorityProcess()
 			CAL_V_CalProcess();
 			break;
 
+		case SS_Cal_I_Process:
+			CAL_I_CalProcess();
+			break;
+
 		default:
 			break;
 	}
@@ -267,7 +287,7 @@ void CONTROL_V_Stop()
 }
 //------------------------------------------
 
-void CONTROL_V_Start()
+void CONTROL_StartHighPriorityProcesses()
 {
 	LL_SyncOSC(true);
 

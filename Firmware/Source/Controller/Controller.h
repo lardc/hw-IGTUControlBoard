@@ -70,7 +70,7 @@ void CONTROL_Idle();
 void CONTROL_SetDeviceState(DeviceState NewState, DeviceSubState NewSubState);
 void CONTROL_ForceStopProcess();
 void CONTROL_HighPriorityProcess();
-void CONTROL_V_Start();
+void CONTROL_StartHighPriorityProcesses();
 void CONTROL_V_Stop();
 void CONTROL_I_Start();
 void CONTROL_I_Stop();

@@ -11,6 +11,8 @@
 // Functions prototypes
 //
 void CAL_V_Prepare();
+void CAL_I_Prepare();
 void CAL_V_CalProcess();
+void CAL_I_CalProcess();
 
 #endif /* CONTROLLER_CALIBRATION_H_ */
