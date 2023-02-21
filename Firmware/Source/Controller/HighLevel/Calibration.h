@@ -10,7 +10,7 @@
 
 // Functions prototypes
 //
-void CAL_Prepare();
-void CAL_Calibration(DeviceSubState SubState);
+void CAL_V_Prepare();
+void CAL_V_CalProcess();
 
 #endif /* CONTROLLER_CALIBRATION_H_ */

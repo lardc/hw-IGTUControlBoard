@@ -27,8 +27,8 @@
 #define ACT_DBG_SWITCH_TO_DIAG			65	// Тест переключения в режим самодиагностики
 
 // Команды для калибровки
-#define ACT_CAL_V_V						70
-#define ACT_CAL_V_I						71
+#define ACT_CAL_V						70
+#define ACT_CAL_I						71
 
 // Команды самодиагностики
 #define ACT_DIAG_V						90	// Старт диагностики источника напряжения

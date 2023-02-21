@@ -25,7 +25,6 @@ RingBuffersParams CalRingBuffers;
 // Functions prototypes
 //
 void CAL_CacheVariables();
-void CAL_V_CalProcess();
 MeasureSample CAL_GetAverageSamples();
 
 // Functions
@@ -51,7 +50,7 @@ void CAL_CacheVariables()
 }
 //------------------------------
 
-void CAL_Prepare()
+void CAL_V_Prepare()
 {
 	INITCFG_ConfigADC_VgsIges();
 	INITCFG_ConfigDMA_VgsIges();
@@ -63,27 +62,16 @@ void CAL_Prepare()
 	CONTROL_SwitchOutMUX(Voltage);
 
 	CAL_CacheVariables();
-}
-//------------------------------
 
-void CAL_Calibration(DeviceSubState SubState)
-{
-	CalSampledData = MEASURE_SampleVgsIges();
-
-	switch(SubState)
-	{
-	case SS_Cal_V_Process:
-		CAL_V_CalProcess();
-		break;
-
-	default:
-		break;
-	}
+	CONTROL_SetDeviceState(DS_Ready, SS_Cal_V_Process);
+	CONTROL_V_Start();
 }
 //------------------------------
 
 void CAL_V_CalProcess()
 {
+	CalSampledData = MEASURE_SampleVgsIges();
+
 	LOG_SaveSampleToRingBuffer(&CalRingBuffers);
 	LOG_LoggingData(&CalibrationLog);
 

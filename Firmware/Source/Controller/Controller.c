@@ -190,7 +190,7 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			DataTable[REG_WARNING] = WARNING_NONE;
 			break;
 
-		case ACT_CAL_V_V:
+		case ACT_CAL_V:
 			if(CONTROL_State == DS_Ready)
 			{
 				CONTROL_ResetOutputRegisters();
@@ -217,10 +217,7 @@ void CONTROL_LogicProcess()
 	switch(CONTROL_SubState)
 	{
 		case SS_Cal_V_Prepare:
-			CAL_Prepare();
-
-			CONTROL_SetDeviceState(DS_Ready, SS_Cal_V_Process);
-			CONTROL_V_Start();
+			CAL_V_Prepare();
 			break;
 
 		default:
@@ -252,7 +249,7 @@ void CONTROL_HighPriorityProcess()
 	switch(CONTROL_SubState)
 	{
 		case SS_Cal_V_Process:
-			CAL_Calibration(CONTROL_SubState);
+			CAL_V_CalProcess();
 			break;
 
 		default:
