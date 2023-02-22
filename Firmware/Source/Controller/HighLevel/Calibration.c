@@ -75,7 +75,7 @@ void CAL_V_Prepare()
 
 	CAL_V_CacheVariables();
 
-	CONTROL_SetDeviceState(DS_Ready, SS_Cal_V_Process);
+	CONTROL_SetDeviceState(CONTROL_State, SS_Cal_V_Process);
 	CONTROL_StartHighPriorityProcesses();
 }
 //------------------------------
@@ -96,7 +96,7 @@ void CAL_I_Prepare()
 
 	CAL_I_CacheVariables();
 
-	CONTROL_SetDeviceState(DS_Ready, SS_Cal_I_Process);
+	CONTROL_SetDeviceState(CONTROL_State, SS_Cal_I_Process);
 	MEASURE_StartNewSampling();
 	CONTROL_StartHighPriorityProcesses();
 }
@@ -125,10 +125,18 @@ void CAL_V_CalProcess()
 			DataTable[REG_CAL_V_RESULT] = 0;
 			DataTable[REG_CAL_I_RESULT] = 0;
 
-			if(CalSampledData.Current > MEASURE_VGS_CURRENT_MAX)
+			if(CalSampledData.Current > VGS_CURRENT_MAX)
 			{
-				DataTable[REG_PROBLEM] = PROBLEM_GATE_SHORT;
-				CONTROL_SetDeviceState(DS_Ready, SS_None);
+				if(CONTROL_State == DS_SelfTest)
+				{
+					DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_FAIL;
+					CONTROL_SwitchToFault(DF_FOLLOWING_ERROR);
+				}
+				else
+				{
+					DataTable[REG_PROBLEM] = PROBLEM_GATE_SHORT;
+					CONTROL_SetDeviceState(DS_Ready, SS_None);
+				}
 			}
 			else
 				CONTROL_SwitchToFault(DF_FOLLOWING_ERROR);
@@ -139,7 +147,10 @@ void CAL_V_CalProcess()
 			DataTable[REG_CAL_V_RESULT] = AverageData.Voltage;
 			DataTable[REG_CAL_I_RESULT] = AverageData.Current;
 
-			CONTROL_SetDeviceState(DS_Ready, SS_None);
+			if(CONTROL_State == DS_SelfTest)
+				CONTROL_SetDeviceState(CONTROL_State, SS_VoltageCheck);
+			else
+				CONTROL_SetDeviceState(DS_Ready, SS_None);
 		}
 	}
 }

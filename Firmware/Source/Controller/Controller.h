@@ -15,7 +15,7 @@ typedef enum __DeviceState
 	DS_Disabled = 2,
 	DS_Ready = 3,
 	DS_InProcess = 4,
-	DS_Selftest = 5
+	DS_SelfTest = 5
 } DeviceState;
 
 typedef enum __DeviceSubState
@@ -36,7 +36,12 @@ typedef enum __DeviceSubState
 
 	SS_QgPrepare = 30,
 	SS_QgProcess,
-	SS_QgSaveResult
+	SS_QgSaveResult,
+
+	SS_VoltagePrepare = 40,
+	SS_VoltageCheck,
+	SS_CurrentPrepare,
+	SS_CurrentCheck
 } DeviceSubState;
 
 typedef enum __CommutationState

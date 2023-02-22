@@ -11,6 +11,7 @@
 #include "Vgs.h"
 #include "Iges.h"
 #include "Qg.h"
+#include "SelfTest.h"
 
 
 // Variables
@@ -177,6 +178,19 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 				*pUserError = ERR_DEVICE_NOT_READY;
 			break;
 
+		case ACT_SELF_TEST:
+			if(CONTROL_State == DS_Ready)
+			{
+				CONTROL_ResetOutputRegisters();
+				DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_NONE;
+				CONTROL_SetDeviceState(DS_SelfTest, SS_VoltagePrepare);
+			}
+			else if(CONTROL_State == DS_InProcess)
+				*pUserError = ERR_OPERATION_BLOCKED;
+			else
+				*pUserError = ERR_DEVICE_NOT_READY;
+			break;
+
 		case ACT_STOP_PROCESS:
 			if(CONTROL_State == DS_InProcess)
 			{
@@ -263,6 +277,9 @@ void CONTROL_LogicProcess()
 		default:
 			break;
 	}
+
+	if(CONTROL_State == DS_SelfTest)
+		ST_Process();
 }
 //-----------------------------------------------
 

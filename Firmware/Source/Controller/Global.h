@@ -14,7 +14,8 @@
 #define ENABLE_LOCKING							FALSE	// Защита NV регистров паролем
 #define CURRENT_PULSE_WIDTH						300		// Макс длительность импульса тока (мкс)
 #define VOLTAGE_PULSE_WIDTH						12000	// Макс длительность импульса напряжения (мкс)
-#define MEASURE_VGS_CURRENT_MAX					210		// Максимальный измеряемый ток, мА
+#define VGS_VOLTAGE_MAX							30		// Максимальное напряжения формирователя, В
+#define VGS_CURRENT_MAX							210		// Максимальный измеряемый ток, мА
 #define MEASURE_IGES_CURRENT_MIN				1		// Минимальный измеряемый токутечки, нА
 #define MEASURE_IGES_CURRENT_MAX				300		// Максимальный измеряемый токутечки, нА
 #define DAC_MAX_VAL								0x0FFF	// Максимальное значение ЦАП

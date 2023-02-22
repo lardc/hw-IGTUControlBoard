@@ -32,7 +32,7 @@ void IGES_Prepare()
 		INITCFG_ConfigADC_VgsIges();
 		INITCFG_ConfigDMA_VgsIges();
 
-		MEASURE_V_SetCurrentRange(MEASURE_VGS_CURRENT_MAX);
+		MEASURE_V_SetCurrentRange(VGS_CURRENT_MAX);
 
 		LL_V_IlimHighRange();
 		LL_V_ShortOut(false);
@@ -103,7 +103,7 @@ void IGES_Process()
 		{
 			CONTROL_StopHighPriorityProcesses();
 
-			if(IgesSampledData.Current > MEASURE_VGS_CURRENT_MAX)
+			if(IgesSampledData.Current > VGS_CURRENT_MAX)
 			{
 				DataTable[REG_PROBLEM] = PROBLEM_GATE_SHORT;
 				CONTROL_SetDeviceState(DS_Ready, SS_None);

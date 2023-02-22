@@ -36,6 +36,8 @@
 #define ACT_IGES_START					102	// Старт измерения тока утечки затвор-эммитер
 #define ACT_STOP_PROCESS				103	// Стоп измерения
 //
+#define ACT_SELF_TEST					110	// Запуск самотестирования
+//
 #define ACT_SAVE_TO_ROM					200	// Сохранение пользовательских данных во FLASH процессора
 #define ACT_RESTORE_FROM_ROM			201	// Восстановление данных из FLASH
 #define ACT_RESET_TO_DEFAULT			202	// Сброс DataTable в состояние по умолчанию
@@ -126,6 +128,7 @@
 #define REG_IGES_V_RATE					75	// Скорость нарастания напряжения, [В/мкс]
 #define REG_IGES_PLATE_TIME				76	// Длительность полки напряжения, [мс]
 //
+#define REG_ST_CHECK_ERROR				77	// Допустимая ошибка результата самотестирования
 
 
 // Несохраняемые регистры чтения-записи
@@ -158,7 +161,8 @@
 #define REG_WARNING						195	// Регистр Warning
 #define REG_PROBLEM						196	// Регистр Problem
 #define REG_OP_RESULT					197	// Регистр результата операции
-#define REG_SUB_STATE					198	// Регистр вспомогательного состояния
+#define REG_SELF_TEST_OP_RESULT			198	// Регистр результата самотестирования
+#define REG_SUB_STATE					199	// Регистр вспомогательного состояния
 //
 #define REG_SAFETY_STATE				199	// Регистр состояния контакта безопасности
 
@@ -235,6 +239,7 @@
 #define DF_PAU_WRONG_STATE				3
 #define DF_TOCUHP_INTERFACE				4
 #define DF_TOCUHP_WRONG_STATE			5
+#define DF_ST_CHECK_ERROR				6
 
 // Problem
 #define PROBLEM_NONE					0
