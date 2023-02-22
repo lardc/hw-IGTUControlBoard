@@ -45,23 +45,23 @@ bool DIAG_HandleDiagnosticAction(uint16_t ActionID, uint16_t *pUserError)
 			DBGACT_V_VSet();
 			break;
 
-		case ACT_DBG_C_LIM_LOW_TEST:
+		case ACT_DBG_I_LIM_LOW_TEST:
 			DBGACT_V_TestClimLow();
 			break;
 
-		case ACT_DBG_C_LIM_HIGH_TEST:
+		case ACT_DBG_I_LIM_HIGH_TEST:
 			DBGACT_V_TestClimHigh();
 			break;
 
-		case ACT_DBG_C_V_CUTOFF:
+		case ACT_DBG_I_V_CUTOFF:
 			DBGACT_C_VCutoffSet();
 			break;
 
-		case ACT_DBG_C_V_NEGATIVE:
+		case ACT_DBG_I_V_NEGATIVE:
 			DBGACT_C_VNegativeSet();
 			break;
 
-		case ACT_DBG_C_TEST_PULSE:
+		case ACT_DBG_I_TEST_PULSE:
 			DBGACT_C_TestPulse();
 			break;
 

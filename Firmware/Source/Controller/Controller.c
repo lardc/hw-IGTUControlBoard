@@ -86,11 +86,11 @@ void CONTROL_ResetOutputRegisters()
 	DataTable[REG_PROBLEM] = PROBLEM_NONE;
 	DataTable[REG_OP_RESULT] = OPRESULT_NONE;
 
-	DataTable[REG_VGS] = 0;
-	DataTable[REG_QG] = 0;
-	DataTable[REG_QG_T] = 0;
-	DataTable[REG_QG_C] = 0;
-	DataTable[REG_IGES] = 0;
+	DataTable[REG_VGS_RESULT] = 0;
+	DataTable[REG_QG_RESULT] = 0;
+	DataTable[REG_QG_I_DURATION_RESULT] = 0;
+	DataTable[REG_QG_I_RESULT] = 0;
+	DataTable[REG_IGES_RESULT] = 0;
 
 	DEVPROFILE_ResetScopes(0);
 	DEVPROFILE_ResetEPReadState();
@@ -145,7 +145,7 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 				*pUserError = ERR_OPERATION_BLOCKED;
 			break;
 
-		case ACT_VGS_START:
+		case ACT_START_VGS:
 			if(CONTROL_State == DS_Ready)
 			{
 				CONTROL_ResetOutputRegisters();
@@ -157,7 +157,7 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 				*pUserError = ERR_DEVICE_NOT_READY;
 			break;
 
-		case ACT_QG_START:
+		case ACT_START_QG:
 			if(CONTROL_State == DS_Ready)
 				CONTROL_SetDeviceState(DS_InProcess, SS_QgPrepare);
 			else if(CONTROL_State == DS_InProcess)
@@ -166,7 +166,7 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 				*pUserError = ERR_DEVICE_NOT_READY;
 			break;
 
-		case ACT_IGES_START:
+		case ACT_START_IGES:
 			if(CONTROL_State == DS_Ready)
 			{
 				CONTROL_ResetOutputRegisters();
@@ -178,7 +178,7 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 				*pUserError = ERR_DEVICE_NOT_READY;
 			break;
 
-		case ACT_SELF_TEST:
+		case ACT_START_SELF_TEST:
 			if(CONTROL_State == DS_Ready)
 			{
 				CONTROL_ResetOutputRegisters();

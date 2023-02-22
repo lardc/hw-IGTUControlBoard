@@ -93,8 +93,8 @@ void VGS_Process()
 		CONTROL_StopHighPriorityProcesses();
 
 		MeasureSample VgsResult = LOG_RingBufferGetAverage(&VgsRingBuffers);
-		DataTable[REG_VGS] = VgsResult.Voltage;
-		DataTable[REG_VGS_I] = VgsResult.Current;
+		DataTable[REG_VGS_RESULT] = VgsResult.Voltage;
+		DataTable[REG_VGS_I_RESULT] = VgsResult.Current;
 		DataTable[REG_OP_RESULT] = OPRESULT_OK;
 
 		CONTROL_SetDeviceState(DS_Ready, SS_None);
@@ -104,7 +104,7 @@ void VGS_Process()
 	{
 		CONTROL_StopHighPriorityProcesses();
 
-		DataTable[REG_VGS] = 0;
+		DataTable[REG_VGS_RESULT] = 0;
 		DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
 
 		if(RegulatorParams.FollowingError)

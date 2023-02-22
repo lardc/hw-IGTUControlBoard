@@ -59,29 +59,29 @@ const TableItemConstraint Constraint[DATA_TABLE_WP_START] = {
 		{REGULATOR_ERR_MIN, REGULATOR_ERR_MAX, REGULATOR_ERR_DEF},					// 48
 		{REGULATOR_FE_CNT_MIN, REGULATOR_FE_CNT_MAX, REGULATOR_FE_CNT_DEF},			// 49
 		{NO, YES, NO},																// 50
-		{DAC_OUTPUT_LIM_MIN, DAC_OUTPUT_LIM_MAX, DAC_OUTPUT_LIM_DEF},				// 51
-		{0, 0, 0},																	// 52
-		{0, 0, 0},																	// 53
-		{0, 0, 0},																	// 54
-		{0, 0, 0},																	// 55
-		{0, 0, 0},																	// 56
-		{0, 0, 0},																	// 57
-		{0, 0, 0},																	// 58
-		{0, 0, 0},																	// 59
-		{0, 0, 0},																	// 60
-		{0, 0, 0},																	// 61
-		{0, 0, 0},																	// 62
-		{0, 0, 0},																	// 63
-		{0, 0, 0},																	// 64
-		{0, 0, 0},																	// 65
+		{VGS_FAST_RATE_MIN, VGS_FAST_RATE_MAX, VGS_FAST_RATE_DEF},					// 51
+		{VGS_SLOW_RATE_MIN, VGS_SLOW_RATE_MAX, VGS_SLOW_RATE_DEF},					// 52
+		{VGS_dI_TRIG_MIN, VGS_dI_TRIG_MAX, VGS_dI_TRIG_DEF},						// 53
+		{VGS_I_THRESHOLD_MIN, VGS_I_THRESHOLD_MAX, VGS_I_THRESHOLD_DEF},			// 54
+		{IGES_V_RATE_MIN, IGES_V_RATE_MAX, IGES_V_RATE_DEF},						// 55
+		{IGES_PLATE_TIME_MIN, IGES_PLATE_TIME_MAX, IGES_PLATE_TIME_DEF},			// 56
+		{0, INT16U_MAX, PAU_CAN_ID_DEF},											// 57
+		{NO, YES, NO},																// 58
+		{0, INT16U_MAX, TOCUHP_CAN_ID_DEF},											// 59
+		{NO, YES, NO},																// 60
+		{0, INT16U_MAX, TOCUHP_RES_PER_BIT_DEF},									// 61
+		{DAC_OUTPUT_LIM_MIN, DAC_OUTPUT_LIM_MAX, DAC_OUTPUT_LIM_DEF},				// 62
+		{0, INT16U_MAX, 0},															// 63
+		{NO, YES, NO},																// 64
+		{ST_CHECK_ERROR_MIN, ST_CHECK_ERROR_MAX, ST_CHECK_ERROR_DEF},				// 65
 		{0, 0, 0},																	// 66
 		{0, 0, 0},																	// 67
 		{0, 0, 0},																	// 68
 		{0, 0, 0},																	// 69
-		{VGS_PLATE_MIN, VGS_PLATE_MAX, VGS_PLATE_DEF},								// 70
-		{VGS_RATE_MIN, VGS_RATE_MAX, VGS_RATE_DEF},									// 71
-		{VGS_RATE_MIN, VGS_RATE_MAX, VGS_RATE_DEF},									// 72
-		{VGS_dI_TRIG_MIN, VGS_dI_TRIG_MAX, VGS_dI_TRIG_DEF},						// 73
+		{0, 0, 0},																	// 70
+		{0, 0, 0},																	// 71
+		{0, 0, 0},																	// 72
+		{0, 0, 0},																	// 73
 		{0, 0, 0},																	// 74
 		{0, 0, 0},																	// 75
 		{0, 0, 0},																	// 76
@@ -136,39 +136,39 @@ const TableItemConstraint Constraint[DATA_TABLE_WP_START] = {
 		{0, 0, 0},																	// 125
 		{0, 0, 0},																	// 126
 		{0, 0, 0},																	// 127
-		{VGS_C_TRIG_MIN, VGS_C_TRIG_MAX, VGS_C_TRIG_MIN},							// 128
-		{VGS_V_DEST_MIN, VGS_V_DEST_MAX, VGS_V_DEST_MAX},			// 129
-		{0, 0, 0},					// 130
-		{0, 0, 0},							// 131
-		{0, 0, 0},																	// 132
-		{0, 0, 0},																	// 133
-		{0, 0, 0},																	// 134
-		{QG_V_CUTOFF_MIN, QG_V_CUTOFF_MAX, QG_V_CUTOFF_DEF},						// 135
-		{QG_V_NEGATIVE_MIN, QG_V_NEGATIVE_MAX, QG_V_NEGATIVE_DEF},					// 136
-		{QG_C_SET_MIN, QG_C_SET_MAX, QG_C_SET_MIN},									// 137
-		{QG_T_CURRENT_MIN, QG_T_CURRENT_MAX, QG_T_CURRENT_MIN},						// 138
-		{QG_C_POWER_SET_MIN, QG_C_POWER_SET_MAX, QG_C_POWER_SET_MIN},				// 139
-		{QG_V_POWER_SET_MIN, QG_V_POWER_SET_MAX, QG_V_POWER_SET_MIN},				// 140
-		{QG_C_THRESHOLD_MIN, QG_C_THRESHOLD_MAX, QG_C_THRESHOLD_DEF},				// 141
+		{VGS_I_TRIG_MIN, VGS_I_TRIG_MAX, VGS_I_TRIG_DEF},							// 128
+		{VGS_V_DEST_MIN, VGS_V_DEST_MAX, VGS_V_DEST_DEF},							// 129
+		{QG_V_CUTOFF_MIN, QG_V_CUTOFF_MAX, QG_V_CUTOFF_DEF},						// 130
+		{QG_V_NEGATIVE_MIN, QG_V_NEGATIVE_MAX, QG_V_NEGATIVE_DEF},					// 131
+		{QG_I_MIN, QG_I_MAX, QG_I_DEF},												// 132
+		{QG_I_DURATION_MIN, QG_I_DURATION_MAX, QG_I_DURATION_DEF},					// 133
+		{QG_I_POWER_MIN, QG_I_POWER_MAX, QG_I_POWER_DEF},							// 134
+		{QG_V_POWER_MIN, QG_V_POWER_MAX, QG_V_POWER_DEF},							// 135
+		{IGES_V_MIN, IGES_V_MAX, IGES_V_DEF},										// 136
+		{0, 0, 0},																	// 137
+		{0, 0, 0},																	// 138
+		{0, 0, 0},																	// 139
+		{0, INT16U_MAX, 0},															// 140
+		{0, INT16U_MAX, 0},															// 141
 		{0, 0, 0},																	// 142
 		{0, 0, 0},																	// 143
 		{0, 0, 0},																	// 144
-		{IGES_V_CONSTANT_MIN, IGES_V_CONSTANT_MAX, IGES_V_CONSTANT_MIN},			// 145
-		{IGES_T_V_CONSTANT_MIN, IGES_T_V_CONSTANT_MAX, IGES_T_V_CONSTANT_MIN},		// 146
-		{IGES_T_V_FRONT_MIN, IGES_T_V_FRONT_MAX, IGES_T_V_FRONT_MIN},				// 147
+		{0, 0, 0},																	// 145
+		{0, 0, 0},																	// 146
+		{0, 0, 0},																	// 147
 		{0, 0, 0},																	// 148
 		{0, 0, 0},																	// 149
 		{0, INT16U_MAX, 0},															// 150
-		{NO, YES, YES},																// 151
-		{NO, YES, NO},																// 152
-		{NO, YES, NO},																// 153
+		{0, 0, 0},																	// 151
+		{0, 0, 0},																	// 152
+		{0, 0, 0},																	// 153
 		{0, 0, 0},																	// 154
 		{0, 0, 0},																	// 155
 		{0, 0, 0},																	// 156
 		{0, 0, 0},																	// 157
 		{0, 0, 0},																	// 158
 		{0, 0, 0},																	// 159
-		{0, INT16U_MAX, 0},															// 160
+		{0, 0, 0},																	// 160
 		{0, 0, 0},																	// 161
 		{0, 0, 0},																	// 162
 		{0, 0, 0},																	// 163

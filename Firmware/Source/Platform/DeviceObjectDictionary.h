@@ -9,15 +9,15 @@
 
 // Отладочные команды
 // Источник напряжения
-#define ACT_DBG_V_V_SET					50	// Установить значение напряжения затвора из регистра DBG [mV]
+#define ACT_DBG_V_V_SET					50	// Установить значение напряжения затвора из регистра DBG (mV)
 #define ACT_DBG_V_SHORT					51	// Закоротить выход источника напряжения (регистр DBG = 1 -> закоротка, DBG = 0 -> разрыв)
 #define ACT_DBG_PAU_SHORT				52	// Управление шунтированием PAU
-#define ACT_DBG_C_LIM_LOW_TEST			53	// Тест на проверку ограничения тока младшего диапазона
-#define ACT_DBG_C_LIM_HIGH_TEST			54	// Тест на проверку ограничения тока старшего диапазона
+#define ACT_DBG_I_LIM_LOW_TEST			53	// Тест на проверку ограничения тока младшего диапазона
+#define ACT_DBG_I_LIM_HIGH_TEST			54	// Тест на проверку ограничения тока старшего диапазона
 // Источник тока
-#define ACT_DBG_C_V_CUTOFF				55	// Установить значение напряжения отсечки из регистра DBG [mV]
-#define ACT_DBG_C_V_NEGATIVE			56	// Установить значение отрицательного напряжения смещения из регистра DBG [mV]
-#define ACT_DBG_C_TEST_PULSE			57	// Тестовый импульс тока из регистра DBG [mA] на нагрузку, длительность 20 мкс
+#define ACT_DBG_I_V_CUTOFF				55	// Установить значение напряжения отсечки из регистра DBG (mV)
+#define ACT_DBG_I_V_NEGATIVE			56	// Установить значение отрицательного напряжения смещения из регистра DBG (mV)
+#define ACT_DBG_I_TEST_PULSE			57	// Тестовый импульс тока из регистра DBG (mA) на нагрузку, длительность 20 мкс
 //
 #define ACT_DBG_SYNC_PAU				60	// Тест синхронизации PAU
 #define ACT_DBG_SYNC_TOCUHP				61	// Тест синхронизации TOCU HP
@@ -31,12 +31,12 @@
 #define ACT_CAL_I						71	// Калибровка источника тока
 
 // Команды измерений
-#define ACT_VGS_START					100	// Старт измерения порогового напряжения затвора
-#define ACT_QG_START					101	// Старт измерения заряда затвора
-#define ACT_IGES_START					102	// Старт измерения тока утечки затвор-эммитер
+#define ACT_START_VGS					100	// Старт измерения порогового напряжения затвора
+#define ACT_START_QG					101	// Старт измерения заряда затвора
+#define ACT_START_IGES					102	// Старт измерения тока утечки затвор-эммитер
 #define ACT_STOP_PROCESS				103	// Стоп измерения
 //
-#define ACT_SELF_TEST					110	// Запуск самотестирования
+#define ACT_START_SELF_TEST				110	// Запуск самотестирования
 //
 #define ACT_SAVE_TO_ROM					200	// Сохранение пользовательских данных во FLASH процессора
 #define ACT_RESTORE_FROM_ROM			201	// Восстановление данных из FLASH
@@ -108,51 +108,51 @@
 #define REG_REGULATOR_FE_COUNTER		49	// Счетчик Following Error
 #define REG_REGULATOR_DEBUG				50	// Режим отладки регулятора (1 = параметрическое формирование, 0 = ПИ регулятор)
 //
-#define REG_DAC_OUTPUT_LIMIT_VALUE		51	// Ограничение выхода ЦАП (0 - 4095)
-#define REG_SCOPE_STEP					52	// Шаг сохранения оцифрованных значений
-#define REG_V_I_SENS_THRESHOLD			53	// Порог переключения диапазонов измерения тока
-#define REG_MUTE_SAFETY					54	// Отключение проверки контакта безопасности
+#define REG_VGS_FAST_RATE				51	// Скорость нарастания напряжения Vg (мВ/мкс)
+#define REG_VGS_SLOW_RATE				52	// Скорость нарастания напряжения Vg (мВ/мкс)
+#define REG_VGS_dI_TRIG					53	// (%)
+#define REG_VGS_I_THRESHOLD				54	// Порог переключения диапазонов измерения тока
 //
-#define REG_PAU_CAN_ID					55	// CAN ID PAU
-#define REG_PAU_EMULATED				56	// Эмуляция работы PAU
+#define REG_IGES_V_RATE					55	// Скорость нарастания напряжения, (В/мкс)
+#define REG_IGES_PLATE_TIME				56	// Длительность полки напряжения, (мс)
 //
-#define REG_TOCUHP_CAN_ID				60	// CAN ID TOCUHP
-#define REG_TOCUHP_EMULATED				61	// Эмуляция работы TOCUHP
-#define REG_TOCUHP_RES_PER_BIT			62	// Сопротивление одного бита блока TOCU [Ом]
+#define REG_PAU_CAN_ID					57	// CAN ID PAU
+#define REG_PAU_EMULATED				58	// Эмуляция работы PAU
 //
-#define REG_VGS_PULSE_PLATE				70	// Длительность полки напряжения Vgs (мкс)
-#define REG_VGS_FAST_RATE				71	// Скорость нарастания напряжения Vg (мВ/мкс)
-#define REG_VGS_SLOW_RATE				72	// Скорость нарастания напряжения Vg (мВ/мкс)
-#define REG_VGS_dI_TRIG					73	// (%)
+#define REG_TOCUHP_CAN_ID				59	// CAN ID TOCUHP
+#define REG_TOCUHP_EMULATED				60	// Эмуляция работы TOCUHP
+#define REG_TOCUHP_RES_PER_BIT			61	// Сопротивление одного бита блока TOCU (Ом)
 //
-#define REG_IGES_V_RATE					75	// Скорость нарастания напряжения, [В/мкс]
-#define REG_IGES_PLATE_TIME				76	// Длительность полки напряжения, [мс]
-//
-#define REG_ST_CHECK_ERROR				77	// Допустимая ошибка результата самотестирования
+#define REG_DAC_OUTPUT_LIMIT_VALUE		62	// Ограничение выхода ЦАП (0 - 4095)
+#define REG_SCOPE_STEP					63	// Шаг сохранения оцифрованных значений
+#define REG_MUTE_SAFETY					64	// Отключение проверки контакта безопасности
+#define REG_ST_CHECK_ERROR				65	// Допустимая ошибка результата самотестирования
 
 
 // Несохраняемые регистры чтения-записи
 //
 // Регистры измерения VGS
-#define REG_VGS_I_TRIG					128	// Задание триггера тока [мА]
-#define	REG_VGS_V_MAX					129	// Макс значение напряжения [мВ]
+#define REG_VGS_I_TRIG					128	// Задание триггера тока (мА)
+#define	REG_VGS_V_MAX					129	// Значение напряжения ограничения (мВ)
 
 // Регистры измерения QG
-#define REG_QG_V_CUTOFF					135	// Ограничение напряжения затвора [мВ]
-#define REG_QG_V_NEGATIVE				136	// Отрицательное напряжение, приложенное к затвору [мВ]
-#define REG_QG_I_SET					137	// Ток затвора [мА]
-#define REG_QG_T_CURRENT				138	// Длительность тока затвора [мкс]
-#define REG_QG_I_POWER					139	// Силовой ток коллектор-эммитер (сток-исток) [А]
-#define REG_QG_V_POWER					140	// Напряжение коллектор-эммитер (сток-исток) [В]
-#define REG_QG_I_THRESHOLD				141	// Порог срабатывания триггера тока (в % от REG_QG_C_SET) [%]
+#define REG_QG_V_CUTOFF					130	// Ограничение напряжения затвора (мВ)
+#define REG_QG_V_NEGATIVE				131	// Отрицательное напряжение, приложенное к затвору (мВ)
+#define REG_QG_I						132	// Ток затвора (мА)
+#define REG_QG_I_DURATION				133	// Длительность тока затвора (мкс)
+#define REG_QG_I_POWER					134	// Силовой ток коллектор-эммитер (сток-исток) (А)
+#define REG_QG_V_POWER					135	// Напряжение коллектор-эммитер (сток-исток) (В)
 
 // Регистры измерения IGES
-#define REG_IGES_V						145	// Полка напряжения на затворе [мВ]
+#define REG_IGES_V						136	// Полка напряжения на затворе (мВ)
+
+// Регистры режимов калибровки
+#define REG_CAL_V						140	// Задание напряжения при калибровке, мВ
+#define REG_CAL_I						141	// Задание тока при калибровке, мА
+
+
+#define REG_DBG							150	// Отладочный регистр
 //
-#define REG_DBG							150	// Регистр режима Отладки
-//
-#define REG_CAL_V						160	// Задание напряжения при калибровке, мВ
-#define REG_CAL_I						161	// Задание тока при калибровке, мА
 
 // Регистры только чтение
 #define REG_DEV_STATE					192	// Регистр состояния
@@ -167,14 +167,12 @@
 #define REG_SAFETY_STATE				199	// Регистр состояния контакта безопасности
 
 // Результаты измерения
-#define REG_VGS							200	// Измеренное значение VGS, [мВ]
-#define REG_VGS_I						201	// Достигнутый ток, при измерении Vgs, [мА]
-//
-#define REG_QG							201	// Измеренное значение QG [нКл]
-#define REG_QG_T						202 // Измеренная длительность импульса тока [мкс]
-#define REG_QG_C						203 // Усредненное измеренное значение тока [мА]
-//
-#define REG_IGES						205	// Измеренное значение IGES [нА]
+#define REG_VGS_RESULT					200	// Измеренное значение VGS, (мВ)
+#define REG_VGS_I_RESULT				201	// Достигнутый ток, при измерении Vgs, (мА)
+#define REG_QG_RESULT					202	// Измеренное значение QG (нКл)
+#define REG_QG_I_DURATION_RESULT		203 // Измеренная длительность импульса тока (мкс)
+#define REG_QG_I_RESULT					204 // Усредненное измеренное значение тока (мА)
+#define REG_IGES_RESULT					205	// Измеренное значение IGES (нА)
 //
 #define REG_CAL_V_RESULT				210
 #define REG_CAL_I_RESULT				211

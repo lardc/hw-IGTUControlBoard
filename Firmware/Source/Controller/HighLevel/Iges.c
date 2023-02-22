@@ -111,7 +111,7 @@ void IGES_Process()
 			else
 				CONTROL_SwitchToFault(DF_FOLLOWING_ERROR);
 
-			DataTable[REG_IGES] = 0;
+			DataTable[REG_IGES_RESULT] = 0;
 			DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
 		}
 
@@ -131,7 +131,7 @@ void IGES_SaveResults()
 		if(Iges > MEASURE_IGES_CURRENT_MAX)
 			DataTable[REG_WARNING] = WARNING_IGES_TOO_HIGH;
 
-		DataTable[REG_IGES] = Iges;
+		DataTable[REG_IGES_RESULT] = Iges;
 		DataTable[REG_OP_RESULT] = OPRESULT_OK;
 	}
 	else

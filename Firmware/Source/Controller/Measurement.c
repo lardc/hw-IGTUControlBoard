@@ -82,7 +82,7 @@ void MEASURE_ResetDMABuffers()
 
 void MEASURE_V_SetCurrentRange(float Current)
 {
-	CurrentRange = (Current > DataTable[REG_V_I_SENS_THRESHOLD]) ? MEASURE_V_I_RANGE1 : MEASURE_V_I_RANGE0;
+	CurrentRange = (Current > DataTable[REG_VGS_I_THRESHOLD]) ? MEASURE_V_I_RANGE1 : MEASURE_V_I_RANGE0;
 	LL_V_IsenseSetRange(CurrentRange);
 }
 //-----------------------------
