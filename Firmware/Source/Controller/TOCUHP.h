@@ -20,6 +20,10 @@ typedef enum __TOCUHPState
 	TOCUHP_DS_InProcess = 4
 } TOCUHPState;
 
+// Variables
+//
+extern Int16U	TOCUHP_State;
+
 // Functions
 //
 bool TOCUHP_ReadState(Int16U* Register);

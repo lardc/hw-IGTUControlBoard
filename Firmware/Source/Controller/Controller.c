@@ -10,6 +10,7 @@
 #include "Calibration.h"
 #include "Vgs.h"
 #include "Iges.h"
+#include "Qg.h"
 
 
 // Variables
@@ -252,6 +253,11 @@ void CONTROL_LogicProcess()
 			break;
 
 		case SS_QgPrepare:
+			QG_Prepare();
+			break;
+
+		case SS_QgSaveResult:
+			QG_SaveResult();
 			break;
 
 		default:
@@ -302,9 +308,6 @@ void CONTROL_HighPriorityProcess()
 			IGES_SaveResults();
 			break;
 
-		case SS_QgProcess:
-			break;
-
 		default:
 			break;
 	}
@@ -331,6 +334,7 @@ void CONTROL_SwitchToFault(Int16U Reason)
 {
 	CONTROL_SetDeviceState(DS_Fault, SS_None);
 	DataTable[REG_FAULT_REASON] = Reason;
+	DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
 }
 //------------------------------------------
 

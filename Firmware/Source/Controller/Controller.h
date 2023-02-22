@@ -35,7 +35,8 @@ typedef enum __DeviceSubState
 	SS_IgesSaveResult,
 
 	SS_QgPrepare = 30,
-	SS_QgProcess
+	SS_QgProcess,
+	SS_QgSaveResult
 } DeviceSubState;
 
 typedef enum __CommutationState

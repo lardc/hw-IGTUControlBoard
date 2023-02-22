@@ -8,6 +8,7 @@
 #include "Global.h"
 #include "DataTable.h"
 #include "DeviceObjectDictionary.h"
+#include "Qg.h"
 
 // Functions
 //
@@ -58,6 +59,18 @@ void TIM7_IRQHandler()
 
 		TIM_StatusClear(TIM7);
 	}
+}
+//-----------------------------------------
+
+void TIM3_IRQHandler()
+{
+	if(CONTROL_SubState == SS_QgProcess)
+	{
+		QG_Pulse(false);
+		CONTROL_SetDeviceState(DS_Ready, SS_QgSaveResult);
+	}
+
+	TIM_StatusClear(TIM3);
 }
 //-----------------------------------------
 

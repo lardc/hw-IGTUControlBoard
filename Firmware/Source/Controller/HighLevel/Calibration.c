@@ -59,15 +59,6 @@ void CAL_I_CacheVariables()
 {
 	CU_LoadConvertParams();
 	MEASURE_ResetDMABuffers();
-
-	CalibrationLog.DataA = &CalSampledData.Voltage;
-	CalibrationLog.DataB = &CalSampledData.Current;
-	CalibrationLog.LogBufferA = &CONTROL_VoltageValues[0];
-	CalibrationLog.LogBufferB = &CONTROL_CurrentValues[0];
-	CalibrationLog.LogBufferCounter = &CONTROL_Values_Counter;
-	//
-	CalRingBuffers.DataA = &CalSampledData.Voltage;
-	CalRingBuffers.DataB = &CalSampledData.Current;
 }
 //------------------------------
 

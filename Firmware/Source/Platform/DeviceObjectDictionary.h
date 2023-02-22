@@ -232,9 +232,9 @@
 #define DF_NONE							0
 #define DF_FOLLOWING_ERROR				1
 #define DF_PAU_INTERFACE				2
-#define DF_PAU_FAULT					3
+#define DF_PAU_WRONG_STATE				3
 #define DF_TOCUHP_INTERFACE				4
-#define DF_TOCUHP_FAULT					5
+#define DF_TOCUHP_WRONG_STATE			5
 
 // Problem
 #define PROBLEM_NONE					0
@@ -247,6 +247,7 @@
 #define WARNING_NONE					0
 #define WARNING_IGES_TOO_LOW			1
 #define WARNING_IGES_TOO_HIGH			2
+#define WARNING_QG_VOLTAGE_NOT_REACHED	3
 
 //  User Errors
 #define ERR_NONE						0

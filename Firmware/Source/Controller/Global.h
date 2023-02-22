@@ -20,6 +20,7 @@
 #define DAC_MAX_VAL								0x0FFF	// Максимальное значение ЦАП
 #define EXT_DAC_A								0x0		// Выбор канала A
 #define EXT_DAC_B								0x8000	// Выбор канала B
+#define QG_CURRENT_SAMPLE_TIME					0.2		// мкс
 
 // Размер массивов EP
 #define VALUES_x_SIZE							1000

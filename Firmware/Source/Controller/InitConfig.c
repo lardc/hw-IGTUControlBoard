@@ -126,6 +126,14 @@ void INITCFG_ConfigTimer7()
 }
 //------------------------------------------------
 
+void INITCFG_ConfigTimer3(Int16U Period)
+{
+	TIM_Clock_En(TIM_3);
+	TIM_Config(TIM3, SYSCLK, Period);
+	TIM_Interupt(TIM3, 0, true);
+}
+//------------------------------------------------
+
 void INITCFG_ConfigTimer15()
 {
 	TIM_Clock_En(TIM_15);

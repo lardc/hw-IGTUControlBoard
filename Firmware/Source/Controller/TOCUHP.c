@@ -8,6 +8,10 @@
 #include "DeviceObjectDictionary.h"
 #include "BCCIMHighLevel.h"
 
+// Variables
+//
+Int16U	TOCUHP_State;
+
 // Functions
 //
 bool TOCUHP_ReadState(Int16U* Register)
