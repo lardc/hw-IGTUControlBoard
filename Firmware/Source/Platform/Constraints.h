@@ -67,17 +67,13 @@
 #define VGS_dI_TRIG_MAX				10
 #define VGS_dI_TRIG_DEF				5
 //
-#define VGS_I_THRESHOLD_MIN			10
-#define VGS_I_THRESHOLD_MAX			24
-#define VGS_I_THRESHOLD_DEF			20
+#define IGES_V_RATE_MIN				1e-4
+#define IGES_V_RATE_MAX				1e-2
+#define IGES_V_RATE_DEF				1e-3
 //
-#define IGES_V_RATE_MIN				1
-#define IGES_V_RATE_MAX				10
-#define IGES_V_RATE_DEF				5
-//
-#define IGES_PLATE_TIME_MIN			100
-#define IGES_PLATE_TIME_MAX			10000
-#define IGES_PLATE_TIME_DEF			5000
+#define IGES_SAMPLES_MIN			10
+#define IGES_SAMPLES_MAX			400
+#define IGES_SAMPLES_DEF			50
 //
 #define PAU_CAN_ID_DEF				120
 #define TOCUHP_CAN_ID_DEF			130
@@ -124,9 +120,9 @@
 #define QG_V_POWER_MAX				1500
 #define QG_V_POWER_DEF				1000
 //
-#define IGES_V_MIN					5000
-#define IGES_V_MAX					30000
-#define IGES_V_DEF					30000
+#define IGES_V_MIN					2
+#define IGES_V_MAX					30
+#define IGES_V_DEF					20
 
 
 // Types

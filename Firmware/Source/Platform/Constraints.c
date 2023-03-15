@@ -62,9 +62,9 @@ const TableItemConstraint Constraint[DATA_TABLE_WP_START] = {
 		{VGS_FAST_RATE_MIN, VGS_FAST_RATE_MAX, VGS_FAST_RATE_DEF},					// 51
 		{VGS_SLOW_RATE_MIN, VGS_SLOW_RATE_MAX, VGS_SLOW_RATE_DEF},					// 52
 		{VGS_dI_TRIG_MIN, VGS_dI_TRIG_MAX, VGS_dI_TRIG_DEF},						// 53
-		{VGS_I_THRESHOLD_MIN, VGS_I_THRESHOLD_MAX, VGS_I_THRESHOLD_DEF},			// 54
+		{0, 0, 0},																	// 54
 		{IGES_V_RATE_MIN, IGES_V_RATE_MAX, IGES_V_RATE_DEF},						// 55
-		{IGES_PLATE_TIME_MIN, IGES_PLATE_TIME_MAX, IGES_PLATE_TIME_DEF},			// 56
+		{IGES_SAMPLES_MIN, IGES_SAMPLES_MAX, IGES_SAMPLES_DEF},						// 56
 		{0, INT16U_MAX, PAU_CAN_ID_DEF},											// 57
 		{NO, YES, NO},																// 58
 		{0, INT16U_MAX, TOCUHP_CAN_ID_DEF},											// 59
@@ -78,11 +78,11 @@ const TableItemConstraint Constraint[DATA_TABLE_WP_START] = {
 		{0, 0, 0},																	// 67
 		{0, 0, 0},																	// 68
 		{0, 0, 0},																	// 69
-		{0, 0, 0},																	// 70
-		{0, 0, 0},																	// 71
-		{0, 0, 0},																	// 72
-		{0, 0, 0},																	// 73
-		{0, 0, 0},																	// 74
+		{COEF_P2_MIN, COEF_P2_MAX, COEF_P2_DEF},																	// 70
+		{COEF_P1_MIN, COEF_P1_MAX, COEF_P1_DEF},																	// 71
+		{COEF_P0_MIN, COEF_P0_MAX, COEF_P0_DEF},																	// 72
+		{COEF_K_MIN, COEF_K_MAX, 1},																	// 73
+		{COEF_B_MIN, COEF_B_MAX, 0},																	// 74
 		{0, 0, 0},																	// 75
 		{0, 0, 0},																	// 76
 		{0, 0, 0},																	// 77
@@ -145,7 +145,7 @@ const TableItemConstraint Constraint[DATA_TABLE_WP_START] = {
 		{QG_I_POWER_MIN, QG_I_POWER_MAX, QG_I_POWER_DEF},							// 134
 		{QG_V_POWER_MIN, QG_V_POWER_MAX, QG_V_POWER_DEF},							// 135
 		{IGES_V_MIN, IGES_V_MAX, IGES_V_DEF},										// 136
-		{0, 0, 0},																	// 137
+		{PAU_CODE_RANGE0, PAU_CODE_RANGE2, PAU_CODE_RANGE2},						// 137
 		{0, 0, 0},																	// 138
 		{0, 0, 0},																	// 139
 		{0, INT16U_MAX, 0},															// 140

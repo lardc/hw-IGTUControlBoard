@@ -106,15 +106,14 @@
 #define REG_REGULATOR_QI_MAX			47	// Ограничение уровня интегральной составляющей
 #define REG_REGULATOR_ERR_MAX			48	// Уровень ошибки регулятора для Following Error (%)
 #define REG_REGULATOR_FE_COUNTER		49	// Счетчик Following Error
-#define REG_REGULATOR_DEBUG				50	// Режим отладки регулятора (1 = параметрическое формирование, 0 = ПИ регулятор)
+#define REG_REGULATOR_PARAMETRIC		50	// Режим параметрического формирования
 //
 #define REG_VGS_FAST_RATE				51	// Скорость нарастания напряжения Vg (мВ/мкс)
 #define REG_VGS_SLOW_RATE				52	// Скорость нарастания напряжения Vg (мВ/мкс)
 #define REG_VGS_dI_TRIG					53	// (%)
-#define REG_VGS_I_THRESHOLD				54	// Порог переключения диапазонов измерения тока
 //
 #define REG_IGES_V_RATE					55	// Скорость нарастания напряжения, (В/мкс)
-#define REG_IGES_PLATE_TIME				56	// Длительность полки напряжения, (мс)
+#define REG_IGES_SAMPLES_NUMBER			56	// Количество семплов при измерении Iges
 //
 #define REG_PAU_CAN_ID					57	// CAN ID PAU
 #define REG_PAU_EMULATED				58	// Эмуляция работы PAU
@@ -127,6 +126,12 @@
 #define REG_SCOPE_STEP					63	// Шаг сохранения оцифрованных значений
 #define REG_MUTE_SAFETY					64	// Отключение проверки контакта безопасности
 #define REG_ST_CHECK_ERROR				65	// Допустимая ошибка результата самотестирования
+//
+#define REG_V_ADC_TO_I_LOW_P2			70	// Коэффициент тонкой подстройки Р2
+#define REG_V_ADC_TO_I_LOW_P1			71	// Коэффициент тонкой подстройки Р1
+#define REG_V_ADC_TO_I_LOW_P0			72	// Смещение тонкой подстройки Р0
+#define REG_V_ADC_TO_I_LOW_K			73	// Коэффициент преобразования K
+#define REG_V_ADC_TO_I_LOW_B			74	// Коэффициент преобразования B
 
 
 // Несохраняемые регистры чтения-записи
@@ -145,6 +150,7 @@
 
 // Регистры измерения IGES
 #define REG_IGES_V						136	// Полка напряжения на затворе (мВ)
+#define REG_IGES_RANGE					137	// Диапазон измерения тока утечки (0 - 20нА, 1 - 200нА, 2 - 2мкА)
 
 // Регистры режимов калибровки
 #define REG_CAL_V						140	// Задание напряжения при калибровке, мВ
@@ -197,7 +203,7 @@
 // PAU registers
 #define REG_PAU_CHANNEL					128	// Выбор канала измерения PAU
 #define REG_PAU_RANGE					129	// Диапазон измерения тока (мА)
-#define REG_PAU_MEASUREMENT_TIME		130	// Время измерения (мс)
+#define REG_PAU_SAMPLES_NUMBER			130	// Количество точек измерения
 #define REG_PAU_RESULT_CURRENT			200	// Измеренное значение тока
 //
 #define REG_PAU_DEV_STATE				192	// Состояние блока

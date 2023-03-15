@@ -40,6 +40,7 @@ void CAL_V_CacheVariables()
 	MEASURE_ResetDMABuffers();
 	REGULATOR_ResetVariables(&RegulatorParams);
 	REGULATOR_CacheVariables(&RegulatorParams);
+	REGULATOR_Mode(&RegulatorParams, Parametric);
 
 	RegulatorParams.dVg = DataTable[REG_CAL_V] / (CAL_VG_FRONT_TIME / TIMER15_uS);
 	RegulatorParams.Counter = CAL_PULSE_WIDTH_MS / TIMER15_uS;
@@ -64,13 +65,14 @@ void CAL_I_CacheVariables()
 
 void CAL_V_Prepare()
 {
-	INITCFG_ConfigADC_VgsIges();
+	Int16U CurrentRange = MEASURE_V_SetCurrentRange(DataTable[REG_CAL_I]);
+
+	INITCFG_ConfigADC_VgsIges(CurrentRange);
 	INITCFG_ConfigDMA_VgsIges();
 
-	MEASURE_V_SetCurrentRange(DataTable[REG_CAL_I]);
-	LL_V_IlimHighRange();
 	LL_V_ShortOut(false);
 	LL_V_ShortPAU(true);
+	LL_V_Diagnostic(false);
 	CONTROL_SwitchOutMUX(Voltage);
 
 	CAL_V_CacheVariables();

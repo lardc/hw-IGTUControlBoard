@@ -7,7 +7,11 @@
 
 // Definitions
 //
-#define MEASURE_V_I_RANGES				2		// Количество диапазонов измерения тока в источнике напряжения
+#define MEASURE_V_I_RANGES				3		// Количество диапазонов измерения тока в источнике напряжения
+//
+#define MEASURE_V_I_LOW					0
+#define MEASURE_V_I_HIGH_R0				1
+#define MEASURE_V_I_HIGH_R1				2
 
 // Types
 //
@@ -28,7 +32,7 @@ extern volatile Int16U MEASURE_Qg_DataRaw[ADC_DMA_BUFF_SIZE_QG];
 MeasureSample MEASURE_V_SampleVI();
 float MEASURE_ExtractAveragedDatas(float* Buffer, Int16U BufferLength);
 void MEASURE_ResetDMABuffers();
-void MEASURE_V_SetCurrentRange(float Current);
+Int16U MEASURE_V_SetCurrentRange(float Current);
 void MEASURE_StartNewSampling();
 
 #endif /* MEASUREMENT_H_ */

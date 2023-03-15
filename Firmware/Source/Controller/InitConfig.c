@@ -170,8 +170,15 @@ void INITCFG_ConfigADC_Qg()
 }
 //------------------------------------------------
 
-void INITCFG_ConfigADC_VgsIges()
+void INITCFG_ConfigADC_VgsIges(Int16U CurrentRange)
 {
+	Int16U ADCChannel;
+
+	if(CurrentRange == MEASURE_V_I_LOW)
+		ADCChannel = ADC1_V_I_LOW_SEN_CHANNEL;
+	else
+		ADCChannel = ADC1_V_I_HIGH_SEN_CHANNEL;
+
 	// ADC1
 	ADC_ResetConfig(ADC1);
 	ADC_Calibration(ADC1);
@@ -179,7 +186,7 @@ void INITCFG_ConfigADC_VgsIges()
 	ADC_ChannelSeqReset(ADC1);
 
 	for (uint8_t i = 1; i <= ADC_V_DMA_BUFF_SIZE; ++i)
-		ADC_ChannelSet_Sequence(ADC1, ADC1_V_I_SEN_CHANNEL, i);
+		ADC_ChannelSet_Sequence(ADC1, ADCChannel, i);
 
 	ADC_ChannelSeqLen(ADC1, ADC_V_DMA_BUFF_SIZE);
 	ADC_DMAConfig(ADC1);

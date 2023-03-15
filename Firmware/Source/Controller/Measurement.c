@@ -6,17 +6,12 @@
 #include "ConvertUtils.h"
 #include "LowLevel.h"
 
-//Definitions
-//
-#define MEASURE_V_I_RANGE0			0
-#define MEASURE_V_I_RANGE1			1
-
 // Variables
 volatile Int16U MEASURE_VoltageRaw[ADC_V_DMA_BUFF_SIZE] = {0};
 volatile Int16U MEASURE_CurrentRaw[ADC_V_DMA_BUFF_SIZE] = {0};
 volatile Int16U MEASURE_Qg_DataRaw[ADC_DMA_BUFF_SIZE_QG] = {0};
 //
-bool CurrentRange = MEASURE_V_I_RANGE0;
+Int16U CurrentRange = MEASURE_V_I_HIGH_R0;
 
 // Functions prototypes
 //
@@ -80,9 +75,29 @@ void MEASURE_ResetDMABuffers()
 }
 //-----------------------------
 
-void MEASURE_V_SetCurrentRange(float Current)
+Int16U MEASURE_V_SetCurrentRange(float Current)
 {
-	CurrentRange = (Current > DataTable[REG_VGS_I_THRESHOLD]) ? MEASURE_V_I_RANGE1 : MEASURE_V_I_RANGE0;
-	LL_V_IsenseSetRange(CurrentRange);
+	if(Current <= THRESHOLD_V_I_LOW)
+	{
+		CurrentRange = MEASURE_V_I_LOW;
+		LL_V_IlimLowRange();
+	}
+	else
+	{
+		if(Current > THRESHOLD_V_I_HIGH)
+		{
+			CurrentRange = MEASURE_V_I_HIGH_R1;
+			LL_V_IsenseHighRange1();
+		}
+		else
+		{
+			CurrentRange = MEASURE_V_I_HIGH_R0;
+			LL_V_IsenseHighRange0();
+		}
+
+		LL_V_IlimHighRange();
+	}
+
+	return CurrentRange;
 }
 //-----------------------------

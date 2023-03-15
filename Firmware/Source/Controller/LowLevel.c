@@ -75,18 +75,16 @@ void LL_V_VSetDAC(Int16U Data)
 }
 //-----------------------------
 
-void LL_V_IsenseSetRange(bool Range)
+void LL_V_IsenseHighRange0()
 {
-	if(Range)
-	{
-		GPIO_SetState(GPIO_V_CURR_K1, false);
-		GPIO_SetState(GPIO_V_CURR_K2, true);
-	}
-	else
-	{
-		GPIO_SetState(GPIO_V_CURR_K1, true);
-		GPIO_SetState(GPIO_V_CURR_K2, false);
-	}
+	GPIO_SetState(GPIO_V_CURR_K1, true);
+	GPIO_SetState(GPIO_V_CURR_K2, false);
+}
+
+void LL_V_IsenseHighRange1()
+{
+	GPIO_SetState(GPIO_V_CURR_K1, false);
+	GPIO_SetState(GPIO_V_CURR_K2, true);
 }
 //-----------------------------
 

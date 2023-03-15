@@ -17,7 +17,7 @@ void INITCFG_ConfigWatchDog();
 void INITCFG_ConfigExtInterrupt();
 void INITCFG_ConfigSPI();
 void INITCFG_ConfigDMA_VgsIges();
-void INITCFG_ConfigADC_VgsIges();
+void INITCFG_ConfigADC_VgsIges(Int16U CurrentRange);
 void INITCFG_ConfigDMA_Qg();
 void INITCFG_ConfigADC_Qg();
 void INITCFG_ConfigADC();
