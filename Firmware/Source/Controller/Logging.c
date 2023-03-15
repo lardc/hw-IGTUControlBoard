@@ -11,30 +11,28 @@
 //
 void LOG_LoggingData(LogParamsStruct* Log)
 {
-	static Int16U ScopeLogStep = 0, LocalCounter = 0;
-
 	// —брос локального счетчика в начале логгировани€
 	if(*Log->LogBufferCounter == 0)
-		LocalCounter = 0;
+		Log->LocalCounter = 0;
 
-	if(ScopeLogStep++ >= DataTable[REG_SCOPE_STEP])
+	if(Log->ScopeLogStep++ >= DataTable[REG_SCOPE_STEP])
 	{
-		ScopeLogStep = 0;
+		Log->ScopeLogStep = 0;
 
-		*(Log->LogBufferA + LocalCounter) = *Log->DataA;
-		*(Log->LogBufferB + LocalCounter) = *Log->DataB;
-		*Log->LogBufferCounter = LocalCounter;
+		*(Log->LogBufferA + Log->LocalCounter) = *Log->DataA;
+		*(Log->LogBufferB + Log->LocalCounter) = *Log->DataB;
+		*Log->LogBufferCounter = Log->LocalCounter;
 
-		LocalCounter++;
+		Log->LocalCounter++;
 	}
 
 	// ”словие обновлени€ глобального счетчика данных
 	if(*Log->LogBufferCounter < VALUES_x_SIZE)
-		*Log->LogBufferCounter = LocalCounter;
+		*Log->LogBufferCounter = Log->LocalCounter;
 
 	// —брос локального счетчика
-	if(LocalCounter >= VALUES_x_SIZE)
-		LocalCounter = 0;
+	if(Log->LocalCounter >= VALUES_x_SIZE)
+		Log->LocalCounter = 0;
 }
 //-----------------------------------------------
 

@@ -21,6 +21,8 @@ typedef struct __LogParams
 	pFloat32 LogBufferA;
 	pFloat32 LogBufferB;
 	pInt16U LogBufferCounter;
+	Int16U ScopeLogStep;
+	Int16U LocalCounter;
 } LogParamsStruct;
 
 typedef struct __RingBuffersParams
