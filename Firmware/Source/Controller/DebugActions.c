@@ -12,6 +12,7 @@
 #include "Delay.h"
 #include "ConvertUtils.h"
 #include "Measurement.h"
+#include "Global.h"
 
 // Definitions
 //
@@ -107,7 +108,7 @@ void DBGACT_V_TestClimHigh()
 	LL_V_ShortPAU(true);
 	LL_V_ShortOut(false);
 	LL_V_Diagnostic(false);
-	MEASURE_V_SetCurrentRange(DataTable[REG_VGS_I_THRESHOLD]);
+	MEASURE_V_SetCurrentRange(THRESHOLD_V_I_HIGH);
 	LL_V_IlimHighRange();
 
 	LL_V_VSetDAC(DBG_DAC_TEST_VALUE);

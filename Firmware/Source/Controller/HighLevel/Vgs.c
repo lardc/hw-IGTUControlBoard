@@ -29,10 +29,10 @@ void VGS_CacheVariables();
 //
 void VGS_Prepare()
 {
-	INITCFG_ConfigADC_VgsIges();
-	INITCFG_ConfigDMA_VgsIges();
+	Int16U CurrentRange = MEASURE_V_SetCurrentRange(DataTable[REG_VGS_I_TRIG]);
 
-	MEASURE_V_SetCurrentRange(DataTable[REG_VGS_I_TRIG]);
+	INITCFG_ConfigADC_VgsIges(CurrentRange);
+	INITCFG_ConfigDMA_VgsIges();
 
 	LL_V_IlimHighRange();
 	LL_V_ShortOut(false);
