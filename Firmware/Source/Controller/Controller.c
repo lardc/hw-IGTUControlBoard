@@ -12,6 +12,8 @@
 #include "Iges.h"
 #include "Qg.h"
 #include "SelfTest.h"
+#include "BCCIMHighLevel.h"
+#include "PAU.h"
 
 
 // Variables
@@ -128,7 +130,7 @@ void CONTROL_Idle()
 static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 {
 	*pUserError = ERR_NONE;
-	
+
 	switch(ActionID)
 	{
 		case ACT_ENABLE_POWER:
@@ -204,12 +206,23 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			break;
 
 		case ACT_CLR_FAULT:
-			if(CONTROL_State == DS_Fault)
-				CONTROL_ResetToDefaultState();
+			if(PAU_ClearFault())
+			{
+				if(CONTROL_State == DS_Fault)
+					CONTROL_ResetToDefaultState();
+			}
+			else
+				CONTROL_SwitchToFault(DF_PAU_INTERFACE);
 			break;
 
 		case ACT_CLR_WARNING:
-			DataTable[REG_WARNING] = WARNING_NONE;
+			if(PAU_ClearWarning())
+				DataTable[REG_WARNING] = WARNING_NONE;
+			else
+			{
+				DataTable[REG_WARNING] = WARNING_NONE;
+				CONTROL_SwitchToFault(DF_PAU_INTERFACE);
+			}
 			break;
 
 		case ACT_CAL_V:
@@ -264,6 +277,10 @@ void CONTROL_LogicProcess()
 
 		case SS_IgesPrepare:
 			IGES_Prepare();
+			break;
+
+		case SS_IgesSaveResult:
+			IGES_SaveResults();
 			break;
 
 		case SS_QgPrepare:
@@ -321,10 +338,6 @@ void CONTROL_HighPriorityProcess()
 			IGES_Process();
 			break;
 
-		case SS_IgesSaveResult:
-			IGES_SaveResults();
-			break;
-
 		default:
 			break;
 	}
@@ -349,6 +362,14 @@ void CONTROL_StartHighPriorityProcesses()
 
 void CONTROL_SwitchToFault(Int16U Reason)
 {
+	if(Reason == DF_PAU_INTERFACE)
+	{
+		BHLError Error = BHL_GetError();
+		DataTable[REG_PAU_ERROR_CODE] = Error.ErrorCode;
+		DataTable[REG_PAU_FUNCTION] = Error.Func;
+		DataTable[REG_PAU_EXT_DATA] = Error.ExtData;
+	}
+
 	CONTROL_SetDeviceState(DS_Fault, SS_None);
 	DataTable[REG_FAULT_REASON] = Reason;
 	DataTable[REG_OP_RESULT] = OPRESULT_FAIL;

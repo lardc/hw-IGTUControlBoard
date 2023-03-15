@@ -9,6 +9,7 @@
 #include "DataTable.h"
 #include "DeviceObjectDictionary.h"
 #include "Qg.h"
+#include "Iges.h"
 
 // Functions
 //
@@ -76,6 +77,7 @@ void TIM3_IRQHandler()
 
 void EXTI2_TSC_IRQHandler()
 {
+	PAU_SyncFlag = true;
 	EXTI_FlagReset(EXTI_2);
 }
 //-----------------------------------------

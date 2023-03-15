@@ -7,6 +7,7 @@
 #include "DataTable.h"
 #include "DeviceObjectDictionary.h"
 #include "BCCIMHighLevel.h"
+#include "LowLevel.h"
 
 
 // Functions
@@ -23,15 +24,15 @@ bool PAU_UpdateState(Int16U* Register)
 }
 //--------------------------------------
 
-bool PAU_Configure(Int16U Channel, float Range, float Time)
+bool PAU_Configure(Int16U Channel, float Range, Int16U SamplesNumber)
 {
 	if(DataTable[REG_PAU_EMULATED])
 		return true;
 
 	if(BHL_WriteRegister(DataTable[REG_PAU_CAN_ID], REG_PAU_CHANNEL, Channel))
 		if(BHL_WriteRegisterFloat(DataTable[REG_PAU_CAN_ID], REG_PAU_RANGE, Range))
-			if(BHL_WriteRegisterFloat(DataTable[REG_PAU_CAN_ID], REG_PAU_MEASUREMENT_TIME, Time))
-				BHL_Call(DataTable[REG_PAU_CAN_ID], ACT_PAU_PULSE_CONFIG);
+			if(BHL_WriteRegisterFloat(DataTable[REG_PAU_CAN_ID], REG_PAU_SAMPLES_NUMBER, SamplesNumber))
+				if(BHL_Call(DataTable[REG_PAU_CAN_ID], ACT_PAU_PULSE_CONFIG))
 					return true;
 
 	return false;
@@ -53,5 +54,17 @@ bool PAU_ClearWarning()
 bool PAU_ReadMeasuredData(float* Data)
 {
 	return (DataTable[REG_PAU_EMULATED]) ? true : BHL_ReadRegisterFloat(DataTable[REG_PAU_CAN_ID], REG_PAU_RESULT_CURRENT, Data);
+}
+//--------------------------------------
+
+void PAU_ShortInput(bool State)
+{
+	if(DataTable[REG_PAU_EMULATED])
+	{
+		LL_V_ShortPAU(true);
+		return;
+	}
+	else
+		LL_V_ShortPAU(State);
 }
 //--------------------------------------

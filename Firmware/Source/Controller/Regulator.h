@@ -14,6 +14,12 @@
 
 // Structs
 //
+typedef enum __RegulatorMode
+{
+	FeedBack = 0,
+	Parametric = 1,
+} RegulatorMode;
+
 typedef struct __RegulatorParams
 {
 	float Kp;
@@ -22,9 +28,9 @@ typedef struct __RegulatorParams
 	float Qimax;
 	Int16U FECounterMax;
 	Int16U DACLimitValue;
-	bool DebugMode;
+	RegulatorMode ParametricMode;
 //
-	Int16S Counter;
+	Int64U Counter;
 	float dVg;
 	float Target;
 	float SampledData;
@@ -48,6 +54,7 @@ extern RegulatorParamsStruct RegulatorParams;
 bool REGULATOR_Process(RegulatorParamsStruct* Regulator);
 void REGULATOR_CacheVariables(RegulatorParamsStruct* Regulator);
 void REGULATOR_ResetVariables(RegulatorParamsStruct* Regulator);
+void REGULATOR_Mode(RegulatorParamsStruct* Regulator, RegulatorMode Mode);
 //
 
 #endif /* REGULATOR_H_ */

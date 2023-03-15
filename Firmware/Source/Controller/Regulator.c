@@ -25,7 +25,7 @@ bool REGULATOR_Process(RegulatorParamsStruct* Regulator)
 {
 	Regulator->Error = (Regulator->Counter == 0) ? 0 : (Regulator->Target - Regulator->SampledData);
 
-	if(!Regulator->DebugMode && Regulator->Error > Regulator->ErrorMax)
+	if(Regulator->ParametricMode == FeedBack && Regulator->Error > Regulator->ErrorMax)
 	{
 		Regulator->FECounter++;
 
@@ -48,8 +48,7 @@ bool REGULATOR_Process(RegulatorParamsStruct* Regulator)
 
 	Regulator->Out = Regulator->Target + Regulator->Qp + Regulator->Qi;
 
-	float ValueToDAC = (Regulator->DebugMode) ? Regulator->Target : Regulator->Out;
-
+	float ValueToDAC = (Regulator->ParametricMode == Parametric) ? Regulator->Target : Regulator->Out;
 	Regulator->DACSetpoint = REGULATOR_DACApplyLimits(CU_V_VtoDAC(ValueToDAC), Regulator->DACLimitValue);
 
 	LL_V_VSetDAC(Regulator->DACSetpoint);
@@ -58,10 +57,10 @@ bool REGULATOR_Process(RegulatorParamsStruct* Regulator)
 
 	Regulator->Counter--;
 
-	if(!Regulator->Counter)
-		return true;
-	else
+	if(Regulator->Counter)
 		return false;
+	else
+		return true;
 }
 //-----------------------------------------------
 
@@ -87,7 +86,6 @@ void REGULATOR_CacheVariables(RegulatorParamsStruct* Regulator)
 	Regulator->Qimax = DataTable[REG_REGULATOR_QI_MAX];
 	Regulator->FECounterMax = DataTable[REG_REGULATOR_FE_COUNTER];
 	Regulator->DACLimitValue = DataTable[REG_DAC_OUTPUT_LIMIT_VALUE];
-	Regulator->DebugMode = DataTable[REG_REGULATOR_DEBUG];
 	Regulator->DACLimitValue = DataTable[REG_DAC_OUTPUT_LIMIT_VALUE];
 
 	RegulatorLog.DataA = &Regulator->Out;
@@ -109,5 +107,11 @@ void REGULATOR_ResetVariables(RegulatorParamsStruct* Regulator)
 	Regulator->Out = 0;
 	Regulator->FECounter = 0;
 	Regulator->FollowingError = false;
+}
+//-----------------------------------------------
+
+void REGULATOR_Mode(RegulatorParamsStruct* Regulator, RegulatorMode Mode)
+{
+	Regulator->ParametricMode = (DataTable[REG_REGULATOR_PARAMETRIC] == Parametric) ? Parametric : Mode;
 }
 //-----------------------------------------------

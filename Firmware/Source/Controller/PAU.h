@@ -11,8 +11,11 @@
 #define PAU_CHANNEL_IGTU			2
 //
 #define PAU_CONFIG_TIMEOUT			1000
-#define PAU_WAIT_READY_TIMEOUT		1500
-#define PAU_AUTO_RANGE				0
+#define PAU_WAIT_READY_TIMEOUT		5000
+//
+#define PAU_I_RANGE_0				20e-6	// mA
+#define PAU_I_RANGE_1				200e-6	// mA
+#define PAU_I_RANGE_2				2e-3	// mA
 
 // Types
 //
@@ -29,9 +32,10 @@ typedef enum __PAUState
 // Functions
 //
 bool PAU_UpdateState(Int16U* Register);
-bool PAU_Configure(Int16U Channel, float Range, float Time);
+bool PAU_Configure(Int16U Channel, float Range, Int16U SamplesNumber);
 bool PAU_ClearFault();
 bool PAU_ClearWarning();
 bool PAU_ReadMeasuredData(float* Data);
+void PAU_ShortInput(bool State);
 
 #endif /* CONTROLLER_PAU_H_ */

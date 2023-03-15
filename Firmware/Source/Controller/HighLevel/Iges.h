@@ -6,6 +6,10 @@
 #include "Board.h"
 #include "stdinc.h"
 
+// Variables
+//
+extern bool PAU_SyncFlag;
+
 // Functions
 //
 void IGES_Prepare();
