@@ -56,6 +56,9 @@ void IGES_Prepare()
 	if(!PAU_UpdateState(&PAU_State))
 		CONTROL_SwitchToFault(DF_PAU_INTERFACE);
 
+	if(DataTable[REG_PAU_EMULATED])
+		ConfigStage = HW_Config;
+
 	switch(ConfigStage)
 	{
 		case PAU_Config:
@@ -209,6 +212,12 @@ void IGES_PAUsyncProcess(bool State)
 
 	if(State)
 	{
+		if(DataTable[REG_PAU_EMULATED])
+		{
+			IgesSamplesCounter--;
+			return;
+		}
+
 		if(SyncDelayCounter)
 		{
 			SyncDelayCounter--;
@@ -248,32 +257,42 @@ void IGES_SaveResults()
 	if(!PAU_UpdateState(&PAU_State))
 		CONTROL_SwitchToFault(DF_PAU_INTERFACE);
 
-	if(PAU_State == PS_Ready)
+	if(DataTable[REG_PAU_EMULATED])
 	{
-		if(PAU_ReadMeasuredData(&Iges))
-		{
-			if(Iges < MEASURE_IGES_CURRENT_MIN)
-				DataTable[REG_WARNING] = WARNING_IGES_TOO_LOW;
-			if(Iges > MEASURE_IGES_CURRENT_MAX)
-				DataTable[REG_WARNING] = WARNING_IGES_TOO_HIGH;
+		DataTable[REG_IGES_RESULT] = 0;
+		DataTable[REG_OP_RESULT] = OPRESULT_OK;
 
-			DataTable[REG_IGES_RESULT] = Iges;
-			DataTable[REG_OP_RESULT] = OPRESULT_OK;
-
-			CONTROL_SetDeviceState(DS_Ready, SS_None);
-		}
-		else
-		{
-			DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
-			CONTROL_SwitchToFault(DF_PAU_INTERFACE);
-		}
+		CONTROL_SetDeviceState(DS_Ready, SS_None);
 	}
 	else
 	{
-		if(CONTROL_TimeCounter >= PAU_StateTimeout)
+		if(PAU_State == PS_Ready)
 		{
-			DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
-			CONTROL_SwitchToFault(DF_PAU_WRONG_STATE);
+			if(PAU_ReadMeasuredData(&Iges))
+			{
+				if(Iges < MEASURE_IGES_CURRENT_MIN)
+					DataTable[REG_WARNING] = WARNING_IGES_TOO_LOW;
+				if(Iges > MEASURE_IGES_CURRENT_MAX)
+					DataTable[REG_WARNING] = WARNING_IGES_TOO_HIGH;
+
+				DataTable[REG_IGES_RESULT] = Iges;
+				DataTable[REG_OP_RESULT] = OPRESULT_OK;
+
+				CONTROL_SetDeviceState(DS_Ready, SS_None);
+			}
+			else
+			{
+				DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
+				CONTROL_SwitchToFault(DF_PAU_INTERFACE);
+			}
+		}
+		else
+		{
+			if(CONTROL_TimeCounter >= PAU_StateTimeout)
+			{
+				DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
+				CONTROL_SwitchToFault(DF_PAU_WRONG_STATE);
+			}
 		}
 	}
 }
