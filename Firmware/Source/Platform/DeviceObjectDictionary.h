@@ -65,73 +65,74 @@
 #define REG_V_ADC_TO_I_R1_K				13	// Коэффициент преобразования K
 #define REG_V_ADC_TO_I_R1_B				14	// Коэффициент преобразования B
 //
-#define REG_V_V_TO_DAC_P2				15	// Коэффициент тонкой подстройки Р2
-#define REG_V_V_TO_DAC_P1				16	// Коэффициент тонкой подстройки Р1
-#define REG_V_V_TO_DAC_P0				17	// Смещение тонкой подстройки Р0
-#define REG_V_V_TO_DAC_K				18	// Коэффициент преобразования K
-#define REG_V_V_TO_DAC_B				19	// Коэффициент преобразования B
+#define REG_V_ADC_TO_I_R2_P2			15	// Коэффициент тонкой подстройки Р2
+#define REG_V_ADC_TO_I_R2_P1			16	// Коэффициент тонкой подстройки Р1
+#define REG_V_ADC_TO_I_R2_P0			17	// Смещение тонкой подстройки Р0
+#define REG_V_ADC_TO_I_R2_K				18	// Коэффициент преобразования K
+#define REG_V_ADC_TO_I_R2_B				19	// Коэффициент преобразования B
 //
-#define REG_I_I_TO_DAC_P2				20	// Коэффициент тонкой подстройки Р2
-#define REG_I_I_TO_DAC_P1				21	// Коэффициент тонкой подстройки Р1
-#define REG_I_I_TO_DAC_P0				22	// Смещение тонкой подстройки Р0
-#define REG_I_I_TO_DAC_K				23	// Коэффициент преобразования K
-#define REG_I_I_TO_DAC_B				24	// Коэффициент преобразования B
+#define REG_V_V_TO_DAC_P2				20	// Коэффициент тонкой подстройки Р2
+#define REG_V_V_TO_DAC_P1				21	// Коэффициент тонкой подстройки Р1
+#define REG_V_V_TO_DAC_P0				22	// Смещение тонкой подстройки Р0
+#define REG_V_V_TO_DAC_K				23	// Коэффициент преобразования K
+#define REG_V_V_TO_DAC_B				24	// Коэффициент преобразования B
 //
-#define REG_I_VC_TO_DAC_P2				25	// Коэффициент тонкой подстройки Р2
-#define REG_I_VC_TO_DAC_P1				26	// Коэффициент тонкой подстройки Р1
-#define REG_I_VC_TO_DAC_P0				27	// Смещение тонкой подстройки Р0
-#define REG_I_VC_TO_DAC_K				28	// Коэффициент преобразования K
-#define REG_I_VC_TO_DAC_B				29	// Коэффициент преобразования B
+#define REG_I_I_TO_DAC_P2				25	// Коэффициент тонкой подстройки Р2
+#define REG_I_I_TO_DAC_P1				26	// Коэффициент тонкой подстройки Р1
+#define REG_I_I_TO_DAC_P0				27	// Смещение тонкой подстройки Р0
+#define REG_I_I_TO_DAC_K				28	// Коэффициент преобразования K
+#define REG_I_I_TO_DAC_B				29	// Коэффициент преобразования B
 //
-#define REG_I_VN_TO_DAC_P2				30	// Коэффициент тонкой подстройки Р2
-#define REG_I_VN_TO_DAC_P1				31	// Коэффициент тонкой подстройки Р1
-#define REG_I_VN_TO_DAC_P0				32	// Смещение тонкой подстройки Р0
-#define REG_I_VN_TO_DAC_K				33	// Коэффициент преобразования K
-#define REG_I_VN_TO_DAC_B				34	// Коэффициент преобразования B
+#define REG_I_VC_TO_DAC_P2				30	// Коэффициент тонкой подстройки Р2
+#define REG_I_VC_TO_DAC_P1				31	// Коэффициент тонкой подстройки Р1
+#define REG_I_VC_TO_DAC_P0				32	// Смещение тонкой подстройки Р0
+#define REG_I_VC_TO_DAC_K				33	// Коэффициент преобразования K
+#define REG_I_VC_TO_DAC_B				34	// Коэффициент преобразования B
 //
-#define REG_I_ADC_TO_V_P2				35	// Коэффициент тонкой подстройки Р2
-#define REG_I_ADC_TO_V_P1				36	// Коэффициент тонкой подстройки Р1
-#define REG_I_ADC_TO_V_P0				37	// Смещение тонкой подстройки Р0
-#define REG_I_ADC_TO_V_K				38	// Коэффициент преобразования K
-#define REG_I_ADC_TO_V_B				39	// Коэффициент преобразования B
+#define REG_I_VN_TO_DAC_P2				35	// Коэффициент тонкой подстройки Р2
+#define REG_I_VN_TO_DAC_P1				36	// Коэффициент тонкой подстройки Р1
+#define REG_I_VN_TO_DAC_P0				37	// Смещение тонкой подстройки Р0
+#define REG_I_VN_TO_DAC_K				38	// Коэффициент преобразования K
+#define REG_I_VN_TO_DAC_B				39	// Коэффициент преобразования B
 //
-#define REG_I_ADC_TO_I_P2				40	// Коэффициент тонкой подстройки Р2
-#define REG_I_ADC_TO_I_P1				41	// Коэффициент тонкой подстройки Р1
-#define REG_I_ADC_TO_I_P0				42	// Смещение тонкой подстройки Р0
-#define REG_I_ADC_TO_I_K				43	// Коэффициент преобразования K
-#define REG_I_ADC_TO_I_B				44	// Коэффициент преобразования B
+#define REG_I_ADC_TO_V_P2				40	// Коэффициент тонкой подстройки Р2
+#define REG_I_ADC_TO_V_P1				41	// Коэффициент тонкой подстройки Р1
+#define REG_I_ADC_TO_V_P0				42	// Смещение тонкой подстройки Р0
+#define REG_I_ADC_TO_V_K				43	// Коэффициент преобразования K
+#define REG_I_ADC_TO_V_B				44	// Коэффициент преобразования B
 //
-#define REG_REGULATOR_Kp				45	// Пропорциональный коэффициент регулятора
-#define REG_REGULATOR_Ki				46	// Интегральный коэффициент регулятора
-#define REG_REGULATOR_QI_MAX			47	// Ограничение уровня интегральной составляющей
-#define REG_REGULATOR_ERR_MAX			48	// Уровень ошибки регулятора для Following Error (%)
-#define REG_REGULATOR_FE_COUNTER		49	// Счетчик Following Error
-#define REG_REGULATOR_PARAMETRIC		50	// Режим параметрического формирования
+#define REG_I_ADC_TO_I_P2				45	// Коэффициент тонкой подстройки Р2
+#define REG_I_ADC_TO_I_P1				46	// Коэффициент тонкой подстройки Р1
+#define REG_I_ADC_TO_I_P0				47	// Смещение тонкой подстройки Р0
+#define REG_I_ADC_TO_I_K				48	// Коэффициент преобразования K
+#define REG_I_ADC_TO_I_B				49	// Коэффициент преобразования B
 //
-#define REG_VGS_FAST_RATE				51	// Скорость нарастания напряжения Vg (мВ/мкс)
-#define REG_VGS_SLOW_RATE				52	// Скорость нарастания напряжения Vg (мВ/мкс)
-#define REG_VGS_dI_TRIG					53	// (%)
+#define REG_REGULATOR_Kp				50	// Пропорциональный коэффициент регулятора
+#define REG_REGULATOR_Ki				51	// Интегральный коэффициент регулятора
+#define REG_REGULATOR_QI_MAX			52	// Ограничение уровня интегральной составляющей
+#define REG_REGULATOR_ERR_MAX			53	// Уровень ошибки регулятора для Following Error (%)
+#define REG_REGULATOR_FE_COUNTER		54	// Счетчик Following Error
+#define REG_REGULATOR_PARAMETRIC		55	// Режим параметрического формирования
 //
-#define REG_IGES_V_RATE					55	// Скорость нарастания напряжения, (В/мкс)
-#define REG_IGES_SAMPLES_NUMBER			56	// Количество семплов при измерении Iges
+#define REG_VGS_FAST_RATE				56	// Скорость нарастания напряжения Vg (мВ/мкс)
+#define REG_VGS_SLOW_RATE				57	// Скорость нарастания напряжения Vg (мВ/мкс)
+#define REG_VGS_dI_TRIG					58	// (%)
 //
-#define REG_PAU_CAN_ID					57	// CAN ID PAU
-#define REG_PAU_EMULATED				58	// Эмуляция работы PAU
+#define REG_IGES_V_RATE					59	// Скорость нарастания напряжения, (В/мкс)
+#define REG_IGES_SAMPLES_NUMBER			60	// Количество семплов при измерении Iges
 //
-#define REG_TOCUHP_CAN_ID				59	// CAN ID TOCUHP
-#define REG_TOCUHP_EMULATED				60	// Эмуляция работы TOCUHP
-#define REG_TOCUHP_RES_PER_BIT			61	// Сопротивление одного бита блока TOCU (Ом)
+#define REG_PAU_CAN_ID					61	// CAN ID PAU
+#define REG_PAU_EMULATED				62	// Эмуляция работы PAU
 //
-#define REG_DAC_OUTPUT_LIMIT_VALUE		62	// Ограничение выхода ЦАП (0 - 4095)
-#define REG_SCOPE_STEP					63	// Шаг сохранения оцифрованных значений
-#define REG_MUTE_SAFETY					64	// Отключение проверки контакта безопасности
-#define REG_ST_CHECK_ERROR				65	// Допустимая ошибка результата самотестирования
+#define REG_TOCUHP_CAN_ID				63	// CAN ID TOCUHP
+#define REG_TOCUHP_EMULATED				64	// Эмуляция работы TOCUHP
+#define REG_TOCUHP_RES_PER_BIT			65	// Сопротивление одного бита блока TOCU (Ом)
 //
-#define REG_V_ADC_TO_I_LOW_P2			70	// Коэффициент тонкой подстройки Р2
-#define REG_V_ADC_TO_I_LOW_P1			71	// Коэффициент тонкой подстройки Р1
-#define REG_V_ADC_TO_I_LOW_P0			72	// Смещение тонкой подстройки Р0
-#define REG_V_ADC_TO_I_LOW_K			73	// Коэффициент преобразования K
-#define REG_V_ADC_TO_I_LOW_B			74	// Коэффициент преобразования B
+#define REG_DAC_OUTPUT_LIMIT_VALUE		66	// Ограничение выхода ЦАП (0 - 4095)
+#define REG_SCOPE_STEP					67	// Шаг сохранения оцифрованных значений
+#define REG_MUTE_SAFETY					68	// Отключение проверки контакта безопасности
+#define REG_ST_CHECK_ERROR				69	// Допустимая ошибка результата самотестирования
+//
 
 
 // Несохраняемые регистры чтения-записи

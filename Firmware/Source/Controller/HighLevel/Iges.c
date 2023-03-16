@@ -110,7 +110,7 @@ void IGES_Prepare()
 		case HW_Config:
 			ConfigStage = PAU_Config;
 
-			Int16U CurrentRange = MEASURE_V_SetCurrentRange(THRESHOLD_V_I_LOW);
+			Int16U CurrentRange = MEASURE_V_SetCurrentRange(THRESHOLD_V_I_R0);
 
 			INITCFG_ConfigADC_VgsIges(CurrentRange);
 			INITCFG_ConfigDMA_VgsIges();

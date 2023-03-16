@@ -9,9 +9,9 @@
 //
 #define MEASURE_V_I_RANGES				3		// Количество диапазонов измерения тока в источнике напряжения
 //
-#define MEASURE_V_I_LOW					0
-#define MEASURE_V_I_HIGH_R0				1
-#define MEASURE_V_I_HIGH_R1				2
+#define MEASURE_V_I_R0					0
+#define MEASURE_V_I_R1					1
+#define MEASURE_V_I_R2					2
 
 // Types
 //

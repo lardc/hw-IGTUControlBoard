@@ -22,8 +22,8 @@
 #define EXT_DAC_A								0x0					// Выбор канала A
 #define EXT_DAC_B								0x8000				// Выбор канала B
 #define QG_CURRENT_SAMPLE_TIME					0.2					// мкс
-#define THRESHOLD_V_I_LOW						1					// мА
-#define THRESHOLD_V_I_HIGH						20					// мА
+#define THRESHOLD_V_I_R0						1					// мА
+#define THRESHOLD_V_I_R1						20					// мА
 #define PAU_CODE_RANGE0							0
 #define PAU_CODE_RANGE1							1
 #define PAU_CODE_RANGE2							2

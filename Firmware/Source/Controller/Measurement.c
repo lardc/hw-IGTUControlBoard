@@ -11,7 +11,7 @@ volatile Int16U MEASURE_VoltageRaw[ADC_V_DMA_BUFF_SIZE] = {0};
 volatile Int16U MEASURE_CurrentRaw[ADC_V_DMA_BUFF_SIZE] = {0};
 volatile Int16U MEASURE_Qg_DataRaw[ADC_DMA_BUFF_SIZE_QG] = {0};
 //
-Int16U CurrentRange = MEASURE_V_I_HIGH_R0;
+Int16U CurrentRange = MEASURE_V_I_R2;
 
 // Functions prototypes
 //
@@ -77,21 +77,21 @@ void MEASURE_ResetDMABuffers()
 
 Int16U MEASURE_V_SetCurrentRange(float Current)
 {
-	if(Current <= THRESHOLD_V_I_LOW)
+	if(Current <= THRESHOLD_V_I_R0)
 	{
-		CurrentRange = MEASURE_V_I_LOW;
+		CurrentRange = MEASURE_V_I_R0;
 		LL_V_IlimLowRange();
 	}
 	else
 	{
-		if(Current > THRESHOLD_V_I_HIGH)
+		if(Current > THRESHOLD_V_I_R1)
 		{
-			CurrentRange = MEASURE_V_I_HIGH_R1;
+			CurrentRange = MEASURE_V_I_R2;
 			LL_V_IsenseHighRange1();
 		}
 		else
 		{
-			CurrentRange = MEASURE_V_I_HIGH_R0;
+			CurrentRange = MEASURE_V_I_R1;
 			LL_V_IsenseHighRange0();
 		}
 

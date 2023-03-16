@@ -174,7 +174,7 @@ void INITCFG_ConfigADC_VgsIges(Int16U CurrentRange)
 {
 	Int16U ADCChannel;
 
-	if(CurrentRange == MEASURE_V_I_LOW)
+	if(CurrentRange == MEASURE_V_I_R0)
 		ADCChannel = ADC1_V_I_LOW_SEN_CHANNEL;
 	else
 		ADCChannel = ADC1_V_I_HIGH_SEN_CHANNEL;

@@ -10,8 +10,8 @@
 #define NO		0
 #define YES		1
 //
-#define V_ADC_TO_V_K_DEF			0.008409
-#define V_ADC_TO_V_B_DEF			0.166985
+#define V_ADC_TO_V_K_DEF			0.002583375
+#define V_ADC_TO_V_B_DEF			-0.004545826
 #define V_V_TO_DAC_K_DEF			123.072
 #define V_V_TO_DAC_B_DEF			7.385
 #define V_ADC_TO_I_R0_K_DEF			6.472063e-003

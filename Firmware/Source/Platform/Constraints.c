@@ -16,23 +16,23 @@ const TableItemConstraint Constraint[DATA_TABLE_WP_START] = {
 		{COEF_P2_MIN, COEF_P2_MAX, COEF_P2_DEF},									// 5
 		{COEF_P1_MIN, COEF_P1_MAX, COEF_P1_DEF},									// 6
 		{COEF_P0_MIN, COEF_P0_MAX, COEF_P0_DEF},									// 7
-		{COEF_K_MIN, COEF_K_MAX, V_ADC_TO_I_R0_K_DEF},								// 8
-		{COEF_B_MIN, COEF_B_MAX, V_ADC_TO_I_R0_B_DEF},								// 9
+		{COEF_K_MIN, COEF_K_MAX, 1},												// 8
+		{COEF_B_MIN, COEF_B_MAX, 0},												// 9
 		{COEF_P2_MIN, COEF_P2_MAX, COEF_P2_DEF},									// 10
 		{COEF_P1_MIN, COEF_P1_MAX, COEF_P1_DEF},									// 11
 		{COEF_P0_MIN, COEF_P0_MAX, COEF_P0_DEF},									// 12
-		{COEF_K_MIN, COEF_K_MAX, V_ADC_TO_I_R1_K_DEF},								// 13
-		{COEF_B_MIN, COEF_B_MAX, V_ADC_TO_I_R1_K_DEF},								// 14
+		{COEF_K_MIN, COEF_K_MAX, V_ADC_TO_I_R0_K_DEF},								// 13
+		{COEF_B_MIN, COEF_B_MAX, V_ADC_TO_I_R0_B_DEF},								// 14
 		{COEF_P2_MIN, COEF_P2_MAX, COEF_P2_DEF},									// 15
 		{COEF_P1_MIN, COEF_P1_MAX, COEF_P1_DEF},									// 16
 		{COEF_P0_MIN, COEF_P0_MAX, COEF_P0_DEF},									// 17
-		{COEF_K_MIN, COEF_K_MAX, V_V_TO_DAC_K_DEF},									// 18
-		{COEF_B_MIN, COEF_B_MAX, V_V_TO_DAC_B_DEF},									// 19
+		{COEF_K_MIN, COEF_K_MAX, V_ADC_TO_I_R1_K_DEF},								// 18
+		{COEF_B_MIN, COEF_B_MAX, V_ADC_TO_I_R1_B_DEF},								// 19
 		{COEF_P2_MIN, COEF_P2_MAX, COEF_P2_DEF},									// 20
 		{COEF_P1_MIN, COEF_P1_MAX, COEF_P1_DEF},									// 21
 		{COEF_P0_MIN, COEF_P0_MAX, COEF_P0_DEF},									// 22
-		{COEF_K_MIN, COEF_K_MAX, 1},												// 23
-		{COEF_B_MIN, COEF_B_MAX, 0},												// 24
+		{COEF_K_MIN, COEF_K_MAX, V_V_TO_DAC_K_DEF},									// 23
+		{COEF_B_MIN, COEF_B_MAX, V_V_TO_DAC_B_DEF},									// 24
 		{COEF_P2_MIN, COEF_P2_MAX, COEF_P2_DEF},									// 25
 		{COEF_P1_MIN, COEF_P1_MAX, COEF_P1_DEF},									// 26
 		{COEF_P0_MIN, COEF_P0_MAX, COEF_P0_DEF},									// 27
@@ -53,36 +53,36 @@ const TableItemConstraint Constraint[DATA_TABLE_WP_START] = {
 		{COEF_P0_MIN, COEF_P0_MAX, COEF_P0_DEF},									// 42
 		{COEF_K_MIN, COEF_K_MAX, 1},												// 43
 		{COEF_B_MIN, COEF_B_MAX, 0},												// 44
-		{REGULATOR_KP_MIN, REGULATOR_KP_MAX, REGULATOR_KP_DEF},						// 45
-		{REGULATOR_KI_MIN, REGULATOR_KI_MAX, REGULATOR_KI_DEF},						// 46
-		{INT16S_MIN, INT16S_MAX, REGULATOR_QI_MAX_DEF},								// 47
-		{REGULATOR_ERR_MIN, REGULATOR_ERR_MAX, REGULATOR_ERR_DEF},					// 48
-		{REGULATOR_FE_CNT_MIN, REGULATOR_FE_CNT_MAX, REGULATOR_FE_CNT_DEF},			// 49
-		{NO, YES, NO},																// 50
-		{VGS_FAST_RATE_MIN, VGS_FAST_RATE_MAX, VGS_FAST_RATE_DEF},					// 51
-		{VGS_SLOW_RATE_MIN, VGS_SLOW_RATE_MAX, VGS_SLOW_RATE_DEF},					// 52
-		{VGS_dI_TRIG_MIN, VGS_dI_TRIG_MAX, VGS_dI_TRIG_DEF},						// 53
-		{0, 0, 0},																	// 54
-		{IGES_V_RATE_MIN, IGES_V_RATE_MAX, IGES_V_RATE_DEF},						// 55
-		{IGES_SAMPLES_MIN, IGES_SAMPLES_MAX, IGES_SAMPLES_DEF},						// 56
-		{0, INT16U_MAX, PAU_CAN_ID_DEF},											// 57
-		{NO, YES, NO},																// 58
-		{0, INT16U_MAX, TOCUHP_CAN_ID_DEF},											// 59
-		{NO, YES, NO},																// 60
-		{0, INT16U_MAX, TOCUHP_RES_PER_BIT_DEF},									// 61
-		{DAC_OUTPUT_LIM_MIN, DAC_OUTPUT_LIM_MAX, DAC_OUTPUT_LIM_DEF},				// 62
-		{0, INT16U_MAX, 0},															// 63
+		{COEF_P2_MIN, COEF_P2_MAX, COEF_P2_DEF},									// 45
+		{COEF_P1_MIN, COEF_P1_MAX, COEF_P1_DEF},									// 46
+		{COEF_P0_MIN, COEF_P0_MAX, COEF_P0_DEF},									// 47
+		{COEF_K_MIN, COEF_K_MAX, 1},												// 48
+		{COEF_B_MIN, COEF_B_MAX, 0},												// 49
+		{REGULATOR_KP_MIN, REGULATOR_KP_MAX, REGULATOR_KP_DEF},						// 50
+		{REGULATOR_KI_MIN, REGULATOR_KI_MAX, REGULATOR_KI_DEF},						// 51
+		{INT16S_MIN, INT16S_MAX, REGULATOR_QI_MAX_DEF},								// 52
+		{REGULATOR_ERR_MIN, REGULATOR_ERR_MAX, REGULATOR_ERR_DEF},					// 53
+		{REGULATOR_FE_CNT_MIN, REGULATOR_FE_CNT_MAX, REGULATOR_FE_CNT_DEF},			// 54
+		{NO, YES, NO},																// 55
+		{VGS_FAST_RATE_MIN, VGS_FAST_RATE_MAX, VGS_FAST_RATE_DEF},					// 56
+		{VGS_SLOW_RATE_MIN, VGS_SLOW_RATE_MAX, VGS_SLOW_RATE_DEF},					// 57
+		{VGS_dI_TRIG_MIN, VGS_dI_TRIG_MAX, VGS_dI_TRIG_DEF},						// 58
+		{IGES_V_RATE_MIN, IGES_V_RATE_MAX, IGES_V_RATE_DEF},						// 59
+		{IGES_SAMPLES_MIN, IGES_SAMPLES_MAX, IGES_SAMPLES_DEF},						// 60
+		{0, INT16U_MAX, PAU_CAN_ID_DEF},											// 61
+		{NO, YES, NO},																// 62
+		{0, INT16U_MAX, TOCUHP_CAN_ID_DEF},											// 63
 		{NO, YES, NO},																// 64
-		{ST_CHECK_ERROR_MIN, ST_CHECK_ERROR_MAX, ST_CHECK_ERROR_DEF},				// 65
-		{0, 0, 0},																	// 66
-		{0, 0, 0},																	// 67
-		{0, 0, 0},																	// 68
-		{0, 0, 0},																	// 69
-		{COEF_P2_MIN, COEF_P2_MAX, COEF_P2_DEF},																	// 70
-		{COEF_P1_MIN, COEF_P1_MAX, COEF_P1_DEF},																	// 71
-		{COEF_P0_MIN, COEF_P0_MAX, COEF_P0_DEF},																	// 72
-		{COEF_K_MIN, COEF_K_MAX, 1},																	// 73
-		{COEF_B_MIN, COEF_B_MAX, 0},																	// 74
+		{0, INT16U_MAX, TOCUHP_RES_PER_BIT_DEF},									// 65
+		{DAC_OUTPUT_LIM_MIN, DAC_OUTPUT_LIM_MAX, DAC_OUTPUT_LIM_DEF},				// 66
+		{0, INT16U_MAX, 0},															// 67
+		{NO, YES, NO},																// 68
+		{ST_CHECK_ERROR_MIN, ST_CHECK_ERROR_MAX, ST_CHECK_ERROR_DEF},				// 69
+		{0, 0, 0},																	// 70
+		{0, 0, 0},																	// 71
+		{0, 0, 0},																	// 72
+		{0, 0, 0},																	// 73
+		{0, 0, 0},																	// 74
 		{0, 0, 0},																	// 75
 		{0, 0, 0},																	// 76
 		{0, 0, 0},																	// 77
