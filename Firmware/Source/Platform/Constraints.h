@@ -47,24 +47,24 @@
 //
 #define REGULATOR_QI_MAX_DEF		30000
 //
-#define REGULATOR_ERR_MIN			1
-#define REGULATOR_ERR_MAX			10
-#define REGULATOR_ERR_DEF			5
+#define REGULATOR_ERR_MIN			0.05
+#define REGULATOR_ERR_MAX			1
+#define REGULATOR_ERR_DEF			0.5
 //
 #define REGULATOR_FE_CNT_MIN		0
 #define REGULATOR_FE_CNT_MAX		10
 #define REGULATOR_FE_CNT_DEF		5
 //
-#define VGS_FAST_RATE_MIN			1
-#define VGS_FAST_RATE_MAX			10
-#define VGS_FAST_RATE_DEF			5
+#define VGS_FAST_RATE_MIN			1e-5
+#define VGS_FAST_RATE_MAX			2e-3
+#define VGS_FAST_RATE_DEF			1e-3
 //
-#define VGS_SLOW_RATE_MIN			1
-#define VGS_SLOW_RATE_MAX			10
-#define VGS_SLOW_RATE_DEF			5
+#define VGS_SLOW_RATE_MIN			1e-5
+#define VGS_SLOW_RATE_MAX			2e-3
+#define VGS_SLOW_RATE_DEF			1e-3
 //
 #define VGS_dI_TRIG_MIN				1
-#define VGS_dI_TRIG_MAX				10
+#define VGS_dI_TRIG_MAX				50
 #define VGS_dI_TRIG_DEF				5
 //
 #define IGES_V_RATE_MIN				1e-4
@@ -92,9 +92,9 @@
 #define VGS_I_TRIG_MAX				300			// (мА)
 #define VGS_I_TRIG_DEF				300			// (мА)
 //
-#define VGS_V_DEST_MIN				100			// (мВ)
-#define VGS_V_DEST_MAX				20000		// (мВ)
-#define VGS_V_DEST_DEF				20000		// (мВ)
+#define VGS_V_DEST_MIN				2			// (В)
+#define VGS_V_DEST_MAX				10			// (В)
+#define VGS_V_DEST_DEF				10			// (В)
 //
 #define QG_V_CUTOFF_MIN				5000		//
 #define QG_V_CUTOFF_MAX				20000		//

@@ -30,8 +30,11 @@ typedef struct __RingBuffersParams
 	pFloat32 DataA;
 	pFloat32 DataB;
 	Int16U RingCounter;
+	Int16U RingCounterMask;
 	float RingBufferA[LOG_RING_BUFFER_SIZE];
 	float RingBufferB[LOG_RING_BUFFER_SIZE];
+	float SumA;
+	float SumB;
 } RingBuffersParams;
 
 // Functions
@@ -42,5 +45,6 @@ MeasureSample LOG_RingBufferGetAverage(RingBuffersParams* Log);
 void LOG_CopyVoltageToEndpoints(pFloat32 Endpoint, volatile Int16U* Buffer, Int16U BufferSize, Int16U SkipStep);
 void LOG_CopyCurrentToEndpoints(pFloat32 Endpoint, volatile Int16U* Buffer, Int16U BufferSize, Int16U SkipStep);
 float LOG_GetAverageFromBuffer(pFloat32 Buffer, Int16U BufferSize);
+void LOG_ClearBuffers(RingBuffersParams* Log);
 
 #endif /* CONTROLLER_LOGGING_H_ */

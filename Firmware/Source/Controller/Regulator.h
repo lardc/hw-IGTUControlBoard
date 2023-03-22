@@ -28,7 +28,7 @@ typedef struct __RegulatorParams
 	float Qimax;
 	Int16U FECounterMax;
 	Int16U DACLimitValue;
-	RegulatorMode ParametricMode;
+	RegulatorMode Mode;
 //
 	Int64U Counter;
 	float dVg;

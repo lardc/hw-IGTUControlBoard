@@ -38,11 +38,17 @@ void LOG_LoggingData(LogParamsStruct* Log)
 
 void LOG_SaveSampleToRingBuffer(RingBuffersParams* Log)
 {
-	Log->RingCounter++;
-	Log->RingCounter &= LOG_COUNTER_MASK;
-
 	Log->RingBufferA[Log->RingCounter] = *Log->DataA;
 	Log->RingBufferB[Log->RingCounter] = *Log->DataB;
+	//
+	Log->SumA += Log->RingBufferA[Log->RingCounter];
+	Log->SumB += Log->RingBufferB[Log->RingCounter];
+
+	Log->RingCounter++;
+	Log->RingCounter &= Log->RingCounterMask;
+
+	Log->SumA -= Log->RingBufferA[Log->RingCounter];
+	Log->SumB -= Log->RingBufferB[Log->RingCounter];
 }
 //-----------------------------------------------
 
@@ -50,12 +56,25 @@ MeasureSample LOG_RingBufferGetAverage(RingBuffersParams* Log)
 {
 	MeasureSample AverageSamples;
 
-	AverageSamples.Voltage = LOG_GetAverageFromBuffer(&Log->RingBufferA[0], LOG_RING_BUFFER_SIZE);
-	AverageSamples.Current = LOG_GetAverageFromBuffer(&Log->RingBufferB[0], LOG_RING_BUFFER_SIZE);
+	AverageSamples.Voltage = Log->SumA / (Log->RingCounterMask + 1);
+	AverageSamples.Current = Log->SumB / (Log->RingCounterMask + 1);
 
 	return AverageSamples;
 }
 //-----------------------------------------------
+
+void LOG_ClearBuffers(RingBuffersParams* Log)
+{
+	Log->RingCounter = 0;
+	Log->SumA = 0;
+	Log->SumB = 0;
+
+	for(int i = 0; i < LOG_RING_BUFFER_SIZE; i++)
+	{
+		Log->RingBufferA[i] = 0;
+		Log->RingBufferB[i] = 0;
+	}
+}
 
 float LOG_GetAverageFromBuffer(pFloat32 Buffer, Int16U BufferSize)
 {

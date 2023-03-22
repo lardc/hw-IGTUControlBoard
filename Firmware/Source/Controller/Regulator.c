@@ -25,7 +25,7 @@ bool REGULATOR_Process(RegulatorParamsStruct* Regulator)
 {
 	Regulator->Error = (Regulator->Counter == 0) ? 0 : (Regulator->Target - Regulator->SampledData);
 
-	if(Regulator->ParametricMode == FeedBack && Regulator->Error > Regulator->ErrorMax)
+	if(Regulator->Mode == FeedBack && Regulator->Error > Regulator->ErrorMax)
 	{
 		Regulator->FECounter++;
 
@@ -48,7 +48,7 @@ bool REGULATOR_Process(RegulatorParamsStruct* Regulator)
 
 	Regulator->Out = Regulator->Target + Regulator->Qp + Regulator->Qi;
 
-	float ValueToDAC = (Regulator->ParametricMode == Parametric) ? Regulator->Target : Regulator->Out;
+	float ValueToDAC = (Regulator->Mode == Parametric) ? Regulator->Target : Regulator->Out;
 	Regulator->DACSetpoint = REGULATOR_DACApplyLimits(CU_V_VtoDAC(ValueToDAC), Regulator->DACLimitValue);
 
 	LL_V_VSetDAC(Regulator->DACSetpoint);
@@ -112,6 +112,6 @@ void REGULATOR_ResetVariables(RegulatorParamsStruct* Regulator)
 
 void REGULATOR_Mode(RegulatorParamsStruct* Regulator, RegulatorMode Mode)
 {
-	Regulator->ParametricMode = (DataTable[REG_REGULATOR_PARAMETRIC] == Parametric) ? Parametric : Mode;
+	Regulator->Mode = (DataTable[REG_REGULATOR_PARAMETRIC] == Parametric) ? Parametric : Mode;
 }
 //-----------------------------------------------

@@ -148,6 +148,7 @@ void IGES_CacheVariables()
 	//
 	IgesRingBuffers.DataA = &IgesSampledData.Voltage;
 	IgesRingBuffers.DataB = &IgesSampledData.Current;
+	IgesRingBuffers.RingCounterMask = LOG_COUNTER_MASK;
 	//
 	IgesSamplesCounter = DataTable[REG_IGES_SAMPLES_NUMBER];
 }
