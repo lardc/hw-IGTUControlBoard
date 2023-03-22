@@ -89,6 +89,7 @@ void CONTROL_ResetOutputRegisters()
 	DataTable[REG_OP_RESULT] = OPRESULT_NONE;
 
 	DataTable[REG_VGS_RESULT] = 0;
+	DataTable[REG_VGS_I_RESULT] = 0;
 	DataTable[REG_QG_RESULT] = 0;
 	DataTable[REG_QG_I_DURATION_RESULT] = 0;
 	DataTable[REG_QG_I_RESULT] = 0;
@@ -259,40 +260,63 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 }
 //-----------------------------------------------
 
+bool CONTROL_IsSafetyOk()
+{
+	if(CONTROL_State == DS_InProcess && LL_SafetyState() && !DataTable[REG_MUTE_SAFETY])
+	{
+		CONTROL_StopHighPriorityProcesses();
+
+		DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
+		DataTable[REG_PROBLEM] = PROBLEM_SAFETY_VIOLATION;
+
+		CONTROL_SetDeviceState(DS_Ready, SS_None);
+
+		return false;
+	}
+
+	return true;
+}
+
 void CONTROL_LogicProcess()
 {
-	switch(CONTROL_SubState)
+	if(CONTROL_State == DS_InProcess)
 	{
-		case SS_Cal_V_Prepare:
-			CAL_V_Prepare();
-			break;
+		if(!CONTROL_IsSafetyOk())
+			return;
 
-		case SS_Cal_I_Prepare:
-			CAL_I_Prepare();
-			break;
+		switch(CONTROL_SubState)
+		{
+			case SS_Cal_V_Prepare:
+				CAL_V_Prepare();
+				break;
 
-		case SS_VgsPrepare:
-			VGS_Prepare();
-			break;
+			case SS_Cal_I_Prepare:
+				CAL_I_Prepare();
+				break;
 
-		case SS_IgesPrepare:
-			IGES_Prepare();
-			break;
+			case SS_VgsPrepare:
+				VGS_Prepare();
+				break;
 
-		case SS_IgesSaveResult:
-			IGES_SaveResults();
-			break;
+			case SS_IgesPrepare:
+				IGES_Prepare();
+				break;
 
-		case SS_QgPrepare:
-			QG_Prepare();
-			break;
+			case SS_IgesSaveResult:
+				IGES_SaveResults();
+				break;
 
-		case SS_QgSaveResult:
-			QG_SaveResult();
-			break;
+			case SS_QgPrepare:
+				QG_Prepare();
+				break;
 
-		default:
-			break;
+			case SS_QgSaveResult:
+				QG_SaveResult();
+				break;
+
+			default:
+				break;
+		}
 	}
 
 	if(CONTROL_State == DS_SelfTest)
@@ -353,7 +377,7 @@ void CONTROL_StopHighPriorityProcesses()
 
 void CONTROL_StartHighPriorityProcesses()
 {
-	LL_SyncOSC(true);
+	//LL_SyncOSC(true);
 
 	TIM_Reset(TIM15);
 	TIM_Start(TIM15);

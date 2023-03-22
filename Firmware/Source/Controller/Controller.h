@@ -77,5 +77,6 @@ void CONTROL_StartHighPriorityProcesses();
 void CONTROL_StopHighPriorityProcesses();
 void CONTROL_SwitchOutMUX(CommutationState Commutation);
 void CONTROL_SwitchToFault(Int16U Reason);
+bool CONTROL_IsSafetyOk();
 
 #endif // __CONTROLLER_H
