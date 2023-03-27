@@ -27,17 +27,20 @@ void LOG_LoggingData(LogParamsStruct* Log)
 	}
 
 	// Условие обновления глобального счетчика данных
-	if(*Log->LogBufferCounter < VALUES_x_SIZE)
+	if(*Log->LogBufferCounter < VALUES_x_SIZE1)
 		*Log->LogBufferCounter = Log->LocalCounter;
 
 	// Сброс локального счетчика
-	if(Log->LocalCounter >= VALUES_x_SIZE)
+	if(Log->LocalCounter >= VALUES_x_SIZE1)
 		Log->LocalCounter = 0;
 }
 //-----------------------------------------------
 
 void LOG_SaveSampleToRingBuffer(RingBuffersParams* Log)
 {
+	Log->SumA -= Log->RingBufferA[Log->RingCounter];
+	Log->SumB -= Log->RingBufferB[Log->RingCounter];
+	//
 	Log->RingBufferA[Log->RingCounter] = *Log->DataA;
 	Log->RingBufferB[Log->RingCounter] = *Log->DataB;
 	//
@@ -46,9 +49,6 @@ void LOG_SaveSampleToRingBuffer(RingBuffersParams* Log)
 
 	Log->RingCounter++;
 	Log->RingCounter &= Log->RingCounterMask;
-
-	Log->SumA -= Log->RingBufferA[Log->RingCounter];
-	Log->SumB -= Log->RingBufferB[Log->RingCounter];
 }
 //-----------------------------------------------
 
@@ -93,9 +93,9 @@ void LOG_CopyVoltageToEndpoints(pFloat32 Endpoint, volatile Int16U* Buffer, Int1
 
 	for(Int16U i = 0; i < BufferSize; i += (SkipStep + 1))
 	{
-		if(Counter < VALUES_x_SIZE)
+		if(Counter < VALUES_x_SIZE2)
 		{
-			*(Endpoint + Counter) = CU_I_ADCtoV(*(Buffer + i));
+			*(Endpoint + Counter) = CU_I_ADCtoV(*(Buffer + i) - DataTable[REG_I_ADC_TO_V_ZERO_OFFSET]);
 			Counter++;
 		}
 	}
@@ -108,7 +108,7 @@ void LOG_CopyCurrentToEndpoints(pFloat32 Endpoint, volatile Int16U* Buffer, Int1
 
 	for(Int16U i = 0; i < BufferSize; i += (SkipStep + 1))
 	{
-		if(Counter < VALUES_x_SIZE)
+		if(Counter < VALUES_x_SIZE2)
 		{
 			*(Endpoint + Counter) = CU_I_ADCtoI(*(Buffer + i));
 			Counter++;
