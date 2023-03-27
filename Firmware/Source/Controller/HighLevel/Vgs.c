@@ -50,6 +50,8 @@ void VGS_Prepare()
 
 	CONTROL_SetDeviceState(DS_InProcess, SS_VgsProcess);
 	CONTROL_StartHighPriorityProcesses();
+
+	LL_SyncOSC(true);
 }
 //-----------------------------
 
@@ -89,10 +91,7 @@ void VGS_Process()
 	AverageSamples = LOG_RingBufferGetAverage(&VgsRingBuffers);
 
 	if(VgsSampledData.Current >= TrigCurrentLow)
-	{
-		LL_SyncOSC(true);
 		RegulatorParams.dVg = DataTable[REG_VGS_SLOW_RATE] * TIMER15_uS;
-	}
 
 	if(VgsSampledData.Current < TrigCurrentHigh)
 	{
@@ -135,12 +134,19 @@ void VGS_Process()
 	{
 		CONTROL_StopHighPriorityProcesses();
 
-		DataTable[REG_VGS_RESULT] = AverageSamples.Voltage;
-		DataTable[REG_VGS_I_RESULT] = VgsSampledData.Current;
-		DataTable[REG_OP_RESULT] = OPRESULT_OK;
+		if(VgsSampledData.Voltage < VGS_VOLTAGE_MIN)
+		{
+			DataTable[REG_PROBLEM] = PROBLEM_GATE_SHORT;
+			CONTROL_SetDeviceState(DS_Ready, SS_None);
+		}
+		else
+		{
+			DataTable[REG_VGS_RESULT] = AverageSamples.Voltage;
+			DataTable[REG_VGS_I_RESULT] = VgsSampledData.Current;
+			DataTable[REG_OP_RESULT] = OPRESULT_OK;
 
-		CONTROL_SetDeviceState(DS_Ready, SS_None);
-
+			CONTROL_SetDeviceState(DS_Ready, SS_None);
+		}
 	}
 }
 //-----------------------------
