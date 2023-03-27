@@ -14,7 +14,12 @@
 #include "SelfTest.h"
 #include "BCCIMHighLevel.h"
 #include "PAU.h"
+#include "Constraints.h"
+#include "ConvertUtils.h"
 
+// Definitions
+//
+#define I_VCUT_OFF_DAC_DEF			2000
 
 // Variables
 //
@@ -23,10 +28,10 @@ volatile DeviceSubState CONTROL_SubState = SS_None;
 volatile Int64U CONTROL_TimeCounter = 0;
 static Boolean CycleActive = false;
 //
-float CONTROL_RegulatorOutputValues[VALUES_x_SIZE];
-float CONTROL_RegulatorErrValues[VALUES_x_SIZE];
-float CONTROL_VoltageValues[VALUES_x_SIZE];
-float CONTROL_CurrentValues[VALUES_x_SIZE];
+float CONTROL_RegulatorOutputValues[VALUES_x_SIZE1];
+float CONTROL_RegulatorErrValues[VALUES_x_SIZE1];
+float CONTROL_VoltageValues[VALUES_x_SIZE2];
+float CONTROL_CurrentValues[VALUES_x_SIZE2];
 //
 Int16U CONTROL_RegulatorValues_Counter = 0;
 Int16U CONTROL_Values_Counter = 0;
@@ -48,7 +53,7 @@ void CONTROL_Init()
 {
 	// Переменные для конфигурации EndPoint
 	Int16U EPIndexes[FEP_COUNT] = {EP_VOLTAGE, EP_CURRENT, EP_REGULATOR_ERR, EP_REGULATOR_OUTPUT};
-	Int16U EPSized[FEP_COUNT] = {VALUES_x_SIZE, VALUES_x_SIZE, VALUES_x_SIZE, VALUES_x_SIZE};
+	Int16U EPSized[FEP_COUNT] = {VALUES_x_SIZE2, VALUES_x_SIZE2, VALUES_x_SIZE1, VALUES_x_SIZE1};
 	pInt16U EPCounters[FEP_COUNT] = {(pInt16U)&CONTROL_Values_Counter, (pInt16U)&CONTROL_Values_Counter,
 			(pInt16U)&CONTROL_RegulatorValues_Counter, (pInt16U)&CONTROL_RegulatorValues_Counter};
 
@@ -94,6 +99,7 @@ void CONTROL_ResetOutputRegisters()
 	DataTable[REG_QG_I_DURATION_RESULT] = 0;
 	DataTable[REG_QG_I_RESULT] = 0;
 	DataTable[REG_IGES_RESULT] = 0;
+	DataTable[REG_IGES_V_RESULT] = 0;
 
 	DEVPROFILE_ResetScopes(0);
 	DEVPROFILE_ResetEPReadState();
@@ -114,8 +120,10 @@ void CONTROL_ResetHardwareToDefaultState()
 
 	LL_V_VSetDAC(0);
 	LL_I_SetDAC(0);
-	LL_ExDACVCutoff(0);
+	LL_ExDACVCutoff(I_VCUT_OFF_DAC_DEF);
 	LL_ExDACVNegative(0);
+
+	CONTROL_SwitchOutMUX(Voltage);
 }
 //------------------------------------------
 
@@ -377,8 +385,6 @@ void CONTROL_StopHighPriorityProcesses()
 
 void CONTROL_StartHighPriorityProcesses()
 {
-	//LL_SyncOSC(true);
-
 	TIM_Reset(TIM15);
 	TIM_Start(TIM15);
 }

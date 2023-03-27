@@ -58,10 +58,10 @@ extern volatile DeviceState CONTROL_State;
 extern volatile DeviceSubState CONTROL_SubState;
 extern volatile Int64U CONTROL_TimeCounter;
 //
-extern float CONTROL_RegulatorOutputValues[VALUES_x_SIZE];
-extern float CONTROL_VoltageValues[VALUES_x_SIZE];
-extern float CONTROL_CurrentValues[VALUES_x_SIZE];
-extern float CONTROL_RegulatorErrValues[VALUES_x_SIZE];
+extern float CONTROL_RegulatorOutputValues[VALUES_x_SIZE1];
+extern float CONTROL_VoltageValues[VALUES_x_SIZE2];
+extern float CONTROL_CurrentValues[VALUES_x_SIZE2];
+extern float CONTROL_RegulatorErrValues[VALUES_x_SIZE1];
 extern Int16U CONTROL_RegulatorValues_Counter;
 extern Int16U CONTROL_Values_Counter;
 //

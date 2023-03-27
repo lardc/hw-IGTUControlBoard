@@ -35,7 +35,7 @@
 #define ADC1_V_I_HIGH_SEN_CHANNEL		4				// АЦП1 номер канала тока (источник V)
 #define ADC3_POT_CHANNEL				1				// АЦП3 номер канала напряжения POT
 #define ADC_V_DMA_BUFF_SIZE				5				// Количество данных DMA для измерения Vgs/Iges
-#define ADC_DMA_BUFF_SIZE_QG			2000			// Количество данных DMA для измерения Qg
+#define ADC_DMA_BUFF_SIZE_QG			3000			// Количество данных DMA для измерения Qg
 // ----------------------------------------------
 
 // SPI

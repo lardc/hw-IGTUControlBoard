@@ -15,6 +15,7 @@
 #define CURRENT_PULSE_WIDTH						300					// Макс длительность импульса тока (мкс)
 #define VOLTAGE_PULSE_WIDTH						12000				// Макс длительность импульса напряжения (мкс)
 #define VGS_VOLTAGE_MAX							30					// Максимальное напряжения формирователя, В
+#define VGS_VOLTAGE_MIN							2					// Минимальное напряжения формирователя, В
 #define VGS_CURRENT_MAX							210					// Максимальный измеряемый ток, мА
 #define MEASURE_IGES_CURRENT_MIN				1e-9				// Минимальный измеряемый токутечки, mА
 #define MEASURE_IGES_CURRENT_MAX				(20 * 10e-6)		// Максимальный измеряемый токутечки, mА
@@ -29,7 +30,8 @@
 #define PAU_CODE_RANGE2							2
 
 // Размер массивов EP
-#define VALUES_x_SIZE							1000
+#define VALUES_x_SIZE1							1000
+#define VALUES_x_SIZE2							1500
 
 // Временные параметры
 #define TIME_LED_BLINK							500		// Мигание светодиодом (в мс)
