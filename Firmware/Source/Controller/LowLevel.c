@@ -111,7 +111,7 @@ void LL_V_Diagnostic(bool State)
 // C source
 void LL_I_Start(bool State)
 {
-	GPIO_SetState(GPIO_C_C_START, State);
+	GPIO_SetState(GPIO_C_C_START, !State);
 }
 //-----------------------------
 

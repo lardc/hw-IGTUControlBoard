@@ -17,8 +17,11 @@
 #define CAL_PULSE_WIDTH_MS			10000	// ìêñ
 #define CAL_VG_FRONT_TIME			5000	// ìêñ
 //
-#define CAL_AVG_START_INDEX			20
+#define CAL_AVG_START_INDEX_DEF		20
 #define CAL_AVG_LENGTH				20
+#define CAL_AVG_V_START_INDEX		800
+#define CAL_AVG_VN_START_INDEX		400
+#define CAL_AVG_I_START_INDEX		800
 
 // Variables
 //
@@ -37,10 +40,10 @@ MeasureSample CAL_GetAverageSamples();
 void CAL_V_CacheVariables()
 {
 	CU_LoadConvertParams();
-	MEASURE_ResetDMABuffers();
 	REGULATOR_ResetVariables(&RegulatorParams);
 	REGULATOR_CacheVariables(&RegulatorParams);
 	REGULATOR_Mode(&RegulatorParams, Parametric);
+	LOG_ClearBuffers(&CalRingBuffers);
 
 	RegulatorParams.dVg = DataTable[REG_CAL_V] / (CAL_VG_FRONT_TIME / TIMER15_uS);
 	RegulatorParams.Counter = CAL_PULSE_WIDTH_MS / TIMER15_uS;
@@ -53,13 +56,15 @@ void CAL_V_CacheVariables()
 	//
 	CalRingBuffers.DataA = &CalSampledData.Voltage;
 	CalRingBuffers.DataB = &CalSampledData.Current;
+	CalRingBuffers.RingCounterMask = LOG_COUNTER_MASK;
 }
 //------------------------------
 
 void CAL_I_CacheVariables()
 {
 	CU_LoadConvertParams();
-	MEASURE_ResetDMABuffers();
+	//
+	CalRingBuffers.RingCounterMask = LOG_COUNTER_MASK;
 }
 //------------------------------
 
@@ -69,7 +74,7 @@ void CAL_V_Prepare()
 
 	INITCFG_ConfigADC_VgsIges(CurrentRange);
 	INITCFG_ConfigDMA_VgsIges();
-
+	MEASURE_ResetDMABuffers();
 	LL_V_ShortOut(false);
 	LL_V_ShortPAU(true);
 	LL_V_Diagnostic(false);
@@ -84,23 +89,27 @@ void CAL_V_Prepare()
 
 void CAL_I_Prepare()
 {
+	CAL_I_CacheVariables();
+
 	INITCFG_ConfigADC_Qg();
 	INITCFG_ConfigDMA_Qg();
-
+	MEASURE_ResetDMABuffers();
 	LL_ExDACVCutoff(CU_I_VcutoffToDAC(DataTable[REG_CAL_V]));
 	LL_ExDACVNegative(CU_I_VnegativeToDAC(DataTable[REG_CAL_V]));
 	LL_I_SetDAC(CU_I_ItoDAC(DataTable[REG_CAL_I]));
 	LL_I_Start(false);
 	LL_I_Enable(true);
+	LL_V_Diagnostic(false);
 	DELAY_MS(20);
 
-	CONTROL_SwitchOutMUX(Voltage);
-
-	CAL_I_CacheVariables();
+	CONTROL_SwitchOutMUX(Current);
 
 	CONTROL_SetDeviceState(CONTROL_State, SS_Cal_I_Process);
 	MEASURE_StartNewSampling();
 	CONTROL_StartHighPriorityProcesses();
+
+	LL_SyncOSC(true);
+	DELAY_US(100);
 }
 //------------------------------
 
@@ -114,7 +123,10 @@ void CAL_V_CalProcess()
 	if(RegulatorParams.Target < DataTable[REG_CAL_V])
 		RegulatorParams.Target += RegulatorParams.dVg;
 	else
+	{
 		RegulatorParams.Target = DataTable[REG_CAL_V];
+		LL_SyncOSC(true);
+	}
 
 	RegulatorParams.SampledData = CalSampledData.Voltage;
 
@@ -160,20 +172,30 @@ void CAL_V_CalProcess()
 
 void CAL_I_CalProcess()
 {
+	static bool FirstMeasure = true;
+	Int16U StartIndex = 0;
+
 	if(DMA_IsTransferComplete(DMA1, DMA_ISR_TCIF1))
 	{
-		LL_I_Start(false);
+		CONTROL_StopHighPriorityProcesses();
 
-		LOG_CopyCurrentToEndpoints(&CONTROL_CurrentValues[0], &MEASURE_Qg_DataRaw[0], sizeof(MEASURE_Qg_DataRaw), 1);
-		LOG_CopyVoltageToEndpoints(&CONTROL_VoltageValues[0], &MEASURE_Qg_DataRaw[1], sizeof(MEASURE_Qg_DataRaw), 1);
-		CONTROL_Values_Counter = VALUES_x_SIZE;
+		StartIndex = (FirstMeasure) ? 0 : 1;
+		FirstMeasure = false;
 
-		DataTable[REG_CAL_V_RESULT] = LOG_GetAverageFromBuffer(&CONTROL_VoltageValues[CAL_AVG_START_INDEX], CAL_AVG_LENGTH);
-		DataTable[REG_CAL_I_RESULT] = LOG_GetAverageFromBuffer(&CONTROL_CurrentValues[CAL_AVG_START_INDEX], CAL_AVG_LENGTH);
+		LOG_CopyCurrentToEndpoints(&CONTROL_CurrentValues[0], &MEASURE_Qg_DataRaw[StartIndex], ADC_DMA_BUFF_SIZE_QG, 1);
+		LOG_CopyVoltageToEndpoints(&CONTROL_VoltageValues[0], &MEASURE_Qg_DataRaw[StartIndex + 1], ADC_DMA_BUFF_SIZE_QG - StartIndex - 1, 1);
+		CONTROL_Values_Counter = VALUES_x_SIZE2;
+
+		DataTable[REG_CAL_V_RESULT] = LOG_GetAverageFromBuffer(&CONTROL_VoltageValues[CAL_AVG_V_START_INDEX], CAL_AVG_LENGTH);
+		DataTable[REG_CAL_VN_RESULT] = LOG_GetAverageFromBuffer(&CONTROL_VoltageValues[CAL_AVG_VN_START_INDEX], CAL_AVG_LENGTH);
+		DataTable[REG_CAL_I_RESULT] = LOG_GetAverageFromBuffer(&CONTROL_CurrentValues[CAL_AVG_I_START_INDEX], CAL_AVG_LENGTH);
 
 		CONTROL_SetDeviceState(DS_Ready, SS_None);
 	}
 	else
-		LL_I_Start(true);
+	{
+		if(DMA_ReadDataCount(DMA1_Channel1) <= ADC_DMA_BUFF_SIZE_QG / 2)
+			LL_I_Start(true);
+	}
 }
 //-----------------------------------------------

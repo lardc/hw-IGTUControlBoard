@@ -44,8 +44,8 @@ float MEASURE_ExtractX(volatile Int16U* InputArray, Int16U ArraySize)
 
 void MEASURE_StartNewSampling()
 {
-	DMA_TransferCompleteReset(DMA1, DMA_TRANSFER_COMPLETE);
-	DMA_TransferCompleteReset(DMA2, DMA_TRANSFER_COMPLETE);
+	DMA_TransferCompleteReset(DMA1, DMA_IFCR_CTCIF1);
+	DMA_TransferCompleteReset(DMA2, DMA_IFCR_CTCIF5);
 	ADC_SamplingStart(ADC1);
 	ADC_SamplingStart(ADC3);
 }

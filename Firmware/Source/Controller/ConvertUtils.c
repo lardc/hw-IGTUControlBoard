@@ -19,7 +19,7 @@ ConvertParams I_ADCtoIParams;
 // Functions
 //
 Int16U CU_XtoDAC(ConvertParams *Params, float Value);
-float CU_ADCtoX(ConvertParams *Params, Int16U Data);
+float CU_ADCtoX(ConvertParams *Params, Int16S Data);
 //-----------------------------
 //
 Int16U CU_I_VcutoffToDAC(float Value)
@@ -64,7 +64,7 @@ float CU_I_ADCtoI(Int16U Data)
 }
 //-----------------------------
 
-float CU_I_ADCtoV(Int16U Data)
+float CU_I_ADCtoV(Int16S Data)
 {
 	return CU_ADCtoX(&I_ADCtoVParams, Data);
 }
@@ -77,7 +77,7 @@ Int16U CU_XtoDAC(ConvertParams *Params, float Value)
 }
 //-----------------------------
 
-float CU_ADCtoX(ConvertParams *Params, Int16U Data)
+float CU_ADCtoX(ConvertParams *Params, Int16S Data)
 {
 	float Value = Data * Params->K + Params->B;
 	return (Value * Value * Params->P2 + Value * Params->P1 + Params->P0);

@@ -156,6 +156,7 @@ void INITCFG_ConfigADC_Qg()
 	ADC_Calibration(ADC1);
 	ADC_SoftTrigConfig(ADC1);
 	ADC_ChannelSeqReset(ADC1);
+	ADC_SetContinuousMode(ADC1);
 
 	ADC_ChannelSet_Sequence(ADC1, ADC1_I_I_SEN_CHANNEL, 1);
 	ADC_ChannelSet_Sequence(ADC1, ADC1_I_V_SEN_CHANNEL, 2);
@@ -167,6 +168,7 @@ void INITCFG_ConfigADC_Qg()
 
 	// ADC3
 	ADC_ResetConfig(ADC3);
+	ADC_Disable(ADC3);
 }
 //------------------------------------------------
 
@@ -238,6 +240,7 @@ void INITCFG_ConfigDMA_Qg()
 
 	// DMA2
 	DMA_Reset(DMA1_Channel2);
+	DMA_ChannelEnable(DMA1_Channel2, false);
 }
 //------------------------------------------------
 
