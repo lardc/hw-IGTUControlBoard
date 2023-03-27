@@ -117,6 +117,7 @@ void IGES_Prepare()
 
 			INITCFG_ConfigADC_VgsIges(CurrentRange);
 			INITCFG_ConfigDMA_VgsIges();
+			LOG_ClearBuffers(&IgesRingBuffers);
 
 			LL_V_ShortOut(false);
 			PAU_ShortInput(true);
@@ -127,6 +128,8 @@ void IGES_Prepare()
 
 			CONTROL_SetDeviceState(DS_InProcess, SS_IgesProcess);
 			CONTROL_StartHighPriorityProcesses();
+
+			LL_SyncOSC(true);
 			break;
 	}
 }
@@ -196,6 +199,7 @@ void IGES_Process()
 			else
 				CONTROL_SwitchToFault(DF_FOLLOWING_ERROR);
 
+			DataTable[REG_IGES_V_RESULT] = LOG_RingBufferGetAverage(&IgesRingBuffers).Voltage;
 			DataTable[REG_IGES_RESULT] = 0;
 			DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
 		}
@@ -260,6 +264,7 @@ void IGES_SaveResults()
 
 	if(DataTable[REG_PAU_EMULATED])
 	{
+		DataTable[REG_IGES_V_RESULT] = LOG_RingBufferGetAverage(&IgesRingBuffers).Voltage;
 		DataTable[REG_IGES_RESULT] = 0;
 		DataTable[REG_OP_RESULT] = OPRESULT_OK;
 
@@ -276,6 +281,7 @@ void IGES_SaveResults()
 				if(Iges > MEASURE_IGES_CURRENT_MAX)
 					DataTable[REG_WARNING] = WARNING_IGES_TOO_HIGH;
 
+				DataTable[REG_IGES_V_RESULT] = LOG_RingBufferGetAverage(&IgesRingBuffers).Voltage;
 				DataTable[REG_IGES_RESULT] = Iges;
 				DataTable[REG_OP_RESULT] = OPRESULT_OK;
 
