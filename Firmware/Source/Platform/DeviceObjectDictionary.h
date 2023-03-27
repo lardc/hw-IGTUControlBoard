@@ -100,38 +100,39 @@
 #define REG_I_ADC_TO_V_P0				42	// Смещение тонкой подстройки Р0
 #define REG_I_ADC_TO_V_K				43	// Коэффициент преобразования K
 #define REG_I_ADC_TO_V_B				44	// Коэффициент преобразования B
+#define REG_I_ADC_TO_V_ZERO_OFFSET		45	// Смещение для выставления нуля
 //
-#define REG_I_ADC_TO_I_P2				45	// Коэффициент тонкой подстройки Р2
-#define REG_I_ADC_TO_I_P1				46	// Коэффициент тонкой подстройки Р1
-#define REG_I_ADC_TO_I_P0				47	// Смещение тонкой подстройки Р0
-#define REG_I_ADC_TO_I_K				48	// Коэффициент преобразования K
-#define REG_I_ADC_TO_I_B				49	// Коэффициент преобразования B
+#define REG_I_ADC_TO_I_P2				46	// Коэффициент тонкой подстройки Р2
+#define REG_I_ADC_TO_I_P1				47	// Коэффициент тонкой подстройки Р1
+#define REG_I_ADC_TO_I_P0				48	// Смещение тонкой подстройки Р0
+#define REG_I_ADC_TO_I_K				49	// Коэффициент преобразования K
+#define REG_I_ADC_TO_I_B				50	// Коэффициент преобразования B
 //
-#define REG_REGULATOR_Kp				50	// Пропорциональный коэффициент регулятора
-#define REG_REGULATOR_Ki				51	// Интегральный коэффициент регулятора
-#define REG_REGULATOR_QI_MAX			52	// Ограничение уровня интегральной составляющей
-#define REG_REGULATOR_ERR_MAX			53	// Уровень ошибки регулятора для Following Error (%)
-#define REG_REGULATOR_FE_COUNTER		54	// Счетчик Following Error
-#define REG_REGULATOR_PARAMETRIC		55	// Режим параметрического формирования
+#define REG_REGULATOR_Kp				51	// Пропорциональный коэффициент регулятора
+#define REG_REGULATOR_Ki				52	// Интегральный коэффициент регулятора
+#define REG_REGULATOR_QI_MAX			53	// Ограничение уровня интегральной составляющей
+#define REG_REGULATOR_ERR_MAX			54	// Уровень ошибки регулятора для Following Error (%)
+#define REG_REGULATOR_FE_COUNTER		55	// Счетчик Following Error
+#define REG_REGULATOR_PARAMETRIC		56	// Режим параметрического формирования
 //
-#define REG_VGS_FAST_RATE				56	// Скорость нарастания напряжения Vg (мВ/мкс)
-#define REG_VGS_SLOW_RATE				57	// Скорость нарастания напряжения Vg (мВ/мкс)
-#define REG_VGS_dI_TRIG					58	// (%)
+#define REG_VGS_FAST_RATE				57	// Скорость нарастания напряжения Vg (мВ/мкс)
+#define REG_VGS_SLOW_RATE				58	// Скорость нарастания напряжения Vg (мВ/мкс)
+#define REG_VGS_dI_TRIG					59	// (%)
 //
-#define REG_IGES_V_RATE					59	// Скорость нарастания напряжения, (В/мкс)
-#define REG_IGES_SAMPLES_NUMBER			60	// Количество семплов при измерении Iges
+#define REG_IGES_V_RATE					60	// Скорость нарастания напряжения, (В/мкс)
+#define REG_IGES_SAMPLES_NUMBER			61	// Количество семплов при измерении Iges
 //
-#define REG_PAU_CAN_ID					61	// CAN ID PAU
-#define REG_PAU_EMULATED				62	// Эмуляция работы PAU
+#define REG_PAU_CAN_ID					62	// CAN ID PAU
+#define REG_PAU_EMULATED				63	// Эмуляция работы PAU
 //
-#define REG_TOCUHP_CAN_ID				63	// CAN ID TOCUHP
-#define REG_TOCUHP_EMULATED				64	// Эмуляция работы TOCUHP
-#define REG_TOCUHP_RES_PER_BIT			65	// Сопротивление одного бита блока TOCU (Ом)
+#define REG_TOCUHP_CAN_ID				64	// CAN ID TOCUHP
+#define REG_TOCUHP_EMULATED				65	// Эмуляция работы TOCUHP
+#define REG_TOCUHP_RES_PER_BIT			66	// Сопротивление одного бита блока TOCU (Ом)
 //
-#define REG_DAC_OUTPUT_LIMIT_VALUE		66	// Ограничение выхода ЦАП (0 - 4095)
-#define REG_SCOPE_STEP					67	// Шаг сохранения оцифрованных значений
-#define REG_MUTE_SAFETY					68	// Отключение проверки контакта безопасности
-#define REG_ST_CHECK_ERROR				69	// Допустимая ошибка результата самотестирования
+#define REG_DAC_OUTPUT_LIMIT_VALUE		67	// Ограничение выхода ЦАП (0 - 4095)
+#define REG_SCOPE_STEP					68	// Шаг сохранения оцифрованных значений
+#define REG_MUTE_SAFETY					69	// Отключение проверки контакта безопасности
+#define REG_ST_CHECK_ERROR				70	// Допустимая ошибка результата самотестирования
 //
 
 
@@ -139,11 +140,11 @@
 //
 // Регистры измерения VGS
 #define REG_VGS_I_TRIG					128	// Задание триггера тока (мА)
-#define	REG_VGS_V_MAX					129	// Значение напряжения ограничения (мВ)
+#define	REG_VGS_V_MAX					129	// Значение напряжения ограничения (В)
 
 // Регистры измерения QG
-#define REG_QG_V_CUTOFF					130	// Ограничение напряжения затвора (мВ)
-#define REG_QG_V_NEGATIVE				131	// Отрицательное напряжение, приложенное к затвору (мВ)
+#define REG_QG_V_CUTOFF					130	// Ограничение напряжения затвора (В)
+#define REG_QG_V_NEGATIVE				131	// Отрицательное напряжение, приложенное к затвору (В)
 #define REG_QG_I						132	// Ток затвора (мА)
 #define REG_QG_I_DURATION				133	// Длительность тока затвора (мкс)
 #define REG_QG_I_POWER					134	// Силовой ток коллектор-эммитер (сток-исток) (А)
@@ -174,15 +175,17 @@
 #define REG_SAFETY_STATE				199	// Регистр состояния контакта безопасности
 
 // Результаты измерения
-#define REG_VGS_RESULT					200	// Измеренное значение VGS, (мВ)
+#define REG_VGS_RESULT					200	// Измеренное значение VGS, (В)
 #define REG_VGS_I_RESULT				201	// Достигнутый ток, при измерении Vgs, (мА)
 #define REG_QG_RESULT					202	// Измеренное значение QG (нКл)
 #define REG_QG_I_DURATION_RESULT		203 // Измеренная длительность импульса тока (мкс)
 #define REG_QG_I_RESULT					204 // Усредненное измеренное значение тока (мА)
 #define REG_IGES_RESULT					205	// Измеренное значение IGES (нА)
+#define REG_IGES_V_RESULT				206	// Измеренное значение напряжения (В)
 //
 #define REG_CAL_V_RESULT				210
-#define REG_CAL_I_RESULT				211
+#define REG_CAL_VN_RESULT				211
+#define REG_CAL_I_RESULT				212
 
 #define REG_PAU_ERROR_CODE				220	// Ошибка интерфейса PAU: код ошибки
 #define REG_PAU_FUNCTION				221	// Ошибка интерфейса PAU: код функции
