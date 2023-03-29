@@ -14,6 +14,7 @@
 #include "Measurement.h"
 #include "DeviceObjectDictionary.h"
 #include "Delay.h"
+#include "Math.h"
 
 // Definitions
 //
@@ -21,6 +22,11 @@
 #define PAU_SYNC_DELAY_STEP				(Int16U)(PAU_SYNC_DELAY_US / TIMER15_uS)
 //
 #define PAU_UDATE_STATE_PERIOD			50	// in ms
+#define SHORT_CIRCUIT_CURRENT_ERROR		10	// %
+#define DUT_NOT_FOUND_LEVEL				THRESHOLD_V_I_R0 * 0.1
+//
+#define IGES_RING_BUFFER_SIZE			8
+#define IGES_RING_BUFFER_CNT_MASK		IGES_RING_BUFFER_SIZE - 1
 
 // Types
 //
@@ -34,8 +40,7 @@ typedef enum __IgesPrepareStage
 // Variables
 //
 LogParamsStruct IgesLog;
-MeasureSample IgesSampledData;
-RingBuffersParams IgesRingBuffers;
+float SampledCurrent;
 IgesPrepareStage ConfigStage = PAU_Config;
 Int64U PAU_StateTimeout = 0;
 bool PAU_SyncFlag = false;
@@ -113,18 +118,17 @@ void IGES_Prepare()
 		case HW_Config:
 			ConfigStage = PAU_Config;
 
+			IGES_CacheVariables();
 			Int16U CurrentRange = MEASURE_V_SetCurrentRange(THRESHOLD_V_I_R0);
 
 			INITCFG_ConfigADC_VgsIges(CurrentRange);
 			INITCFG_ConfigDMA_VgsIges();
-			LOG_ClearBuffers(&IgesRingBuffers);
+			MEASURE_ResetDMABuffers();
 
 			LL_V_ShortOut(false);
 			PAU_ShortInput(true);
 			CONTROL_SwitchOutMUX(Voltage);
 			REGULATOR_Mode(&RegulatorParams, Parametric);
-
-			IGES_CacheVariables();
 
 			CONTROL_SetDeviceState(DS_InProcess, SS_IgesProcess);
 			CONTROL_StartHighPriorityProcesses();
@@ -143,15 +147,11 @@ void IGES_CacheVariables()
 
 	RegulatorParams.dVg = DataTable[REG_IGES_V_RATE] * TIMER15_uS;
 
-	IgesLog.DataA = &IgesSampledData.Voltage;
-	IgesLog.DataB = &IgesSampledData.Current;
+	IgesLog.DataA = &RegulatorParams.Target;
+	IgesLog.DataB = &SampledCurrent;
 	IgesLog.LogBufferA = &CONTROL_VoltageValues[0];
 	IgesLog.LogBufferB = &CONTROL_CurrentValues[0];
 	IgesLog.LogBufferCounter = &CONTROL_Values_Counter;
-	//
-	IgesRingBuffers.DataA = &IgesSampledData.Voltage;
-	IgesRingBuffers.DataB = &IgesSampledData.Current;
-	IgesRingBuffers.RingCounterMask = LOG_COUNTER_MASK;
 	//
 	IgesSamplesCounter = DataTable[REG_IGES_SAMPLES_NUMBER];
 }
@@ -160,18 +160,45 @@ void IGES_CacheVariables()
 void IGES_Process()
 {
 	static bool StartPulsePlate = false;
+	static float CurrentMax = 0;
 
-	IgesSampledData = MEASURE_V_SampleVI();
+	SampledCurrent = MEASURE_V_SampleVI().Current;
 
-	LOG_SaveSampleToRingBuffer(&IgesRingBuffers);
 	LOG_LoggingData(&IgesLog);
 
 	if(RegulatorParams.Target < DataTable[REG_IGES_V])
+	{
 		RegulatorParams.Target += RegulatorParams.dVg;
+
+		if(SampledCurrent > CurrentMax)
+			CurrentMax = SampledCurrent;
+	}
 	else
 	{
 		if(!StartPulsePlate)
 		{
+			float Error1 = fabsf((CurrentMax - THRESHOLD_V_I_R0) / THRESHOLD_V_I_R0 * 100);
+			float Error2 = fabsf((SampledCurrent - THRESHOLD_V_I_R0) / THRESHOLD_V_I_R0 * 100);
+
+			if(Error1 < SHORT_CIRCUIT_CURRENT_ERROR && Error2 < SHORT_CIRCUIT_CURRENT_ERROR)
+			{
+				CurrentMax = 0;
+				DataTable[REG_PROBLEM] = PROBLEM_GATE_SHORT;
+				CONTROL_SetDeviceState(DS_Ready, SS_None);
+				return;
+			}
+			else
+			{
+				if(CurrentMax < DUT_NOT_FOUND_LEVEL)
+				{
+					CurrentMax = 0;
+					DataTable[REG_PROBLEM] = PROBLEM_DUT_NOT_FOUND;
+					CONTROL_SetDeviceState(DS_Ready, SS_None);
+					return;
+				}
+			}
+
+			CurrentMax = 0;
 			StartPulsePlate = true;
 			RegulatorParams.Target = DataTable[REG_IGES_V];
 			PAU_ShortInput(false);
@@ -180,29 +207,12 @@ void IGES_Process()
 
 	IGES_PAUsyncProcess(StartPulsePlate);
 
-	RegulatorParams.SampledData = IgesSampledData.Voltage;
-
 	REGULATOR_Process(&RegulatorParams);
 
 	if(!IgesSamplesCounter)
 	{
 		StartPulsePlate = false;
 		CONTROL_StopHighPriorityProcesses();
-
-		if(RegulatorParams.FollowingError)
-		{
-			if(IgesSampledData.Current > VGS_CURRENT_MAX)
-			{
-				DataTable[REG_PROBLEM] = PROBLEM_GATE_SHORT;
-				CONTROL_SetDeviceState(DS_Ready, SS_None);
-			}
-			else
-				CONTROL_SwitchToFault(DF_FOLLOWING_ERROR);
-
-			DataTable[REG_IGES_V_RESULT] = LOG_RingBufferGetAverage(&IgesRingBuffers).Voltage;
-			DataTable[REG_IGES_RESULT] = 0;
-			DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
-		}
 
 		PAU_StateTimeout = CONTROL_TimeCounter + PAU_WAIT_READY_TIMEOUT;
 		CONTROL_SetDeviceState(DS_InProcess, SS_IgesSaveResult);
@@ -264,7 +274,6 @@ void IGES_SaveResults()
 
 	if(DataTable[REG_PAU_EMULATED])
 	{
-		DataTable[REG_IGES_V_RESULT] = LOG_RingBufferGetAverage(&IgesRingBuffers).Voltage;
 		DataTable[REG_IGES_RESULT] = 0;
 		DataTable[REG_OP_RESULT] = OPRESULT_OK;
 
@@ -281,7 +290,6 @@ void IGES_SaveResults()
 				if(Iges > MEASURE_IGES_CURRENT_MAX)
 					DataTable[REG_WARNING] = WARNING_IGES_TOO_HIGH;
 
-				DataTable[REG_IGES_V_RESULT] = LOG_RingBufferGetAverage(&IgesRingBuffers).Voltage;
 				DataTable[REG_IGES_RESULT] = Iges;
 				DataTable[REG_OP_RESULT] = OPRESULT_OK;
 

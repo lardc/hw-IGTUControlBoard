@@ -181,7 +181,6 @@
 #define REG_QG_I_DURATION_RESULT		203 // Измеренная длительность импульса тока (мкс)
 #define REG_QG_I_RESULT					204 // Усредненное измеренное значение тока (мА)
 #define REG_IGES_RESULT					205	// Измеренное значение IGES (нА)
-#define REG_IGES_V_RESULT				206	// Измеренное значение напряжения (В)
 //
 #define REG_CAL_V_RESULT				210
 #define REG_CAL_VN_RESULT				211
@@ -255,6 +254,7 @@
 #define PROBLEM_SAFETY_VIOLATION		2
 #define PROBLEM_VGS_CURRENT_NOT_REACHED	3
 #define PROBLEM_GATE_SHORT				4
+#define PROBLEM_DUT_NOT_FOUND			5
 
 //  Warning
 #define WARNING_NONE					0
