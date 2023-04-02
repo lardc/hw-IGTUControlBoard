@@ -77,7 +77,6 @@ void CAL_V_Prepare()
 	MEASURE_ResetDMABuffers();
 	LL_V_ShortOut(false);
 	LL_V_ShortPAU(true);
-	LL_V_Diagnostic(false);
 	CONTROL_SwitchOutMUX(Voltage);
 
 	CAL_V_CacheVariables();
@@ -91,15 +90,14 @@ void CAL_I_Prepare()
 {
 	CAL_I_CacheVariables();
 
-	INITCFG_ConfigADC_Qg();
-	INITCFG_ConfigDMA_Qg();
+	INITCFG_ConfigADC_Qg_VI();
+	INITCFG_ConfigDMA_Qg(ADC_DMA_BUFF_SIZE_QG);
 	MEASURE_ResetDMABuffers();
 	LL_ExDACVCutoff(CU_I_VcutoffToDAC(DataTable[REG_CAL_V]));
 	LL_ExDACVNegative(CU_I_VnegativeToDAC(DataTable[REG_CAL_V]));
 	LL_I_SetDAC(CU_I_ItoDAC(DataTable[REG_CAL_I]));
 	LL_I_Start(false);
 	LL_I_Enable(true);
-	LL_V_Diagnostic(false);
 	DELAY_MS(20);
 
 	CONTROL_SwitchOutMUX(Current);
@@ -162,7 +160,7 @@ void CAL_V_CalProcess()
 			DataTable[REG_CAL_I_RESULT] = AverageData.Current;
 
 			if(CONTROL_State == DS_SelfTest)
-				CONTROL_SetDeviceState(CONTROL_State, SS_VoltageCheck);
+				CONTROL_SetDeviceState(CONTROL_State, SS_V_Check);
 			else
 				CONTROL_SetDeviceState(DS_Ready, SS_None);
 		}

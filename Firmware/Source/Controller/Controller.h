@@ -38,10 +38,15 @@ typedef enum __DeviceSubState
 	SS_QgProcess,
 	SS_QgSaveResult,
 
-	SS_VoltagePrepare = 40,
-	SS_VoltageCheck,
-	SS_CurrentPrepare,
-	SS_CurrentCheck
+	SS_V_Prepare_Voltage = 40,
+	SS_V_Prepare_Irange0,
+	SS_V_Prepare_Irange1,
+	SS_V_Prepare_Irange2,
+	SS_V_Check,
+
+	SS_I_PrepareStage0 = 50,
+	SS_I_PrepareStage1,
+	SS_I_Check
 } DeviceSubState;
 
 typedef enum __CommutationState
@@ -78,5 +83,6 @@ void CONTROL_StopHighPriorityProcesses();
 void CONTROL_SwitchOutMUX(CommutationState Commutation);
 void CONTROL_SwitchToFault(Int16U Reason);
 bool CONTROL_IsSafetyOk();
+void CONTROL_ResetHardwareToDefaultState();
 
 #endif // __CONTROLLER_H

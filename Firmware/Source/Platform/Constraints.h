@@ -26,8 +26,8 @@
 #define I_ADC_TO_V_K_DEF			0.01217935
 #define I_ADC_TO_V_B_DEF			0.2828039
 
-#define I_I_TO_DAC_K_DEF			7
-#define I_I_TO_DAC_B_DEF			135
+#define I_I_TO_DAC_K_DEF			7.185
+#define I_I_TO_DAC_B_DEF			40
 #define I_VC_TO_DAC_K_DEF			165.061
 #define	I_VC_TO_DAC_B_DEF			50
 #define I_VN_TO_DAC_K_DEF			175

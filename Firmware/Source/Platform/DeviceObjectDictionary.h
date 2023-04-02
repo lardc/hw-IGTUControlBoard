@@ -178,9 +178,8 @@
 #define REG_VGS_RESULT					200	// Измеренное значение VGS, (В)
 #define REG_VGS_I_RESULT				201	// Достигнутый ток, при измерении Vgs, (мА)
 #define REG_QG_RESULT					202	// Измеренное значение QG (нКл)
-#define REG_QG_I_DURATION_RESULT		203 // Измеренная длительность импульса тока (мкс)
-#define REG_QG_I_RESULT					204 // Усредненное измеренное значение тока (мА)
-#define REG_IGES_RESULT					205	// Измеренное значение IGES (нА)
+#define REG_QG_I_RESULT					203 // Усредненное измеренное значение тока (мА)
+#define REG_IGES_RESULT					204	// Измеренное значение IGES (нА)
 //
 #define REG_CAL_V_RESULT				210
 #define REG_CAL_VN_RESULT				211

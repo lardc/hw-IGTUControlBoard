@@ -149,7 +149,19 @@ void INITCFG_ConfigWatchDog()
 }
 //------------------------------------------------
 
-void INITCFG_ConfigADC_Qg()
+void INITCFG_ConfigADC_Qg_I()
+{
+	INITCFG_ConfigADC_QgXX(true);
+}
+//------------------------------------------------
+
+void INITCFG_ConfigADC_Qg_VI()
+{
+	INITCFG_ConfigADC_QgXX(false);
+}
+//------------------------------------------------
+
+void INITCFG_ConfigADC_QgXX(bool OnlyCurrentSample)
 {
 	// ADC1
 	ADC_ResetConfig(ADC1);
@@ -159,9 +171,15 @@ void INITCFG_ConfigADC_Qg()
 	ADC_SetContinuousMode(ADC1);
 
 	ADC_ChannelSet_Sequence(ADC1, ADC1_I_I_SEN_CHANNEL, 1);
-	ADC_ChannelSet_Sequence(ADC1, ADC1_I_V_SEN_CHANNEL, 2);
 
-	ADC_ChannelSeqLen(ADC1, 2);
+	if(!OnlyCurrentSample)
+	{
+		ADC_ChannelSet_Sequence(ADC1, ADC1_I_V_SEN_CHANNEL, 2);
+		ADC_ChannelSeqLen(ADC1, 2);
+	}
+	else
+		ADC_ChannelSeqLen(ADC1, 1);
+
 	ADC_DMAConfig(ADC1);
 	ADC_Enable(ADC1);
 	ADC_DMAEnable(ADC1, true);
@@ -229,11 +247,11 @@ void INITCFG_ConfigDMA_VgsIges()
 }
 //------------------------------------------------
 
-void INITCFG_ConfigDMA_Qg()
+void INITCFG_ConfigDMA_Qg(Int16U DMA_DataSize)
 {
 	// DMA1
 	DMA_Reset(DMA1_Channel1);
-	DMAChannelX_DataConfig(DMA1_Channel1, (uint32_t)&MEASURE_Qg_DataRaw, (uint32_t)(&ADC1->DR), ADC_DMA_BUFF_SIZE_QG);
+	DMAChannelX_DataConfig(DMA1_Channel1, (uint32_t)&MEASURE_Qg_DataRaw, (uint32_t)(&ADC1->DR), DMA_DataSize);
 	DMAChannelX_Config(DMA1_Channel1, DMA_MEM2MEM_DIS, DMA_LvlPriority_LOW, DMA_MSIZE_16BIT, DMA_PSIZE_16BIT,
 															DMA_MINC_EN, DMA_PINC_DIS, DMA_CIRCMODE_DIS, DMA_READ_FROM_PERIPH);
 	DMA_ChannelEnable(DMA1_Channel1, true);

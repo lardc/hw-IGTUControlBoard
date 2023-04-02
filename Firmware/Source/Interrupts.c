@@ -67,8 +67,17 @@ void TIM3_IRQHandler()
 {
 	if(CONTROL_SubState == SS_QgProcess)
 	{
+		LL_I_Start(false);
 		QG_Pulse(false);
-		CONTROL_SetDeviceState(CONTROL_State, SS_QgSaveResult);
+		CONTROL_ResetHardwareToDefaultState();
+
+		if(CONTROL_State == DS_SelfTest)
+		{
+			QG_SaveResult();
+			CONTROL_SetDeviceState(CONTROL_State, SS_I_Check);
+		}
+		else
+			CONTROL_SetDeviceState(CONTROL_State, SS_QgSaveResult);
 	}
 
 	TIM_StatusClear(TIM3);

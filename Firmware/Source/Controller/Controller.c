@@ -43,7 +43,6 @@ Int16U CONTROL_Values_Counter = 0;
 static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError);
 void CONTROL_UpdateWatchDog();
 void CONTROL_ResetToDefaultState();
-void CONTROL_ResetHardwareToDefaultState();
 void CONTROL_LogicProcess();
 void CONTROL_ResetOutputRegisters();
 
@@ -96,7 +95,6 @@ void CONTROL_ResetOutputRegisters()
 	DataTable[REG_VGS_RESULT] = 0;
 	DataTable[REG_VGS_I_RESULT] = 0;
 	DataTable[REG_QG_RESULT] = 0;
-	DataTable[REG_QG_I_DURATION_RESULT] = 0;
 	DataTable[REG_QG_I_RESULT] = 0;
 	DataTable[REG_IGES_RESULT] = 0;
 
@@ -169,7 +167,10 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 
 		case ACT_START_QG:
 			if(CONTROL_State == DS_Ready)
+			{
+				CONTROL_ResetOutputRegisters();
 				CONTROL_SetDeviceState(DS_InProcess, SS_QgPrepare);
+			}
 			else if(CONTROL_State == DS_InProcess)
 				*pUserError = ERR_OPERATION_BLOCKED;
 			else
@@ -193,7 +194,7 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			{
 				CONTROL_ResetOutputRegisters();
 				DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_NONE;
-				CONTROL_SetDeviceState(DS_SelfTest, SS_VoltagePrepare);
+				CONTROL_SetDeviceState(DS_SelfTest, SS_V_Prepare_Voltage);
 			}
 			else if(CONTROL_State == DS_InProcess)
 				*pUserError = ERR_OPERATION_BLOCKED;
