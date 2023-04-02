@@ -108,7 +108,7 @@ void DBGACT_V_TestClimHigh()
 	LL_V_ShortPAU(true);
 	LL_V_ShortOut(false);
 	LL_V_Diagnostic(false);
-	MEASURE_V_SetCurrentRange(THRESHOLD_V_I_R1);
+	MEASURE_V_SetCurrentRange(V_I_R1_MAX);
 	LL_V_IlimHighRange();
 
 	LL_V_VSetDAC(DBG_DAC_TEST_VALUE);

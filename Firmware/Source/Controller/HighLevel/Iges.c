@@ -23,7 +23,7 @@
 //
 #define PAU_UDATE_STATE_PERIOD			50	// in ms
 #define SHORT_CIRCUIT_CURRENT_ERROR		10	// %
-#define DUT_NOT_FOUND_LEVEL				THRESHOLD_V_I_R0 * 0.1
+#define DUT_NOT_FOUND_LEVEL				V_I_R0_MAX * 0.1
 //
 #define IGES_RING_BUFFER_SIZE			8
 #define IGES_RING_BUFFER_CNT_MASK		IGES_RING_BUFFER_SIZE - 1
@@ -41,7 +41,7 @@ typedef enum __IgesPrepareStage
 //
 LogParamsStruct IgesLog;
 float SampledCurrent;
-IgesPrepareStage ConfigStage = PAU_Config;
+IgesPrepareStage IgesConfigStage = PAU_Config;
 Int64U PAU_StateTimeout = 0;
 bool PAU_SyncFlag = false;
 Int16U IgesSamplesCounter = 0;
@@ -62,9 +62,9 @@ void IGES_Prepare()
 		CONTROL_SwitchToFault(DF_PAU_INTERFACE);
 
 	if(DataTable[REG_PAU_EMULATED])
-		ConfigStage = HW_Config;
+		IgesConfigStage = HW_Config;
 
-	switch(ConfigStage)
+	switch(IgesConfigStage)
 	{
 		case PAU_Config:
 			if(PAU_State == PS_Ready || PAU_State == PS_ConfigReady)
@@ -87,7 +87,7 @@ void IGES_Prepare()
 				if(PAU_Configure(PAU_CHANNEL_IGTU, PAU_Current, DataTable[REG_IGES_SAMPLES_NUMBER]))
 				{
 					PAU_StateTimeout = CONTROL_TimeCounter + PAU_WAIT_READY_TIMEOUT;
-					ConfigStage = PAU_Wating;
+					IgesConfigStage = PAU_Wating;
 				}
 				else
 				{
@@ -104,7 +104,7 @@ void IGES_Prepare()
 
 		case PAU_Wating:
 			if(PAU_State == PS_ConfigReady)
-				ConfigStage = HW_Config;
+				IgesConfigStage = HW_Config;
 			else
 			{
 				if(CONTROL_TimeCounter >= PAU_StateTimeout)
@@ -116,10 +116,10 @@ void IGES_Prepare()
 			break;
 
 		case HW_Config:
-			ConfigStage = PAU_Config;
+			IgesConfigStage = PAU_Config;
 
 			IGES_CacheVariables();
-			Int16U CurrentRange = MEASURE_V_SetCurrentRange(THRESHOLD_V_I_R0);
+			Int16U CurrentRange = MEASURE_V_SetCurrentRange(V_I_R0_MAX);
 
 			INITCFG_ConfigADC_VgsIges(CurrentRange);
 			INITCFG_ConfigDMA_VgsIges();
@@ -177,8 +177,8 @@ void IGES_Process()
 	{
 		if(!StartPulsePlate)
 		{
-			float Error1 = fabsf((CurrentMax - THRESHOLD_V_I_R0) / THRESHOLD_V_I_R0 * 100);
-			float Error2 = fabsf((SampledCurrent - THRESHOLD_V_I_R0) / THRESHOLD_V_I_R0 * 100);
+			float Error1 = fabsf((CurrentMax - V_I_R0_MAX) / V_I_R0_MAX * 100);
+			float Error2 = fabsf((SampledCurrent - V_I_R0_MAX) / V_I_R0_MAX * 100);
 
 			if(Error1 < SHORT_CIRCUIT_CURRENT_ERROR && Error2 < SHORT_CIRCUIT_CURRENT_ERROR)
 			{

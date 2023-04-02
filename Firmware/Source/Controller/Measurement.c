@@ -77,14 +77,14 @@ void MEASURE_ResetDMABuffers()
 
 Int16U MEASURE_V_SetCurrentRange(float Current)
 {
-	if(Current <= THRESHOLD_V_I_R0)
+	if(Current <= V_I_R0_MAX)
 	{
 		CurrentRange = MEASURE_V_I_R0;
 		LL_V_IlimLowRange();
 	}
 	else
 	{
-		if(Current > THRESHOLD_V_I_R1)
+		if(Current > V_I_R1_MAX)
 		{
 			CurrentRange = MEASURE_V_I_R2;
 			LL_V_IsenseHighRange1();
