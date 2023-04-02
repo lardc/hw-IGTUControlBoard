@@ -26,7 +26,7 @@
 #define ST_I_V_SET_STAGE0			5
 #define ST_I_V_SET_STAGE1			20
 
-#define ST_I_Q_REF_STAGE0			913
+#define ST_I_Q_REF_STAGE0			890
 #define ST_I_Q_REF_STAGE1			4500
 //
 
