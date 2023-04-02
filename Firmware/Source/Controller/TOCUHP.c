@@ -11,12 +11,13 @@
 // Variables
 //
 Int16U	TOCUHP_State;
+bool TOCUHP_Emulated = false;
 
 // Functions
 //
 bool TOCUHP_ReadState(Int16U* Register)
 {
-	if(DataTable[REG_TOCUHP_EMULATED])
+	if(DataTable[REG_TOCUHP_EMULATED] || TOCUHP_Emulated)
 		return true;
 
 	if(BHL_ReadRegister(DataTable[REG_TOCUHP_CAN_ID], REG_TOCUHP_DEV_STATE, Register))
@@ -30,7 +31,7 @@ bool TOCUHP_Configure(Int16U Voltage, float AnodeCurrent)
 {
 	Int16U Mask = TOCUHP_BitMask(AnodeCurrent);
 
-	if(DataTable[REG_TOCUHP_EMULATED])
+	if(DataTable[REG_TOCUHP_EMULATED] || TOCUHP_Emulated)
 		return true;
 
 	if(BHL_WriteRegister(DataTable[REG_TOCUHP_CAN_ID], REG_TOCUHP_VOLTAGE_SETPOINT, Voltage))
@@ -43,7 +44,7 @@ bool TOCUHP_Configure(Int16U Voltage, float AnodeCurrent)
 
 bool TOCUHP_CallCommand(uint16_t Command)
 {
-	if(DataTable[REG_TOCUHP_EMULATED])
+	if(DataTable[REG_TOCUHP_EMULATED] || TOCUHP_Emulated)
 		return true;
 
 	return (BHL_Call(DataTable[REG_TOCUHP_CAN_ID], Command));
@@ -52,7 +53,7 @@ bool TOCUHP_CallCommand(uint16_t Command)
 
 bool TOCUHP_AreInStateX(uint16_t State)
 {
-	if(DataTable[REG_TOCUHP_EMULATED])
+	if(DataTable[REG_TOCUHP_EMULATED] || TOCUHP_Emulated)
 		return true;
 
 	Int16U readState;
@@ -66,7 +67,7 @@ bool TOCUHP_AreInStateX(uint16_t State)
 
 bool TOCUHP_IsInFaultOrDisabled()
 {
-	if(DataTable[REG_TOCUHP_EMULATED])
+	if(DataTable[REG_TOCUHP_EMULATED] || TOCUHP_Emulated)
 		return false;
 
 	Int16U readFault, readDisable;
@@ -95,3 +96,14 @@ Int16U TOCUHP_BitMask(float AnodeCurrent)
 	return ActualBitmask;
 }
 //-----------------------------------------------
+
+void TOCUHP_EmulatedState(bool State)
+{
+	TOCUHP_Emulated = State;
+}
+//-----------------------------------------------
+
+bool TOCUHP_IsEmulatedState()
+{
+	return (TOCUHP_Emulated | (bool)DataTable[REG_TOCUHP_EMULATED]);
+}

@@ -32,5 +32,7 @@ bool TOCUHP_CallCommand(uint16_t Command);
 bool TOCUHP_AreInStateX(uint16_t State);
 bool TOCUHP_IsInFaultOrDisabled();
 Int16U TOCUHP_BitMask(float AnodeCurrent);
+void TOCUHP_EmulatedState(bool State);
+bool TOCUHP_IsEmulatedState();
 
 #endif /* CONTROLLER_TOCUHP_H_ */
