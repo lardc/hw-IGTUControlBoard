@@ -120,7 +120,6 @@ void ST_Process()
 			}
 			else
 			{
-				DataTable[REG_OP_RESULT] = OPRESULT_NONE;
 				DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_FAIL;
 				CONTROL_SwitchToFault(DF_ST_CHECK_ERROR);
 			}

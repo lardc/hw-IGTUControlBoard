@@ -91,16 +91,10 @@ void IGES_Prepare()
 					IgesConfigStage = PAU_Wating;
 				}
 				else
-				{
-					DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
 					CONTROL_SwitchToFault(DF_PAU_INTERFACE);
-				}
 			}
 			else
-			{
-				DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
 				CONTROL_SwitchToFault(DF_PAU_WRONG_STATE);
-			}
 			break;
 
 		case PAU_Wating:
@@ -109,10 +103,7 @@ void IGES_Prepare()
 			else
 			{
 				if(CONTROL_TimeCounter >= PAU_StateTimeout)
-				{
-					DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
 					CONTROL_SwitchToFault(DF_PAU_WRONG_STATE);
-				}
 			}
 			break;
 
@@ -338,18 +329,12 @@ void IGES_SaveResults()
 				CONTROL_SetDeviceState(DS_Ready, SS_None);
 			}
 			else
-			{
-				DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
 				CONTROL_SwitchToFault(DF_PAU_INTERFACE);
-			}
 		}
 		else
 		{
 			if(CONTROL_TimeCounter >= PAU_StateTimeout)
-			{
-				DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
 				CONTROL_SwitchToFault(DF_PAU_WRONG_STATE);
-			}
 		}
 	}
 }
