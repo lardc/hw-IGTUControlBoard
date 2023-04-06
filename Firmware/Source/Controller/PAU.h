@@ -12,6 +12,7 @@
 //
 #define PAU_CONFIG_TIMEOUT			1000
 #define PAU_WAIT_READY_TIMEOUT		5000
+#define PAU_SYNC_PERIOD_MAX			2000
 //
 #define PAU_I_RANGE_0				20e-6	// mA
 #define PAU_I_RANGE_1				200e-6	// mA

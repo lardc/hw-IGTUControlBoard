@@ -50,6 +50,7 @@ Int16U IgesSamplesCounter = 0;
 //
 void IGES_CacheVariables();
 void IGES_PAUsyncProcess(bool State);
+void IGES_CheckDUT(bool PulsePlate, float SampledCurrent);
 
 // Functions
 //
@@ -160,7 +161,6 @@ void IGES_CacheVariables()
 void IGES_Process()
 {
 	static bool StartPulsePlate = false;
-	static float CurrentMax = 0;
 
 	SampledCurrent = MEASURE_V_SampleVI().Current;
 
@@ -169,14 +169,45 @@ void IGES_Process()
 	if(RegulatorParams.Target < DataTable[REG_IGES_V])
 	{
 		RegulatorParams.Target += RegulatorParams.dVg;
-
-		if(SampledCurrent > CurrentMax)
-			CurrentMax = SampledCurrent;
+		StartPulsePlate = false;
 	}
 	else
 	{
-		if(!StartPulsePlate)
+		RegulatorParams.Target = DataTable[REG_IGES_V];
+		StartPulsePlate = true;
+	}
+
+	IGES_CheckDUT(StartPulsePlate, SampledCurrent);
+
+	IGES_PAUsyncProcess(StartPulsePlate);
+
+	REGULATOR_Process(&RegulatorParams);
+
+	if(StartPulsePlate)
+	{
+		if(!IgesSamplesCounter)
 		{
+			StartPulsePlate = false;
+			CONTROL_StopHighPriorityProcesses();
+
+			PAU_StateTimeout = CONTROL_TimeCounter + PAU_WAIT_READY_TIMEOUT;
+			CONTROL_SetDeviceState(DS_InProcess, SS_IgesSaveResult);
+		}
+	}
+}
+//-----------------------------------------------
+
+void IGES_CheckDUT(bool PulsePlate, float SampledCurrent)
+{
+	static bool IsDUTChecked = false;
+	static float CurrentMax = 0;
+
+	if(PulsePlate)
+	{
+		if(!IsDUTChecked)
+		{
+			IsDUTChecked = true;
+
 			float Error1 = fabsf((CurrentMax - V_I_R0_MAX) / V_I_R0_MAX * 100);
 			float Error2 = fabsf((SampledCurrent - V_I_R0_MAX) / V_I_R0_MAX * 100);
 
@@ -199,23 +230,15 @@ void IGES_Process()
 			}
 
 			CurrentMax = 0;
-			StartPulsePlate = true;
-			RegulatorParams.Target = DataTable[REG_IGES_V];
 			PAU_ShortInput(false);
 		}
 	}
-
-	IGES_PAUsyncProcess(StartPulsePlate);
-
-	REGULATOR_Process(&RegulatorParams);
-
-	if(!IgesSamplesCounter)
+	else
 	{
-		StartPulsePlate = false;
-		CONTROL_StopHighPriorityProcesses();
+		IsDUTChecked = false;
 
-		PAU_StateTimeout = CONTROL_TimeCounter + PAU_WAIT_READY_TIMEOUT;
-		CONTROL_SetDeviceState(DS_InProcess, SS_IgesSaveResult);
+		if(SampledCurrent > CurrentMax)
+			CurrentMax = SampledCurrent;
 	}
 }
 //-----------------------------------------------
@@ -224,6 +247,8 @@ void IGES_PAUsyncProcess(bool State)
 {
 	static Int16U SyncDelayCounter = 0;
 	static bool SyncState = false;
+	static Int16U IgesSamplesLast = 0;
+	static Int64U IgesSamplesTimeoutCounter = 0;
 
 	if(State)
 	{
@@ -253,9 +278,26 @@ void IGES_PAUsyncProcess(bool State)
 
 			SyncState = false;
 		}
+
+		if(IgesSamplesLast != IgesSamplesCounter)
+		{
+			IgesSamplesLast = IgesSamplesCounter;
+			IgesSamplesTimeoutCounter = CONTROL_TimeCounter + PAU_SYNC_PERIOD_MAX;
+		}
+		else
+		{
+			if(CONTROL_TimeCounter > IgesSamplesTimeoutCounter)
+			{
+				CONTROL_StopHighPriorityProcesses();
+
+				DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_FAIL;
+				CONTROL_SwitchToFault(DF_PAU_SYNC_TIMEOUT);
+			}
+		}
 	}
 	else
 	{
+		IgesSamplesLast = 0;
 		SyncDelayCounter = PAU_SYNC_DELAY_STEP;
 		SyncState = false;
 	}
