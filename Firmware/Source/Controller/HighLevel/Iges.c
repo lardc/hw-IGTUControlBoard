@@ -56,11 +56,7 @@ void IGES_CheckDUT(bool PulsePlate, float SampledCurrent);
 //
 void IGES_Prepare()
 {
-	Int16U PAU_State;
 	float PAU_Current = 0;
-
-	if(!PAU_UpdateState(&PAU_State))
-		CONTROL_SwitchToFault(DF_PAU_INTERFACE);
 
 	if(DataTable[REG_PAU_EMULATED])
 		IgesConfigStage = HW_Config;
@@ -68,7 +64,7 @@ void IGES_Prepare()
 	switch(IgesConfigStage)
 	{
 		case PAU_Config:
-			if(PAU_State == PS_Ready || PAU_State == PS_ConfigReady)
+			if(PAU_IsReady() || PAU_IsConfigReady())
 			{
 				switch((Int16U)DataTable[REG_IGES_RANGE])
 				{
@@ -98,7 +94,7 @@ void IGES_Prepare()
 			break;
 
 		case PAU_Wating:
-			if(PAU_State == PS_ConfigReady)
+			if(PAU_IsConfigReady())
 				IgesConfigStage = HW_Config;
 			else
 			{
@@ -300,10 +296,6 @@ void IGES_PAUsyncProcess(bool State)
 void IGES_SaveResults()
 {
 	float Iges = 0;
-	Int16U PAU_State;
-
-	if(!PAU_UpdateState(&PAU_State))
-		CONTROL_SwitchToFault(DF_PAU_INTERFACE);
 
 	if(DataTable[REG_PAU_EMULATED])
 	{
@@ -314,7 +306,7 @@ void IGES_SaveResults()
 	}
 	else
 	{
-		if(PAU_State == PS_Ready)
+		if(PAU_IsReady())
 		{
 			if(PAU_ReadMeasuredData(&Iges))
 			{

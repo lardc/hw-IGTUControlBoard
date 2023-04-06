@@ -9,9 +9,44 @@
 #include "BCCIMHighLevel.h"
 #include "LowLevel.h"
 
+// Function prototypes
+//
+bool PAU_CheckState(PAUState State);
+
 
 // Functions
 //
+bool PAU_IsReady()
+{
+	return PAU_CheckState(PS_Ready);
+}
+//--------------------------------------
+
+bool PAU_IsConfigReady()
+{
+	return PAU_CheckState(PS_ConfigReady);
+}
+//--------------------------------------
+
+bool PAU_InFault()
+{
+	return PAU_CheckState(PS_Fault);
+}
+//--------------------------------------
+
+bool PAU_CheckState(PAUState State)
+{
+	Int16U PAU_State = 0;
+
+	if(BHL_ReadRegister(DataTable[REG_PAU_CAN_ID], REG_PAU_DEV_STATE, &PAU_State))
+		return (PAU_State == State) ? true : false;
+	else
+		CONTROL_SwitchToFault(DF_PAU_INTERFACE);
+
+	return false;
+}
+//--------------------------------------
+
 bool PAU_UpdateState(Int16U* Register)
 {
 	if(DataTable[REG_PAU_EMULATED])

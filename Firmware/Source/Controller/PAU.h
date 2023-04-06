@@ -32,7 +32,9 @@ typedef enum __PAUState
 
 // Functions
 //
-bool PAU_UpdateState(Int16U* Register);
+bool PAU_IsReady();
+bool PAU_IsConfigReady();
+bool PAU_InFault();
 bool PAU_Configure(Int16U Channel, float Range, Int16U SamplesNumber);
 bool PAU_ClearFault();
 bool PAU_ClearWarning();
