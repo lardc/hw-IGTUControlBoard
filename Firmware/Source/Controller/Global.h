@@ -6,7 +6,7 @@
 // Definitions
 // 
 #define	SCCI_TIMEOUT_TICKS						1000				// Таймаут интерфейса SCCI (в мс)
-#define	BCCIM_TIMEOUT_TICKS						50				// Таймаут протоколоа мастер BCCI (в мс)
+#define	BCCIM_TIMEOUT_TICKS						200				// Таймаут протоколоа мастер BCCI (в мс)
 #define EP_WRITE_COUNT							0					// Количество массивов для записи
 
 #define EP_COUNT								0					// Количество массивов для чтения
