@@ -16,6 +16,7 @@
 #include "PAU.h"
 #include "Constraints.h"
 #include "ConvertUtils.h"
+#include "TOCUHP.h"
 
 // Definitions
 //
@@ -26,6 +27,7 @@
 volatile DeviceState CONTROL_State = DS_None;
 volatile DeviceSubState CONTROL_SubState = SS_None;
 volatile Int64U CONTROL_TimeCounter = 0;
+volatile Int64U CONTROL_Timeout = 0;
 static Boolean CycleActive = false;
 //
 float CONTROL_RegulatorOutputValues[VALUES_x_SIZE1];
@@ -141,14 +143,23 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 	{
 		case ACT_ENABLE_POWER:
 			if(CONTROL_State == DS_None)
-				CONTROL_SetDeviceState(DS_Ready, SS_None);
+			{
+				if(TOCUHP_PowerEnable())
+				{
+					CONTROL_Timeout = CONTROL_TimeCounter + POWER_ON_TIMEOUT;
+					CONTROL_SetDeviceState(DS_Ready, SS_PowerOnProcess);
+				}
+			}
 			else if(CONTROL_State != DS_Ready)
 				*pUserError = ERR_OPERATION_BLOCKED;
 			break;
 
 		case ACT_DISABLE_POWER:
 			if((CONTROL_State == DS_Ready) || (CONTROL_State == DS_InProcess))
-				CONTROL_ResetToDefaultState();
+			{
+				if(TOCUHP_PowerDisable())
+					CONTROL_ResetToDefaultState();
+			}
 			else if(CONTROL_State != DS_None)
 				*pUserError = ERR_OPERATION_BLOCKED;
 			break;
@@ -169,6 +180,7 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			if(CONTROL_State == DS_Ready)
 			{
 				CONTROL_ResetOutputRegisters();
+				TOCUHP_UpdateCANid();
 				CONTROL_SetDeviceState(DS_InProcess, SS_QgPrepare);
 			}
 			else if(CONTROL_State == DS_InProcess)
@@ -215,7 +227,7 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			break;
 
 		case ACT_CLR_FAULT:
-			if(PAU_ClearFault())
+			if(PAU_ClearFault() && TOCUHP_ClearFault())
 			{
 				if(CONTROL_State == DS_Fault)
 					CONTROL_ResetToDefaultState();
@@ -284,6 +296,7 @@ bool CONTROL_IsSafetyOk()
 
 	return true;
 }
+//-----------------------------------------------
 
 void CONTROL_LogicProcess()
 {
@@ -294,6 +307,19 @@ void CONTROL_LogicProcess()
 
 		switch(CONTROL_SubState)
 		{
+			case SS_PowerOnProcess:
+				if(TOCUHP_IsReady())
+				{
+					if(PAU_IsReady())
+						CONTROL_SetDeviceState(DS_Ready, SS_None);
+				}
+				else
+				{
+					if(CONTROL_TimeCounter > CONTROL_Timeout)
+						CONTROL_SwitchToFault(DF_POWER_ON_TIMEOUT);
+				}
+				break;
+
 			case SS_Cal_V_Prepare:
 				CAL_V_Prepare();
 				break;

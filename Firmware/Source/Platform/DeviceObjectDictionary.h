@@ -252,6 +252,7 @@
 #define DF_TOCUHP_INTERFACE				5
 #define DF_TOCUHP_WRONG_STATE			6
 #define DF_ST_CHECK_ERROR				7
+#define DF_POWER_ON_TIMEOUT				8
 
 // Problem
 #define PROBLEM_NONE					0

@@ -25,7 +25,7 @@ Int16U TOCUHP_CalculateBitMask(float AnodeCurrent);
 
 // Functions
 //
-void TOCUHP_CacheVariables()
+void TOCUHP_UpdateCANid()
 {
 	TOCUHP_ActiveUnitsCounter = 0;
 
@@ -62,7 +62,7 @@ bool TOCUHP_InFault()
 }
 //--------------------------------------
 
-bool TOCUHP_ResetFault()
+bool TOCUHP_ClearFault()
 {
 	return TOCUHP_Call(ACT_TOCUHP_FAULT_CLEAR);
 }

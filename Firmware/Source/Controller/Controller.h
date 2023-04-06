@@ -21,30 +21,31 @@ typedef enum __DeviceState
 typedef enum __DeviceSubState
 {
 	SS_None = 0,
+	SS_PowerOnProcess,
 
-	SS_Cal_V_Prepare = 1,
+	SS_Cal_V_Prepare = 10,
 	SS_Cal_V_Process,
 	SS_Cal_I_Prepare,
 	SS_Cal_I_Process,
 
-	SS_VgsPrepare = 10,
+	SS_VgsPrepare = 20,
 	SS_VgsProcess,
 
-	SS_IgesPrepare = 20,
+	SS_IgesPrepare = 30,
 	SS_IgesProcess,
 	SS_IgesSaveResult,
 
-	SS_QgPrepare = 30,
+	SS_QgPrepare = 40,
 	SS_QgProcess,
 	SS_QgSaveResult,
 
-	SS_V_Prepare_Voltage = 40,
+	SS_V_Prepare_Voltage = 50,
 	SS_V_Prepare_Irange0,
 	SS_V_Prepare_Irange1,
 	SS_V_Prepare_Irange2,
 	SS_V_Check,
 
-	SS_I_PrepareStage0 = 50,
+	SS_I_PrepareStage0 = 60,
 	SS_I_PrepareStage1,
 	SS_I_Check
 } DeviceSubState;

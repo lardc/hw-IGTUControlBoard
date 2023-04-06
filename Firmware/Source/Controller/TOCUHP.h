@@ -26,10 +26,10 @@ extern Int16U	TOCUHP_State;
 
 // Functions
 //
-void TOCUHP_CacheVariables();
+void TOCUHP_UpdateCANid();
 bool TOCUHP_IsReady();
 bool TOCUHP_InFault();
-bool TOCUHP_ResetFault();
+bool TOCUHP_ClearFault();
 bool TOCUHP_PowerEnable();
 void TOCUHP_EmulatedState(bool State);
 bool TOCUHP_IsEmulatedState();

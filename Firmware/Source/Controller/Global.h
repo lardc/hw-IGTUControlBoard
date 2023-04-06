@@ -6,7 +6,7 @@
 // Definitions
 // 
 #define	SCCI_TIMEOUT_TICKS						1000				// Таймаут интерфейса SCCI (в мс)
-#define	BCCIM_TIMEOUT_TICKS						200				// Таймаут протоколоа мастер BCCI (в мс)
+#define	BCCIM_TIMEOUT_TICKS						200					// Таймаут протоколоа мастер BCCI (в мс)
 #define EP_WRITE_COUNT							0					// Количество массивов для записи
 
 #define EP_COUNT								0					// Количество массивов для чтения
@@ -27,6 +27,7 @@
 #define PAU_CODE_RANGE0							0
 #define PAU_CODE_RANGE1							1
 #define PAU_CODE_RANGE2							2
+#define POWER_ON_TIMEOUT						5000				// Таймаут включения, мс
 
 // Размер массивов EP
 #define VALUES_x_SIZE1							1000
