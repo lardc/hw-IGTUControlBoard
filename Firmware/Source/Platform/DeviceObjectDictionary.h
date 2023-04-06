@@ -125,14 +125,19 @@
 #define REG_PAU_CAN_ID					62	// CAN ID PAU
 #define REG_PAU_EMULATED				63	// Эмуляция работы PAU
 //
-#define REG_TOCUHP_CAN_ID				64	// CAN ID TOCUHP
-#define REG_TOCUHP_EMULATED				65	// Эмуляция работы TOCUHP
-#define REG_TOCUHP_RES_PER_BIT			66	// Сопротивление одного бита блока TOCU (Ом)
+#define REG_TOCUHP0_CAN_ID				64	// CAN ID TOCUHP 0
+#define REG_TOCUHP1_CAN_ID				65	// CAN ID TOCUHP 1
+#define REG_TOCUHP2_CAN_ID				66	// CAN ID TOCUHP 2
+#define REG_TOCUHP0_BITS				67	// Разрядность TOCUHP 0
+#define REG_TOCUHP1_BITS				68	// Разрядность TOCUHP 1
+#define REG_TOCUHP2_BITS				69	// Разрядность TOCUHP 2
+#define REG_TOCUHP_EMULATED				70	// Эмуляция работы TOCUHP
+#define REG_TOCUHP_RES_PER_BIT0			71	// Сопротивление одного бита блока TOCU (Ом)
 //
-#define REG_DAC_OUTPUT_LIMIT_VALUE		67	// Ограничение выхода ЦАП (0 - 4095)
-#define REG_SCOPE_STEP					68	// Шаг сохранения оцифрованных значений
-#define REG_MUTE_SAFETY					69	// Отключение проверки контакта безопасности
-#define REG_ST_CHECK_ERROR				70	// Допустимая ошибка результата самотестирования
+#define REG_DAC_OUTPUT_LIMIT_VALUE		72	// Ограничение выхода ЦАП (0 - 4095)
+#define REG_SCOPE_STEP					73	// Шаг сохранения оцифрованных значений
+#define REG_MUTE_SAFETY					74	// Отключение проверки контакта безопасности
+#define REG_ST_CHECK_ERROR				75	// Допустимая ошибка результата самотестирования
 //
 
 
@@ -185,9 +190,9 @@
 #define REG_CAL_VN_RESULT				211
 #define REG_CAL_I_RESULT				212
 
-#define REG_PAU_ERROR_CODE				220	// Ошибка интерфейса PAU: код ошибки
-#define REG_PAU_FUNCTION				221	// Ошибка интерфейса PAU: код функции
-#define REG_PAU_EXT_DATA				222	// Ошибка интерфейса PAU: расширенная информация
+#define REG_EXT_UNIT_ERROR_CODE			220	// Ошибка интерфейса PAU: код ошибки
+#define REG_EXT_UNIT_FUNCTION			221	// Ошибка интерфейса PAU: код функции
+#define REG_EXT_UNIT_EXT_DATA			222	// Ошибка интерфейса PAU: расширенная информация
 // -----------------------------
 #define REG_FWINFO_SLAVE_NID			256	// Device CAN slave node ID
 #define REG_FWINFO_MASTER_NID			257	// Device CAN master node ID (if presented)
@@ -243,9 +248,10 @@
 #define DF_FOLLOWING_ERROR				1
 #define DF_PAU_INTERFACE				2
 #define DF_PAU_WRONG_STATE				3
-#define DF_TOCUHP_INTERFACE				4
-#define DF_TOCUHP_WRONG_STATE			5
-#define DF_ST_CHECK_ERROR				6
+#define DF_PAU_SYNC_TIMEOUT				4
+#define DF_TOCUHP_INTERFACE				5
+#define DF_TOCUHP_WRONG_STATE			6
+#define DF_ST_CHECK_ERROR				7
 
 // Problem
 #define PROBLEM_NONE					0

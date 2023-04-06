@@ -6,18 +6,18 @@
 #include "stdinc.h"
 
 // Definitions
+#define TOCUHP_NUM_MAX				3
 #define TOCUHP_BIT_MASK				0x3FF
-#define TOCUHP_VOLTAGE				1500
 
 // Types
 //
 typedef enum __TOCUHPState
 {
-	TOCUHP_DS_None = 0,
-	TOCUHP_DS_Fault = 1,
-	TOCUHP_DS_Disabled = 2,
-	TOCUHP_DS_Ready = 3,
-	TOCUHP_DS_InProcess = 4
+	TS_None = 0,
+	TS_Fault = 1,
+	TS_Disabled = 2,
+	TS_Ready = 3,
+	TS_InProcess = 4
 } TOCUHPState;
 
 // Variables
@@ -26,13 +26,15 @@ extern Int16U	TOCUHP_State;
 
 // Functions
 //
-bool TOCUHP_ReadState(Int16U* Register);
-bool TOCUHP_Configure(Int16U Voltage, float AnodeCurrent);
-bool TOCUHP_CallCommand(uint16_t Command);
-bool TOCUHP_AreInStateX(uint16_t State);
-bool TOCUHP_IsInFaultOrDisabled();
-Int16U TOCUHP_BitMask(float AnodeCurrent);
+void TOCUHP_CacheVariables();
+bool TOCUHP_IsReady();
+bool TOCUHP_InFault();
+bool TOCUHP_ResetFault();
+bool TOCUHP_PowerEnable();
 void TOCUHP_EmulatedState(bool State);
 bool TOCUHP_IsEmulatedState();
+bool TOCUHP_PowerDisable();
+bool TOCUHP_ConfigAnodeVoltage(Int16U Voltage);
+bool TOCUHP_ConfigAnodeCurrent(float Current);
 
 #endif /* CONTROLLER_TOCUHP_H_ */

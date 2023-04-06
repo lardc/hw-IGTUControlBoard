@@ -28,14 +28,15 @@
 //
 typedef enum __QgPrepareStage
 {
-	TOCUHP_Config = 0,
-	TOCUHP_Wating = 1,
-	HW_Config = 2
+	TOCUHP_ConfigVoltage = 0,
+	TOCUHP_ConfigCurrent,
+	TOCUHP_Wating,
+	HW_Config
 } QgPrepareStage;
 
 // Variables
 //
-QgPrepareStage QgConfigStage = TOCUHP_Config;
+QgPrepareStage QgConfigStage = TOCUHP_ConfigVoltage;
 Int64U TOCUHP_StateTimeout = 0;
 
 // Function prototypes
@@ -50,21 +51,18 @@ float QG_ExtractAverageCurrent(pFloat32 Buffer, Int16U BufferSize);
 //
 void QG_Prepare()
 {
-	if(!TOCUHP_ReadState(&TOCUHP_State))
-		CONTROL_SwitchToFault(DF_TOCUHP_INTERFACE);
-
 	if(TOCUHP_IsEmulatedState())
 		QgConfigStage = HW_Config;
 
 	switch(QgConfigStage)
 	{
-		case TOCUHP_Config:
-			if(TOCUHP_State == TOCUHP_DS_Ready || CONTROL_State == DS_SelfTest)
+		case TOCUHP_ConfigVoltage:
+			if(TOCUHP_IsReady())
 			{
-				if(TOCUHP_Configure(DataTable[REG_QG_V_POWER], DataTable[REG_QG_I_POWER]))
+				if(TOCUHP_ConfigAnodeVoltage(DataTable[REG_QG_V_POWER]))
 				{
 					TOCUHP_StateTimeout = CONTROL_TimeCounter + PAU_WAIT_READY_TIMEOUT;
-					QgConfigStage = TOCUHP_Wating;
+					QgConfigStage = TOCUHP_ConfigCurrent;
 				}
 				else
 				{
@@ -79,20 +77,39 @@ void QG_Prepare()
 			}
 			break;
 
+		case TOCUHP_ConfigCurrent:
+			if(TOCUHP_IsReady())
+			{
+				if(TOCUHP_ConfigAnodeCurrent(DataTable[REG_QG_I_POWER]))
+				{
+					TOCUHP_StateTimeout = CONTROL_TimeCounter + PAU_WAIT_READY_TIMEOUT;
+					QgConfigStage = TOCUHP_Wating;
+				}
+				else
+				{
+					CONTROL_ResetHardwareToDefaultState();
+					CONTROL_SwitchToFault(DF_TOCUHP_INTERFACE);
+				}
+			}
+			else
+			{
+				if(CONTROL_TimeCounter >= TOCUHP_StateTimeout)
+					CONTROL_SwitchToFault(DF_TOCUHP_WRONG_STATE);
+			}
+			break;
+
 		case TOCUHP_Wating:
-			if(TOCUHP_State == TOCUHP_DS_Ready)
+			if(TOCUHP_IsReady())
 				QgConfigStage = HW_Config;
 			else
 			{
 				if(CONTROL_TimeCounter >= TOCUHP_StateTimeout)
-				{
-					DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
 					CONTROL_SwitchToFault(DF_TOCUHP_WRONG_STATE);
-				}
 			}
 			break;
 
 		case HW_Config:
+			CONTROL_SwitchOutMUX(Current);
 			QG_CacheVariables();
 
 			INITCFG_ConfigADC_Qg_I();
@@ -108,7 +125,8 @@ void QG_Prepare()
 			LL_I_Enable(true);
 			DELAY_MS(20);
 
-			CONTROL_SwitchOutMUX(Current);
+			LL_SyncTOCUHP(true);
+			DELAY_US(50);
 
 			CONTROL_SetDeviceState(CONTROL_State, SS_QgProcess);
 			MEASURE_StartNewSampling();
@@ -144,17 +162,11 @@ void QG_Pulse(bool State)
 
 void QG_SaveResult()
 {
-	if(!TOCUHP_ReadState(&TOCUHP_State))
-		CONTROL_SwitchToFault(DF_TOCUHP_INTERFACE);
-
-	if(TOCUHP_IsEmulatedState())
-		TOCUHP_State = TOCUHP_DS_Ready;
-
-	if(TOCUHP_State == TOCUHP_DS_Fault || TOCUHP_State == TOCUHP_DS_Disabled || TOCUHP_State == TOCUHP_DS_None)
+	if(TOCUHP_InFault())
 		CONTROL_SwitchToFault(DF_TOCUHP_WRONG_STATE);
 	else
 	{
-		if(TOCUHP_State == TOCUHP_DS_Ready || CONTROL_State == DS_SelfTest)
+		if(TOCUHP_IsReady() || CONTROL_State == DS_SelfTest)
 		{
 			if(DMA_IsTransferComplete(DMA1, DMA_ISR_TCIF1))
 			{
@@ -174,10 +186,7 @@ void QG_SaveResult()
 		else
 		{
 			if(CONTROL_TimeCounter >= TOCUHP_StateTimeout)
-			{
-				DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
 				CONTROL_SwitchToFault(DF_TOCUHP_WRONG_STATE);
-			}
 		}
 	}
 }

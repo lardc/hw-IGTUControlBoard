@@ -72,18 +72,18 @@ const TableItemConstraint Constraint[DATA_TABLE_WP_START] = {
 		{IGES_SAMPLES_MIN, IGES_SAMPLES_MAX, IGES_SAMPLES_DEF},						// 61
 		{0, INT16U_MAX, PAU_CAN_ID_DEF},											// 62
 		{NO, YES, NO},																// 63
-		{0, INT16U_MAX, TOCUHP_CAN_ID_DEF},											// 64
-		{NO, YES, NO},																// 65
-		{0, INT16U_MAX, TOCUHP_RES_PER_BIT_DEF},									// 66
-		{DAC_OUTPUT_LIM_MIN, DAC_OUTPUT_LIM_MAX, DAC_OUTPUT_LIM_DEF},				// 67
-		{0, INT16U_MAX, 0},															// 68
-		{NO, YES, NO},																// 69
-		{ST_CHECK_ERROR_MIN, ST_CHECK_ERROR_MAX, ST_CHECK_ERROR_DEF},				// 70
-		{0, 0, 0},																	// 71
-		{0, 0, 0},																	// 72
-		{0, 0, 0},																	// 73
-		{0, 0, 0},																	// 74
-		{0, 0, 0},																	// 75
+		{0, INT16U_MAX, TOCUHP0_CAN_ID_DEF},										// 64
+		{0, INT16U_MAX, TOCUHP1_CAN_ID_DEF},										// 65
+		{0, INT16U_MAX, TOCUHP2_CAN_ID_DEF},										// 66
+		{TOCUHP_BITS_MIN, TOCUHP_BITS_MAX, TOCUHP_BITS_DEF},						// 67
+		{TOCUHP_BITS_MIN, TOCUHP_BITS_MAX, TOCUHP_BITS_DEF},						// 68
+		{TOCUHP_BITS_MIN, TOCUHP_BITS_MAX, TOCUHP_BITS_DEF},						// 69
+		{NO, YES, NO},																// 70
+		{0, INT16U_MAX, TOCUHP_RES_PER_BIT_DEF},									// 71
+		{DAC_OUTPUT_LIM_MIN, DAC_OUTPUT_LIM_MAX, DAC_OUTPUT_LIM_DEF},				// 72
+		{0, INT16U_MAX, 0},															// 73
+		{NO, YES, NO},																// 74
+		{ST_CHECK_ERROR_MIN, ST_CHECK_ERROR_MAX, ST_CHECK_ERROR_DEF},				// 75
 		{0, 0, 0},																	// 76
 		{0, 0, 0},																	// 77
 		{0, 0, 0},																	// 78

@@ -392,16 +392,18 @@ void CONTROL_StartHighPriorityProcesses()
 
 void CONTROL_SwitchToFault(Int16U Reason)
 {
-	if(Reason == DF_PAU_INTERFACE)
+	if(Reason == DF_PAU_INTERFACE || Reason == DF_TOCUHP_INTERFACE)
 	{
 		BHLError Error = BHL_GetError();
-		DataTable[REG_PAU_ERROR_CODE] = Error.ErrorCode;
-		DataTable[REG_PAU_FUNCTION] = Error.Func;
-		DataTable[REG_PAU_EXT_DATA] = Error.ExtData;
+		DataTable[REG_EXT_UNIT_ERROR_CODE] = Error.ErrorCode;
+		DataTable[REG_EXT_UNIT_FUNCTION] = Error.Func;
+		DataTable[REG_EXT_UNIT_EXT_DATA] = Error.ExtData;
 	}
 
 	CONTROL_SetDeviceState(DS_Fault, SS_None);
-	DataTable[REG_FAULT_REASON] = Reason;
+
+	if(DataTable[REG_FAULT_REASON] == DF_NONE)
+		DataTable[REG_FAULT_REASON] = Reason;
 	DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
 }
 //------------------------------------------

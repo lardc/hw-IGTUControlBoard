@@ -26,6 +26,10 @@
 #define I_ADC_TO_V_K_DEF			0.01217935
 #define I_ADC_TO_V_B_DEF			0.2828039
 
+#define TOCUHP_BITS_MIN				1
+#define TOCUHP_BITS_MAX				11
+#define TOCUHP_BITS_DEF				9
+
 #define I_I_TO_DAC_K_DEF			7.185
 #define I_I_TO_DAC_B_DEF			40
 #define I_VC_TO_DAC_K_DEF			165.061
@@ -90,7 +94,9 @@
 #define IGES_SAMPLES_DEF			50
 //
 #define PAU_CAN_ID_DEF				101
-#define TOCUHP_CAN_ID_DEF			130
+#define TOCUHP0_CAN_ID_DEF			130
+#define TOCUHP1_CAN_ID_DEF			131
+#define TOCUHP2_CAN_ID_DEF			132
 #define TOCUHP_RES_PER_BIT_DEF		200
 //
 #define DAC_OUTPUT_LIM_MIN			0
