@@ -52,13 +52,13 @@ bool TOCUHP_IsEmulatedState()
 
 bool TOCUHP_IsReady()
 {
-	return TOCUHP_CheckState(TS_Ready);
+	return (DataTable[REG_TOCUHP_EMULATED] || TOCUHP_Emulated) ? true : TOCUHP_CheckState(TS_Ready);
 }
 //--------------------------------------
 
 bool TOCUHP_InFault()
 {
-	return TOCUHP_CheckState(TS_Fault);
+	return (DataTable[REG_TOCUHP_EMULATED] || TOCUHP_Emulated) ? false : TOCUHP_CheckState(TS_Fault);
 }
 //--------------------------------------
 
@@ -145,9 +145,6 @@ bool TOCUHP_Call(Int16U Call)
 bool TOCUHP_CheckState(TOCUHPState State)
 {
 	Int16U TOCUHP_State;
-
-	if(DataTable[REG_TOCUHP_EMULATED] || TOCUHP_Emulated)
-		return true;
 
 	for(int i = 0; i < TOCUHP_ActiveUnitsCounter; i++)
 	{
