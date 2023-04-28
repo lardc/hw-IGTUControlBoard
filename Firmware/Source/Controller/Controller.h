@@ -47,7 +47,10 @@ typedef enum __DeviceSubState
 
 	SS_I_PrepareStage0 = 60,
 	SS_I_PrepareStage1,
-	SS_I_Check
+	SS_I_Check,
+
+	SS_ResPrepare = 70,
+	SS_ResProcess
 } DeviceSubState;
 
 typedef enum __CommutationState

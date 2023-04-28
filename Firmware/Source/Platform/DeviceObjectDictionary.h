@@ -34,7 +34,8 @@
 #define ACT_START_VGS					100	// Старт измерения порогового напряжения затвора
 #define ACT_START_QG					101	// Старт измерения заряда затвора
 #define ACT_START_IGES					102	// Старт измерения тока утечки затвор-эммитер
-#define ACT_STOP_PROCESS				103	// Стоп измерения
+#define ACT_START_RES					103	// Старт измерения сопротивления
+#define ACT_STOP_PROCESS				104	// Стоп измерения
 //
 #define ACT_START_SELF_TEST				110	// Запуск самотестирования
 //
@@ -160,7 +161,7 @@
 #define REG_IGES_RANGE					137	// Диапазон измерения тока утечки (0 - 20нА, 1 - 200нА, 2 - 2мкА)
 
 // Регистры режимов калибровки
-#define REG_CAL_V						140	// Задание напряжения при калибровке, мВ
+#define REG_CAL_V						140	// Задание напряжения при калибровке, В
 #define REG_CAL_I						141	// Задание тока при калибровке, мА
 
 
@@ -185,6 +186,7 @@
 #define REG_QG_RESULT					202	// Измеренное значение QG (нКл)
 #define REG_QG_I_RESULT					203 // Усредненное измеренное значение тока (мА)
 #define REG_IGES_RESULT					204	// Измеренное значение IGES (нА)
+#define REG_RES_RESULT					205	// Измеренное значение сопротивления (Ом)
 //
 #define REG_CAL_V_RESULT				210
 #define REG_CAL_VN_RESULT				211
@@ -261,14 +263,14 @@
 #define PROBLEM_FORCED_STOP				1
 #define PROBLEM_SAFETY_VIOLATION		2
 #define PROBLEM_VGS_CURRENT_NOT_REACHED	3
-#define PROBLEM_GATE_SHORT				4
+#define PROBLEM_SHORT					4
 #define PROBLEM_DUT_NOT_FOUND			5
 
 //  Warning
 #define WARNING_NONE					0
-#define WARNING_IGES_TOO_LOW			1
-#define WARNING_IGES_TOO_HIGH			2
-#define WARNING_QG_VOLTAGE_NOT_REACHED	3
+#define WARNING_IGES_OUT_OF_RANGE		1
+#define WARNING_QG_VOLTAGE_NOT_REACHED	2
+#define WARNING_RES_OUT_OF_RANGE		3
 
 //  User Errors
 #define ERR_NONE						0

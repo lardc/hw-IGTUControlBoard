@@ -17,6 +17,8 @@
 #define VGS_CURRENT_MAX							210					// Максимальный измеряемый ток, мА
 #define MEASURE_IGES_CURRENT_MIN				1e-9				// Минимальный измеряемый токутечки, mА
 #define MEASURE_IGES_CURRENT_MAX				(20 * 10e-6)		// Максимальный измеряемый токутечки, mА
+#define MEASURE_RES_MIN							100					// Минимальное измеряемое сопротивление резистора, Ом
+#define MEASURE_RES_MAX							10000				// Максимальное измеряемое сопротивление резистора, Ом
 #define DAC_MAX_VAL								0x0FFF				// Максимальное значение ЦАП
 #define EXT_DAC_A								0x0					// Выбор канала A
 #define EXT_DAC_B								0x8000				// Выбор канала B
@@ -24,6 +26,7 @@
 #define V_I_R0_MAX								1.0f				// мА
 #define V_I_R1_MAX								20.0f				// мА
 #define V_I_R2_MAX								200.0f				// мА
+#define V_I_R2_MIN								20.0f				// мА
 #define PAU_CODE_RANGE0							0
 #define PAU_CODE_RANGE1							1
 #define PAU_CODE_RANGE2							2

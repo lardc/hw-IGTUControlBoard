@@ -17,6 +17,7 @@
 #include "Constraints.h"
 #include "ConvertUtils.h"
 #include "TOCUHP.h"
+#include "Res.h"
 
 // Definitions
 //
@@ -201,6 +202,18 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 				*pUserError = ERR_DEVICE_NOT_READY;
 			break;
 
+		case ACT_START_RES:
+			if(CONTROL_State == DS_Ready)
+			{
+				CONTROL_ResetOutputRegisters();
+				CONTROL_SetDeviceState(DS_InProcess, SS_ResPrepare);
+			}
+			else if(CONTROL_State == DS_InProcess)
+				*pUserError = ERR_OPERATION_BLOCKED;
+			else
+				*pUserError = ERR_DEVICE_NOT_READY;
+			break;
+
 		case ACT_START_SELF_TEST:
 			if(CONTROL_State == DS_Ready)
 			{
@@ -348,6 +361,10 @@ void CONTROL_LogicProcess()
 				QG_SaveResult();
 				break;
 
+			case SS_ResPrepare:
+				RES_Prepare();
+				break;
+
 			default:
 				break;
 		}
@@ -394,6 +411,10 @@ void CONTROL_HighPriorityProcess()
 
 		case SS_IgesProcess:
 			IGES_Process();
+			break;
+
+		case SS_ResProcess:
+			RES_Process();
 			break;
 
 		default:
