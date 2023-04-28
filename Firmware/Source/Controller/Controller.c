@@ -30,10 +30,10 @@ volatile Int64U CONTROL_TimeCounter = 0;
 volatile Int64U CONTROL_Timeout = 0;
 static Boolean CycleActive = false;
 //
-float CONTROL_RegulatorOutputValues[VALUES_x_SIZE1];
-float CONTROL_RegulatorErrValues[VALUES_x_SIZE1];
-float CONTROL_VoltageValues[VALUES_x_SIZE2];
-float CONTROL_CurrentValues[VALUES_x_SIZE2];
+float CONTROL_RegulatorOutputValues[VALUES_x_SIZE];
+float CONTROL_RegulatorErrValues[VALUES_x_SIZE];
+float CONTROL_VoltageValues[VALUES_x_SIZE];
+float CONTROL_CurrentValues[VALUES_x_SIZE];
 //
 Int16U CONTROL_RegulatorValues_Counter = 0;
 Int16U CONTROL_Values_Counter = 0;
@@ -54,7 +54,7 @@ void CONTROL_Init()
 {
 	// Переменные для конфигурации EndPoint
 	Int16U EPIndexes[FEP_COUNT] = {EP_VOLTAGE, EP_CURRENT, EP_REGULATOR_ERR, EP_REGULATOR_OUTPUT};
-	Int16U EPSized[FEP_COUNT] = {VALUES_x_SIZE2, VALUES_x_SIZE2, VALUES_x_SIZE1, VALUES_x_SIZE1};
+	Int16U EPSized[FEP_COUNT] = {VALUES_x_SIZE, VALUES_x_SIZE, VALUES_x_SIZE, VALUES_x_SIZE};
 	pInt16U EPCounters[FEP_COUNT] = {(pInt16U)&CONTROL_Values_Counter, (pInt16U)&CONTROL_Values_Counter,
 			(pInt16U)&CONTROL_RegulatorValues_Counter, (pInt16U)&CONTROL_RegulatorValues_Counter};
 
@@ -74,6 +74,7 @@ void CONTROL_Init()
 	DEVPROFILE_ResetControlSection();
 
 	CONTROL_ResetToDefaultState();
+	TOCUHP_UpdateCANid();
 }
 //------------------------------------------
 
@@ -180,7 +181,6 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			if(CONTROL_State == DS_Ready)
 			{
 				CONTROL_ResetOutputRegisters();
-				TOCUHP_UpdateCANid();
 				CONTROL_SetDeviceState(DS_InProcess, SS_QgPrepare);
 			}
 			else if(CONTROL_State == DS_InProcess)
@@ -431,6 +431,9 @@ void CONTROL_SwitchToFault(Int16U Reason)
 	if(DataTable[REG_FAULT_REASON] == DF_NONE)
 		DataTable[REG_FAULT_REASON] = Reason;
 	DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
+
+	QG_ResetConfigStageToDefault();
+	CONTROL_ResetHardwareToDefaultState();
 }
 //------------------------------------------
 

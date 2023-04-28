@@ -30,8 +30,7 @@
 #define POWER_ON_TIMEOUT						5000				// Таймаут включения, мс
 
 // Размер массивов EP
-#define VALUES_x_SIZE1							1000
-#define VALUES_x_SIZE2							1500
+#define VALUES_x_SIZE							1000
 
 // Временные параметры
 #define TIME_LED_BLINK							500		// Мигание светодиодом (в мс)

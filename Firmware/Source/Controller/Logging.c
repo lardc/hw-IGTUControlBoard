@@ -27,11 +27,11 @@ void LOG_LoggingData(LogParamsStruct* Log)
 	}
 
 	// Условие обновления глобального счетчика данных
-	if(*Log->LogBufferCounter < VALUES_x_SIZE1)
+	if(*Log->LogBufferCounter < VALUES_x_SIZE)
 		*Log->LogBufferCounter = Log->LocalCounter;
 
 	// Сброс локального счетчика
-	if(Log->LocalCounter >= VALUES_x_SIZE1)
+	if(Log->LocalCounter >= VALUES_x_SIZE)
 		Log->LocalCounter = 0;
 }
 //-----------------------------------------------
@@ -93,7 +93,7 @@ void LOG_CopyVoltageToEndpoints(pFloat32 Endpoint, volatile Int16U* Buffer, Int1
 
 	for(Int16U i = 0; i < BufferSize; i += (SkipStep + 1))
 	{
-		if(Counter < VALUES_x_SIZE2)
+		if(Counter < VALUES_x_SIZE)
 		{
 			*(Endpoint + Counter) = CU_I_ADCtoV(*(Buffer + i) - DataTable[REG_I_ADC_TO_V_ZERO_OFFSET]);
 			Counter++;
@@ -108,7 +108,7 @@ void LOG_CopyCurrentToEndpoints(pFloat32 Endpoint, volatile Int16U* Buffer, Int1
 
 	for(Int16U i = 0; i < BufferSize; i += (SkipStep + 1))
 	{
-		if(Counter < VALUES_x_SIZE2)
+		if(Counter < VALUES_x_SIZE)
 		{
 			*(Endpoint + Counter) = CU_I_ADCtoI(*(Buffer + i));
 			Counter++;

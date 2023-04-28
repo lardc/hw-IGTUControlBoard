@@ -182,7 +182,7 @@ void CAL_I_CalProcess()
 
 		LOG_CopyCurrentToEndpoints(&CONTROL_CurrentValues[0], &MEASURE_Qg_DataRaw[StartIndex], ADC_DMA_BUFF_SIZE_QG, 1);
 		LOG_CopyVoltageToEndpoints(&CONTROL_VoltageValues[0], &MEASURE_Qg_DataRaw[StartIndex + 1], ADC_DMA_BUFF_SIZE_QG - StartIndex - 1, 1);
-		CONTROL_Values_Counter = VALUES_x_SIZE2;
+		CONTROL_Values_Counter = VALUES_x_SIZE;
 
 		DataTable[REG_CAL_V_RESULT] = LOG_GetAverageFromBuffer(&CONTROL_VoltageValues[CAL_AVG_V_START_INDEX], CAL_AVG_LENGTH);
 		DataTable[REG_CAL_VN_RESULT] = LOG_GetAverageFromBuffer(&CONTROL_VoltageValues[CAL_AVG_VN_START_INDEX], CAL_AVG_LENGTH);
