@@ -201,7 +201,7 @@ void IGES_CheckDUT(bool PulsePlate, float SampledCurrent)
 			if(Error1 < SHORT_CIRCUIT_CURRENT_ERROR && Error2 < SHORT_CIRCUIT_CURRENT_ERROR)
 			{
 				CurrentMax = 0;
-				DataTable[REG_PROBLEM] = PROBLEM_GATE_SHORT;
+				DataTable[REG_PROBLEM] = PROBLEM_SHORT;
 				CONTROL_SetDeviceState(DS_Ready, SS_None);
 				return;
 			}
@@ -310,10 +310,8 @@ void IGES_SaveResults()
 		{
 			if(PAU_ReadMeasuredData(&Iges))
 			{
-				if(Iges < MEASURE_IGES_CURRENT_MIN)
-					DataTable[REG_WARNING] = WARNING_IGES_TOO_LOW;
-				if(Iges > MEASURE_IGES_CURRENT_MAX)
-					DataTable[REG_WARNING] = WARNING_IGES_TOO_HIGH;
+				if(Iges < MEASURE_IGES_CURRENT_MIN || Iges > MEASURE_IGES_CURRENT_MAX)
+					DataTable[REG_WARNING] = WARNING_IGES_OUT_OF_RANGE;
 
 				DataTable[REG_IGES_RESULT] = Iges;
 				DataTable[REG_OP_RESULT] = OPRESULT_OK;

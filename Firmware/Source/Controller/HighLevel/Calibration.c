@@ -146,7 +146,7 @@ void CAL_V_CalProcess()
 				}
 				else
 				{
-					DataTable[REG_PROBLEM] = PROBLEM_GATE_SHORT;
+					DataTable[REG_PROBLEM] = PROBLEM_SHORT;
 					CONTROL_SetDeviceState(DS_Ready, SS_None);
 				}
 			}

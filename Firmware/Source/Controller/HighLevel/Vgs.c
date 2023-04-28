@@ -112,7 +112,7 @@ void VGS_Process()
 			{
 				if(VgsSampledData.Current > TrigCurrentLow)
 				{
-					DataTable[REG_PROBLEM] = PROBLEM_GATE_SHORT;
+					DataTable[REG_PROBLEM] = PROBLEM_SHORT;
 					CONTROL_SetDeviceState(DS_Ready, SS_None);
 				}
 				else
@@ -136,7 +136,7 @@ void VGS_Process()
 
 		if(VgsSampledData.Voltage < VGS_VOLTAGE_MIN)
 		{
-			DataTable[REG_PROBLEM] = PROBLEM_GATE_SHORT;
+			DataTable[REG_PROBLEM] = PROBLEM_SHORT;
 			CONTROL_SetDeviceState(DS_Ready, SS_None);
 		}
 		else
