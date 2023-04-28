@@ -164,10 +164,7 @@ void INITCFG_ConfigADC_Qg_VI()
 void INITCFG_ConfigADC_QgXX(bool OnlyCurrentSample)
 {
 	// ADC1
-	ADC_ResetConfig(ADC1);
-	ADC_Calibration(ADC1);
-	ADC_SoftTrigConfig(ADC1);
-	ADC_ChannelSeqReset(ADC1);
+	INITCFG_ADC_SoftTrigConfig(ADC1);
 	ADC_SetContinuousMode(ADC1);
 
 	ADC_ChannelSet_Sequence(ADC1, ADC1_I_I_SEN_CHANNEL, 1);
@@ -190,6 +187,15 @@ void INITCFG_ConfigADC_QgXX(bool OnlyCurrentSample)
 }
 //------------------------------------------------
 
+void INITCFG_ADC_SoftTrigConfig(ADC_TypeDef* ADCx)
+{
+	ADC_ResetConfig(ADCx);
+	ADC_Calibration(ADCx);
+	ADC_SoftTrigConfig(ADCx);
+	ADC_ChannelSeqReset(ADCx);
+}
+//------------------------------------------------
+
 void INITCFG_ConfigADC_VgsIges(Int16U CurrentRange)
 {
 	Int16U ADCChannel;
@@ -200,10 +206,7 @@ void INITCFG_ConfigADC_VgsIges(Int16U CurrentRange)
 		ADCChannel = ADC1_V_I_HIGH_SEN_CHANNEL;
 
 	// ADC1
-	ADC_ResetConfig(ADC1);
-	ADC_Calibration(ADC1);
-	ADC_SoftTrigConfig(ADC1);
-	ADC_ChannelSeqReset(ADC1);
+	INITCFG_ADC_SoftTrigConfig(ADC1);
 
 	for (uint8_t i = 1; i <= ADC_V_DMA_BUFF_SIZE; ++i)
 		ADC_ChannelSet_Sequence(ADC1, ADCChannel, i);
@@ -214,10 +217,7 @@ void INITCFG_ConfigADC_VgsIges(Int16U CurrentRange)
 	ADC_DMAEnable(ADC1, true);
 
 	// ADC3
-	ADC_ResetConfig(ADC3);
-	ADC_Calibration(ADC3);
-	ADC_SoftTrigConfig(ADC3);
-	ADC_ChannelSeqReset(ADC3);
+	INITCFG_ADC_SoftTrigConfig(ADC3);
 
 	for (uint8_t i = 1; i <= ADC_V_DMA_BUFF_SIZE; ++i)
 		ADC_ChannelSet_Sequence(ADC3, ADC3_POT_CHANNEL, i);

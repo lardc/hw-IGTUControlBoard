@@ -25,5 +25,6 @@ void INITCFG_ConfigADC_Qg_I();
 void INITCFG_ConfigADC();
 void INITCFG_ConfigDMA();
 void INITCFG_ConfigTimer3(Int16U Period);
+void INITCFG_ADC_SoftTrigConfig(ADC_TypeDef* ADCx);
 
 #endif //__INITCONFIG_H
