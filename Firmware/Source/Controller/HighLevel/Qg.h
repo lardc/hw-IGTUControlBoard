@@ -11,5 +11,6 @@
 void QG_Prepare();
 void QG_Pulse(bool State);
 void QG_SaveResult();
+void QG_ResetConfigStageToDefault();
 
 #endif /* CONTROLLER_HIGHLEVEL_QG_H_ */

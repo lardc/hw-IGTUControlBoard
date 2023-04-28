@@ -236,6 +236,7 @@
 #define REG_TOCUHP_DISABLE_REASON		194
 #define REG_TOCUHP_WARNING				195
 #define REG_TOCUHP_PROBLEM				196
+#define REG_TOCUHP_OP_RESULT			197
 // -----------------------------
 
 // Operation results
@@ -251,8 +252,9 @@
 #define DF_PAU_SYNC_TIMEOUT				4
 #define DF_TOCUHP_INTERFACE				5
 #define DF_TOCUHP_WRONG_STATE			6
-#define DF_ST_CHECK_ERROR				7
-#define DF_POWER_ON_TIMEOUT				8
+#define DF_POWER_CURRENT				7
+#define DF_ST_CHECK_ERROR				8
+#define DF_POWER_ON_TIMEOUT				9
 
 // Problem
 #define PROBLEM_NONE					0

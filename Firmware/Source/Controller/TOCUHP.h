@@ -36,5 +36,6 @@ bool TOCUHP_IsEmulatedState();
 bool TOCUHP_PowerDisable();
 bool TOCUHP_ConfigAnodeVoltage(Int16U Voltage);
 bool TOCUHP_ConfigAnodeCurrent(float Current);
+bool TOCUHP_CheckOpResult();
 
 #endif /* CONTROLLER_TOCUHP_H_ */

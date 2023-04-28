@@ -15,28 +15,35 @@
 #include "Measurement.h"
 #include "Logging.h"
 #include "Global.h"
+#include "stdlib.h"
+#include "math.h"
 
 // Definitions
 //
-#define QG_AVG_START_INDEX			20
-#define QG_AVG_LENGTH				20
+#define QG_AVG_LENGTH					20
 //
-#define PAU_WAIT_READY_TIMEOUT		5000
-#define QG_FILTER_COEFFICIENT		0.1
+#define TOCUHP_WAIT_READY_TIMEOUT		10000
+#define QG_FILTER_COEFFICIENT			0.1
+#define QG_GATE_VOLTAGE_ALLOWED_ERR		10
+#define QG_I_PULSE_WIDTH_COEF			0.96
+#define QG_PULSE_WIDTH_THRE_COEF		0.95
 
 // Types
 //
 typedef enum __QgPrepareStage
 {
-	TOCUHP_ConfigVoltage = 0,
+	TOCUHP_InitWaiting = 0,
+	TOCUHP_ConfigVoltage,
 	TOCUHP_ConfigCurrent,
-	TOCUHP_Wating,
-	HW_Config
+	TOCUHP_WatingReady,
+	HW_Config,
+	StartMeasure
 } QgPrepareStage;
 
 // Variables
 //
-QgPrepareStage QgConfigStage = TOCUHP_ConfigVoltage;
+QgPrepareStage QgConfigStage = TOCUHP_InitWaiting;
+QgPrepareStage QgConfigLastStage = TOCUHP_InitWaiting;
 Int64U TOCUHP_StateTimeout = 0;
 
 // Function prototypes
@@ -46,61 +53,42 @@ float QG_CalculateGateCharge(pFloat32 Buffer, Int16U BufferSize);
 void QG_SetPulseWidth(float Period);
 void QG_Filter(pFloat32 InputArray, Int16U ArraySize);
 float QG_ExtractAverageCurrent(pFloat32 Buffer, Int16U BufferSize);
+int QG_SortCondition(const void *A, const void *B);
+void QG_CheckGateVoltage();
 
 // Functions
 //
 void QG_Prepare()
 {
-	if(TOCUHP_IsEmulatedState())
-		QgConfigStage = HW_Config;
-
 	switch(QgConfigStage)
 	{
-		case TOCUHP_ConfigVoltage:
-			if(TOCUHP_IsReady())
-			{
-				if(TOCUHP_ConfigAnodeVoltage(DataTable[REG_QG_V_POWER]))
-				{
-					TOCUHP_StateTimeout = CONTROL_TimeCounter + PAU_WAIT_READY_TIMEOUT;
-					QgConfigStage = TOCUHP_ConfigCurrent;
-				}
-				else
-				{
-					CONTROL_ResetHardwareToDefaultState();
-					CONTROL_SwitchToFault(DF_TOCUHP_INTERFACE);
-				}
-			}
-			else
-			{
-				CONTROL_ResetHardwareToDefaultState();
-				CONTROL_SwitchToFault(DF_TOCUHP_WRONG_STATE);
-			}
+		case TOCUHP_InitWaiting:
+			TOCUHP_StateTimeout = CONTROL_TimeCounter + TOCUHP_WAIT_READY_TIMEOUT;
+			QgConfigLastStage = TOCUHP_InitWaiting;
+			QgConfigStage = TOCUHP_WatingReady;
 			break;
 
-		case TOCUHP_ConfigCurrent:
+		case TOCUHP_WatingReady:
 			if(TOCUHP_IsReady())
 			{
-				if(TOCUHP_ConfigAnodeCurrent(DataTable[REG_QG_I_POWER]))
+				switch(QgConfigLastStage)
 				{
-					TOCUHP_StateTimeout = CONTROL_TimeCounter + PAU_WAIT_READY_TIMEOUT;
-					QgConfigStage = TOCUHP_Wating;
-				}
-				else
-				{
-					CONTROL_ResetHardwareToDefaultState();
-					CONTROL_SwitchToFault(DF_TOCUHP_INTERFACE);
-				}
-			}
-			else
-			{
-				if(CONTROL_TimeCounter >= TOCUHP_StateTimeout)
-					CONTROL_SwitchToFault(DF_TOCUHP_WRONG_STATE);
-			}
-			break;
+					case TOCUHP_InitWaiting:
+						QgConfigStage = HW_Config;
+						break;
 
-		case TOCUHP_Wating:
-			if(TOCUHP_IsReady())
-				QgConfigStage = HW_Config;
+					case TOCUHP_ConfigVoltage:
+						QgConfigStage = TOCUHP_ConfigCurrent;
+						break;
+
+					case TOCUHP_ConfigCurrent:
+						QgConfigStage = StartMeasure;
+						break;
+
+					default:
+						break;
+				}
+			}
 			else
 			{
 				if(CONTROL_TimeCounter >= TOCUHP_StateTimeout)
@@ -113,26 +101,42 @@ void QG_Prepare()
 			QG_CacheVariables();
 
 			INITCFG_ConfigADC_Qg_I();
-			INITCFG_ConfigDMA_Qg(VALUES_x_SIZE2);
+			INITCFG_ConfigDMA_Qg(VALUES_x_SIZE);
 			MEASURE_ResetDMABuffers();
 			QG_SetPulseWidth(DataTable[REG_QG_I_DURATION]);
 
 			LL_ExDACVCutoff(CU_I_VcutoffToDAC(DataTable[REG_QG_V_CUTOFF]));
 			LL_ExDACVNegative(CU_I_VnegativeToDAC(DataTable[REG_QG_V_NEGATIVE]));
-			DELAY_MS(50);
 			LL_I_SetDAC(CU_I_ItoDAC(DataTable[REG_QG_I]));
-			LL_I_Start(false);
 			LL_I_Enable(true);
-			DELAY_MS(20);
 
-			LL_SyncTOCUHP(true);
-			DELAY_US(50);
+			QgConfigStage = TOCUHP_ConfigVoltage;
+			break;
 
+		case TOCUHP_ConfigVoltage:
+			if(TOCUHP_ConfigAnodeVoltage(DataTable[REG_QG_V_POWER]))
+			{
+				TOCUHP_StateTimeout = CONTROL_TimeCounter + TOCUHP_WAIT_READY_TIMEOUT;
+				QgConfigLastStage = TOCUHP_ConfigVoltage;
+				QgConfigStage = TOCUHP_WatingReady;
+			}
+			break;
+
+		case TOCUHP_ConfigCurrent:
+			if(TOCUHP_ConfigAnodeCurrent(DataTable[REG_QG_I_POWER]))
+			{
+				TOCUHP_StateTimeout = CONTROL_TimeCounter + TOCUHP_WAIT_READY_TIMEOUT;
+				QgConfigLastStage = TOCUHP_ConfigCurrent;
+				QgConfigStage = TOCUHP_WatingReady;
+			}
+			break;
+
+		case StartMeasure:
 			CONTROL_SetDeviceState(CONTROL_State, SS_QgProcess);
 			MEASURE_StartNewSampling();
-			QG_Pulse(true);
 
-			TOCUHP_StateTimeout = CONTROL_TimeCounter + PAU_WAIT_READY_TIMEOUT;
+			LL_SyncTOCUHP(true);
+			QG_Pulse(true);
 			break;
 	}
 }
@@ -146,17 +150,32 @@ void QG_CacheVariables()
 
 void QG_SetPulseWidth(float Period)
 {
-	INITCFG_ConfigTimer3(Period);
+	INITCFG_ConfigTimer3(Period * QG_I_PULSE_WIDTH_COEF);
 }
 //----------------------------
 
 void QG_Pulse(bool State)
 {
 	LL_SyncOSC(State);
-	LL_SyncTOCUHP(State);
 
 	(State) ? TIM_Start(TIM3) : TIM_Stop(TIM3);
+	TIM_Reset(TIM3);
 	LL_I_Start(State);
+}
+//----------------------------
+
+void QG_CheckGateVoltage()
+{
+	float CurrentWidth = 0;
+
+	for(int i = 0; i < VALUES_x_SIZE; i++)
+	{
+		if(CONTROL_CurrentValues[i] > 0)
+			CurrentWidth += QG_CURRENT_SAMPLE_TIME;
+	}
+
+	if(CurrentWidth > DataTable[REG_QG_I_DURATION] * QG_PULSE_WIDTH_THRE_COEF)
+		DataTable[REG_WARNING] = WARNING_QG_VOLTAGE_NOT_REACHED;
 }
 //----------------------------
 
@@ -166,29 +185,38 @@ void QG_SaveResult()
 		CONTROL_SwitchToFault(DF_TOCUHP_WRONG_STATE);
 	else
 	{
-		if(TOCUHP_IsReady() || CONTROL_State == DS_SelfTest)
+		if(TOCUHP_CheckOpResult() || CONTROL_State == DS_SelfTest)
 		{
 			if(DMA_IsTransferComplete(DMA1, DMA_ISR_TCIF1))
 			{
 				LOG_CopyCurrentToEndpoints(&CONTROL_CurrentValues[0], &MEASURE_Qg_DataRaw[0], ADC_DMA_BUFF_SIZE_QG / 2, 0);
-				CONTROL_Values_Counter = VALUES_x_SIZE2;
+				CONTROL_Values_Counter = VALUES_x_SIZE;
 
-				QG_Filter(&CONTROL_CurrentValues[0], VALUES_x_SIZE2);
+				QG_Filter(&CONTROL_CurrentValues[0], VALUES_x_SIZE);
 
-				DataTable[REG_QG_I_RESULT] =  QG_ExtractAverageCurrent(&CONTROL_CurrentValues[0], VALUES_x_SIZE2);
-				DataTable[REG_QG_RESULT] = QG_CalculateGateCharge(&CONTROL_CurrentValues[0], VALUES_x_SIZE2);
-				DataTable[REG_OP_RESULT] = OPRESULT_OK;
+				DataTable[REG_QG_I_RESULT] =  QG_ExtractAverageCurrent(&CONTROL_CurrentValues[0], VALUES_x_SIZE);
+				DataTable[REG_QG_RESULT] = QG_CalculateGateCharge(&CONTROL_CurrentValues[0], VALUES_x_SIZE);
 
 				if(CONTROL_State == DS_InProcess)
+				{
+					QG_CheckGateVoltage();
+					DataTable[REG_OP_RESULT] = OPRESULT_OK;
 					CONTROL_SetDeviceState(DS_Ready, SS_None);
+				}
+
+				QG_ResetConfigStageToDefault();
+				CONTROL_ResetHardwareToDefaultState();
 			}
 		}
 		else
-		{
-			if(CONTROL_TimeCounter >= TOCUHP_StateTimeout)
-				CONTROL_SwitchToFault(DF_TOCUHP_WRONG_STATE);
-		}
+			CONTROL_SwitchToFault(DF_POWER_CURRENT);
 	}
+}
+//-----------------------------------------------
+
+void QG_ResetConfigStageToDefault()
+{
+	QgConfigStage = TOCUHP_InitWaiting;
 }
 //-----------------------------------------------
 
@@ -223,27 +251,23 @@ void QG_Filter(pFloat32 InputArray, Int16U ArraySize)
 
 float QG_ExtractAverageCurrent(pFloat32 Buffer, Int16U BufferSize)
 {
-	float CurrentMax = 0;
-	float Sum = 0;
-	Int16U Counter = 0;
+	float AverageValue = 0;
+	static float CopiedBuffer[VALUES_x_SIZE];
 
-	// Поиск максимума
-	for(int i = 0; i < BufferSize; i++)
-	{
-		if(*(Buffer + i) > CurrentMax)
-			CurrentMax = *(Buffer + i);
-	}
+	for (int i = 0; i < BufferSize; i++)
+		CopiedBuffer[i] = *(Buffer + i);
 
-	// Усреднение
-	for(int i = 0; i < BufferSize; i++)
-	{
-		if(*(Buffer + i) > CurrentMax * 0.7)
-		{
-			Sum += *(Buffer + i);
-			Counter++;
-		}
-	}
+	qsort(CopiedBuffer, BufferSize, sizeof(*CopiedBuffer), QG_SortCondition);
 
-	return Sum / Counter;
+	for (int i = BufferSize; i >= BufferSize - QG_AVG_LENGTH; i--)
+		AverageValue += *(CopiedBuffer + i);
+
+	return (AverageValue / QG_AVG_LENGTH);
 }
 //-----------------------------------------------
+
+int QG_SortCondition(const void *A, const void *B)
+{
+	return (float)(*(float *)A) - (float)(*(float *)B);
+}
+//-----------------------------------------
