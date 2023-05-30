@@ -7,7 +7,7 @@
 
 // Definitions
 #define TOCUHP_NUM_MAX				3
-#define TOCUHP_BIT_MASK				0x3FF
+#define TOCUHP0_BIT_MASK			0x1FF
 
 // Types
 //

@@ -20,7 +20,6 @@ volatile float* TOCUHP_NodeID[TOCUHP_NUM_MAX];
 bool TOCUHP_CheckState(TOCUHPState State);
 bool TOCUHP_OpResult();
 bool TOCUHP_Call(Int16U Call);
-Int16U TOCUHP_CalculateBitMask(float AnodeCurrent);
 bool TOCUHP_CompareRegister(Int16U Register, Int16U Vlaue);
 
 // Functions
@@ -105,16 +104,28 @@ bool TOCUHP_ConfigAnodeVoltage(Int16U Voltage)
 
 bool TOCUHP_ConfigAnodeCurrent(float Current)
 {
-	Int16U TOCUHPx_BitMask[TOCUHP_NUM_MAX];
+	Int16U TOCUHPx_BitMask[TOCUHP_NUM_MAX] = {0};
 	Int16U BitMask = 0;
 
 	if((DataTable[REG_TOCUHP_EMULATED] || TOCUHP_Emulated))
 		return true;
 
-	BitMask = TOCUHP_CalculateBitMask(Current) & TOCUHP_BIT_MASK;
+	if(Current >= DataTable[REG_QG_V_POWER] / DataTable[REG_TOCUHP2_RES_PER_BIT0])
+	{
+		Current -= DataTable[REG_QG_V_POWER] / DataTable[REG_TOCUHP2_RES_PER_BIT0];
+		TOCUHPx_BitMask[2] = 1;
+	}
+
+	if(Current >= DataTable[REG_QG_V_POWER] / DataTable[REG_TOCUHP1_RES_PER_BIT0])
+	{
+		Current -= DataTable[REG_QG_V_POWER] / DataTable[REG_TOCUHP1_RES_PER_BIT0];
+		TOCUHPx_BitMask[1] = 1;
+	}
+
+	BitMask = ((Int16U)(Current / (DataTable[REG_QG_V_POWER] / DataTable[REG_TOCUHP0_RES_PER_BIT0])));
+	if(BitMask > TOCUHP0_BIT_MASK)
+		BitMask = TOCUHP0_BIT_MASK;
 	TOCUHPx_BitMask[0] = BitMask & (Int16U)(powf(2, (Int16U)DataTable[REG_TOCUHP0_BITS]) - 1);
-	TOCUHPx_BitMask[1] = (BitMask >> (Int16U)DataTable[REG_TOCUHP0_BITS]) & (Int16U)(powf(2, DataTable[REG_TOCUHP1_BITS]) - 1);
-	TOCUHPx_BitMask[2] = (BitMask >> (Int16U)DataTable[REG_TOCUHP1_BITS]) & (Int16U)(powf(2, DataTable[REG_TOCUHP2_BITS]) - 1);
 
 	for(int i = 0; i < TOCUHP_NUM_MAX; i++)
 	{
@@ -132,13 +143,6 @@ bool TOCUHP_ConfigAnodeCurrent(float Current)
 	return true;
 }
 //--------------------------------------
-
-Int16U TOCUHP_CalculateBitMask(float AnodeCurrent)
-{
-	float CurrentPerBit = DataTable[REG_QG_V_POWER] / DataTable[REG_TOCUHP_RES_PER_BIT0];
-	return (uint16_t)(AnodeCurrent / CurrentPerBit);
-}
-//-----------------------------------------------
 
 bool TOCUHP_Call(Int16U Call)
 {

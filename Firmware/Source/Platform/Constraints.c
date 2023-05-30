@@ -78,14 +78,14 @@ const TableItemConstraint Constraint[DATA_TABLE_WP_START] = {
 		{TOCUHP_BITS_MIN, TOCUHP_BITS_MAX, TOCUHP_BITS_DEF},						// 67
 		{TOCUHP_BITS_MIN, TOCUHP_BITS_MAX, TOCUHP_BITS_DEF},						// 68
 		{TOCUHP_BITS_MIN, TOCUHP_BITS_MAX, TOCUHP_BITS_DEF},						// 69
-		{NO, YES, NO},																// 70
-		{0, INT16U_MAX, TOCUHP_RES_PER_BIT_DEF},									// 71
-		{DAC_OUTPUT_LIM_MIN, DAC_OUTPUT_LIM_MAX, DAC_OUTPUT_LIM_DEF},				// 72
-		{0, INT16U_MAX, 0},															// 73
-		{NO, YES, NO},																// 74
-		{ST_CHECK_ERROR_MIN, ST_CHECK_ERROR_MAX, ST_CHECK_ERROR_DEF},				// 75
-		{0, 0, 0},																	// 76
-		{0, 0, 0},																	// 77
+		{0, INT16U_MAX, TOCUHP0_RES_PER_BIT_DEF},									// 70
+		{0, INT16U_MAX, TOCUHP1_RES_PER_BIT_DEF},									// 71
+		{0, INT16U_MAX, TOCUHP2_RES_PER_BIT_DEF},									// 72
+		{NO, YES, NO},																// 73
+		{DAC_OUTPUT_LIM_MIN, DAC_OUTPUT_LIM_MAX, DAC_OUTPUT_LIM_DEF},				// 74
+		{0, INT16U_MAX, 0},															// 75
+		{NO, YES, NO},																// 76
+		{ST_CHECK_ERROR_MIN, ST_CHECK_ERROR_MAX, ST_CHECK_ERROR_DEF},				// 77
 		{0, 0, 0},																	// 78
 		{0, 0, 0},																	// 79
 		{0, 0, 0},																	// 80

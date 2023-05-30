@@ -132,13 +132,15 @@
 #define REG_TOCUHP0_BITS				67	// Разрядность TOCUHP 0
 #define REG_TOCUHP1_BITS				68	// Разрядность TOCUHP 1
 #define REG_TOCUHP2_BITS				69	// Разрядность TOCUHP 2
-#define REG_TOCUHP_EMULATED				70	// Эмуляция работы TOCUHP
-#define REG_TOCUHP_RES_PER_BIT0			71	// Сопротивление одного бита блока TOCU (Ом)
+#define REG_TOCUHP0_RES_PER_BIT0		70	// Сопротивление одного бита блока TOCUHP 0 (Ом)
+#define REG_TOCUHP1_RES_PER_BIT0		71	// Сопротивление одного бита блока TOCUHP 0 (Ом)
+#define REG_TOCUHP2_RES_PER_BIT0		72	// Сопротивление одного бита блока TOCUHP 0 (Ом)
+#define REG_TOCUHP_EMULATED				73	// Эмуляция работы TOCUHP
 //
-#define REG_DAC_OUTPUT_LIMIT_VALUE		72	// Ограничение выхода ЦАП (0 - 4095)
-#define REG_SCOPE_STEP					73	// Шаг сохранения оцифрованных значений
-#define REG_MUTE_SAFETY					74	// Отключение проверки контакта безопасности
-#define REG_ST_CHECK_ERROR				75	// Допустимая ошибка результата самотестирования
+#define REG_DAC_OUTPUT_LIMIT_VALUE		74	// Ограничение выхода ЦАП (0 - 4095)
+#define REG_SCOPE_STEP					75	// Шаг сохранения оцифрованных значений
+#define REG_MUTE_SAFETY					76	// Отключение проверки контакта безопасности
+#define REG_ST_CHECK_ERROR				77	// Допустимая ошибка результата самотестирования
 //
 
 
