@@ -207,7 +207,7 @@ void IGES_CheckDUT(bool PulsePlate, float SampledCurrent)
 			}
 			else
 			{
-				if(CurrentMax < DUT_NOT_FOUND_LEVEL)
+				if(CurrentMax < DUT_NOT_FOUND_LEVEL && DataTable[REG_DUT_CONN_CHECK])
 				{
 					CurrentMax = 0;
 					DataTable[REG_PROBLEM] = PROBLEM_DUT_NOT_FOUND;
@@ -310,8 +310,10 @@ void IGES_SaveResults()
 		{
 			if(PAU_ReadMeasuredData(&Iges))
 			{
+				Iges = Iges * 1e6; // in nA
+
 				if(Iges < MEASURE_IGES_CURRENT_MIN || Iges > MEASURE_IGES_CURRENT_MAX)
-					DataTable[REG_WARNING] = WARNING_IGES_OUT_OF_RANGE;
+					DataTable[REG_WARNING] = WARNING_OUT_OF_RANGE;
 
 				DataTable[REG_IGES_RESULT] = Iges;
 				DataTable[REG_OP_RESULT] = OPRESULT_OK;

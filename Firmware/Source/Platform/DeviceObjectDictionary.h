@@ -141,6 +141,7 @@
 #define REG_SCOPE_STEP					75	// Шаг сохранения оцифрованных значений
 #define REG_MUTE_SAFETY					76	// Отключение проверки контакта безопасности
 #define REG_ST_CHECK_ERROR				77	// Допустимая ошибка результата самотестирования
+#define REG_DUT_CONN_CHECK				78	// Определение подключенного прибора
 //
 
 
@@ -270,9 +271,8 @@
 
 //  Warning
 #define WARNING_NONE					0
-#define WARNING_IGES_OUT_OF_RANGE		1
+#define WARNING_OUT_OF_RANGE			1
 #define WARNING_QG_VOLTAGE_NOT_REACHED	2
-#define WARNING_RES_OUT_OF_RANGE		3
 
 //  User Errors
 #define ERR_NONE						0

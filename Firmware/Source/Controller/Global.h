@@ -15,8 +15,8 @@
 #define VGS_VOLTAGE_MAX							11					// Максимальное измеряемое напряжение, В
 #define VGS_VOLTAGE_MIN							1					// Минимальное измеряемое напряжение, В
 #define VGS_CURRENT_MAX							210					// Максимальный измеряемый ток, мА
-#define MEASURE_IGES_CURRENT_MIN				1e-9				// Минимальный измеряемый токутечки, mА
-#define MEASURE_IGES_CURRENT_MAX				(20 * 10e-6)		// Максимальный измеряемый токутечки, mА
+#define MEASURE_IGES_CURRENT_MIN				1					// Минимальный измеряемый токутечки, нА
+#define MEASURE_IGES_CURRENT_MAX				20					// Максимальный измеряемый токутечки, нА
 #define MEASURE_RES_MIN							100					// Минимальное измеряемое сопротивление резистора, Ом
 #define MEASURE_RES_MAX							10000				// Максимальное измеряемое сопротивление резистора, Ом
 #define DAC_MAX_VAL								0x0FFF				// Максимальное значение ЦАП

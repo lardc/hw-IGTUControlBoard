@@ -86,7 +86,7 @@ const TableItemConstraint Constraint[DATA_TABLE_WP_START] = {
 		{0, INT16U_MAX, 0},															// 75
 		{NO, YES, NO},																// 76
 		{ST_CHECK_ERROR_MIN, ST_CHECK_ERROR_MAX, ST_CHECK_ERROR_DEF},				// 77
-		{0, 0, 0},																	// 78
+		{NO, YES, YES},																// 78
 		{0, 0, 0},																	// 79
 		{0, 0, 0},																	// 80
 		{0, 0, 0},																	// 81
