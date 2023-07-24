@@ -20,6 +20,7 @@
 #define RES_PULSE_WIDTH_MS			10000	// ìêñ
 #define RES_VG_FRONT_TIME			5000	// ìêñ
 #define RES_TEST_VOLTAGE			10.0f	// Â
+#define LINE_SHORT_CURRENT			5
 //
 #define RES_AVG_START_INDEX_DEF		20
 #define RES_AVG_LENGTH				20
@@ -109,16 +110,13 @@ void RES_Process()
 			DataTable[REG_RES_RESULT] = 0;
 			DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
 
-			if(ResSampledData.Current > V_I_R2_MIN)
+			if(ResSampledData.Current > LINE_SHORT_CURRENT)
 			{
 				DataTable[REG_PROBLEM] = PROBLEM_SHORT;
 				CONTROL_SetDeviceState(DS_Ready, SS_None);
 			}
 			else
-			{
-				DataTable[150] = ResSampledData.Current;
 				CONTROL_SwitchToFault(DF_FOLLOWING_ERROR);
-			}
 		}
 		else
 		{
@@ -138,7 +136,7 @@ void RES_Process()
 				DataTable[REG_RES_RESULT] = AverageData.Voltage / AverageData.Current * 1000;
 
 				if(DataTable[REG_RES_RESULT] < MEASURE_RES_MIN || DataTable[REG_RES_RESULT] > MEASURE_RES_MAX)
-					DataTable[REG_WARNING] = WARNING_RES_OUT_OF_RANGE;
+					DataTable[REG_WARNING] = WARNING_OUT_OF_RANGE;
 
 				DataTable[REG_OP_RESULT] = OPRESULT_OK;
 				CONTROL_SetDeviceState(DS_Ready, SS_None);
