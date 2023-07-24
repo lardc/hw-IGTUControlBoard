@@ -27,6 +27,7 @@
 #define QG_GATE_VOLTAGE_ALLOWED_ERR		10
 #define QG_I_PULSE_WIDTH_COEF			0.96
 #define QG_PULSE_WIDTH_THRE_COEF		0.95
+#define QG_HW_CONFIG_TIME				5
 
 // Types
 //
@@ -37,6 +38,7 @@ typedef enum __QgPrepareStage
 	TOCUHP_ConfigCurrent,
 	TOCUHP_WatingReady,
 	HW_Config,
+	HW_ConfigWaiting,
 	StartMeasure
 } QgPrepareStage;
 
@@ -45,6 +47,7 @@ typedef enum __QgPrepareStage
 QgPrepareStage QgConfigStage = TOCUHP_InitWaiting;
 QgPrepareStage QgConfigLastStage = TOCUHP_InitWaiting;
 Int64U TOCUHP_StateTimeout = 0;
+Int64U Timeout = 0;
 
 // Function prototypes
 //
@@ -110,7 +113,13 @@ void QG_Prepare()
 			LL_I_SetDAC(CU_I_ItoDAC(DataTable[REG_QG_I]));
 			LL_I_Enable(true);
 
-			QgConfigStage = TOCUHP_ConfigVoltage;
+			Timeout = CONTROL_TimeCounter + QG_HW_CONFIG_TIME;
+			QgConfigStage = HW_ConfigWaiting;
+			break;
+
+		case HW_ConfigWaiting:
+			if(CONTROL_TimeCounter >= Timeout)
+				QgConfigStage = TOCUHP_ConfigVoltage;
 			break;
 
 		case TOCUHP_ConfigVoltage:
