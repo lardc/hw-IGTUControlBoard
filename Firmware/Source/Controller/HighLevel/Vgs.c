@@ -110,14 +110,7 @@ void VGS_Process()
 
 			if(RegulatorParams.FollowingError)
 			{
-				if(VgsSampledData.Current > TrigCurrentLow)
-				{
-					DataTable[REG_PROBLEM] = PROBLEM_SHORT;
-					CONTROL_SetDeviceState(DS_Ready, SS_None);
-				}
-				else
-					CONTROL_SwitchToFault(DF_FOLLOWING_ERROR);
-
+				CONTROL_SwitchToFault(DF_FOLLOWING_ERROR);
 				return;
 			}
 			else
@@ -135,12 +128,12 @@ void VGS_Process()
 		CONTROL_StopHighPriorityProcesses();
 
 		if(VgsSampledData.Voltage < VGS_VOLTAGE_MIN)
-		{
-			DataTable[REG_PROBLEM] = PROBLEM_SHORT;
-			CONTROL_SetDeviceState(DS_Ready, SS_None);
-		}
+			CONTROL_SwitchToFault(DF_FOLLOWING_ERROR);
 		else
 		{
+			if(AverageSamples.Voltage > VGS_VOLTAGE_MAX || AverageSamples.Voltage < VGS_VOLTAGE_MIN)
+				DataTable[REG_WARNING] = WARNING_OUT_OF_RANGE;
+
 			DataTable[REG_VGS_RESULT] = AverageSamples.Voltage;
 			DataTable[REG_VGS_I_RESULT] = VgsSampledData.Current;
 			DataTable[REG_OP_RESULT] = OPRESULT_OK;
