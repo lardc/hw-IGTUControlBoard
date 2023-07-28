@@ -30,6 +30,7 @@ volatile DeviceSubState CONTROL_SubState = SS_None;
 volatile Int64U CONTROL_TimeCounter = 0;
 volatile Int64U CONTROL_Timeout = 0;
 static Boolean CycleActive = false;
+Boolean IsImpulse = false;
 //
 float CONTROL_RegulatorOutputValues[VALUES_x_SIZE];
 float CONTROL_RegulatorErrValues[VALUES_x_SIZE];
@@ -83,6 +84,7 @@ void CONTROL_ResetToDefaultState()
 {
 	CONTROL_ResetOutputRegisters();
 	CONTROL_ResetHardwareToDefaultState();
+	IsImpulse = false;
 
 	CONTROL_SetDeviceState(DS_None, SS_None);
 }
@@ -123,6 +125,8 @@ void CONTROL_ResetHardwareToDefaultState()
 	LL_I_SetDAC(0);
 	LL_ExDACVCutoff(I_VCUT_OFF_DAC_DEF);
 	LL_ExDACVNegative(0);
+
+	IsImpulse = false;
 
 	CONTROL_SwitchOutMUX(Voltage);
 }
@@ -240,13 +244,16 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			break;
 
 		case ACT_CLR_FAULT:
-			if(PAU_ClearFault() && TOCUHP_ClearFault())
-			{
-				if(CONTROL_State == DS_Fault)
-					CONTROL_ResetToDefaultState();
-			}
-			else
+			if(!PAU_ClearFault())
 				CONTROL_SwitchToFault(DF_PAU_INTERFACE);
+			else if(TOCUHP_ClearFault())
+					{
+						if(CONTROL_State == DS_Fault)
+						{
+							LL_Indication(false);
+							CONTROL_ResetToDefaultState();
+						}
+					}
 			break;
 
 		case ACT_CLR_WARNING:
@@ -457,6 +464,37 @@ void CONTROL_SwitchToFault(Int16U Reason)
 	CONTROL_ResetHardwareToDefaultState();
 }
 //------------------------------------------
+
+void CONTROL_HandleExternalLamp(bool IsImpulse)
+{
+	static Int64U ExternalLampCounter = 0;
+
+	if(CONTROL_State != DS_None)
+	{
+		if(CONTROL_State == DS_Fault)
+		{
+			if(++ExternalLampCounter > TIME_FAULT_LED_BLINK)
+			{
+				LL_ToggleIndication();
+				ExternalLampCounter = 0;
+			}
+		}
+		else
+			{
+				if(IsImpulse)
+				{
+					LL_Indication(true);
+					ExternalLampCounter = CONTROL_TimeCounter + EXT_LAMP_ON_STATE_TIME;
+				}
+				else
+				{
+					if(CONTROL_TimeCounter >= ExternalLampCounter)
+						LL_Indication(false);
+				}
+			}
+	}
+}
+//-----------------------------------------------
 
 void CONTROL_SetDeviceState(DeviceState NewState, DeviceSubState NewSubState)
 {

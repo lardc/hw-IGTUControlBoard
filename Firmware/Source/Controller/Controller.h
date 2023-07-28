@@ -74,6 +74,7 @@ extern float CONTROL_RegulatorErrValues[VALUES_x_SIZE];
 extern Int16U CONTROL_RegulatorValues_Counter;
 extern Int16U CONTROL_Values_Counter;
 //
+extern Boolean IsImpulse;
 
 
 // Functions
@@ -88,5 +89,6 @@ void CONTROL_SwitchOutMUX(CommutationState Commutation);
 void CONTROL_SwitchToFault(Int16U Reason);
 bool CONTROL_IsSafetyOk();
 void CONTROL_ResetHardwareToDefaultState();
+void CONTROL_HandleExternalLamp(bool IsImpulse);
 
 #endif // __CONTROLLER_H

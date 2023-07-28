@@ -37,6 +37,8 @@ void TIM1_BRK_TIM15_IRQHandler()
 {
 	if(TIM_StatusCheck(TIM15))
 	{
+		CONTROL_HandleExternalLamp(true);
+
 		CONTROL_HighPriorityProcess();
 
 		TIM_StatusClear(TIM15);
@@ -57,6 +59,8 @@ void TIM7_IRQHandler()
 			LL_ToggleBoardLED();
 			LED_BlinkTimeCounter = 0;
 		}
+
+		CONTROL_HandleExternalLamp(IsImpulse);
 
 		TIM_StatusClear(TIM7);
 	}

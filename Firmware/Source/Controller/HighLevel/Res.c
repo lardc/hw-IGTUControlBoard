@@ -97,6 +97,7 @@ void RES_Process()
 	{
 		RegulatorParams.Target = RES_TEST_VOLTAGE;
 		LL_SyncOSC(true);
+		IsImpulse = true;
 	}
 
 	RegulatorParams.SampledData = ResSampledData.Voltage;
