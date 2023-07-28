@@ -117,7 +117,7 @@ void VGS_Process()
 			{
 				if(VgsSampledData.Current < TrigCurrentLow)
 				{
-					DataTable[REG_PROBLEM] = PROBLEM_VGS_CURRENT_NOT_REACHED;
+					DataTable[REG_PROBLEM] = PROBLEM_CURRENT_NOT_REACHED;
 					CONTROL_SetDeviceState(DS_Ready, SS_None);
 				}
 			}

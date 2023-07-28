@@ -19,6 +19,8 @@
 #define MEASURE_IGES_CURRENT_MAX				20					// Максимальный измеряемый токутечки, нА
 #define MEASURE_RES_MIN							100					// Минимальное измеряемое сопротивление резистора, Ом
 #define MEASURE_RES_MAX							10000				// Максимальное измеряемое сопротивление резистора, Ом
+#define MEASURE_QG_MIN							300					// Минимальное измеряемое значения заряда затвора, нКл
+#define MEASURE_QG_MAX							15000				// Максимальное измеряемое значения заряда затвора, нКл
 #define DAC_MAX_VAL								0x0FFF				// Максимальное значение ЦАП
 #define EXT_DAC_A								0x0					// Выбор канала A
 #define EXT_DAC_B								0x8000				// Выбор канала B
@@ -37,5 +39,7 @@
 
 // Временные параметры
 #define TIME_LED_BLINK							500		// Мигание светодиодом (в мс)
+#define TIME_FAULT_LED_BLINK					250		// Мигание светодиодом в состоянии Fault
+#define EXT_LAMP_ON_STATE_TIME					500		// мс
 
 #endif //  __GLOBAL_H

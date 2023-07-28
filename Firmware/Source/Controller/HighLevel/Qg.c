@@ -28,6 +28,7 @@
 #define QG_I_PULSE_WIDTH_COEF			0.96
 #define QG_PULSE_WIDTH_THRE_COEF		0.95
 #define QG_HW_CONFIG_TIME				5
+#define QG_I_THRESHOLD_COEF				0.8
 
 // Types
 //
@@ -66,6 +67,7 @@ void QG_Prepare()
 	switch(QgConfigStage)
 	{
 		case TOCUHP_InitWaiting:
+			TOCUHP_UpdateCANid();
 			TOCUHP_StateTimeout = CONTROL_TimeCounter + TOCUHP_WAIT_READY_TIMEOUT;
 			QgConfigLastStage = TOCUHP_InitWaiting;
 			QgConfigStage = TOCUHP_WatingReady;
@@ -143,6 +145,7 @@ void QG_Prepare()
 		case StartMeasure:
 			CONTROL_SetDeviceState(CONTROL_State, SS_QgProcess);
 			MEASURE_StartNewSampling();
+			CONTROL_HandleExternalLamp(true);
 
 			LL_SyncTOCUHP(true);
 			QG_Pulse(true);
@@ -190,6 +193,8 @@ void QG_CheckGateVoltage()
 
 void QG_SaveResult()
 {
+	float Ig, Qg;
+
 	if(TOCUHP_InFault())
 		CONTROL_SwitchToFault(DF_TOCUHP_WRONG_STATE);
 	else
@@ -200,21 +205,34 @@ void QG_SaveResult()
 			{
 				LOG_CopyCurrentToEndpoints(&CONTROL_CurrentValues[0], &MEASURE_Qg_DataRaw[0], ADC_DMA_BUFF_SIZE_QG / 2, 0);
 				CONTROL_Values_Counter = VALUES_x_SIZE;
-
 				QG_Filter(&CONTROL_CurrentValues[0], VALUES_x_SIZE);
 
-				DataTable[REG_QG_I_RESULT] =  QG_ExtractAverageCurrent(&CONTROL_CurrentValues[0], VALUES_x_SIZE);
-				DataTable[REG_QG_RESULT] = QG_CalculateGateCharge(&CONTROL_CurrentValues[0], VALUES_x_SIZE);
+				Ig = QG_ExtractAverageCurrent(&CONTROL_CurrentValues[0], VALUES_x_SIZE);
+				Qg = QG_CalculateGateCharge(&CONTROL_CurrentValues[0], VALUES_x_SIZE);
 
-				if(CONTROL_State == DS_InProcess)
+				if(Ig > DataTable[REG_QG_I] * QG_I_THRESHOLD_COEF)
 				{
+					if(Qg < MEASURE_QG_MIN || Qg > MEASURE_QG_MAX)
+						DataTable[REG_WARNING] = WARNING_OUT_OF_RANGE;
+
+					DataTable[REG_QG_I_RESULT] =  Ig;
+					DataTable[REG_QG_RESULT] = Qg;
+
 					QG_CheckGateVoltage();
 					DataTable[REG_OP_RESULT] = OPRESULT_OK;
-					CONTROL_SetDeviceState(DS_Ready, SS_None);
+				}
+				else
+				{
+					DataTable[REG_QG_I_RESULT] =  0;
+					DataTable[REG_QG_RESULT] = 0;
+					DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
+					DataTable[REG_PROBLEM] = PROBLEM_CURRENT_NOT_REACHED;
 				}
 
 				QG_ResetConfigStageToDefault();
 				CONTROL_ResetHardwareToDefaultState();
+
+				CONTROL_SetDeviceState(DS_Ready, SS_None);
 			}
 		}
 		else

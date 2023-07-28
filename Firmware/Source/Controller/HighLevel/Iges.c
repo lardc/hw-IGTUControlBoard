@@ -201,6 +201,7 @@ void IGES_CheckDUT(bool PulsePlate, float SampledCurrent)
 			if(Error1 < SHORT_CIRCUIT_CURRENT_ERROR && Error2 < SHORT_CIRCUIT_CURRENT_ERROR)
 			{
 				CurrentMax = 0;
+				DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
 				DataTable[REG_PROBLEM] = PROBLEM_SHORT;
 				CONTROL_SetDeviceState(DS_Ready, SS_None);
 				return;
@@ -210,6 +211,7 @@ void IGES_CheckDUT(bool PulsePlate, float SampledCurrent)
 				if(CurrentMax < DUT_NOT_FOUND_LEVEL && DataTable[REG_DUT_CONN_CHECK])
 				{
 					CurrentMax = 0;
+					DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
 					DataTable[REG_PROBLEM] = PROBLEM_DUT_NOT_FOUND;
 					CONTROL_SetDeviceState(DS_Ready, SS_None);
 					return;
