@@ -15,6 +15,7 @@
 //
 void LL_ToggleBoardLED();
 void LL_Indication(bool State);
+void LL_ToggleIndication();
 void LL_OutMultiplexCurrent();
 void LL_OutMultiplexVoltage();
 void LL_SyncTOCUHP(bool State);
