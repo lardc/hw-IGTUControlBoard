@@ -170,18 +170,12 @@ void CAL_V_CalProcess()
 
 void CAL_I_CalProcess()
 {
-	static bool FirstMeasure = true;
-	Int16U StartIndex = 0;
-
 	if(DMA_IsTransferComplete(DMA1, DMA_ISR_TCIF1))
 	{
 		CONTROL_StopHighPriorityProcesses();
 
-		StartIndex = (FirstMeasure) ? 0 : 1;
-		FirstMeasure = false;
-
-		LOG_CopyCurrentToEndpoints(&CONTROL_CurrentValues[0], &MEASURE_Qg_DataRaw[StartIndex], ADC_DMA_BUFF_SIZE_QG, 1);
-		LOG_CopyVoltageToEndpoints(&CONTROL_VoltageValues[0], &MEASURE_Qg_DataRaw[StartIndex + 1], ADC_DMA_BUFF_SIZE_QG - StartIndex - 1, 1);
+		LOG_CopyCurrentToEndpoints(&CONTROL_CurrentValues[0], &MEASURE_Qg_DataRaw[0], ADC_DMA_BUFF_SIZE_QG, 1);
+		LOG_CopyVoltageToEndpoints(&CONTROL_VoltageValues[0], &MEASURE_Qg_DataRaw[1], ADC_DMA_BUFF_SIZE_QG, 1);
 		CONTROL_Values_Counter = VALUES_x_SIZE;
 
 		DataTable[REG_CAL_V_RESULT] = LOG_GetAverageFromBuffer(&CONTROL_VoltageValues[CAL_AVG_V_START_INDEX], CAL_AVG_LENGTH);
