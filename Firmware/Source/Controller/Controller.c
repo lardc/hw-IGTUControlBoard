@@ -128,6 +128,9 @@ void CONTROL_ResetHardwareToDefaultState()
 
 	IsImpulse = false;
 
+	ADC_Disable(ADC1);
+	ADC_Disable(ADC3);
+
 	CONTROL_SwitchOutMUX(Voltage);
 }
 //------------------------------------------
