@@ -177,9 +177,8 @@ void INITCFG_ConfigADC_QgXX(bool OnlyCurrentSample)
 	else
 		ADC_ChannelSeqLen(ADC1, 1);
 
-	ADC_DMAConfig(ADC1);
-	ADC_Enable(ADC1);
 	ADC_DMAEnable(ADC1, true);
+	ADC_Enable(ADC1);
 
 	// ADC3
 	ADC_ResetConfig(ADC3);
