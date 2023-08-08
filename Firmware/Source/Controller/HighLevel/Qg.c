@@ -147,6 +147,9 @@ void QG_Prepare()
 			MEASURE_StartNewSampling();
 			CONTROL_HandleExternalLamp(true);
 
+			LL_QgProtection(true);
+			DELAY_US(10);
+
 			LL_SyncTOCUHP(true);
 			QG_Pulse(true);
 			break;
@@ -171,6 +174,7 @@ void QG_Pulse(bool State)
 	LL_SyncOSC(State);
 
 	(State) ? TIM_Start(TIM3) : TIM_Stop(TIM3);
+
 	TIM_Reset(TIM3);
 	LL_I_Start(State);
 }
@@ -201,39 +205,36 @@ void QG_SaveResult()
 	{
 		if(TOCUHP_CheckOpResult() || CONTROL_State == DS_SelfTest)
 		{
-			if(DMA_IsTransferComplete(DMA1, DMA_ISR_TCIF1))
+			LOG_CopyCurrentToEndpoints(&CONTROL_CurrentValues[0], &MEASURE_Qg_DataRaw[0], ADC_DMA_BUFF_SIZE_QG / 2, 0);
+			CONTROL_Values_Counter = VALUES_x_SIZE;
+			QG_Filter(&CONTROL_CurrentValues[0], VALUES_x_SIZE);
+
+			Ig = QG_ExtractAverageCurrent(&CONTROL_CurrentValues[0], VALUES_x_SIZE);
+			Qg = QG_CalculateGateCharge(&CONTROL_CurrentValues[0], VALUES_x_SIZE);
+
+			if(Ig > DataTable[REG_QG_I] * QG_I_THRESHOLD_COEF)
 			{
-				LOG_CopyCurrentToEndpoints(&CONTROL_CurrentValues[0], &MEASURE_Qg_DataRaw[0], ADC_DMA_BUFF_SIZE_QG / 2, 0);
-				CONTROL_Values_Counter = VALUES_x_SIZE;
-				QG_Filter(&CONTROL_CurrentValues[0], VALUES_x_SIZE);
+				if(Qg < MEASURE_QG_MIN || Qg > MEASURE_QG_MAX)
+					DataTable[REG_WARNING] = WARNING_OUT_OF_RANGE;
 
-				Ig = QG_ExtractAverageCurrent(&CONTROL_CurrentValues[0], VALUES_x_SIZE);
-				Qg = QG_CalculateGateCharge(&CONTROL_CurrentValues[0], VALUES_x_SIZE);
+				DataTable[REG_QG_I_RESULT] =  Ig;
+				DataTable[REG_QG_RESULT] = Qg;
 
-				if(Ig > DataTable[REG_QG_I] * QG_I_THRESHOLD_COEF)
-				{
-					if(Qg < MEASURE_QG_MIN || Qg > MEASURE_QG_MAX)
-						DataTable[REG_WARNING] = WARNING_OUT_OF_RANGE;
-
-					DataTable[REG_QG_I_RESULT] =  Ig;
-					DataTable[REG_QG_RESULT] = Qg;
-
-					QG_CheckGateVoltage();
-					DataTable[REG_OP_RESULT] = OPRESULT_OK;
-				}
-				else
-				{
-					DataTable[REG_QG_I_RESULT] =  0;
-					DataTable[REG_QG_RESULT] = 0;
-					DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
-					DataTable[REG_PROBLEM] = PROBLEM_CURRENT_NOT_REACHED;
-				}
-
-				QG_ResetConfigStageToDefault();
-				CONTROL_ResetHardwareToDefaultState();
-
-				CONTROL_SetDeviceState(DS_Ready, SS_None);
+				QG_CheckGateVoltage();
+				DataTable[REG_OP_RESULT] = OPRESULT_OK;
 			}
+			else
+			{
+				DataTable[REG_QG_I_RESULT] =  0;
+				DataTable[REG_QG_RESULT] = 0;
+				DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
+				DataTable[REG_PROBLEM] = PROBLEM_CURRENT_NOT_REACHED;
+			}
+
+			QG_ResetConfigStageToDefault();
+			CONTROL_ResetHardwareToDefaultState();
+
+			CONTROL_SetDeviceState(DS_Ready, SS_None);
 		}
 		else
 			CONTROL_SwitchToFault(DF_POWER_CURRENT);
