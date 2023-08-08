@@ -121,7 +121,7 @@ void ST_Process()
 			else
 			{
 				DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_FAIL;
-				CONTROL_SwitchToFault(DF_ST_CHECK_ERROR);
+				CONTROL_SwitchToFault(DF_ST_V_SOURCE_ERROR);
 			}
 			break;
 
@@ -174,7 +174,7 @@ void ST_Process()
 			{
 				TOCUHP_EmulatedState(false);
 				DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_FAIL;
-				CONTROL_SwitchToFault(DF_ST_CHECK_ERROR);
+				CONTROL_SwitchToFault(DF_ST_I_SOURCE_ERROR);
 			}
 			break;
 

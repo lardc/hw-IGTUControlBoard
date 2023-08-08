@@ -90,5 +90,6 @@ void CONTROL_SwitchToFault(Int16U Reason);
 bool CONTROL_IsSafetyOk();
 void CONTROL_ResetHardwareToDefaultState();
 void CONTROL_HandleExternalLamp(bool IsImpulse);
+void CONTROL_ResetOutputRegisters();
 
 #endif // __CONTROLLER_H
