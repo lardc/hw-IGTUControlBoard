@@ -69,6 +69,10 @@ bool DIAG_HandleDiagnosticAction(uint16_t ActionID, uint16_t *pUserError)
 			DBGACT_SwitchToDIAG();
 			break;
 
+		case ACT_DBG_PROTECTION:
+			DBGACT_Protection();
+			break;
+
 		default:
 			return false;
 	}

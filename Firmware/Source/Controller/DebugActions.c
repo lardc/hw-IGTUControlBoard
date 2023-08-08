@@ -136,21 +136,30 @@ void DBGACT_SwitchToDIAG()
 }
 //-----------------------------
 
+void DBGACT_Protection()
+{
+	LL_QgProtection(DataTable[REG_DBG]);
+}
+//-----------------------------
+
 void DBGACT_C_TestPulse()
 {
 	LL_OutMultiplexCurrent();
 	LL_I_Diagnostic(false);
 	LL_ExDACVNegative(0);
 	LL_I_Enable(true);
+	LL_QgProtection(false);
 	LL_ExDACVCutoff(DBG_DAC_TEST_VALUE);
 	DELAY_MS(20);
 
 	LL_I_SetDAC(DataTable[REG_DBG]);
 	DELAY_US(10);
 
-	LL_I_Start(false);
-	DELAY_US(20);
+	LL_QgProtection(true);
 	LL_I_Start(true);
+	DELAY_US(20);
+	LL_I_Start(false);
+	LL_QgProtection(false);
 
 	LL_I_Enable(false);
 	LL_I_SetDAC(0);

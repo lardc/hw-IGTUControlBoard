@@ -48,7 +48,6 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError);
 void CONTROL_UpdateWatchDog();
 void CONTROL_ResetToDefaultState();
 void CONTROL_LogicProcess();
-void CONTROL_ResetOutputRegisters();
 
 // Functions
 //
@@ -120,6 +119,7 @@ void CONTROL_ResetHardwareToDefaultState()
 	LL_I_Diagnostic(false);
 	LL_I_Start(false);
 	LL_I_Enable(false);
+	LL_QgProtection(false);
 
 	LL_V_VSetDAC(0);
 	LL_I_SetDAC(0);

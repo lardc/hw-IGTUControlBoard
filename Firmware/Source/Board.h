@@ -18,7 +18,6 @@
 
 // Определения для выходных портов
 // INDICATION
-GPIO_PortPinSettingMacro GPIO_LED 				= {GPIOC, Pin_13};
 GPIO_PortPinSettingMacro GPIO_INDICATION 		= {GPIOC, Pin_15};
 // V
 GPIO_PortPinSettingMacro GPIO_V_CURR_K1 		= {GPIOA, Pin_6};
@@ -32,6 +31,7 @@ GPIO_PortPinSettingMacro GPIO_V_HIGH_CURRENT 	= {GPIOB, Pin_9};
 GPIO_PortPinSettingMacro GPIO_C_C_START 		= {GPIOB, Pin_7};
 GPIO_PortPinSettingMacro GPIO_C_ENABLE 			= {GPIOB, Pin_12};
 GPIO_PortPinSettingMacro GPIO_C_DIAG_CTRL 		= {GPIOB, Pin_14};
+GPIO_PortPinSettingMacro GPIO_QG_PORTECTION		= {GPIOC, Pin_13};
 // C EXT DAC
 GPIO_PortPinSettingMacro GPIO_C_EXT_DAC_CS 		= {GPIOA, Pin_15};
 GPIO_PortPinSettingMacro GPIO_C_EXT_DAC_LDAC	= {GPIOA, Pin_8};

@@ -25,6 +25,7 @@
 #define ACT_DBG_EXT_IND					63	// Тест внешнего индикатора
 #define ACT_DBG_SWITCH_MUX				64	// Тест переключения выходного мультиплексора на реле
 #define ACT_DBG_SWITCH_TO_DIAG			65	// Тест переключения в режим самодиагностики
+#define ACT_DBG_PROTECTION				66	// Тест управления системой защиты
 
 // Команды для калибровки
 #define ACT_CAL_V						70	// Калибровка источника напряжения
@@ -142,7 +143,6 @@
 #define REG_MUTE_SAFETY					76	// Отключение проверки контакта безопасности
 #define REG_ST_CHECK_ERROR				77	// Допустимая ошибка результата самотестирования
 #define REG_DUT_CONN_CHECK				78	// Определение подключенного прибора
-//
 
 
 // Несохраняемые регистры чтения-записи
@@ -258,8 +258,9 @@
 #define DF_TOCUHP_INTERFACE				5
 #define DF_TOCUHP_WRONG_STATE			6
 #define DF_POWER_CURRENT				7
-#define DF_ST_CHECK_ERROR				8
-#define DF_POWER_ON_TIMEOUT				9
+#define DF_ST_V_SOURCE_ERROR			8
+#define DF_ST_I_SOURCE_ERROR			9
+#define DF_POWER_ON_TIMEOUT				10
 
 // Problem
 #define PROBLEM_NONE					0

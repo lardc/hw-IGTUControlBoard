@@ -41,7 +41,7 @@ void INITCFG_ConfigIO()
 	RCC_GPIO_Clk_EN(PORTC);
 	
 	// Выходы
-	GPIO_InitPushPullOutput(GPIO_LED);
+	GPIO_InitPushPullOutput(GPIO_QG_PORTECTION);
 	GPIO_InitPushPullOutput(GPIO_INDICATION);
 	GPIO_InitPushPullOutput(GPIO_V_CURR_K1);
 	GPIO_InitPushPullOutput(GPIO_V_CURR_K2);
@@ -63,7 +63,7 @@ void INITCFG_ConfigIO()
 	GPIO_InitOpenDrainOutput(GPIO_V_SHORT_OUT, NoPull);
 
 	// Начальная установка состояний выходов
-	GPIO_SetState(GPIO_LED, false);
+	GPIO_SetState(GPIO_QG_PORTECTION, true);
 	GPIO_SetState(GPIO_INDICATION, false);
 	GPIO_SetState(GPIO_V_CURR_K1, false);
 	GPIO_SetState(GPIO_V_CURR_K2, true);

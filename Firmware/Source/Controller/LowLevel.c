@@ -10,7 +10,13 @@
 //
 void LL_ToggleBoardLED()
 {
-	GPIO_Toggle(GPIO_LED);
+
+}
+//-----------------------------
+
+void LL_QgProtection(bool State)
+{
+	GPIO_SetState(GPIO_QG_PORTECTION, !State);
 }
 //-----------------------------
 

@@ -19,7 +19,7 @@
 //
 #define CAL_AVG_START_INDEX_DEF		20
 #define CAL_AVG_LENGTH				20
-#define CAL_AVG_V_START_INDEX		800
+#define CAL_AVG_V_START_INDEX		950
 #define CAL_AVG_VN_START_INDEX		400
 #define CAL_AVG_I_START_INDEX		800
 
@@ -80,6 +80,7 @@ void CAL_V_Prepare()
 	CONTROL_SwitchOutMUX(Voltage);
 
 	CAL_V_CacheVariables();
+	CONTROL_ResetOutputRegisters();
 
 	CONTROL_SetDeviceState(CONTROL_State, SS_Cal_V_Process);
 	CONTROL_StartHighPriorityProcesses();
@@ -97,11 +98,13 @@ void CAL_I_Prepare()
 	LL_ExDACVNegative(CU_I_VnegativeToDAC(DataTable[REG_CAL_V]));
 	LL_I_SetDAC(CU_I_ItoDAC(DataTable[REG_CAL_I]));
 	LL_I_Start(false);
+	LL_QgProtection(false);
 	LL_I_Enable(true);
 	DELAY_MS(20);
 
 	CONTROL_SwitchOutMUX(Current);
 
+	CONTROL_ResetOutputRegisters();
 	CONTROL_SetDeviceState(CONTROL_State, SS_Cal_I_Process);
 	MEASURE_StartNewSampling();
 	CONTROL_StartHighPriorityProcesses();
@@ -187,7 +190,10 @@ void CAL_I_CalProcess()
 	else
 	{
 		if(DMA_ReadDataCount(DMA1_Channel1) <= ADC_DMA_BUFF_SIZE_QG / 2)
+		{
+			LL_QgProtection(true);
 			LL_I_Start(true);
+		}
 	}
 }
 //-----------------------------------------------
