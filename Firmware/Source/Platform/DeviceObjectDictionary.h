@@ -97,11 +97,11 @@
 #define REG_I_VN_TO_DAC_K				38	// Коэффициент преобразования K
 #define REG_I_VN_TO_DAC_B				39	// Коэффициент преобразования B
 //
-#define REG_I_ADC_TO_V_P2				40	// Коэффициент тонкой подстройки Р2
-#define REG_I_ADC_TO_V_P1				41	// Коэффициент тонкой подстройки Р1
-#define REG_I_ADC_TO_V_P0				42	// Смещение тонкой подстройки Р0
-#define REG_I_ADC_TO_V_K				43	// Коэффициент преобразования K
-#define REG_I_ADC_TO_V_B				44	// Коэффициент преобразования B
+#define REG_I_ADC_TO_VC_P2				40	// Коэффициент тонкой подстройки Р2
+#define REG_I_ADC_TO_VC_P1				41	// Коэффициент тонкой подстройки Р1
+#define REG_I_ADC_TO_VC_P0				42	// Смещение тонкой подстройки Р0
+#define REG_I_ADC_TO_VC_K				43	// Коэффициент преобразования K
+#define REG_I_ADC_TO_VC_B				44	// Коэффициент преобразования B
 #define REG_I_ADC_TO_V_ZERO_OFFSET		45	// Смещение для выставления нуля
 //
 #define REG_I_ADC_TO_I_P2				46	// Коэффициент тонкой подстройки Р2
@@ -143,6 +143,12 @@
 #define REG_MUTE_SAFETY					76	// Отключение проверки контакта безопасности
 #define REG_ST_CHECK_ERROR				77	// Допустимая ошибка результата самотестирования
 #define REG_DUT_CONN_CHECK				78	// Определение подключенного прибора
+//
+#define REG_I_ADC_TO_VN_P2				79	// Коэффициент тонкой подстройки Р2
+#define REG_I_ADC_TO_VN_P1				80	// Коэффициент тонкой подстройки Р1
+#define REG_I_ADC_TO_VN_P0				81	// Смещение тонкой подстройки Р0
+#define REG_I_ADC_TO_VN_K				82	// Коэффициент преобразования K
+#define REG_I_ADC_TO_VN_B				83	// Коэффициент преобразования B
 
 
 // Несохраняемые регистры чтения-записи

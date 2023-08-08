@@ -13,13 +13,13 @@ ConvertParams V_VtoDACParams;
 ConvertParams I_ItoDACParams;
 ConvertParams I_VCutoffToDACParams;
 ConvertParams I_VnegativeToDACParams;
-ConvertParams I_ADCtoVParams;
+ConvertParams I_ADCtoVParams[MEASURE_I_V_TYPES];
 ConvertParams I_ADCtoIParams;
 
 // Functions
 //
 Int16U CU_XtoDAC(ConvertParams *Params, float Value);
-float CU_ADCtoX(ConvertParams *Params, Int16S Data);
+float CU_ADCtoX(ConvertParams *Params, Int16U Data);
 //-----------------------------
 //
 Int16U CU_I_VcutoffToDAC(float Value)
@@ -64,9 +64,9 @@ float CU_I_ADCtoI(Int16U Data)
 }
 //-----------------------------
 
-float CU_I_ADCtoV(Int16S Data)
+float CU_I_ADCtoV(Int16U Data, Int16U Vtype)
 {
-	return CU_ADCtoX(&I_ADCtoVParams, Data);
+	return CU_ADCtoX(&I_ADCtoVParams[Vtype], Data);
 }
 //-----------------------------
 //
@@ -77,7 +77,7 @@ Int16U CU_XtoDAC(ConvertParams *Params, float Value)
 }
 //-----------------------------
 
-float CU_ADCtoX(ConvertParams *Params, Int16S Data)
+float CU_ADCtoX(ConvertParams *Params, Int16U Data)
 {
 	float Value = Data * Params->K + Params->B;
 	return (Value * Value * Params->P2 + Value * Params->P1 + Params->P0);
@@ -104,7 +104,8 @@ void CU_LoadConvertParams()
 	CU_LoadSingleParams(&I_ItoDACParams, REG_I_I_TO_DAC_B, REG_I_I_TO_DAC_K, REG_I_I_TO_DAC_P0, REG_I_I_TO_DAC_P1, REG_I_I_TO_DAC_P2);
 	CU_LoadSingleParams(&I_VCutoffToDACParams, REG_I_VC_TO_DAC_B, REG_I_VC_TO_DAC_K, REG_I_VC_TO_DAC_P0, REG_I_VC_TO_DAC_P1, REG_I_VC_TO_DAC_P2);
 	CU_LoadSingleParams(&I_VnegativeToDACParams, REG_I_VN_TO_DAC_B, REG_I_VN_TO_DAC_K, REG_I_VN_TO_DAC_P0, REG_I_VN_TO_DAC_P1, REG_I_VN_TO_DAC_P2);
-	CU_LoadSingleParams(&I_ADCtoVParams, REG_I_ADC_TO_V_B, REG_I_ADC_TO_V_K, REG_I_ADC_TO_V_P0, REG_I_ADC_TO_V_P1, REG_I_ADC_TO_V_P2);
+	CU_LoadSingleParams(&I_ADCtoVParams[MEASURE_I_VC], REG_I_ADC_TO_VC_B, REG_I_ADC_TO_VC_K, REG_I_ADC_TO_VC_P0, REG_I_ADC_TO_VC_P1, REG_I_ADC_TO_VC_P2);
+	CU_LoadSingleParams(&I_ADCtoVParams[MEASURE_I_VN], REG_I_ADC_TO_VN_B, REG_I_ADC_TO_VN_K, REG_I_ADC_TO_VN_P0, REG_I_ADC_TO_VN_P1, REG_I_ADC_TO_VN_P2);
 	CU_LoadSingleParams(&I_ADCtoIParams, REG_I_ADC_TO_I_B, REG_I_ADC_TO_I_K, REG_I_ADC_TO_I_P0, REG_I_ADC_TO_I_P1, REG_I_ADC_TO_I_P2);
 }
 //-----------------------------

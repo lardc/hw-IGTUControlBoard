@@ -95,7 +95,10 @@ void LOG_CopyVoltageToEndpoints(pFloat32 Endpoint, volatile Int16U* Buffer, Int1
 	{
 		if(Counter < VALUES_x_SIZE)
 		{
-			*(Endpoint + Counter) = CU_I_ADCtoV(*(Buffer + i) - DataTable[REG_I_ADC_TO_V_ZERO_OFFSET]);
+			if(*(Buffer + i) > DataTable[REG_I_ADC_TO_V_ZERO_OFFSET])
+				*(Endpoint + Counter) = CU_I_ADCtoV(*(Buffer + i), MEASURE_I_VC);
+			else
+				*(Endpoint + Counter) = CU_I_ADCtoV(*(Buffer + i), MEASURE_I_VN);
 			Counter++;
 		}
 	}

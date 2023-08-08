@@ -51,8 +51,8 @@ const TableItemConstraint Constraint[DATA_TABLE_WP_START] = {
 		{COEF_P2_MIN, COEF_P2_MAX, COEF_P2_DEF},									// 40
 		{COEF_P1_MIN, COEF_P1_MAX, COEF_P1_DEF},									// 41
 		{COEF_P0_MIN, COEF_P0_MAX, COEF_P0_DEF},									// 42
-		{COEF_K_MIN, COEF_K_MAX, I_ADC_TO_V_K_DEF},									// 43
-		{COEF_B_MIN, COEF_B_MAX, I_ADC_TO_V_B_DEF},									// 44
+		{COEF_K_MIN, COEF_K_MAX, I_ADC_TO_VC_K_DEF},								// 43
+		{COEF_B_MIN, COEF_B_MAX, I_ADC_TO_VC_B_DEF},								// 44
 		{INT16S_MIN, INT16S_MAX, I_ADC_TO_V_ZERO_OFFSET_DEF},						// 45
 		{COEF_P2_MIN, COEF_P2_MAX, COEF_P2_DEF},									// 46
 		{COEF_P1_MIN, COEF_P1_MAX, COEF_P1_DEF},									// 47
@@ -87,11 +87,11 @@ const TableItemConstraint Constraint[DATA_TABLE_WP_START] = {
 		{NO, YES, NO},																// 76
 		{ST_CHECK_ERROR_MIN, ST_CHECK_ERROR_MAX, ST_CHECK_ERROR_DEF},				// 77
 		{NO, YES, YES},																// 78
-		{0, 0, 0},																	// 79
-		{0, 0, 0},																	// 80
-		{0, 0, 0},																	// 81
-		{0, 0, 0},																	// 82
-		{0, 0, 0},																	// 83
+		{COEF_P2_MIN, COEF_P2_MAX, COEF_P2_DEF},									// 79
+		{COEF_P1_MIN, COEF_P1_MAX, COEF_P1_DEF},									// 80
+		{COEF_P0_MIN, COEF_P0_MAX, COEF_P0_DEF},									// 81
+		{COEF_K_MIN, COEF_K_MAX, I_ADC_TO_VN_K_DEF},								// 82
+		{COEF_B_MIN, COEF_B_MAX, I_ADC_TO_VN_B_DEF},								// 83
 		{0, 0, 0},																	// 84
 		{0, 0, 0},																	// 85
 		{0, 0, 0},																	// 86
