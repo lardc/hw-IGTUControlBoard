@@ -30,7 +30,5 @@
 
 // Functions
 bool DIAG_HandleDiagnosticAction(uint16_t ActionID, uint16_t *pUserError);
-void DIAG_V_SelfTestFinished();
-void DIAG_C_SelfTestFinished();
 
 #endif // __DIAGNOSTIC_H

@@ -1,103 +1,103 @@
 ﻿// Includes
 #include "Measurement.h"
 #include "Board.h"
-#include "LowLevel.h"
 #include "DataTable.h"
 #include "Global.h"
+#include "ConvertUtils.h"
+#include "LowLevel.h"
 
 // Variables
-volatile Int16U MEASURE_C_CSenRaw[C_VALUES_x_SIZE];
+volatile Int16U MEASURE_VoltageRaw[ADC_V_DMA_BUFF_SIZE] = {0};
+volatile Int16U MEASURE_CurrentRaw[ADC_V_DMA_BUFF_SIZE] = {0};
+volatile Int16U MEASURE_Qg_DataRaw[ADC_DMA_BUFF_SIZE_QG] = {0};
+//
+Int16U CurrentRange = MEASURE_V_I_R2;
+
+// Functions prototypes
+//
+float MEASURE_ExtractX(volatile Int16U* InputArray, Int16U ArraySize);
 
 // Functions
 //
-
-Int16U MEASURE_PotSen()
+MeasureSample MEASURE_V_SampleVI()
 {
-	return ADC_Measure(ADC3, ADC3_POT_CHANNEL);
+	MeasureSample Sample;
+
+	Sample.Voltage = CU_V_ADCtoV(MEASURE_ExtractX(&MEASURE_VoltageRaw[1], ADC_V_DMA_BUFF_SIZE - 1));
+	Sample.Current = CU_V_ADCtoI(MEASURE_ExtractX(&MEASURE_CurrentRaw[1], ADC_V_DMA_BUFF_SIZE - 1), CurrentRange);
+	MEASURE_StartNewSampling();
+
+	return Sample;
 }
 //-----------------------------------------------
 
-Int16U MEASURE_V_VSen()
-{
-	return ADC_Measure(ADC1, ADC1_V_V_SEN_CHANNEL);
-}
-//-----------------------------------------------
-
-Int16U MEASURE_V_CSen()
-{
-	return ADC_Measure(ADC1, ADC1_V_C_SEN_CHANNEL);
-}
-//-----------------------------------------------
-
-Int16U MEASURE_C_VSen()
-{
-	return ADC_Measure(ADC1, ADC1_C_V_SEN_CHANNEL);
-}
-//-----------------------------------------------
-
-Int16U MEASURE_C_CSen()
-{
-	return ADC_Measure(ADC1, ADC1_C_C_SEN_CHANNEL);
-}
-//-----------------------------------------------
-
-Boolean MEASURE_VGS_Params(volatile RegulatorParamsStruct* Regulator, bool SelfMode)
-{
-	float V = SelfMode ? CU_V_ADCVToX(MEASURE_V_VSen()) : CU_PotADCVToX(MEASURE_PotSen());
-	float C = CU_V_ADCCToX(MEASURE_V_CSen());
-
-	if(Regulator->RegulatorStepCounter == 0)
-	{
-		V = 0;
-		C = 0;
-	}
-	Regulator->VSen = V;
-	Regulator->CSen = C;
-
-	// проверка на достижение током порогового значения
-	if((C >= (float)DataTable[REG_VGS_C_TRIG]) && (Regulator->CTrigRegulatorStep == 0))
-	{
-		Regulator->CTrigRegulatorStep = Regulator->RegulatorStepCounter;
-		Regulator->VSenForm[Regulator->RegulatorStepCounter] = (Int16U)V;
-		Regulator->CTrigVSen = V;
-		Regulator->CTrigCSen = C;
-		return true;
-	}
-	else
-		return false;
-}
-//-----------------------------------------------
-
-void MEASURE_IGES_Params(volatile RegulatorParamsStruct* Regulator, bool SelfMode)
-{
-	float V = SelfMode ? CU_V_ADCVToX(MEASURE_V_VSen()) : CU_PotADCVToX(MEASURE_PotSen());
-
-	if(Regulator->RegulatorStepCounter == 0)
-		V = 0;
-	Regulator->VSen = V;
-	Regulator->VSenForm[Regulator->RegulatorStepCounter] = V;
-}
-//-----------------------------------------------
-
-void MEASURE_C_CDMABufferClear()
-{
-	for(int i = 0; i < C_VALUES_x_SIZE; i++)
-		MEASURE_C_CSenRaw[i] = 0;
-}
-//-----------------------------------------------
-
-Int16U MEASURE_C_DMAExtractCSen()
-{
-	return MEASURE_Average((Int16U*)&MEASURE_C_CSenRaw[1], C_VALUES_x_SIZE - 1);
-}
-//-----------------------------------------------
-
-Int16U MEASURE_Average(Int16U* InputArrayAddr, Int16U ArraySize)
+float MEASURE_ExtractX(volatile Int16U* InputArray, Int16U ArraySize)
 {
 	Int32U AverageData = 0;
 
 	for(int i = 0; i < ArraySize; i++)
-		AverageData += *(InputArrayAddr + i);
+		AverageData += *(InputArray + i);
 
-	return (Int16U)((float)AverageData / ArraySize);
+	return (float)AverageData / ArraySize;
 }
+//-----------------------------------------------
+
+void MEASURE_StartNewSampling()
+{
+	DMA_TransferCompleteReset(DMA1, DMA_IFCR_CTCIF1);
+	DMA_TransferCompleteReset(DMA2, DMA_IFCR_CTCIF5);
+	ADC_SamplingStart(ADC1);
+	ADC_SamplingStart(ADC3);
+}
+//-----------------------------------------------
+
+float MEASURE_ExtractAveragedDatas(float* Buffer, Int16U BufferLength)
+{
+	float Temp = 0;
+
+	for(int i = 0; i < BufferLength; i++)
+		Temp += *(Buffer + i) / BufferLength;
+
+	return Temp;
+}
+//-----------------------------
+
+void MEASURE_ResetDMABuffers()
+{
+	for(int i = 0; i < ADC_V_DMA_BUFF_SIZE; i++)
+	{
+		MEASURE_VoltageRaw[i] = 0;
+		MEASURE_CurrentRaw[i] = 0;
+	}
+
+	for(int i = 0; i < ADC_DMA_BUFF_SIZE_QG; i++)
+		MEASURE_Qg_DataRaw[i] = 0;
+}
+//-----------------------------
+
+Int16U MEASURE_V_SetCurrentRange(float Current)
+{
+	if(Current <= V_I_R0_MAX)
+	{
+		CurrentRange = MEASURE_V_I_R0;
+		LL_V_IlimLowRange();
+	}
+	else
+	{
+		if(Current > V_I_R1_MAX)
+		{
+			CurrentRange = MEASURE_V_I_R2;
+			LL_V_IsenseHighRange1();
+		}
+		else
+		{
+			CurrentRange = MEASURE_V_I_R1;
+			LL_V_IsenseHighRange0();
+		}
+
+		LL_V_IlimHighRange();
+	}
+
+	return CurrentRange;
+}
+//-----------------------------

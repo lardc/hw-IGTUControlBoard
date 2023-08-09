@@ -16,10 +16,20 @@ void INITCFG_ConfigDAC()
 {
 	DACx_Clk_Enable(DAC_1_ClkEN);
 	DACx_Reset();
+	DAC_TriggerConfigCh1(DAC1, TRIG1_TIMER4, TRIG1_ENABLE);
 	DAC_BufferCh1(DAC1, true);
 	DAC_EnableCh1(DAC1);
 	DAC_BufferCh2(DAC1, true);
 	DAC_EnableCh2(DAC1);
+}
+//------------------------------------------------
+
+void INITCFG_ConfigTimer4()
+{
+	TIM_Clock_En(TIM_4);
+	TIM_Config(TIM4, SYSCLK, TIMER4_uS);
+	TIM_MasterMode(TIM4, MMS_UPDATE);
+	TIM_Start(TIM4);
 }
 //------------------------------------------------
 
@@ -31,7 +41,7 @@ void INITCFG_ConfigIO()
 	RCC_GPIO_Clk_EN(PORTC);
 	
 	// Выходы
-	GPIO_InitPushPullOutput(GPIO_LED);
+	GPIO_InitPushPullOutput(GPIO_QG_PORTECTION);
 	GPIO_InitPushPullOutput(GPIO_INDICATION);
 	GPIO_InitPushPullOutput(GPIO_V_CURR_K1);
 	GPIO_InitPushPullOutput(GPIO_V_CURR_K2);
@@ -53,7 +63,7 @@ void INITCFG_ConfigIO()
 	GPIO_InitOpenDrainOutput(GPIO_V_SHORT_OUT, NoPull);
 
 	// Начальная установка состояний выходов
-	GPIO_SetState(GPIO_LED, false);
+	GPIO_SetState(GPIO_QG_PORTECTION, true);
 	GPIO_SetState(GPIO_INDICATION, false);
 	GPIO_SetState(GPIO_V_CURR_K1, false);
 	GPIO_SetState(GPIO_V_CURR_K2, true);
@@ -63,7 +73,7 @@ void INITCFG_ConfigIO()
 	GPIO_SetState(GPIO_V_SHORT_PAU, false);
 	GPIO_SetState(GPIO_V_SHORT_OUT, false);
 
-	GPIO_SetState(GPIO_C_C_START, false);
+	GPIO_SetState(GPIO_C_C_START, true);
 	GPIO_SetState(GPIO_C_ENABLE, false);
 	GPIO_SetState(GPIO_C_DIAG_CTRL, true);
 	GPIO_SetState(GPIO_C_EXT_DAC_CS, true);
@@ -80,6 +90,8 @@ void INITCFG_ConfigIO()
 	GPIO_InitAltFunction(GPIO_ALT_UART1_TX, AltFn_7);
 	GPIO_InitAltFunction(GPIO_ALT_SPI1_CLK, AltFn_5);
 	GPIO_InitAltFunction(GPIO_ALT_SPI1_DAT, AltFn_5);
+	GPIO_InitAltFunction(GPIO_ALT_CAN1_TX, AltFn_9);
+	GPIO_InitAltFunction(GPIO_ALT_CAN1_RX, AltFn_9);
 
 	// Аналоговые выходы
 	GPIO_InitAnalog(GPIO_C_C_SET);
@@ -114,20 +126,11 @@ void INITCFG_ConfigTimer7()
 }
 //------------------------------------------------
 
-void INITCFG_ConfigTimer6()
+void INITCFG_ConfigTimer3(Int16U Period)
 {
-	TIM_Clock_En(TIM_6);
-	TIM_Config(TIM6, SYSCLK, TIMER6_uS);
-	TIM_DMA(TIM6, DMAEN);
-	TIM_MasterMode(TIM6, MMS_UPDATE);
-}
-//------------------------------------------------
-
-void INITCFG_ConfigTimer4()
-{
-	TIM_Clock_En(TIM_4);
-	TIM_Config(TIM4, SYSCLK, TIMER4_uS);
-	TIM_Interupt(TIM4, 1, true);
+	TIM_Clock_En(TIM_3);
+	TIM_Config(TIM3, SYSCLK, Period);
+	TIM_Interupt(TIM3, 0, true);
 }
 //------------------------------------------------
 
@@ -146,45 +149,129 @@ void INITCFG_ConfigWatchDog()
 }
 //------------------------------------------------
 
+void INITCFG_ConfigADC_Qg_I()
+{
+	INITCFG_ConfigADC_QgXX(true);
+}
+//------------------------------------------------
+
+void INITCFG_ConfigADC_Qg_VI()
+{
+	INITCFG_ConfigADC_QgXX(false);
+}
+//------------------------------------------------
+
+void INITCFG_ConfigADC_QgXX(bool OnlyCurrentSample)
+{
+	// ADC1
+	INITCFG_ADC_SoftTrigConfig(ADC1);
+	ADC_SetContinuousMode(ADC1);
+
+	ADC_ChannelSet_Sequence(ADC1, ADC1_I_I_SEN_CHANNEL, 1);
+
+	if(!OnlyCurrentSample)
+	{
+		ADC_ChannelSet_Sequence(ADC1, ADC1_I_V_SEN_CHANNEL, 2);
+		ADC_ChannelSeqLen(ADC1, 2);
+	}
+	else
+		ADC_ChannelSeqLen(ADC1, 1);
+
+	ADC_DMAEnable(ADC1, true);
+	ADC_Enable(ADC1);
+
+	// ADC3
+	ADC_ResetConfig(ADC3);
+	ADC_Disable(ADC3);
+}
+//------------------------------------------------
+
+void INITCFG_ADC_SoftTrigConfig(ADC_TypeDef* ADCx)
+{
+	ADC_ResetConfig(ADCx);
+	ADC_Calibration(ADCx);
+	ADC_SoftTrigConfig(ADCx);
+	ADC_ChannelSeqReset(ADCx);
+}
+//------------------------------------------------
+
+void INITCFG_ConfigADC_VgsIges(Int16U CurrentRange)
+{
+	Int16U ADCChannel;
+
+	if(CurrentRange == MEASURE_V_I_R0)
+		ADCChannel = ADC1_V_I_LOW_SEN_CHANNEL;
+	else
+		ADCChannel = ADC1_V_I_HIGH_SEN_CHANNEL;
+
+	// ADC1
+	INITCFG_ADC_SoftTrigConfig(ADC1);
+
+	for (uint8_t i = 1; i <= ADC_V_DMA_BUFF_SIZE; ++i)
+		ADC_ChannelSet_Sequence(ADC1, ADCChannel, i);
+
+	ADC_ChannelSeqLen(ADC1, ADC_V_DMA_BUFF_SIZE);
+	ADC_DMAConfig(ADC1);
+	ADC_Enable(ADC1);
+	ADC_DMAEnable(ADC1, true);
+
+	// ADC3
+	INITCFG_ADC_SoftTrigConfig(ADC3);
+
+	for (uint8_t i = 1; i <= ADC_V_DMA_BUFF_SIZE; ++i)
+		ADC_ChannelSet_Sequence(ADC3, ADC3_POT_CHANNEL, i);
+
+	ADC_ChannelSeqLen(ADC3, ADC_V_DMA_BUFF_SIZE);
+	ADC_DMAConfig(ADC3);
+	ADC_Enable(ADC3);
+	ADC_DMAEnable(ADC3, true);
+}
+//------------------------------------------------
+
+void INITCFG_ConfigDMA_VgsIges()
+{
+	// DMA1
+	DMA_Reset(DMA1_Channel1);
+	DMAChannelX_DataConfig(DMA1_Channel1, (uint32_t)&MEASURE_CurrentRaw, (uint32_t)(&ADC1->DR), ADC_V_DMA_BUFF_SIZE);
+	DMAChannelX_Config(DMA1_Channel1, DMA_MEM2MEM_DIS, DMA_LvlPriority_LOW, DMA_MSIZE_16BIT, DMA_PSIZE_16BIT,
+															DMA_MINC_EN, DMA_PINC_DIS, DMA_CIRCMODE_EN, DMA_READ_FROM_PERIPH);
+	DMA_ChannelEnable(DMA1_Channel1, true);
+
+	// DMA2
+	DMA_Reset(DMA2_Channel5);
+	DMAChannelX_DataConfig(DMA2_Channel5, (uint32_t)&MEASURE_VoltageRaw, (uint32_t)(&ADC3->DR), ADC_V_DMA_BUFF_SIZE);
+	DMAChannelX_Config(DMA2_Channel5, DMA_MEM2MEM_DIS, DMA_LvlPriority_LOW, DMA_MSIZE_16BIT, DMA_PSIZE_16BIT,
+															DMA_MINC_EN, DMA_PINC_DIS, DMA_CIRCMODE_EN, DMA_READ_FROM_PERIPH);
+	DMA_ChannelEnable(DMA2_Channel5, true);
+}
+//------------------------------------------------
+
+void INITCFG_ConfigDMA_Qg(Int16U DMA_DataSize)
+{
+	// DMA1
+	DMA_Reset(DMA1_Channel1);
+	DMAChannelX_DataConfig(DMA1_Channel1, (uint32_t)&MEASURE_Qg_DataRaw, (uint32_t)(&ADC1->DR), DMA_DataSize);
+	DMAChannelX_Config(DMA1_Channel1, DMA_MEM2MEM_DIS, DMA_LvlPriority_LOW, DMA_MSIZE_16BIT, DMA_PSIZE_16BIT,
+															DMA_MINC_EN, DMA_PINC_DIS, DMA_CIRCMODE_DIS, DMA_READ_FROM_PERIPH);
+	DMA_ChannelEnable(DMA1_Channel1, true);
+
+	// DMA2
+	DMA_Reset(DMA1_Channel2);
+	DMA_ChannelEnable(DMA1_Channel2, false);
+}
+//------------------------------------------------
+
 void INITCFG_ConfigADC()
 {
 	RCC_ADC_Clk_EN(ADC_12_ClkEN);
 	RCC_ADC_Clk_EN(ADC_34_ClkEN);
-
-	// ADC1
-	ADC_Calibration(ADC1);
-	ADC_Enable(ADC1);
-	ADC_SoftTrigConfig(ADC1);
-	ADC_DMAConfig(ADC1);
-
-	ADC_TrigConfig(ADC1, ADC12_TIM6_TRGO, RISE);
-	ADC_ChannelSeqReset(ADC1);
-
-	ADC_ChannelSet_Sequence(ADC1, ADC1_C_C_SEN_CHANNEL, 1);
-	ADC_ChannelSeqLen(ADC1, 1);
-
-	ADC_DMAEnable(ADC1, true);
-
-	// ADC3
-	ADC_Calibration(ADC3);
-	ADC_SoftTrigConfig(ADC3);
-	ADC_DMAConfig(ADC3);
-	ADC_Enable(ADC3);
-	ADC_DMAEnable(ADC3, false);
 }
 //------------------------------------------------
 
 void INITCFG_ConfigDMA()
 {
 	DMA_Clk_Enable(DMA1_ClkEN);
-	// DMA для АЦП тока затвора
-	DMA_Reset(DMA_ADC_C_C_SEN_CHANNEL);
-	DMA_Interrupt(DMA_ADC_C_C_SEN_CHANNEL, DMA_TRANSFER_COMPLETE, 0, true);
-	DMAChannelX_DataConfig(DMA_ADC_C_C_SEN_CHANNEL, (uint32_t)MEASURE_C_CSenRaw, (uint32_t)(&ADC1->DR),
-	C_VALUES_x_SIZE);
-	DMAChannelX_Config(DMA_ADC_C_C_SEN_CHANNEL, DMA_MEM2MEM_DIS, DMA_LvlPriority_LOW, DMA_MSIZE_16BIT, DMA_PSIZE_16BIT,
-	DMA_MINC_EN, DMA_PINC_DIS, DMA_CIRCMODE_DIS, DMA_READ_FROM_PERIPH);
-	DMA_ChannelEnable(DMA_ADC_C_C_SEN_CHANNEL, true);
+	DMA_Clk_Enable(DMA2_ClkEN);
 }
 //------------------------------------------------
 

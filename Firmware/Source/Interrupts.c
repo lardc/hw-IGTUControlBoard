@@ -8,6 +8,8 @@
 #include "Global.h"
 #include "DataTable.h"
 #include "DeviceObjectDictionary.h"
+#include "Qg.h"
+#include "Iges.h"
 
 // Functions
 //
@@ -31,26 +33,15 @@ void USB_LP_CAN_RX0_IRQHandler()
 }
 //-----------------------------------------
 
-void TIM15_IRQHandler()
+void TIM1_BRK_TIM15_IRQHandler()
 {
 	if(TIM_StatusCheck(TIM15))
 	{
-		CONTROL_V_HighPriorityProcess();
+		CONTROL_HandleExternalLamp(true);
+
+		CONTROL_HighPriorityProcess();
 
 		TIM_StatusClear(TIM15);
-	}
-}
-//-----------------------------------------
-
-void TIM6_IRQHandler()
-{
-	if(TIM_StatusCheck(TIM6))
-	{
-		if(++CONTROL_I_TimeCounter > (Int16U)((float)DataTable[REG_QG_T_CURRENT] / (float)TIMER6_uS))
-			CONTROL_C_HighPriorityProcess(false, false);
-		else
-			CONTROL_C_HighPriorityProcess(true, false);
-		TIM_StatusClear(TIM6);
 	}
 }
 //-----------------------------------------
@@ -61,15 +52,54 @@ void TIM7_IRQHandler()
 
 	if(TIM_StatusCheck(TIM7))
 	{
-
 		CONTROL_TimeCounter++;
+
 		if(++LED_BlinkTimeCounter > TIME_LED_BLINK)
 		{
 			LL_ToggleBoardLED();
 			LED_BlinkTimeCounter = 0;
 		}
 
+		CONTROL_HandleExternalLamp(IsImpulse);
+
 		TIM_StatusClear(TIM7);
 	}
+}
+//-----------------------------------------
+
+void TIM3_IRQHandler()
+{
+	if(CONTROL_SubState == SS_QgProcess)
+	{
+		QG_Pulse(false);
+
+		if(CONTROL_State == DS_SelfTest)
+		{
+			CONTROL_ResetHardwareToDefaultState();
+			QG_SaveResult();
+			CONTROL_SetDeviceState(CONTROL_State, SS_I_Check);
+		}
+		else
+		{
+			LL_SyncTOCUHP(false);
+			CONTROL_SetDeviceState(DS_InProcess, SS_QgSaveResult);
+		}
+	}
+
+	TIM_StatusClear(TIM3);
+}
+//-----------------------------------------
+
+void EXTI2_TSC_IRQHandler()
+{
+	PAU_SyncFlag = true;
+	EXTI_FlagReset(EXTI_2);
+}
+//-----------------------------------------
+
+void EXTI15_10_IRQHandler()
+{
+	CONTROL_IsSafetyOk();
+	EXTI_FlagReset(EXTI_15);
 }
 //-----------------------------------------
