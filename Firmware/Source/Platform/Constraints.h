@@ -124,7 +124,7 @@
 #define QG_V_CUTOFF_MAX				20			//
 #define QG_V_CUTOFF_DEF				10			//
 //
-#define QG_V_NEGATIVE_MIN			0
+#define QG_V_NEGATIVE_MIN			0.5
 #define QG_V_NEGATIVE_MAX			20
 #define QG_V_NEGATIVE_DEF			10
 //
