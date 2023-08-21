@@ -166,7 +166,7 @@
 #define REG_QG_V_POWER					135	// Напряжение коллектор-эммитер (сток-исток) (В)
 
 // Регистры измерения IGES
-#define REG_IGES_V						136	// Полка напряжения на затворе (мВ)
+#define REG_IGES_V						136	// Полка напряжения на затворе (В)
 #define REG_IGES_RANGE					137	// Диапазон измерения тока утечки (0 - 20нА, 1 - 200нА, 2 - 2мкА)
 
 // Регистры режимов калибровки
@@ -187,7 +187,6 @@
 #define REG_SELF_TEST_OP_RESULT			198	// Регистр результата самотестирования
 #define REG_SUB_STATE					199	// Регистр вспомогательного состояния
 //
-#define REG_SAFETY_STATE				199	// Регистр состояния контакта безопасности
 
 // Результаты измерения
 #define REG_VGS_RESULT					200	// Измеренное значение VGS, (В)
@@ -263,10 +262,10 @@
 #define DF_PAU_SYNC_TIMEOUT				4
 #define DF_TOCUHP_INTERFACE				5
 #define DF_TOCUHP_WRONG_STATE			6
-#define DF_POWER_CURRENT				7
-#define DF_ST_V_SOURCE_ERROR			8
-#define DF_ST_I_SOURCE_ERROR			9
-#define DF_POWER_ON_TIMEOUT				10
+#define DF_TOCUHP_PWR_ON_TIMEOUT		7
+#define DF_POWER_CURRENT				8
+#define DF_ST_V_SOURCE_ERROR			9
+#define DF_ST_I_SOURCE_ERROR			10
 
 // Problem
 #define PROBLEM_NONE					0

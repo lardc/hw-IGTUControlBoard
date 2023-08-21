@@ -120,7 +120,7 @@
 #define VGS_V_DEST_MAX				10			// (В)
 #define VGS_V_DEST_DEF				10			// (В)
 //
-#define QG_V_CUTOFF_MIN				1			//
+#define QG_V_CUTOFF_MIN				2			//
 #define QG_V_CUTOFF_MAX				20			//
 #define QG_V_CUTOFF_DEF				10			//
 //
@@ -133,8 +133,8 @@
 #define QG_I_DEF					500
 //
 #define QG_I_DURATION_MIN			20
-#define QG_I_DURATION_MAX			500
-#define QG_I_DURATION_DEF			500
+#define QG_I_DURATION_MAX			300
+#define QG_I_DURATION_DEF			300
 //
 #define QG_I_POWER_MIN				50
 #define QG_I_POWER_MAX				1000

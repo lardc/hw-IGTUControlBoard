@@ -339,7 +339,7 @@ void CONTROL_LogicProcess()
 				else
 				{
 					if(CONTROL_TimeCounter > CONTROL_Timeout)
-						CONTROL_SwitchToFault(DF_POWER_ON_TIMEOUT);
+						CONTROL_SwitchToFault(DF_TOCUHP_PWR_ON_TIMEOUT);
 				}
 				break;
 
