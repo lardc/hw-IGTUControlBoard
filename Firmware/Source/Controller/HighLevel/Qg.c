@@ -27,7 +27,7 @@
 #define QG_GATE_VOLTAGE_ALLOWED_ERR		10
 #define QG_I_PULSE_WIDTH_COEF			0.96
 #define QG_PULSE_WIDTH_THRE_COEF		0.95
-#define QG_HW_CONFIG_TIME				5
+#define QG_HW_CONFIG_TIME				50
 #define QG_I_THRESHOLD_COEF				0.8
 
 // Types
