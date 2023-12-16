@@ -50,7 +50,7 @@ Int16U IgesSamplesCounter = 0;
 //
 void IGES_CacheVariables();
 void IGES_PAUsyncProcess(bool State);
-void IGES_CheckDUT(bool PulsePlate, float SampledCurrent);
+bool IGES_CheckDUT(bool PulsePlate, float SampledCurrent);
 
 // Functions
 //
@@ -107,7 +107,7 @@ void IGES_Prepare()
 			IgesConfigStage = PAU_Config;
 
 			IGES_CacheVariables();
-			Int16U CurrentRange = MEASURE_V_SetCurrentRange(V_I_R0_MAX);
+			Int16U CurrentRange = MEASURE_V_SetCurrentRange(V_I_R1_MAX);
 
 			INITCFG_ConfigADC_VgsIges(CurrentRange);
 			INITCFG_ConfigDMA_VgsIges();
@@ -164,27 +164,33 @@ void IGES_Process()
 		StartPulsePlate = true;
 	}
 
-	IGES_CheckDUT(StartPulsePlate, SampledCurrent);
-
-	IGES_PAUsyncProcess(StartPulsePlate);
-
-	REGULATOR_Process(&RegulatorParams);
-
-	if(StartPulsePlate)
+	if(IGES_CheckDUT(StartPulsePlate, SampledCurrent))
 	{
-		if(!IgesSamplesCounter)
-		{
-			StartPulsePlate = false;
-			CONTROL_StopHighPriorityProcesses();
+		IGES_PAUsyncProcess(StartPulsePlate);
 
-			PAU_StateTimeout = CONTROL_TimeCounter + PAU_WAIT_READY_TIMEOUT;
-			CONTROL_SetDeviceState(DS_InProcess, SS_IgesSaveResult);
+		REGULATOR_Process(&RegulatorParams);
+
+		if(StartPulsePlate)
+		{
+			if(!IgesSamplesCounter)
+			{
+				StartPulsePlate = false;
+				CONTROL_StopHighPriorityProcesses();
+
+				PAU_StateTimeout = CONTROL_TimeCounter + PAU_WAIT_READY_TIMEOUT;
+				CONTROL_SetDeviceState(DS_InProcess, SS_IgesSaveResult);
+			}
 		}
+	}
+	else
+	{
+		StartPulsePlate = false;
+		CONTROL_StopHighPriorityProcesses();
 	}
 }
 //-----------------------------------------------
 
-void IGES_CheckDUT(bool PulsePlate, float SampledCurrent)
+bool IGES_CheckDUT(bool PulsePlate, float SampledCurrent)
 {
 	static bool IsDUTChecked = false;
 	static float CurrentMax = 0;
@@ -204,7 +210,7 @@ void IGES_CheckDUT(bool PulsePlate, float SampledCurrent)
 				DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
 				DataTable[REG_PROBLEM] = PROBLEM_SHORT;
 				CONTROL_SetDeviceState(DS_Ready, SS_None);
-				return;
+				return false;
 			}
 			else
 			{
@@ -214,7 +220,7 @@ void IGES_CheckDUT(bool PulsePlate, float SampledCurrent)
 					DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
 					DataTable[REG_PROBLEM] = PROBLEM_DUT_NOT_FOUND;
 					CONTROL_SetDeviceState(DS_Ready, SS_None);
-					return;
+					return false;
 				}
 			}
 
@@ -229,6 +235,8 @@ void IGES_CheckDUT(bool PulsePlate, float SampledCurrent)
 		if(SampledCurrent > CurrentMax)
 			CurrentMax = SampledCurrent;
 	}
+
+	return true;
 }
 //-----------------------------------------------
 
