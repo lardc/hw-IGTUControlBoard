@@ -21,6 +21,7 @@
 #define RES_VG_FRONT_TIME			5000	// ìêñ
 #define RES_TEST_VOLTAGE			10.0f	// Â
 #define LINE_SHORT_CURRENT			5
+#define LINE_RESISTANCE				4		// Îì
 //
 #define RES_AVG_START_INDEX_DEF		20
 #define RES_AVG_LENGTH				20
@@ -134,7 +135,7 @@ void RES_Process()
 				ResFineMeasure = false;
 				ResTestCurrent = V_I_R2_MAX;
 
-				DataTable[REG_RES_RESULT] = AverageData.Voltage / AverageData.Current * 1000;
+				DataTable[REG_RES_RESULT] = (AverageData.Voltage - LINE_RESISTANCE * AverageData.Current / 1000) / AverageData.Current * 1000;
 
 				if(DataTable[REG_RES_RESULT] < MEASURE_RES_MIN || DataTable[REG_RES_RESULT] > MEASURE_RES_MAX)
 					DataTable[REG_WARNING] = WARNING_OUT_OF_RANGE;
