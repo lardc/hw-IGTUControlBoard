@@ -11,6 +11,7 @@
 #include "Global.h"
 #include "Logging.h"
 #include "Delay.h"
+#include "Qg.h"
 
 // Definitions
 //
@@ -150,6 +151,7 @@ void CAL_V_CalProcess()
 				else
 				{
 					DataTable[REG_PROBLEM] = PROBLEM_SHORT;
+					DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
 					CONTROL_SetDeviceState(DS_Ready, SS_None);
 				}
 			}
@@ -159,8 +161,11 @@ void CAL_V_CalProcess()
 		else
 		{
 			MeasureSample AverageData = LOG_RingBufferGetAverage(&CalRingBuffers);
+
 			DataTable[REG_CAL_V_RESULT] = AverageData.Voltage;
 			DataTable[REG_CAL_I_RESULT] = AverageData.Current;
+
+			DataTable[REG_OP_RESULT] = OPRESULT_OK;
 
 			if(CONTROL_State == DS_SelfTest)
 				CONTROL_SetDeviceState(CONTROL_State, SS_V_Check);
@@ -185,6 +190,7 @@ void CAL_I_CalProcess()
 		DataTable[REG_CAL_VN_RESULT] = LOG_GetAverageFromBuffer(&CONTROL_VoltageValues[CAL_AVG_VN_START_INDEX], CAL_AVG_LENGTH);
 		DataTable[REG_CAL_I_RESULT] = LOG_GetAverageFromBuffer(&CONTROL_CurrentValues[CAL_AVG_I_START_INDEX], CAL_AVG_LENGTH);
 
+		DataTable[REG_OP_RESULT] = OPRESULT_OK;
 		CONTROL_SetDeviceState(DS_Ready, SS_None);
 	}
 	else
