@@ -133,8 +133,8 @@
 #define QG_I_DEF					500
 //
 #define QG_I_DURATION_MIN			20
-#define QG_I_DURATION_MAX			300
-#define QG_I_DURATION_DEF			300
+#define QG_I_DURATION_MAX			100
+#define QG_I_DURATION_DEF			100
 //
 #define QG_I_POWER_MIN				50
 #define QG_I_POWER_MAX				1000
