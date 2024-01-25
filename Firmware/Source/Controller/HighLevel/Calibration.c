@@ -184,6 +184,8 @@ void CAL_I_CalProcess()
 
 		LOG_CopyCurrentToEndpoints(&CONTROL_CurrentValues[0], &MEASURE_Qg_DataRaw[0], CAL_ADC_DMA_BUFF_SIZE);
 		CONTROL_Values_Counter = VALUES_x_SIZE;
+		QG_RemoveDC(&CONTROL_CurrentValues[0], VALUES_x_SIZE);
+		QG_Filter(CONTROL_CurrentValues, VALUES_x_SIZE);
 
 		DataTable[REG_CAL_I_RESULT] = QG_ExtractAverageCurrent(&CONTROL_CurrentValues[0], VALUES_x_SIZE, CAL_I_AVG_LENGTH);
 

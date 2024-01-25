@@ -20,11 +20,11 @@
 
 // Definitions
 //
+#define QG_FILTER_COEFFICIENT			0.2
 #define QG_AVG_LENGTH					20
 #define QG_AVG_IGNORE_POINTS			50
 #define QG_DC_PART_START_INDEX			100
 #define QG_DC_PART_STOP_INDEX			300
-#define QG_EP_CLEAR_INDEX				80
 //
 #define TOCUHP_WAIT_READY_TIMEOUT		10000
 #define QG_I_PULSE_WIDTH_COEF			0.96
@@ -51,12 +51,12 @@ QgPrepareStage QgConfigStage = TOCUHP_InitWaiting;
 QgPrepareStage QgConfigLastStage = TOCUHP_InitWaiting;
 Int64U TOCUHP_StateTimeout = 0;
 Int64U Timeout = 0;
+float QgCopiedBuffer[VALUES_x_SIZE];
 
 // Function prototypes
 //
 void QG_CacheVariables();
 int QG_SortCondition(const void *A, const void *B);
-void QG_RemoveDC(pFloat32 InputArray, Int16U ArraySize);
 
 // Functions
 //
@@ -142,13 +142,14 @@ void QG_Prepare()
 
 		case StartMeasure:
 			CONTROL_SetDeviceState(CONTROL_State, SS_QgProcess);
-			MEASURE_StartNewSampling();
 			CONTROL_HandleExternalLamp(true);
 
 			LL_QgProtection(true);
 			DELAY_US(10);
-
 			LL_SyncTOCUHP(true);
+			DELAY_US(5);
+			MEASURE_StartNewSampling();
+
 			QG_Pulse(true);
 			DELAY_US(20);
 			break;
@@ -198,6 +199,7 @@ void QG_SaveResult()
 			LOG_CopyCurrentToEndpoints(&CONTROL_CurrentValues[0], &MEASURE_Qg_DataRaw[0], VALUES_x_SIZE);
 			CONTROL_Values_Counter = VALUES_x_SIZE;
 			QG_RemoveDC(&CONTROL_CurrentValues[0], VALUES_x_SIZE);
+			QG_Filter(CONTROL_CurrentValues, VALUES_x_SIZE);
 
 			Ig = QG_ExtractAverageCurrent(&CONTROL_CurrentValues[0], VALUES_x_SIZE, QG_AVG_LENGTH);
 			Qg = QG_CalculateGateCharge(&CONTROL_CurrentValues[0], VALUES_x_SIZE);
@@ -266,24 +268,20 @@ void QG_RemoveDC(pFloat32 InputArray, Int16U ArraySize)
 
 	for(int i = 0; i < ArraySize; i++)
 		*(InputArray + i) -= DC;
-
-	for(int i = 0; i < QG_EP_CLEAR_INDEX; i++)
-		*(InputArray + i) = 0;
 }
 //-----------------------------------------------
 
 float QG_ExtractAverageCurrent(pFloat32 Buffer, Int16U BufferSize, Int16U AverageLength)
 {
 	float AverageValue = 0;
-	static float CopiedBuffer[VALUES_x_SIZE];
 
 	for (int i = 0; i < BufferSize; i++)
-		CopiedBuffer[i] = *(Buffer + i);
+		QgCopiedBuffer[i] = *(Buffer + i);
 
-	qsort(CopiedBuffer, BufferSize, sizeof(*CopiedBuffer), QG_SortCondition);
+	qsort(QgCopiedBuffer, BufferSize, sizeof(*QgCopiedBuffer), QG_SortCondition);
 
 	for (int i = BufferSize - QG_AVG_IGNORE_POINTS; i >= BufferSize - QG_AVG_IGNORE_POINTS - AverageLength; i--)
-		AverageValue += *(CopiedBuffer + i);
+		AverageValue += *(QgCopiedBuffer + i);
 
 	return (AverageValue / AverageLength);
 }
@@ -294,3 +292,15 @@ int QG_SortCondition(const void *A, const void *B)
 	return (float)(*(float *)A) - (float)(*(float *)B);
 }
 //-----------------------------------------
+
+void QG_Filter(pFloat32 InputArray, Int16U ArraySize)
+{
+	float FilteredData = 0;
+
+	for(int i = 0; i < ArraySize; i++)
+	{
+		FilteredData += (*(InputArray + i) - FilteredData) * QG_FILTER_COEFFICIENT;
+		  *(InputArray + i) = FilteredData;
+	}
+}
+//-----------------------------------------------
