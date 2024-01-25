@@ -122,6 +122,8 @@ void CONTROL_ResetHardwareToDefaultState()
 	LL_I_Enable(false);
 	LL_QgProtection(false);
 
+	CONTROL_SwitchOutMUX(Voltage);
+
 	LL_V_VSetDAC(0);
 	LL_I_SetDAC(0);
 	LL_ExDACVCutoff(I_VCUT_OFF_DAC_DEF);
@@ -131,8 +133,6 @@ void CONTROL_ResetHardwareToDefaultState()
 
 	ADC_Disable(ADC1);
 	ADC_Disable(ADC3);
-
-	CONTROL_SwitchOutMUX(Voltage);
 }
 //------------------------------------------
 
