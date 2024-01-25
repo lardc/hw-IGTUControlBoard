@@ -21,10 +21,9 @@
 // Definitions
 //
 #define QG_FILTER_COEFFICIENT			0.2
-#define QG_AVG_LENGTH					20
+#define QG_AVG_LENGTH					15
 #define QG_AVG_IGNORE_POINTS			50
-#define QG_DC_PART_START_INDEX			100
-#define QG_DC_PART_STOP_INDEX			300
+#define QG_DC_PART_STOP_INDEX			100
 //
 #define TOCUHP_WAIT_READY_TIMEOUT		10000
 #define QG_I_PULSE_WIDTH_COEF			0.96
@@ -224,7 +223,8 @@ void QG_SaveResult()
 			QG_ResetConfigStageToDefault();
 			CONTROL_ResetHardwareToDefaultState();
 
-			CONTROL_SetDeviceState(DS_Ready, SS_None);
+			if(CONTROL_State != DS_SelfTest)
+				CONTROL_SetDeviceState(DS_Ready, SS_None);
 		}
 		else
 			CONTROL_SwitchToFault(DF_POWER_CURRENT);
@@ -263,8 +263,8 @@ void QG_RemoveDC(pFloat32 InputArray, Int16U ArraySize)
 {
 	float DC = 0;
 
-	for(int i = QG_DC_PART_START_INDEX; i < QG_DC_PART_STOP_INDEX; i++)
-		DC += *(InputArray + i) / (QG_DC_PART_STOP_INDEX - QG_DC_PART_START_INDEX);
+	for(int i = 0; i < QG_DC_PART_STOP_INDEX; i++)
+		DC += *(InputArray + i) / QG_DC_PART_STOP_INDEX;
 
 	for(int i = 0; i < ArraySize; i++)
 		*(InputArray + i) -= DC;
@@ -280,7 +280,7 @@ float QG_ExtractAverageCurrent(pFloat32 Buffer, Int16U BufferSize, Int16U Averag
 
 	qsort(QgCopiedBuffer, BufferSize, sizeof(*QgCopiedBuffer), QG_SortCondition);
 
-	for (int i = BufferSize - QG_AVG_IGNORE_POINTS; i >= BufferSize - QG_AVG_IGNORE_POINTS - AverageLength; i--)
+	for (int i = BufferSize - QG_AVG_IGNORE_POINTS; i > BufferSize - QG_AVG_IGNORE_POINTS - AverageLength; i--)
 		AverageValue += *(QgCopiedBuffer + i);
 
 	return (AverageValue / AverageLength);

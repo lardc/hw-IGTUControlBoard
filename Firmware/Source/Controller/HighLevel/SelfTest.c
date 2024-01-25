@@ -26,8 +26,8 @@
 #define ST_I_V_SET_STAGE0			5
 #define ST_I_V_SET_STAGE1			20
 
-#define ST_I_Q_REF_STAGE0			890
-#define ST_I_Q_REF_STAGE1			4500
+#define ST_I_Q_REF_STAGE0			1966
+#define ST_I_Q_REF_STAGE1			29300
 //
 
 // Functions
@@ -153,7 +153,6 @@ void ST_Process()
 			break;
 
 		case SS_I_Check:
-
 			if(PreviousStage == SS_I_PrepareStage0)
 				ErrorQ = fabsf((DataTable[REG_QG_RESULT] - ST_I_Q_REF_STAGE0) / ST_I_Q_REF_STAGE0 * 100);
 			else

@@ -77,7 +77,7 @@ void TIM3_IRQHandler()
 		{
 			CONTROL_ResetHardwareToDefaultState();
 			QG_SaveResult();
-			CONTROL_SetDeviceState(CONTROL_State, SS_I_Check);
+			CONTROL_SetDeviceState(DS_SelfTest, SS_I_Check);
 		}
 		else
 		{
