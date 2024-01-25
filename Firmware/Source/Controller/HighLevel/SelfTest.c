@@ -42,7 +42,7 @@ void ST_Process()
 		case SS_V_Prepare_Voltage:
 			PreviousStage = SS_V_Prepare_Voltage;
 			DataTable[REG_CAL_I] = ST_V_VOLTAGE_LOW / ST_V_LOAD_RESISTANCE * 1000;
-			DataTable[REG_CAL_V] = DataTable[REG_CAL_I] * (ST_V_RINT_I_RANGE2 + ST_V_LOAD_RESISTANCE) / 1000;
+			DataTable[REG_CAL_VP] = DataTable[REG_CAL_I] * (ST_V_RINT_I_RANGE2 + ST_V_LOAD_RESISTANCE) / 1000;
 
 			LL_V_Diagnostic(true);
 			DELAY_MS(20);
@@ -53,7 +53,7 @@ void ST_Process()
 		case SS_V_Prepare_Irange0:
 			PreviousStage = SS_V_Prepare_Irange0;
 			DataTable[REG_CAL_I] = V_I_R0_MAX;
-			DataTable[REG_CAL_V] = ST_V_VOLTAGE_HIGH;
+			DataTable[REG_CAL_VP] = ST_V_VOLTAGE_HIGH;
 
 			LL_V_Diagnostic(true);
 			DELAY_MS(20);
@@ -64,7 +64,7 @@ void ST_Process()
 		case SS_V_Prepare_Irange1:
 			PreviousStage = SS_V_Prepare_Irange1;
 			DataTable[REG_CAL_I] = V_I_R1_MAX;
-			DataTable[REG_CAL_V] = V_I_R1_MAX * (ST_V_RINT_I_RANGE1 + ST_V_LOAD_RESISTANCE) / 1000;
+			DataTable[REG_CAL_VP] = V_I_R1_MAX * (ST_V_RINT_I_RANGE1 + ST_V_LOAD_RESISTANCE) / 1000;
 
 			LL_V_Diagnostic(true);
 			DELAY_MS(20);
@@ -75,7 +75,7 @@ void ST_Process()
 		case SS_V_Prepare_Irange2:
 			PreviousStage = SS_V_Prepare_Irange2;
 			DataTable[REG_CAL_I] = ST_V_VOLTAGE_HIGH / (ST_V_RINT_I_RANGE1 + ST_V_LOAD_RESISTANCE) * 1000;
-			DataTable[REG_CAL_V] = ST_V_VOLTAGE_HIGH;
+			DataTable[REG_CAL_VP] = ST_V_VOLTAGE_HIGH;
 
 			LL_V_Diagnostic(true);
 			LL_I_Diagnostic(false);

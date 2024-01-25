@@ -18,6 +18,7 @@
 #include "ConvertUtils.h"
 #include "TOCUHP.h"
 #include "Res.h"
+#include "Certification.h"
 
 // Definitions
 //
@@ -177,7 +178,23 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			if(CONTROL_State == DS_Ready)
 			{
 				CONTROL_ResetOutputRegisters();
-				CONTROL_SetDeviceState(DS_InProcess, SS_VgsPrepare);
+
+				if(DataTable[REG_SERTIFICATION])
+				{
+					SertSet_V = (pFloat32)(&DataTable[REG_VGS_V_MAX]);
+					SertSet_I = (pFloat32)(&DataTable[REG_VGS_I_TRIG]);
+					SertResult_V = (pFloat32)(&DataTable[REG_VGS_RESULT]);
+					SertResult_I = (pFloat32)(&DataTable[REG_VGS_I_RESULT]);
+					Mode = FeedBack;
+					CONTROL_SetDeviceState(DS_InProcess, SS_Sert_V_Prepare);
+				}
+				else
+				{
+					if(DataTable[REG_VGS_V_MAX] < VGS_VOLTAGE_MAX)
+						CONTROL_SetDeviceState(DS_InProcess, SS_VgsPrepare);
+					else
+						*pUserError = ERR_WRONG_PARAMS;
+				}
 			}
 			else if(CONTROL_State == DS_InProcess)
 				*pUserError = ERR_OPERATION_BLOCKED;
@@ -201,7 +218,21 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			if(CONTROL_State == DS_Ready)
 			{
 				CONTROL_ResetOutputRegisters();
-				CONTROL_SetDeviceState(DS_InProcess, SS_IgesPrepare);
+
+				if(DataTable[REG_SERTIFICATION])
+				{
+					float Current = V_I_R2_MAX;
+
+					SertSet_V = (pFloat32)(&DataTable[REG_IGES_V]);
+					SertSet_I = &Current;
+					SertResult_V = NULL;
+					SertResult_I = NULL;
+					Mode = Parametric;
+
+					CONTROL_SetDeviceState(DS_InProcess, SS_Sert_V_Prepare);
+				}
+				else
+					CONTROL_SetDeviceState(DS_InProcess, SS_IgesPrepare);
 			}
 			else if(CONTROL_State == DS_InProcess)
 				*pUserError = ERR_OPERATION_BLOCKED;
@@ -375,6 +406,14 @@ void CONTROL_LogicProcess()
 				RES_Prepare();
 				break;
 
+			case SS_Sert_V_Prepare:
+				SERT_V_Prepare();
+				break;
+
+			case SS_Sert_I_Prepare:
+				SERT_I_Prepare();
+				break;
+
 			default:
 				break;
 		}
@@ -425,6 +464,14 @@ void CONTROL_HighPriorityProcess()
 
 		case SS_ResProcess:
 			RES_Process();
+			break;
+
+		case SS_Sert_V_Process:
+			SERT_V_Process();
+			break;
+
+		case SS_Sert_I_Process:
+			SERT_I_Process();
 			break;
 
 		default:
