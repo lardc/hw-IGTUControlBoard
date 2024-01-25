@@ -21,14 +21,16 @@
 // Definitions
 //
 #define QG_AVG_LENGTH					20
+#define QG_AVG_IGNORE_POINTS			50
+#define QG_DC_PART_START_INDEX			100
+#define QG_DC_PART_STOP_INDEX			300
+#define QG_EP_CLEAR_INDEX				80
 //
 #define TOCUHP_WAIT_READY_TIMEOUT		10000
-#define QG_FILTER_COEFFICIENT			0.1
-#define QG_GATE_VOLTAGE_ALLOWED_ERR		10
 #define QG_I_PULSE_WIDTH_COEF			0.96
-#define QG_PULSE_WIDTH_THRE_COEF		0.95
-#define QG_HW_CONFIG_TIME				50
-#define QG_I_THRESHOLD_COEF				0.8
+#define QG_HW_CONFIG_TIME				150
+#define QG_I_THRESHOLD_COEF				0.5
+#define QG_CALC_NOISE_CUT_OFF_COEF		0.3
 
 // Types
 //
@@ -53,12 +55,8 @@ Int64U Timeout = 0;
 // Function prototypes
 //
 void QG_CacheVariables();
-float QG_CalculateGateCharge(pFloat32 Buffer, Int16U BufferSize);
-void QG_SetPulseWidth(float Period);
-void QG_Filter(pFloat32 InputArray, Int16U ArraySize);
-float QG_ExtractAverageCurrent(pFloat32 Buffer, Int16U BufferSize);
 int QG_SortCondition(const void *A, const void *B);
-void QG_CheckGateVoltage();
+void QG_RemoveDC(pFloat32 InputArray, Int16U ArraySize);
 
 // Functions
 //
@@ -152,6 +150,7 @@ void QG_Prepare()
 
 			LL_SyncTOCUHP(true);
 			QG_Pulse(true);
+			DELAY_US(20);
 			break;
 	}
 }
@@ -173,25 +172,16 @@ void QG_Pulse(bool State)
 {
 	LL_SyncOSC(State);
 
-	(State) ? TIM_Start(TIM3) : TIM_Stop(TIM3);
+	if(State)
+	{
+		DELAY_US(50);
+		TIM_Start(TIM3);
+	}
+	else
+		TIM_Stop(TIM3);
 
 	TIM_Reset(TIM3);
 	LL_I_Start(State);
-}
-//----------------------------
-
-void QG_CheckGateVoltage()
-{
-	float CurrentWidth = 0;
-
-	for(int i = 0; i < VALUES_x_SIZE; i++)
-	{
-		if(CONTROL_CurrentValues[i] > 0)
-			CurrentWidth += QG_CURRENT_SAMPLE_TIME;
-	}
-
-	if(CurrentWidth > DataTable[REG_QG_I_DURATION] * QG_PULSE_WIDTH_THRE_COEF)
-		DataTable[REG_WARNING] = WARNING_QG_VOLTAGE_NOT_REACHED;
 }
 //----------------------------
 
@@ -205,11 +195,11 @@ void QG_SaveResult()
 	{
 		if(TOCUHP_CheckOpResult() || CONTROL_State == DS_SelfTest)
 		{
-			LOG_CopyCurrentToEndpoints(&CONTROL_CurrentValues[0], &MEASURE_Qg_DataRaw[0], ADC_DMA_BUFF_SIZE_QG / 2, 0);
+			LOG_CopyCurrentToEndpoints(&CONTROL_CurrentValues[0], &MEASURE_Qg_DataRaw[0], VALUES_x_SIZE);
 			CONTROL_Values_Counter = VALUES_x_SIZE;
-			QG_Filter(&CONTROL_CurrentValues[0], VALUES_x_SIZE);
+			QG_RemoveDC(&CONTROL_CurrentValues[0], VALUES_x_SIZE);
 
-			Ig = QG_ExtractAverageCurrent(&CONTROL_CurrentValues[0], VALUES_x_SIZE);
+			Ig = QG_ExtractAverageCurrent(&CONTROL_CurrentValues[0], VALUES_x_SIZE, QG_AVG_LENGTH);
 			Qg = QG_CalculateGateCharge(&CONTROL_CurrentValues[0], VALUES_x_SIZE);
 
 			if(Ig > DataTable[REG_QG_I] * QG_I_THRESHOLD_COEF)
@@ -219,8 +209,6 @@ void QG_SaveResult()
 
 				DataTable[REG_QG_I_RESULT] =  Ig;
 				DataTable[REG_QG_RESULT] = Qg;
-
-				QG_CheckGateVoltage();
 				DataTable[REG_OP_RESULT] = OPRESULT_OK;
 			}
 			else
@@ -251,13 +239,17 @@ void QG_ResetConfigStageToDefault()
 float QG_CalculateGateCharge(pFloat32 Buffer, Int16U BufferSize)
 {
 	float GateCharge = 0;
-	float Current = 0;
+	float CurrentMax = 0;
 
 	for(int i = 0; i < BufferSize; i++)
 	{
-		Current = *(Buffer + i);
+		if(CurrentMax < *(Buffer + i))
+			CurrentMax = *(Buffer + i);
+	}
 
-		if(Current > 0)
+	for(int i = 0; i < BufferSize; i++)
+	{
+		if(*(Buffer + i) > CurrentMax * QG_CALC_NOISE_CUT_OFF_COEF)
 			GateCharge += *(Buffer + i) * QG_CURRENT_SAMPLE_TIME;
 	}
 
@@ -265,19 +257,22 @@ float QG_CalculateGateCharge(pFloat32 Buffer, Int16U BufferSize)
 }
 //-----------------------------------------------
 
-void QG_Filter(pFloat32 InputArray, Int16U ArraySize)
+void QG_RemoveDC(pFloat32 InputArray, Int16U ArraySize)
 {
-	float FilteredData = 0;
+	float DC = 0;
+
+	for(int i = QG_DC_PART_START_INDEX; i < QG_DC_PART_STOP_INDEX; i++)
+		DC += *(InputArray + i) / (QG_DC_PART_STOP_INDEX - QG_DC_PART_START_INDEX);
 
 	for(int i = 0; i < ArraySize; i++)
-	{
-		FilteredData += (*(InputArray + i) - FilteredData) * QG_FILTER_COEFFICIENT;
-		  *(InputArray + i) = FilteredData;
-	}
+		*(InputArray + i) -= DC;
+
+	for(int i = 0; i < QG_EP_CLEAR_INDEX; i++)
+		*(InputArray + i) = 0;
 }
 //-----------------------------------------------
 
-float QG_ExtractAverageCurrent(pFloat32 Buffer, Int16U BufferSize)
+float QG_ExtractAverageCurrent(pFloat32 Buffer, Int16U BufferSize, Int16U AverageLength)
 {
 	float AverageValue = 0;
 	static float CopiedBuffer[VALUES_x_SIZE];
@@ -287,10 +282,10 @@ float QG_ExtractAverageCurrent(pFloat32 Buffer, Int16U BufferSize)
 
 	qsort(CopiedBuffer, BufferSize, sizeof(*CopiedBuffer), QG_SortCondition);
 
-	for (int i = BufferSize; i >= BufferSize - QG_AVG_LENGTH; i--)
+	for (int i = BufferSize - QG_AVG_IGNORE_POINTS; i >= BufferSize - QG_AVG_IGNORE_POINTS - AverageLength; i--)
 		AverageValue += *(CopiedBuffer + i);
 
-	return (AverageValue / QG_AVG_LENGTH);
+	return (AverageValue / AverageLength);
 }
 //-----------------------------------------------
 

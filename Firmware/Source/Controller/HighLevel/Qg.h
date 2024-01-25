@@ -12,5 +12,8 @@ void QG_Prepare();
 void QG_Pulse(bool State);
 void QG_SaveResult();
 void QG_ResetConfigStageToDefault();
+float QG_CalculateGateCharge(pFloat32 Buffer, Int16U BufferSize);
+void QG_SetPulseWidth(float Period);
+float QG_ExtractAverageCurrent(pFloat32 Buffer, Int16U BufferSize, Int16U AverageLength);
 
 #endif /* CONTROLLER_HIGHLEVEL_QG_H_ */
