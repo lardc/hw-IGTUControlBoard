@@ -105,17 +105,14 @@ void LOG_CopyVoltageToEndpoints(pFloat32 Endpoint, volatile Int16U* Buffer, Int1
 }
 //-----------------------------------------------
 
-void LOG_CopyCurrentToEndpoints(pFloat32 Endpoint, volatile Int16U* Buffer, Int16U BufferSize, Int16U SkipStep)
+void LOG_CopyCurrentToEndpoints(pFloat32 Endpoint, volatile Int16U* Buffer, Int16U BufferSize)
 {
 	Int16U Counter = 0;
 
-	for(Int16U i = 0; i < BufferSize; i += (SkipStep + 1))
+	for(Int16U i = 0; i < BufferSize; i ++)
 	{
-		if(Counter < VALUES_x_SIZE)
-		{
-			*(Endpoint + Counter) = CU_I_ADCtoI(*(Buffer + i));
-			Counter++;
-		}
+		*(Endpoint + Counter) = CU_I_ADCtoI(*(Buffer + i));
+		Counter++;
 	}
 }
 //-----------------------------------------------
