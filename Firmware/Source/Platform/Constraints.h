@@ -117,7 +117,7 @@
 #define VGS_I_TRIG_DEF				300			// (мА)
 //
 #define VGS_V_DEST_MIN				2			// (В)
-#define VGS_V_DEST_MAX				10			// (В)
+#define VGS_V_DEST_MAX				30			// (В)
 #define VGS_V_DEST_DEF				10			// (В)
 //
 #define QG_V_CUTOFF_MIN				2			//

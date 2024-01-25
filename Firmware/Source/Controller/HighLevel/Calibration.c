@@ -19,10 +19,11 @@
 #define CAL_VG_FRONT_TIME			5000	// ìêñ
 //
 #define CAL_AVG_START_INDEX_DEF		20
-#define CAL_AVG_LENGTH				20
+#define CAL_V_AVG_LENGTH			20
+#define CAL_I_AVG_LENGTH			75
 #define CAL_AVG_V_START_INDEX		950
 #define CAL_AVG_VN_START_INDEX		400
-#define CAL_AVG_I_START_INDEX		800
+#define CAL_ADC_DMA_BUFF_SIZE		1000
 
 // Variables
 //
@@ -46,7 +47,7 @@ void CAL_V_CacheVariables()
 	REGULATOR_Mode(&RegulatorParams, Parametric);
 	LOG_ClearBuffers(&CalRingBuffers);
 
-	RegulatorParams.dVg = DataTable[REG_CAL_V] / (CAL_VG_FRONT_TIME / TIMER15_uS);
+	RegulatorParams.dVg = DataTable[REG_CAL_VP] / (CAL_VG_FRONT_TIME / TIMER15_uS);
 	RegulatorParams.Counter = CAL_PULSE_WIDTH_MS / TIMER15_uS;
 
 	CalibrationLog.DataA = &CalSampledData.Voltage;
@@ -90,20 +91,19 @@ void CAL_V_Prepare()
 
 void CAL_I_Prepare()
 {
+	CONTROL_SwitchOutMUX(Current);
 	CAL_I_CacheVariables();
 
-	INITCFG_ConfigADC_Qg_VI();
-	INITCFG_ConfigDMA_Qg(ADC_DMA_BUFF_SIZE_QG);
+	INITCFG_ConfigADC_Qg_I();
+	INITCFG_ConfigDMA_Qg(CAL_ADC_DMA_BUFF_SIZE);
 	MEASURE_ResetDMABuffers();
-	LL_ExDACVCutoff(CU_I_VcutoffToDAC(DataTable[REG_CAL_V]));
-	LL_ExDACVNegative(CU_I_VnegativeToDAC(DataTable[REG_CAL_V]));
+	LL_ExDACVCutoff(CU_I_VcutoffToDAC(DataTable[REG_CAL_VP]));
+	LL_ExDACVNegative(CU_I_VnegativeToDAC(DataTable[REG_CAL_VN]));
 	LL_I_SetDAC(CU_I_ItoDAC(DataTable[REG_CAL_I]));
 	LL_I_Start(false);
 	LL_QgProtection(false);
 	LL_I_Enable(true);
-	DELAY_MS(20);
-
-	CONTROL_SwitchOutMUX(Current);
+	DELAY_MS(150);
 
 	CONTROL_ResetOutputRegisters();
 	CONTROL_SetDeviceState(CONTROL_State, SS_Cal_I_Process);
@@ -111,7 +111,7 @@ void CAL_I_Prepare()
 	CONTROL_StartHighPriorityProcesses();
 
 	LL_SyncOSC(true);
-	DELAY_US(100);
+	DELAY_US(20);
 }
 //------------------------------
 
@@ -122,11 +122,11 @@ void CAL_V_CalProcess()
 	LOG_SaveSampleToRingBuffer(&CalRingBuffers);
 	LOG_LoggingData(&CalibrationLog);
 
-	if(RegulatorParams.Target < DataTable[REG_CAL_V])
+	if(RegulatorParams.Target < DataTable[REG_CAL_VP])
 		RegulatorParams.Target += RegulatorParams.dVg;
 	else
 	{
-		RegulatorParams.Target = DataTable[REG_CAL_V];
+		RegulatorParams.Target = DataTable[REG_CAL_VP];
 		LL_SyncOSC(true);
 	}
 
@@ -182,20 +182,17 @@ void CAL_I_CalProcess()
 	{
 		CONTROL_StopHighPriorityProcesses();
 
-		LOG_CopyCurrentToEndpoints(&CONTROL_CurrentValues[0], &MEASURE_Qg_DataRaw[0], ADC_DMA_BUFF_SIZE_QG, 1);
-		LOG_CopyVoltageToEndpoints(&CONTROL_VoltageValues[0], &MEASURE_Qg_DataRaw[1], ADC_DMA_BUFF_SIZE_QG, 1);
+		LOG_CopyCurrentToEndpoints(&CONTROL_CurrentValues[0], &MEASURE_Qg_DataRaw[0], CAL_ADC_DMA_BUFF_SIZE);
 		CONTROL_Values_Counter = VALUES_x_SIZE;
 
-		DataTable[REG_CAL_V_RESULT] = LOG_GetAverageFromBuffer(&CONTROL_VoltageValues[CAL_AVG_V_START_INDEX], CAL_AVG_LENGTH);
-		DataTable[REG_CAL_VN_RESULT] = LOG_GetAverageFromBuffer(&CONTROL_VoltageValues[CAL_AVG_VN_START_INDEX], CAL_AVG_LENGTH);
-		DataTable[REG_CAL_I_RESULT] = LOG_GetAverageFromBuffer(&CONTROL_CurrentValues[CAL_AVG_I_START_INDEX], CAL_AVG_LENGTH);
+		DataTable[REG_CAL_I_RESULT] = QG_ExtractAverageCurrent(&CONTROL_CurrentValues[0], VALUES_x_SIZE, CAL_I_AVG_LENGTH);
 
 		DataTable[REG_OP_RESULT] = OPRESULT_OK;
 		CONTROL_SetDeviceState(DS_Ready, SS_None);
 	}
 	else
 	{
-		if(DMA_ReadDataCount(DMA1_Channel1) <= ADC_DMA_BUFF_SIZE_QG / 2)
+		if(DMA_ReadDataCount(DMA1_Channel1) <= CAL_ADC_DMA_BUFF_SIZE / 2)
 		{
 			LL_QgProtection(true);
 			LL_I_Start(true);

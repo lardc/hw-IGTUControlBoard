@@ -170,8 +170,10 @@
 #define REG_IGES_RANGE					137	// Диапазон измерения тока утечки (0 - 20нА, 1 - 200нА, 2 - 2мкА)
 
 // Регистры режимов калибровки
-#define REG_CAL_V						140	// Задание напряжения при калибровке, В
-#define REG_CAL_I						141	// Задание тока при калибровке, мА
+#define REG_SERTIFICATION				139	// 0 - обычный режим, 1 - режим аттестации
+#define REG_CAL_VP						140	// Задание положительного напряжения при калибровке, В
+#define REG_CAL_VN						141	// Задание отрицательного напряжения при калибровке, В
+#define REG_CAL_I						142	// Задание тока при калибровке, мА
 
 
 #define REG_DBG							150	// Отладочный регистр
@@ -278,7 +280,6 @@
 //  Warning
 #define WARNING_NONE					0
 #define WARNING_OUT_OF_RANGE			1
-#define WARNING_QG_VOLTAGE_NOT_REACHED	2
 
 //  User Errors
 #define ERR_NONE						0
@@ -286,6 +287,7 @@
 #define ERR_OPERATION_BLOCKED			2	//  Операция не может быть выполнена в текущем состоянии устройства
 #define ERR_DEVICE_NOT_READY			3	//  Устройство не готово для смены состояния
 #define ERR_WRONG_PWD					4	//  Неправильный ключ
+#define ERR_WRONG_PARAMS				5	// Заданы некорректные параметры
 
 // Endpoints
 #define EP_VOLTAGE						1

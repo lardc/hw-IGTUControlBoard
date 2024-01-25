@@ -147,10 +147,10 @@ const TableItemConstraint Constraint[DATA_TABLE_WP_START] = {
 		{IGES_V_MIN, IGES_V_MAX, IGES_V_DEF},										// 136
 		{PAU_CODE_RANGE0, PAU_CODE_RANGE2, PAU_CODE_RANGE2},						// 137
 		{0, 0, 0},																	// 138
-		{0, 0, 0},																	// 139
+		{NO, YES, NO},																// 139
 		{0, INT16U_MAX, 0},															// 140
 		{0, INT16U_MAX, 0},															// 141
-		{0, 0, 0},																	// 142
+		{0, INT16U_MAX, 0},															// 142
 		{0, 0, 0},																	// 143
 		{0, 0, 0},																	// 144
 		{0, 0, 0},																	// 145
