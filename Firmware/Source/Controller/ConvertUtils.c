@@ -73,7 +73,9 @@ float CU_I_ADCtoV(Int16U Data, Int16U Vtype)
 Int16U CU_XtoDAC(ConvertParams *Params, float Value)
 {
 	float Result = Value * Value * Params->P2 + Value * Params->P1 + Params->P0;
-	return (Int16U)(Result * Params->K + Params->B);
+	Result = (Int16U)(Result * Params->K + Params->B);
+
+	return (Result > DAC_MAX_VALUE) ? DAC_MAX_VALUE : Result;
 }
 //-----------------------------
 

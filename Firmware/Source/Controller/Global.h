@@ -33,6 +33,7 @@
 #define PAU_CODE_RANGE1							1
 #define PAU_CODE_RANGE2							2
 #define POWER_ON_TIMEOUT						5000				// Таймаут включения, мс
+#define DAC_MAX_VALUE							4095
 
 // Размер массивов EP
 #define VALUES_x_SIZE							1000
