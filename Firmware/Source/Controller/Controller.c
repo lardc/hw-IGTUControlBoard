@@ -157,7 +157,7 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 				if(TOCUHP_PowerEnable())
 				{
 					CONTROL_Timeout = CONTROL_TimeCounter + POWER_ON_TIMEOUT;
-					CONTROL_SetDeviceState(DS_Ready, SS_PowerOnProcess);
+					CONTROL_SetDeviceState(DS_InProcess, SS_PowerOnProcess);
 				}
 			}
 			else if(CONTROL_State != DS_Ready)
@@ -365,7 +365,11 @@ void CONTROL_LogicProcess()
 				if(TOCUHP_IsReady())
 				{
 					if(PAU_IsReady())
-						CONTROL_SetDeviceState(DS_Ready, SS_None);
+					{
+						CONTROL_ResetOutputRegisters();
+						DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_NONE;
+						CONTROL_SetDeviceState(DS_SelfTest, SS_V_Prepare_Voltage);
+					}
 				}
 				else
 				{
