@@ -26,8 +26,8 @@
 #define ST_I_V_SET_STAGE0			5
 #define ST_I_V_SET_STAGE1			20
 
-#define ST_I_Q_REF_STAGE0			1966
-#define ST_I_Q_REF_STAGE1			29300
+#define ST_I_Q_REF_STAGE0			1080
+#define ST_I_Q_REF_STAGE1			4000
 //
 
 // Functions
@@ -171,6 +171,7 @@ void ST_Process()
 			}
 			else
 			{
+				PreviousStage = 0;
 				TOCUHP_EmulatedState(false);
 				DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_FAIL;
 				CONTROL_SwitchToFault(DF_ST_I_SOURCE_ERROR);
