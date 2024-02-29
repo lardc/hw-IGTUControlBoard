@@ -122,7 +122,7 @@ void CONTROL_ResetHardwareToDefaultState()
 	LL_I_Enable(false);
 	LL_QgProtection(false);
 
-	CONTROL_SwitchOutMUX(Voltage);
+	CONTROL_SwitchOutMUX(Current);
 
 	LL_V_VSetDAC(0);
 	LL_I_SetDAC(0);
