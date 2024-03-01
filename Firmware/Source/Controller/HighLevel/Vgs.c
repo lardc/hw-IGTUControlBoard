@@ -110,7 +110,8 @@ void VGS_Process()
 
 			if(RegulatorParams.FollowingError)
 			{
-				CONTROL_SwitchToFault(DF_FOLLOWING_ERROR);
+				DataTable[REG_PROBLEM] = PROBLEM_DUT_NOT_FOUND;
+				CONTROL_SetDeviceState(DS_Ready, SS_None);
 				return;
 			}
 			else
@@ -128,7 +129,10 @@ void VGS_Process()
 		CONTROL_StopHighPriorityProcesses();
 
 		if(VgsSampledData.Voltage < VGS_VOLTAGE_MIN)
-			CONTROL_SwitchToFault(DF_FOLLOWING_ERROR);
+		{
+			DataTable[REG_PROBLEM] = PROBLEM_SHORT;
+			CONTROL_SetDeviceState(DS_Ready, SS_None);
+		}
 		else
 		{
 			if(AverageSamples.Voltage > VGS_VOLTAGE_MAX || AverageSamples.Voltage < VGS_VOLTAGE_MIN)

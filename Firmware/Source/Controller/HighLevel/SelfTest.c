@@ -26,8 +26,8 @@
 #define ST_I_V_SET_STAGE0			5
 #define ST_I_V_SET_STAGE1			20
 
-#define ST_I_Q_REF_STAGE0			1080
-#define ST_I_Q_REF_STAGE1			4000
+#define ST_I_Q_REF_STAGE0			1150
+#define ST_I_Q_REF_STAGE1			4200
 //
 
 // Functions
