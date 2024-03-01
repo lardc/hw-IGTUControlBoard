@@ -103,6 +103,7 @@ void CONTROL_ResetOutputRegisters()
 	DataTable[REG_QG_RESULT] = 0;
 	DataTable[REG_QG_I_RESULT] = 0;
 	DataTable[REG_IGES_RESULT] = 0;
+	DataTable[REG_RES_RESULT] = 0;
 
 	DEVPROFILE_ResetScopes(0);
 	DEVPROFILE_ResetEPReadState();

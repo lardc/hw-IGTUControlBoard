@@ -105,7 +105,6 @@ void VGS_Process()
 		if(REGULATOR_Process(&RegulatorParams))
 		{
 			CONTROL_StopHighPriorityProcesses();
-
 			DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
 
 			if(RegulatorParams.FollowingError)
@@ -130,6 +129,7 @@ void VGS_Process()
 
 		if(VgsSampledData.Voltage < VGS_VOLTAGE_MIN)
 		{
+			DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
 			DataTable[REG_PROBLEM] = PROBLEM_SHORT;
 			CONTROL_SetDeviceState(DS_Ready, SS_None);
 		}
