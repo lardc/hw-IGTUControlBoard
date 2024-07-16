@@ -40,15 +40,14 @@ float CONTROL_CurrentValues[VALUES_x_SIZE];
 //
 Int16U CONTROL_RegulatorValues_Counter = 0;
 Int16U CONTROL_Values_Counter = 0;
-//
 
-
-/// Forward functions
+// Forward functions
 //
 static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError);
 void CONTROL_UpdateWatchDog();
 void CONTROL_ResetToDefaultState();
 void CONTROL_LogicProcess();
+bool CONTROL_IsSafetyEvent();
 
 // Functions
 //
@@ -179,6 +178,13 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			if(CONTROL_State == DS_Ready)
 			{
 				CONTROL_ResetOutputRegisters();
+				// Проверка безопасности до запуска измерения
+				if(CONTROL_IsSafetyEvent())
+				{
+					DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
+					DataTable[REG_PROBLEM] = PROBLEM_SAFETY_VIOLATION;
+					break;
+				}
 
 				if(DataTable[REG_SERTIFICATION])
 				{
@@ -207,6 +213,13 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			if(CONTROL_State == DS_Ready)
 			{
 				CONTROL_ResetOutputRegisters();
+				// Проверка безопасности до запуска измерения
+				if(CONTROL_IsSafetyEvent())
+				{
+					DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
+					DataTable[REG_PROBLEM] = PROBLEM_SAFETY_VIOLATION;
+					break;
+				}
 				CONTROL_SetDeviceState(DS_InProcess, SS_QgPrepare);
 			}
 			else if(CONTROL_State == DS_InProcess)
@@ -219,6 +232,13 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			if(CONTROL_State == DS_Ready)
 			{
 				CONTROL_ResetOutputRegisters();
+				// Проверка безопасности до запуска измерения
+				if(CONTROL_IsSafetyEvent())
+				{
+					DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
+					DataTable[REG_PROBLEM] = PROBLEM_SAFETY_VIOLATION;
+					break;
+				}
 
 				if(DataTable[REG_SERTIFICATION])
 				{
@@ -245,6 +265,13 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			if(CONTROL_State == DS_Ready)
 			{
 				CONTROL_ResetOutputRegisters();
+				// Проверка безопасности до запуска измерения
+				if(CONTROL_IsSafetyEvent())
+				{
+					DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
+					DataTable[REG_PROBLEM] = PROBLEM_SAFETY_VIOLATION;
+					break;
+				}
 				CONTROL_SetDeviceState(DS_InProcess, SS_ResPrepare);
 			}
 			else if(CONTROL_State == DS_InProcess)
@@ -282,13 +309,13 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			if(!PAU_ClearFault())
 				CONTROL_SwitchToFault(DF_PAU_INTERFACE);
 			else if(TOCUHP_ClearFault())
-					{
-						if(CONTROL_State == DS_Fault)
-						{
-							LL_Indication(false);
-							CONTROL_ResetToDefaultState();
-						}
-					}
+			{
+				if(CONTROL_State == DS_Fault)
+				{
+					LL_Indication(false);
+					CONTROL_ResetToDefaultState();
+				}
+			}
 			break;
 
 		case ACT_CLR_WARNING:
@@ -305,6 +332,13 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			if(CONTROL_State == DS_Ready)
 			{
 				CONTROL_ResetOutputRegisters();
+				// Проверка безопасности до запуска измерения
+				if(CONTROL_IsSafetyEvent())
+				{
+					DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
+					DataTable[REG_PROBLEM] = PROBLEM_SAFETY_VIOLATION;
+					break;
+				}
 				CONTROL_SetDeviceState(DS_InProcess, SS_Cal_V_Prepare);
 			}
 			else if(CONTROL_State == DS_InProcess)
@@ -317,6 +351,13 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			if(CONTROL_State == DS_Ready)
 			{
 				CONTROL_ResetOutputRegisters();
+				// Проверка безопасности до запуска измерения
+				if(CONTROL_IsSafetyEvent())
+				{
+					DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
+					DataTable[REG_PROBLEM] = PROBLEM_SAFETY_VIOLATION;
+					break;
+				}
 				CONTROL_SetDeviceState(DS_InProcess, SS_Cal_I_Prepare);
 			}
 			else if(CONTROL_State == DS_InProcess)
@@ -335,9 +376,15 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 }
 //-----------------------------------------------
 
+bool CONTROL_IsSafetyEvent()
+{
+	return LL_SafetyState() && !DataTable[REG_MUTE_SAFETY];
+}
+//-----------------------------------------------
+
 bool CONTROL_IsSafetyOk()
 {
-	if(CONTROL_State == DS_InProcess && LL_SafetyState() && !DataTable[REG_MUTE_SAFETY])
+	if(CONTROL_State == DS_InProcess && CONTROL_IsSafetyEvent())
 	{
 		CONTROL_StopHighPriorityProcesses();
 
