@@ -38,6 +38,9 @@ bool PAU_CheckState(PAUState State)
 {
 	Int16U PAU_State = 0;
 
+	if(DataTable[REG_PAU_EMULATED])
+		return true;
+
 	if(BHL_ReadRegister(DataTable[REG_PAU_CAN_ID], REG_PAU_DEV_STATE, &PAU_State))
 		return (PAU_State == State) ? true : false;
 	else
