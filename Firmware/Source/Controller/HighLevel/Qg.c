@@ -146,7 +146,7 @@ void QG_Prepare()
 			LL_QgProtection(true);
 			DELAY_US(10);
 			LL_SyncTOCUHP(true);
-			DELAY_US(5);
+			DELAY_US(500);
 			MEASURE_StartNewSampling();
 
 			QG_Pulse(true);
