@@ -140,7 +140,7 @@
 #define QG_I_POWER_MAX				1000
 #define QG_I_POWER_DEF				1000
 //
-#define QG_V_POWER_MIN				100
+#define QG_V_POWER_MIN				300
 #define QG_V_POWER_MAX				1500
 #define QG_V_POWER_DEF				1000
 //

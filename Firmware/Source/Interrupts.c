@@ -10,6 +10,7 @@
 #include "DeviceObjectDictionary.h"
 #include "Qg.h"
 #include "Iges.h"
+#include "Delay.h"
 
 // Functions
 //
@@ -82,6 +83,8 @@ void TIM3_IRQHandler()
 		else
 		{
 			LL_SyncTOCUHP(false);
+			DELAY_US(100);
+
 			CONTROL_SetDeviceState(DS_InProcess, SS_QgSaveResult);
 		}
 	}

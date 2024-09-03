@@ -17,7 +17,7 @@ volatile float* TOCUHP_NodeID[TOCUHP_NUM_MAX];
 
 // Functions prototypes
 //
-bool TOCUHP_CheckState(TOCUHPState State);
+bool TOCUHP_CheckState(TOCUHPState State, bool Immediately);
 bool TOCUHP_OpResult();
 bool TOCUHP_Call(Int16U Call);
 bool TOCUHP_CompareRegister(Int16U Register, Int16U Vlaue);
@@ -52,13 +52,13 @@ bool TOCUHP_CheckOpResult()
 
 bool TOCUHP_IsReady()
 {
-	return (DataTable[REG_TOCUHP_EMULATED] || TOCUHP_Emulated) ? true : TOCUHP_CheckState(TS_Ready);
+	return (DataTable[REG_TOCUHP_EMULATED] || TOCUHP_Emulated) ? true : TOCUHP_CheckState(TS_Ready, false);
 }
 //--------------------------------------
 
 bool TOCUHP_InFault()
 {
-	return (DataTable[REG_TOCUHP_EMULATED] || TOCUHP_Emulated) ? false : TOCUHP_CheckState(TS_Fault);
+	return (DataTable[REG_TOCUHP_EMULATED] || TOCUHP_Emulated) ? false : TOCUHP_CheckState(TS_Fault, true);
 }
 //--------------------------------------
 
@@ -162,11 +162,11 @@ bool TOCUHP_Call(Int16U Call)
 }
 //--------------------------------------
 
-bool TOCUHP_CheckState(TOCUHPState State)
+bool TOCUHP_CheckState(TOCUHPState State, bool Immediately)
 {
 	static Int64U CheckStatePeriodCounter = 0;
 
-	if(CONTROL_TimeCounter >= CheckStatePeriodCounter)
+	if(Immediately || CONTROL_TimeCounter >= CheckStatePeriodCounter)
 	{
 		CheckStatePeriodCounter = CONTROL_TimeCounter + BCCIM_TIMEOUT_TICKS;
 

@@ -62,7 +62,7 @@ void VGS_CacheVariables()
 	REGULATOR_CacheVariables(&RegulatorParams);
 
 	RegulatorParams.dVg = DataTable[REG_VGS_FAST_RATE] * TIMER15_uS;
-	RegulatorParams.Counter = DataTable[REG_VGS_V_MAX] / ((DataTable[REG_VGS_FAST_RATE] + DataTable[REG_VGS_SLOW_RATE]) * TIMER15_uS);
+	RegulatorParams.Counter = DataTable[REG_VGS_V_MAX] / DataTable[REG_VGS_SLOW_RATE] * TIMER15_uS;
 
 	VgsLog.DataA = &VgsSampledData.Voltage;
 	VgsLog.DataB = &VgsSampledData.Current;
