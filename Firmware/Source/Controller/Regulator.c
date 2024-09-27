@@ -1,162 +1,117 @@
 ﻿// Header
 //
 #include "Regulator.h"
+
+// Includes
+//
 #include "DataTable.h"
 #include "LowLevel.h"
 #include "ConvertUtils.h"
+#include "Logging.h"
+
+// Variables
+//
+RegulatorParamsStruct RegulatorParams;
+LogParamsStruct RegulatorLog;
+
 
 // Functions prototypes
 //
-void REGULATOR_LoggingData(volatile RegulatorParamsStruct* Regulator);
-Int16U REGULATOR_DACApplyLimits(float Value, Int16U Offset, Int16U LimitValue);
+Int16U REGULATOR_DACApplyLimits(Int16S Value, Int16U LimitValue);
 
 // Functions
 //
-bool REGULATOR_Process(volatile RegulatorParamsStruct* Regulator)
+bool REGULATOR_Process(RegulatorParamsStruct* Regulator)
 {
-	static float Qi = 0, Qp;
+	Regulator->Error = (Regulator->Counter == 0) ? 0 : (Regulator->Target - Regulator->SampledData);
 
-	Regulator->RegulatorError =
-			(Regulator->RegulatorStepCounter == 0) ?
-					0 : (Regulator->VFormTable[Regulator->RegulatorStepCounter] - Regulator->VSen);
+	if(Regulator->Mode == FeedBack && Regulator->Error > Regulator->ErrorMax)
+	{
+		Regulator->FECounter++;
 
-	Qp = Regulator->RegulatorError * Regulator->Kp;
-	Qi += Regulator->RegulatorError * Regulator->Ki;
-
-	float Qi_max = (float)DataTable[REG_REGULATOR_QI_MAX];
-	if(Qi > Qi_max)
-		Qi = Qi_max;
-	else if(Qi < -Qi_max)
-		Qi = -Qi_max;
-
-	Regulator->RegulatorOutput = Regulator->VFormTable[Regulator->RegulatorStepCounter] + Qp + Qi;
-
-	// Выбор источника данных для записи в ЦАП
-	float ValueToDAC;
-	if(Regulator->DebugMode)
-		ValueToDAC = Regulator->VFormTable[Regulator->RegulatorStepCounter];
+		if(Regulator->FECounter > Regulator->FECounterMax)
+		{
+			Regulator->FollowingError = true;
+			return true;
+		}
+	}
 	else
-		ValueToDAC = Regulator->RegulatorOutput;
+		Regulator->FECounter = 0;
 
-	// Проверка границ диапазона ЦАП
-	Regulator->DACSetpoint = REGULATOR_DACApplyLimits(CU_V_VToDAC(ValueToDAC), Regulator->DACOffset,
-			Regulator->DACLimitValue);
+	Regulator->Qp = Regulator->Error * Regulator->Kp;
+	Regulator->Qi += Regulator->Error * Regulator->Ki;
+
+	if(Regulator->Qi > Regulator->Qimax)
+		Regulator->Qi = Regulator->Qimax;
+	else if(Regulator->Qi < -Regulator->Qimax)
+		Regulator->Qi = -Regulator->Qimax;
+
+	Regulator->Out = Regulator->Target + Regulator->Qp + Regulator->Qi;
+
+	float ValueToDAC = (Regulator->Mode == Parametric) ? Regulator->Target : Regulator->Out;
+	Regulator->DACSetpoint = REGULATOR_DACApplyLimits(CU_V_VtoDAC(ValueToDAC), Regulator->DACLimitValue);
+
 	LL_V_VSetDAC(Regulator->DACSetpoint);
 
-	if(DataTable[REG_REGULATOR_LOGGING] == 1)
-		REGULATOR_LoggingData(Regulator);
-	Regulator->RegulatorStepCounter++;
-	if(Regulator->RegulatorStepCounter >= STEP_BUFFER_SIZE)
-	{
-		Regulator->DebugMode = false;
-		Regulator->RegulatorStepCounter = 0;
-		Regulator->CTrigRegulatorStep = 0;
-		Qi = 0;
-		return true;
-	}
-	else
+	LOG_LoggingData(&RegulatorLog);
+
+	Regulator->Counter--;
+
+	if(Regulator->Counter)
 		return false;
-}
-//-----------------------------------------------
-
-Int16U REGULATOR_DACApplyLimits(float Value, Int16U Offset, Int16U LimitValue)
-{
-	Int16S Result = (Int16S)(Value + Offset);
-	if(Result < 0)
-		return 0;
-	else if(Result > LimitValue)
-		return LimitValue;
 	else
-		return Result;
+		return true;
 }
 //-----------------------------------------------
 
-void REGULATOR_LoggingData(volatile RegulatorParamsStruct* Regulator)
+Int16U REGULATOR_DACApplyLimits(Int16S Value, Int16U LimitValue)
 {
-	static Int16U ScopeLogStep = 0, LocalCounter = 0;
-
-	// Сброс локального счетчика в начале логгирования
-	if(CONTROL_V_Values_Counter == 0)
-		LocalCounter = 0;
-
-	if(ScopeLogStep++ >= DataTable[REG_SCOPE_STEP])
+	if(Value < 0)
+		Value = 0;
+	else
 	{
-		ScopeLogStep = 0;
-
-		CONTROL_V_VValues[LocalCounter] = (Int16U)(Regulator->VFormTable[Regulator->RegulatorStepCounter]);
-		CONTROL_V_VSenValues[LocalCounter] = (Int16U)(Regulator->VSen);
-		CONTROL_V_CSenValues[LocalCounter] = (Int16U)(Regulator->CSen);
-		CONTROL_V_RegErrValues[LocalCounter] = (Int16S)(Regulator->RegulatorError);
-		CONTROL_V_Values_Counter = LocalCounter;
-
-		LocalCounter++;
+		if(Value > LimitValue)
+			Value = LimitValue;
 	}
 
-	// Условие обновления глобального счетчика данных
-	if(CONTROL_V_Values_Counter < V_VALUES_x_SIZE)
-		CONTROL_V_Values_Counter = LocalCounter;
-
-	// Сброс локального счетчика
-	if(LocalCounter >= V_VALUES_x_SIZE)
-		LocalCounter = 0;
+	return Value;
 }
 //-----------------------------------------------
 
-void REGULATOR_VGS_FormConfig(volatile RegulatorParamsStruct* Regulator)
+void REGULATOR_CacheVariables(RegulatorParamsStruct* Regulator)
 {
-	Int16U VGSFrontLastStep = (Int16U)((float)DataTable[REG_VGS_T_V_FRONT] * 1000 / STEP_PERIOD);
-	for(Int16U i = 0; i < STEP_BUFFER_SIZE; i++)
-		Regulator->VFormTable[i] =
-				i < VGSFrontLastStep ? (Int16U)((1000 * DataTable[REG_VGS_V_MAX] * (i + 1)) / VGSFrontLastStep) : 0;
+	Regulator->Kp = DataTable[REG_REGULATOR_Kp];
+	Regulator->Ki = DataTable[REG_REGULATOR_Ki];
+	Regulator->ErrorMax = DataTable[REG_REGULATOR_ERR_MAX];
+	Regulator->Qimax = DataTable[REG_REGULATOR_QI_MAX];
+	Regulator->FECounterMax = DataTable[REG_REGULATOR_FE_COUNTER];
+	Regulator->DACLimitValue = DataTable[REG_DAC_OUTPUT_LIMIT_VALUE];
+	Regulator->DACLimitValue = DataTable[REG_DAC_OUTPUT_LIMIT_VALUE];
+
+	RegulatorLog.DataA = &Regulator->Out;
+	RegulatorLog.DataB = &Regulator->Error;
+	RegulatorLog.LogBufferA = &CONTROL_RegulatorOutputValues[0];
+	RegulatorLog.LogBufferB = &CONTROL_RegulatorErrValues[0];
+	RegulatorLog.LogBufferCounter = &CONTROL_RegulatorValues_Counter;
 }
 //-----------------------------------------------
 
-void REGULATOR_IGES_FormConfig(volatile RegulatorParamsStruct* Regulator)
+void REGULATOR_ResetVariables(RegulatorParamsStruct* Regulator)
 {
-	Int16U IGESFrontLastStep = (Int16U)((float)(DataTable[REG_IGES_T_V_FRONT]) * 1000 / STEP_PERIOD);
-	Regulator->ConstantVFirstStep = IGESFrontLastStep + 1;
-	Int16U IGESLastStep = (Int16U)((float)(DataTable[REG_IGES_T_V_FRONT] + DataTable[REG_IGES_T_V_CONSTANT]) * 1000
-			/ STEP_PERIOD);
-	for(Int16U i = 0; i < STEP_BUFFER_SIZE; i++)
-	{
-		if(i < IGESFrontLastStep)
-			Regulator->VFormTable[i] = (Int16U)((1000 * DataTable[REG_IGES_V] * (i + 1)) / IGESFrontLastStep);
-		else if(i < IGESLastStep)
-			Regulator->VFormTable[i] = (Int16U)(1000 * DataTable[REG_IGES_V]);
-		else
-			Regulator->VFormTable[i] = 0;
-	}
+	Regulator->Target = 0;
+	Regulator->SampledData = 0;
+	Regulator->DACSetpoint = 0;
+	Regulator->Error = 0;
+	Regulator->Qi = 0;
+	Regulator->Qp = 0;
+	Regulator->Out = 0;
+	Regulator->FECounter = 0;
+	Regulator->FollowingError = false;
 }
 //-----------------------------------------------
 
-void REGULATOR_VGS_FormUpdate(volatile RegulatorParamsStruct* Regulator)
+void REGULATOR_Mode(RegulatorParamsStruct* Regulator, RegulatorMode Mode)
 {
-	TIM_Stop(TIM15);
-	Regulator->ConstantVFirstStep = Regulator->RegulatorStepCounter;
-	Regulator->ConstantVLastStep = Regulator->RegulatorStepCounter
-			+ (Int16U)((Int16U) DataTable[REG_VGS_T_V_CONSTANT] * 1000 / STEP_PERIOD);
-	if(Regulator->ConstantVLastStep > STEP_BUFFER_SIZE)
-		Regulator->ConstantVLastStep = STEP_BUFFER_SIZE;
-	for(Int16U i = Regulator->RegulatorStepCounter; i < STEP_BUFFER_SIZE; i++)
-		Regulator->VFormTable[i] =
-				i < Regulator->ConstantVLastStep ? Regulator->VFormTable[Regulator->RegulatorStepCounter] : 0;
-	TIM_Start(TIM15);
-}
-//-----------------------------------------------
-
-bool REGULATOR_IGES_CheckVConstant(volatile RegulatorParamsStruct* Regulator)
-{
-	return Regulator->ConstantVFirstStep == Regulator->RegulatorStepCounter;
-}
-//-----------------------------------------------
-
-void REGULATOR_CashVariables(volatile RegulatorParamsStruct* Regulator)
-{
-	Regulator->Kp = (float)DataTable[REG_REGULATOR_Kp];
-	Regulator->Ki = (float)DataTable[REG_REGULATOR_Ki];
-	Regulator->DebugMode = (bool)DataTable[REG_REGULATOR_DEBUG];
-	Regulator->DACOffset = DataTable[REG_DAC_OFFSET];
-	Regulator->DACLimitValue =
-			(DAC_MAX_VAL > DataTable[REG_DAC_OUTPUT_LIMIT_VALUE]) ? DataTable[REG_DAC_OUTPUT_LIMIT_VALUE] : DAC_MAX_VAL;
+	Regulator->Mode = (DataTable[REG_REGULATOR_PARAMETRIC] == Parametric) ? Parametric : Mode;
 }
 //-----------------------------------------------

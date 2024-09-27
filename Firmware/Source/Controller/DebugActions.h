@@ -7,16 +7,20 @@
 
 // Functions
 //
-void DBGACT_UUSet();
-void DBGACT_UShortOut();
-void DBGACT_UUSen();
-void DBGACT_UISen();
-
-void DBGACT_IISet();
-void DBGACT_IStart();
-void DBGACT_IIGate();
-void DBGACT_UUCutoffSet();
-void DBGACT_UUNegativeSet();
-void DBGACT_ITestPulse();
+void DBGACT_SyncPAU();
+void DBGACT_SyncTOCUHP();
+void DBGACT_SyncOSC();
+void DBGACT_BlinkExtIndication();
+void DBGACT_SwitchMUX();
+void DBGACT_ShortPAU();
+void DBGACT_V_ShortOut();
+void DBGACT_V_VSet();
+void DBGACT_V_TestClimLow();
+void DBGACT_V_TestClimHigh();
+void DBGACT_C_VCutoffSet();
+void DBGACT_C_VNegativeSet();
+void DBGACT_C_TestPulse();
+void DBGACT_SwitchToDIAG();
+void DBGACT_Protection();
 
 #endif //__DEBUGACTIONS_H

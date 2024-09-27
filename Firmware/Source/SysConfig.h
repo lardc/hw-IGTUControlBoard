@@ -18,10 +18,9 @@
 // ----------------------------------------------
 
 // Timers
-#define TIMER15_uS						80			// в мкс
-#define TIMER7_uS						100			// в мкс
-#define TIMER6_nS						500			// в нс
-#define TIMER6_uS						((float)TIMER6_nS / 1000)
+#define TIMER15_uS						50			// в мкс
+#define TIMER7_uS						1000		// в мкс
+#define TIMER6_uS						1			// в мкс
 #define TIMER4_uS						2			// в мкс
 // ----------------------------------------------
 
@@ -30,13 +29,13 @@
 // ----------------------------------------------
 
 // ADC
-#define DMA_ADC_C_C_SEN_CHANNEL			DMA1_Channel1	// Канал DMA для АЦП тока затвора (источник C)
-#define ADC1_C_C_SEN_CHANNEL			1				// АЦП1 номер канала тока (источник C)
-#define ADC1_C_V_SEN_CHANNEL			2				// АЦП1 номер канала напряжения (источник C)
-#define ADC1_V_V_SEN_CHANNEL			3				// АЦП1 номер канала напряжения (источник V)
-#define ADC1_V_C_SEN_CHANNEL			4				// АЦП1 номер канала тока (источник V)
+#define ADC1_I_I_SEN_CHANNEL			1				// АЦП1 номер канала тока (источник C)
+#define ADC1_I_V_SEN_CHANNEL			2				// АЦП1 номер канала напряжения (источник C)
+#define ADC1_V_I_LOW_SEN_CHANNEL		3				// АЦП1 номер канала напряжения (источник V)
+#define ADC1_V_I_HIGH_SEN_CHANNEL		4				// АЦП1 номер канала тока (источник V)
 #define ADC3_POT_CHANNEL				1				// АЦП3 номер канала напряжения POT
-#define ADC_DMA_BUFF_SIZE				5				// Количество данных для DMA
+#define ADC_V_DMA_BUFF_SIZE				5				// Количество данных DMA для измерения Vgs/Iges
+#define ADC_DMA_BUFF_SIZE_QG			3000			// Количество данных DMA для измерения Qg
 // ----------------------------------------------
 
 // SPI
