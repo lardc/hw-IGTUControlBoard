@@ -209,9 +209,6 @@ void QG_SaveResult()
 
 			if(Ig > DataTable[REG_QG_I] * QG_I_THRESHOLD_COEF)
 			{
-				if(Qg < MEASURE_QG_MIN || Qg > MEASURE_QG_MAX)
-					DataTable[REG_WARNING] = WARNING_OUT_OF_RANGE;
-
 				DataTable[REG_QG_I_RESULT] =  Ig;
 				DataTable[REG_QG_RESULT] = Qg;
 				DataTable[REG_OP_RESULT] = OPRESULT_OK;

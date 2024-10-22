@@ -135,9 +135,6 @@ void VGS_Process()
 		}
 		else
 		{
-			if(AverageSamples.Voltage > VGS_VOLTAGE_MAX || AverageSamples.Voltage < VGS_VOLTAGE_MIN)
-				DataTable[REG_WARNING] = WARNING_OUT_OF_RANGE;
-
 			DataTable[REG_VGS_RESULT] = AverageSamples.Voltage;
 			DataTable[REG_VGS_I_RESULT] = VgsSampledData.Current;
 			DataTable[REG_OP_RESULT] = OPRESULT_OK;

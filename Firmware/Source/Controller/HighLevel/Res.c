@@ -137,9 +137,6 @@ void RES_Process()
 
 				DataTable[REG_RES_RESULT] = (AverageData.Voltage - LINE_RESISTANCE * AverageData.Current / 1000) / AverageData.Current * 1000;
 
-				if(DataTable[REG_RES_RESULT] < MEASURE_RES_MIN || DataTable[REG_RES_RESULT] > MEASURE_RES_MAX)
-					DataTable[REG_WARNING] = WARNING_OUT_OF_RANGE;
-
 				DataTable[REG_OP_RESULT] = OPRESULT_OK;
 				CONTROL_SetDeviceState(DS_Ready, SS_None);
 			}
