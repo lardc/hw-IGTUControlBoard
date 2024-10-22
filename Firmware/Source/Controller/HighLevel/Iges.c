@@ -320,10 +320,9 @@ void IGES_SaveResults()
 		{
 			if(PAU_ReadMeasuredData(&Iges))
 			{
-				Iges = Iges * 1e6; // in nA
+				Iges = Iges * 1e6 - DataTable[REG_IGES_V] / DataTable[REG_CTRL_LINE_RES] * 1000; // in nA
 
-				if(Iges < MEASURE_IGES_CURRENT_MIN || Iges > MEASURE_IGES_CURRENT_MAX)
-					DataTable[REG_WARNING] = WARNING_OUT_OF_RANGE;
+				Iges = (Iges < 0) ? 0 : Iges;
 
 				DataTable[REG_IGES_RESULT] = Iges;
 				DataTable[REG_OP_RESULT] = OPRESULT_OK;

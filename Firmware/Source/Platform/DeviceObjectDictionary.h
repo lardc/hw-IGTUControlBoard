@@ -149,6 +149,8 @@
 #define REG_I_ADC_TO_VN_P0				81	// Смещение тонкой подстройки Р0
 #define REG_I_ADC_TO_VN_K				82	// Коэффициент преобразования K
 #define REG_I_ADC_TO_VN_B				83	// Коэффициент преобразования B
+//
+#define REG_CTRL_LINE_RES				84	// Сопротивление утечки линии управления, кОм
 
 
 // Несохраняемые регистры чтения-записи
@@ -279,7 +281,6 @@
 
 //  Warning
 #define WARNING_NONE					0
-#define WARNING_OUT_OF_RANGE			1
 
 //  User Errors
 #define ERR_NONE						0
