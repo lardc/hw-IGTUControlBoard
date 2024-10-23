@@ -87,10 +87,16 @@ void IGES_Prepare()
 					IgesConfigStage = PAU_Wating;
 				}
 				else
+				{
+					IgesConfigStage = PAU_Config;
 					CONTROL_SwitchToFault(DF_PAU_INTERFACE);
+				}
 			}
 			else
+			{
+				IgesConfigStage = PAU_Config;
 				CONTROL_SwitchToFault(DF_PAU_WRONG_STATE);
+			}
 			break;
 
 		case PAU_Wating:
@@ -99,7 +105,10 @@ void IGES_Prepare()
 			else
 			{
 				if(CONTROL_TimeCounter >= PAU_StateTimeout)
+				{
+					IgesConfigStage = PAU_Config;
 					CONTROL_SwitchToFault(DF_PAU_WRONG_STATE);
+				}
 			}
 			break;
 
