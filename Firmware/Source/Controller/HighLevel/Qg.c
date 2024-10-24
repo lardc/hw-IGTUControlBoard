@@ -56,6 +56,7 @@ float QgCopiedBuffer[VALUES_x_SIZE];
 //
 void QG_CacheVariables();
 int QG_SortCondition(const void *A, const void *B);
+float QG_ExtractPulseWidth(pFloat32 Buffer, Int16U BufferSize);
 
 // Functions
 //
@@ -191,7 +192,7 @@ void QG_Pulse(bool State)
 
 void QG_SaveResult()
 {
-	float Ig, Qg;
+	float Ig, Qg, PulseWidth;
 
 	if(TOCUHP_InFault())
 		CONTROL_SwitchToFault(DF_TOCUHP_WRONG_STATE);
@@ -204,21 +205,32 @@ void QG_SaveResult()
 			QG_RemoveDC(&CONTROL_CurrentValues[0], VALUES_x_SIZE);
 			QG_Filter(CONTROL_CurrentValues, VALUES_x_SIZE);
 
+			PulseWidth = QG_ExtractPulseWidth(&CONTROL_CurrentValues[0], VALUES_x_SIZE);
 			Ig = QG_ExtractAverageCurrent(&CONTROL_CurrentValues[0], VALUES_x_SIZE, QG_AVG_LENGTH);
 			Qg = QG_CalculateGateCharge(&CONTROL_CurrentValues[0], VALUES_x_SIZE);
 
-			if(Ig > DataTable[REG_QG_I] * QG_I_THRESHOLD_COEF)
-			{
-				DataTable[REG_QG_I_RESULT] =  Ig;
-				DataTable[REG_QG_RESULT] = Qg;
-				DataTable[REG_OP_RESULT] = OPRESULT_OK;
-			}
-			else
+			if(PulseWidth >= DataTable[REG_QG_I_DURATION] * QG_I_PULSE_WIDTH_COEF)
 			{
 				DataTable[REG_QG_I_RESULT] =  0;
 				DataTable[REG_QG_RESULT] = 0;
 				DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
-				DataTable[REG_PROBLEM] = PROBLEM_CURRENT_NOT_REACHED;
+				DataTable[REG_PROBLEM] = PROBLEM_IG_WIDTH_NOT_ENOUGHT;
+			}
+			else
+			{
+				if(Ig > DataTable[REG_QG_I] * QG_I_THRESHOLD_COEF)
+				{
+					DataTable[REG_QG_I_RESULT] =  Ig;
+					DataTable[REG_QG_RESULT] = Qg;
+					DataTable[REG_OP_RESULT] = OPRESULT_OK;
+				}
+				else
+				{
+					DataTable[REG_QG_I_RESULT] =  0;
+					DataTable[REG_QG_RESULT] = 0;
+					DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
+					DataTable[REG_PROBLEM] = PROBLEM_CURRENT_NOT_REACHED;
+				}
 			}
 
 			QG_ResetConfigStageToDefault();
@@ -269,6 +281,20 @@ void QG_RemoveDC(pFloat32 InputArray, Int16U ArraySize)
 
 	for(int i = 0; i < ArraySize; i++)
 		*(InputArray + i) -= DC;
+}
+//-----------------------------------------------
+
+float QG_ExtractPulseWidth(pFloat32 Buffer, Int16U BufferSize)
+{
+	Int16U SampledPointsCounter = 0;
+
+	for (int i = 0; i < BufferSize; i++)
+	{
+		if(*(Buffer + i) > DataTable[REG_QG_I] * 0.5)
+			SampledPointsCounter++;
+	}
+
+	return (float)(SampledPointsCounter * QG_CURRENT_SAMPLE_TIME);
 }
 //-----------------------------------------------
 

@@ -278,6 +278,7 @@
 #define PROBLEM_CURRENT_NOT_REACHED		3
 #define PROBLEM_SHORT					4
 #define PROBLEM_DUT_NOT_FOUND			5
+#define PROBLEM_IG_WIDTH_NOT_ENOUGHT	6
 
 //  Warning
 #define WARNING_NONE					0
