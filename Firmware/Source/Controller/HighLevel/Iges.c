@@ -69,9 +69,6 @@ void IGES_Prepare()
 				switch((Int16U)DataTable[REG_IGES_RANGE])
 				{
 					case PAU_CODE_RANGE0:
-						PAU_Current = PAU_I_RANGE_0;
-						break;
-
 					case PAU_CODE_RANGE1:
 						PAU_Current = PAU_I_RANGE_1;
 						break;
@@ -329,11 +326,7 @@ void IGES_SaveResults()
 		{
 			if(PAU_ReadMeasuredData(&Iges))
 			{
-				Iges = Iges * 1e6 - DataTable[REG_IGES_V] / DataTable[REG_CTRL_LINE_RES] * 1000; // in nA
-
-				Iges = (Iges < 0) ? 0 : Iges;
-
-				DataTable[REG_IGES_RESULT] = Iges;
+				DataTable[REG_IGES_RESULT] = Iges * 1e6 - DataTable[REG_IGES_V] / DataTable[REG_CTRL_LINE_RES] * 1000; // in nA;
 				DataTable[REG_OP_RESULT] = OPRESULT_OK;
 
 				CONTROL_SetDeviceState(DS_Ready, SS_None);
