@@ -20,10 +20,6 @@
 #include "Res.h"
 #include "Certification.h"
 
-// Definitions
-//
-#define I_VCUT_OFF_DAC_DEF			2000
-
 // Variables
 //
 volatile DeviceState CONTROL_State = DS_None;
@@ -192,7 +188,7 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 					SertSet_I = (pFloat32)(&DataTable[REG_VGS_I_TRIG]);
 					SertResult_V = (pFloat32)(&DataTable[REG_VGS_RESULT]);
 					SertResult_I = (pFloat32)(&DataTable[REG_VGS_I_RESULT]);
-					Mode = FeedBack;
+					Mode = Parametric;
 					CONTROL_SetDeviceState(DS_InProcess, SS_Sert_V_Prepare);
 				}
 				else
@@ -220,6 +216,8 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 					DataTable[REG_PROBLEM] = PROBLEM_SAFETY_VIOLATION;
 					break;
 				}
+
+				QG_CacheVariables();
 				CONTROL_SetDeviceState(DS_InProcess, SS_QgPrepare);
 			}
 			else if(CONTROL_State == DS_InProcess)
@@ -485,11 +483,12 @@ void CONTROL_SwitchOutMUX(CommutationState Commutation)
 		if(Commutation == Current)
 			LL_OutMultiplexCurrent();
 		else
+		{
 			LL_OutMultiplexVoltage();
+			DELAY_MS(20);
+		}
 
 		LastCommutation = Commutation;
-
-		DELAY_MS(20);
 	}
 }
 //-----------------------------------------------

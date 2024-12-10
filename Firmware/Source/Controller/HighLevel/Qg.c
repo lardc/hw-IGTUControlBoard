@@ -26,8 +26,8 @@
 #define QG_DC_PART_STOP_INDEX			100
 //
 #define TOCUHP_WAIT_READY_TIMEOUT		10000
+#define QG_HW_WAIT_TIME					100
 #define QG_I_PULSE_WIDTH_COEF			0.96
-#define QG_HW_CONFIG_TIME				150
 #define QG_I_THRESHOLD_COEF				0.5
 #define QG_CALC_NOISE_CUT_OFF_COEF		0.3
 
@@ -35,28 +35,31 @@
 //
 typedef enum __QgPrepareStage
 {
-	TOCUHP_InitWaiting = 0,
+	HW_Config = 0,
+	HW_ConfigWaiting,
+	TOCUHP_InitWaiting,
 	TOCUHP_ConfigVoltage,
 	TOCUHP_ConfigCurrent,
 	TOCUHP_WatingReady,
-	HW_Config,
-	HW_ConfigWaiting,
-	StartMeasure
+	StartMeasure,
+	GateDischarge
 } QgPrepareStage;
 
 // Variables
 //
-QgPrepareStage QgConfigStage = TOCUHP_InitWaiting;
-QgPrepareStage QgConfigLastStage = TOCUHP_InitWaiting;
-Int64U TOCUHP_StateTimeout = 0;
+float QgVoltageCutOff, QgVoltageNegative, QgGateCurrent, QgGateCurrentDuration;
+//
+QgPrepareStage QgConfigStage = HW_Config;
+QgPrepareStage QgConfigLastStage = HW_Config;
+QGStages QGMeasureStage = QG_PreMeasurement;
 Int64U Timeout = 0;
 float QgCopiedBuffer[VALUES_x_SIZE];
 
 // Function prototypes
 //
-void QG_CacheVariables();
 int QG_SortCondition(const void *A, const void *B);
 float QG_ExtractPulseWidth(pFloat32 Buffer, Int16U BufferSize);
+void QG_CalculateData(pFloat32 PulseWidth, pFloat32 Ig, pFloat32 Qg);
 
 // Functions
 //
@@ -64,9 +67,39 @@ void QG_Prepare()
 {
 	switch(QgConfigStage)
 	{
+		case HW_Config:
+			if(DataTable[REG_SERTIFICATION])
+			{
+				TOCUHP_PowerDisable();
+				TOCUHP_EmulatedState(true);
+				QGMeasureStage = QG_Sertification;
+			}
+
+			CONTROL_SwitchOutMUX(Current);
+
+			INITCFG_ConfigADC_Qg_I();
+			INITCFG_ConfigDMA_Qg(VALUES_x_SIZE);
+			MEASURE_ResetDMABuffers();
+			QG_SetPulseWidth(QgGateCurrentDuration);
+
+			LL_ExDACVCutoff(CU_I_VcutoffToDAC(QgVoltageCutOff));
+			LL_ExDACVNegative(CU_I_VnegativeToDAC(QgVoltageNegative));
+			LL_I_SetDAC(CU_I_ItoDAC(QgGateCurrent));
+			LL_I_Enable(true);
+
+			Timeout = CONTROL_TimeCounter + QG_HW_WAIT_TIME;
+
+			QgConfigStage = HW_ConfigWaiting;
+			break;
+
+		case HW_ConfigWaiting:
+			if(CONTROL_TimeCounter >= Timeout)
+				QgConfigStage = (QGMeasureStage == QG_MainMeasurement) ? StartMeasure : TOCUHP_InitWaiting;
+			break;
+
 		case TOCUHP_InitWaiting:
 			TOCUHP_UpdateCANid();
-			TOCUHP_StateTimeout = CONTROL_TimeCounter + TOCUHP_WAIT_READY_TIMEOUT;
+			Timeout = CONTROL_TimeCounter + TOCUHP_WAIT_READY_TIMEOUT;
 			QgConfigLastStage = TOCUHP_InitWaiting;
 			QgConfigStage = TOCUHP_WatingReady;
 			break;
@@ -77,7 +110,7 @@ void QG_Prepare()
 				switch(QgConfigLastStage)
 				{
 					case TOCUHP_InitWaiting:
-						QgConfigStage = HW_Config;
+						QgConfigStage = TOCUHP_ConfigVoltage;
 						break;
 
 					case TOCUHP_ConfigVoltage:
@@ -94,51 +127,28 @@ void QG_Prepare()
 			}
 			else
 			{
-				if(CONTROL_TimeCounter >= TOCUHP_StateTimeout)
+				if(CONTROL_TimeCounter >= Timeout)
 					CONTROL_SwitchToFault(DF_TOCUHP_WRONG_STATE);
 			}
 			break;
 
-		case HW_Config:
-			CONTROL_SwitchOutMUX(Current);
-			QG_CacheVariables();
+			case TOCUHP_ConfigVoltage:
+				if(TOCUHP_ConfigAnodeVoltage(DataTable[REG_QG_V_POWER]))
+				{
+					Timeout = CONTROL_TimeCounter + TOCUHP_WAIT_READY_TIMEOUT;
+					QgConfigLastStage = TOCUHP_ConfigVoltage;
+					QgConfigStage = TOCUHP_WatingReady;
+				}
+				break;
 
-			INITCFG_ConfigADC_Qg_I();
-			INITCFG_ConfigDMA_Qg(VALUES_x_SIZE);
-			MEASURE_ResetDMABuffers();
-			QG_SetPulseWidth(DataTable[REG_QG_I_DURATION]);
-
-			LL_ExDACVCutoff(CU_I_VcutoffToDAC(DataTable[REG_QG_V_CUTOFF]));
-			LL_ExDACVNegative(CU_I_VnegativeToDAC(DataTable[REG_QG_V_NEGATIVE]));
-			LL_I_SetDAC(CU_I_ItoDAC(DataTable[REG_QG_I]));
-			LL_I_Enable(true);
-
-			Timeout = CONTROL_TimeCounter + QG_HW_CONFIG_TIME;
-			QgConfigStage = HW_ConfigWaiting;
-			break;
-
-		case HW_ConfigWaiting:
-			if(CONTROL_TimeCounter >= Timeout)
-				QgConfigStage = TOCUHP_ConfigVoltage;
-			break;
-
-		case TOCUHP_ConfigVoltage:
-			if(TOCUHP_ConfigAnodeVoltage(DataTable[REG_QG_V_POWER]))
-			{
-				TOCUHP_StateTimeout = CONTROL_TimeCounter + TOCUHP_WAIT_READY_TIMEOUT;
-				QgConfigLastStage = TOCUHP_ConfigVoltage;
-				QgConfigStage = TOCUHP_WatingReady;
-			}
-			break;
-
-		case TOCUHP_ConfigCurrent:
-			if(TOCUHP_ConfigAnodeCurrent(DataTable[REG_QG_I_POWER]))
-			{
-				TOCUHP_StateTimeout = CONTROL_TimeCounter + TOCUHP_WAIT_READY_TIMEOUT;
-				QgConfigLastStage = TOCUHP_ConfigCurrent;
-				QgConfigStage = TOCUHP_WatingReady;
-			}
-			break;
+			case TOCUHP_ConfigCurrent:
+				if(TOCUHP_ConfigAnodeCurrent(DataTable[REG_QG_I_POWER]))
+				{
+					Timeout = CONTROL_TimeCounter + TOCUHP_WAIT_READY_TIMEOUT;
+					QgConfigLastStage = TOCUHP_ConfigCurrent;
+					QgConfigStage = TOCUHP_WatingReady;
+				}
+				break;
 
 		case StartMeasure:
 			CONTROL_SetDeviceState(CONTROL_State, SS_QgProcess);
@@ -146,7 +156,7 @@ void QG_Prepare()
 
 			LL_QgProtection(true);
 			DELAY_US(10);
-			LL_SyncTOCUHP(true);
+			LL_SyncTOCUHP(QGMeasureStage == QG_MainMeasurement);
 			DELAY_US(500);
 			LL_QgProtection(false);
 			DELAY_US(2000);
@@ -157,12 +167,22 @@ void QG_Prepare()
 			QG_Pulse(true);
 			DELAY_US(20);
 			break;
+
+		case GateDischarge:
+			if(CONTROL_TimeCounter >= Timeout)
+				QgConfigStage = HW_Config;
+			break;
 	}
 }
 //----------------------------
 
 void QG_CacheVariables()
 {
+	QgVoltageCutOff = DataTable[REG_QG_V_CUTOFF];
+	QgVoltageNegative = DataTable[REG_QG_V_NEGATIVE];
+	QgGateCurrent = DataTable[REG_QG_I];
+	QgGateCurrentDuration = DataTable[REG_QG_I_DURATION];
+
 	CU_LoadConvertParams();
 }
 //----------------------------
@@ -194,60 +214,110 @@ void QG_SaveResult()
 {
 	float Ig, Qg, PulseWidth;
 
-	if(TOCUHP_InFault())
-		CONTROL_SwitchToFault(DF_TOCUHP_WRONG_STATE);
-	else
+	DataTable[REG_SERTIFICATION] = 0;
+
+	switch(QGMeasureStage)
 	{
-		if(TOCUHP_CheckOpResult() || CONTROL_State == DS_SelfTest)
-		{
-			LOG_CopyCurrentToEndpoints(&CONTROL_CurrentValues[0], &MEASURE_Qg_DataRaw[0], VALUES_x_SIZE);
-			CONTROL_Values_Counter = VALUES_x_SIZE;
-			QG_RemoveDC(&CONTROL_CurrentValues[0], VALUES_x_SIZE);
-			QG_Filter(CONTROL_CurrentValues, VALUES_x_SIZE);
+		case QG_PreMeasurement:
+			QG_CalculateData(&PulseWidth, &Ig, &Qg);
+			QgGateCurrent += QgGateCurrent - Ig;
 
-			PulseWidth = QG_ExtractPulseWidth(&CONTROL_CurrentValues[0], VALUES_x_SIZE);
-			Ig = QG_ExtractAverageCurrent(&CONTROL_CurrentValues[0], VALUES_x_SIZE, QG_AVG_LENGTH);
-			Qg = QG_CalculateGateCharge(&CONTROL_CurrentValues[0], VALUES_x_SIZE);
+			DEVPROFILE_ResetScopes(0);
+			DEVPROFILE_ResetEPReadState();
+			CONTROL_ResetHardwareToDefaultState();
 
-			if(PulseWidth >= DataTable[REG_QG_I_DURATION] * QG_I_PULSE_WIDTH_COEF)
-			{
-				DataTable[REG_QG_I_RESULT] =  0;
-				DataTable[REG_QG_RESULT] = 0;
-				DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
-				DataTable[REG_PROBLEM] = PROBLEM_IG_WIDTH_NOT_ENOUGHT;
-			}
+			Timeout = CONTROL_TimeCounter + QG_HW_WAIT_TIME;
+			QGMeasureStage = QG_MainMeasurement;
+			QgConfigStage = GateDischarge;
+			CONTROL_SetDeviceState(DS_InProcess, SS_QgPrepare);
+		break;
+
+		case QG_MainMeasurement:
+			QGMeasureStage = QG_PreMeasurement;
+
+			if(TOCUHP_InFault())
+				CONTROL_SwitchToFault(DF_TOCUHP_WRONG_STATE);
 			else
 			{
-				if(Ig > DataTable[REG_QG_I] * QG_I_THRESHOLD_COEF)
+				if(TOCUHP_CheckOpResult() || CONTROL_State == DS_SelfTest)
 				{
-					DataTable[REG_QG_I_RESULT] =  Ig;
-					DataTable[REG_QG_RESULT] = Qg;
-					DataTable[REG_OP_RESULT] = OPRESULT_OK;
+					QG_CalculateData(&PulseWidth, &Ig, &Qg);
+
+					if(PulseWidth >= DataTable[REG_QG_I_DURATION] * QG_I_PULSE_WIDTH_COEF)
+					{
+						DataTable[REG_QG_I_RESULT] =  0;
+						DataTable[REG_QG_RESULT] = 0;
+						DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
+						DataTable[REG_PROBLEM] = PROBLEM_VG_CUTOFF_NOT_REACHED;
+					}
+					else
+					{
+						if(Ig > DataTable[REG_QG_I] * QG_I_THRESHOLD_COEF)
+						{
+							DataTable[REG_QG_I_RESULT] =  Ig;
+							DataTable[REG_QG_RESULT] = Qg;
+							DataTable[REG_OP_RESULT] = OPRESULT_OK;
+						}
+						else
+						{
+							DataTable[REG_QG_I_RESULT] =  0;
+							DataTable[REG_QG_RESULT] = 0;
+							DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
+							DataTable[REG_PROBLEM] = PROBLEM_CURRENT_NOT_REACHED;
+						}
+					}
+
+					QG_ResetConfigStageToDefault();
+					CONTROL_ResetHardwareToDefaultState();
+
+					CONTROL_SetDeviceState(DS_Ready, SS_None);
 				}
 				else
-				{
-					DataTable[REG_QG_I_RESULT] =  0;
-					DataTable[REG_QG_RESULT] = 0;
-					DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
-					DataTable[REG_PROBLEM] = PROBLEM_CURRENT_NOT_REACHED;
-				}
+					CONTROL_SwitchToFault(DF_POWER_CURRENT);
 			}
+		break;
+
+		case QG_SelfTest:
+		case QG_Sertification:
+			QG_CalculateData(&PulseWidth, &Ig, &Qg);
+			DataTable[REG_QG_I_RESULT] =  Ig;
+			DataTable[REG_QG_RESULT] = Qg;
+			DataTable[REG_OP_RESULT] = OPRESULT_OK;
 
 			QG_ResetConfigStageToDefault();
 			CONTROL_ResetHardwareToDefaultState();
 
-			if(CONTROL_State != DS_SelfTest)
+			if(QGMeasureStage == QG_Sertification)
+			{
+				QGMeasureStage = QG_PreMeasurement;
 				CONTROL_SetDeviceState(DS_Ready, SS_None);
-		}
-		else
-			CONTROL_SwitchToFault(DF_POWER_CURRENT);
+			}
+			else
+			{
+				QGMeasureStage = QG_SelfTest;
+				CONTROL_SetDeviceState(DS_SelfTest, SS_I_Check);
+			}
+		break;
 	}
+}
+//-----------------------------------------------
+
+void QG_CalculateData(pFloat32 PulseWidth, pFloat32 Ig, pFloat32 Qg)
+{
+	LOG_CopyCurrentToEndpoints(&CONTROL_CurrentValues[0], &MEASURE_Qg_DataRaw[0], VALUES_x_SIZE);
+	CONTROL_Values_Counter = VALUES_x_SIZE;
+	QG_RemoveDC(&CONTROL_CurrentValues[0], VALUES_x_SIZE);
+	QG_Filter(CONTROL_CurrentValues, VALUES_x_SIZE);
+
+	*PulseWidth = QG_ExtractPulseWidth(&CONTROL_CurrentValues[0], VALUES_x_SIZE);
+	*Ig = QG_ExtractAverageCurrent(&CONTROL_CurrentValues[0], VALUES_x_SIZE, QG_AVG_LENGTH);
+	*Qg = QG_CalculateGateCharge(&CONTROL_CurrentValues[0], VALUES_x_SIZE);
 }
 //-----------------------------------------------
 
 void QG_ResetConfigStageToDefault()
 {
-	QgConfigStage = TOCUHP_InitWaiting;
+	QgConfigStage = HW_Config;
 }
 //-----------------------------------------------
 

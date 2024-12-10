@@ -136,7 +136,10 @@ void ST_Process()
 			DataTable[REG_QG_V_NEGATIVE] = ST_I_V_SET_STAGE0;
 			DataTable[REG_QG_I] = ST_I_CURRENT_STAGE0;
 
-			QG_Prepare();
+			CONTROL_ResetOutputRegisters();
+			QG_CacheVariables();
+			QGMeasureStage = QG_SelfTest;
+			CONTROL_SetDeviceState(DS_InProcess, SS_QgPrepare);
 			break;
 
 		case SS_I_PrepareStage1:
@@ -149,7 +152,9 @@ void ST_Process()
 			DataTable[REG_QG_V_NEGATIVE] = ST_I_V_SET_STAGE1;
 			DataTable[REG_QG_I] = ST_I_CURRENT_STAGE1;
 
-			QG_Prepare();
+			CONTROL_ResetOutputRegisters();
+			QG_CacheVariables();
+			CONTROL_SetDeviceState(DS_InProcess, SS_QgPrepare);
 			break;
 
 		case SS_I_Check:
@@ -164,6 +169,7 @@ void ST_Process()
 					CONTROL_SetDeviceState(DS_SelfTest, SS_I_PrepareStage1);
 				else
 				{
+					QGMeasureStage = QG_PreMeasurement;
 					TOCUHP_EmulatedState(false);
 					DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_OK;
 					CONTROL_SetDeviceState(DS_Ready, SS_None);
@@ -171,6 +177,7 @@ void ST_Process()
 			}
 			else
 			{
+				QGMeasureStage = QG_PreMeasurement;
 				PreviousStage = 0;
 				TOCUHP_EmulatedState(false);
 				DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_FAIL;

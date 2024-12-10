@@ -12,6 +12,7 @@
 #include "Logging.h"
 #include "Delay.h"
 #include "Qg.h"
+#include "TOCUHP.h"
 
 // Definitions
 //
@@ -107,6 +108,10 @@ void SERT_I_Prepare()
 {
 	SERT_I_CacheVariables();
 
+	CONTROL_SwitchOutMUX(Current);
+	TOCUHP_PowerDisable();
+	TOCUHP_EmulatedState(true);
+
 	INITCFG_ConfigADC_Qg_I();
 	INITCFG_ConfigDMA_Qg(ADC_DMA_BUFF_SIZE_QG);
 	MEASURE_ResetDMABuffers();
@@ -119,15 +124,16 @@ void SERT_I_Prepare()
 	LL_I_Enable(true);
 	DELAY_MS(20);
 
-	CONTROL_SwitchOutMUX(Current);
-
 	CONTROL_ResetOutputRegisters();
 	CONTROL_SetDeviceState(CONTROL_State, SS_Sert_I_Process);
-	MEASURE_StartNewSampling();
 	CONTROL_StartHighPriorityProcesses();
+	CONTROL_HandleExternalLamp(true);
 
 	LL_SyncOSC(true);
-	//DELAY_US(100);
+	DELAY_US(100);
+
+	MEASURE_StartNewSampling();
+	QG_Pulse(true);
 }
 //------------------------------
 
@@ -205,6 +211,7 @@ void SERT_I_Process()
 		*SertResult_Q = QG_CalculateGateCharge(&CONTROL_CurrentValues[0], VALUES_x_SIZE);
 		*SertResult_I = LOG_GetAverageFromBuffer(&CONTROL_CurrentValues[SERT_AVG_I_START_INDEX], SERT_AVG_LENGTH);
 
+		TOCUHP_EmulatedState(false);
 		DataTable[REG_OP_RESULT] = OPRESULT_OK;
 		CONTROL_SetDeviceState(DS_Ready, SS_None);
 	}
