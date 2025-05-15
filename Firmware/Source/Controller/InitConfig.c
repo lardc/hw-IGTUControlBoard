@@ -13,13 +13,13 @@
 
 // Functions
 //
-Boolean SysClk_Config()
+Boolean INITCFG_SysClk()
 {
 	return RCC_PLL_HSE_Config(QUARTZ_FREQUENCY, PREDIV_4, PLL_14);
 }
 //------------------------------------------------
 
-void EI_Config()
+void INITCFG_EI()
 {
 	EXTI_Config(EXTI_PA, EXTI_8, BOTH_TRIG, 0);
 	EXTI_Config(EXTI_PB, EXTI_15, BOTH_TRIG, 0);
@@ -32,7 +32,7 @@ void EI_Config()
 }
 //------------------------------------------------
 
-void IO_Config()
+void INITCFG_IO()
 {
 	// Включение тактирования портов
 	RCC_GPIO_Clk_EN(PORTA);
@@ -57,7 +57,7 @@ void IO_Config()
 }
 //------------------------------------------------
 
-void UART_Config()
+void INITCFG_UART()
 {
 	USART_Init(USART1, SYSCLK, USART_BAUDRATE);
 	USART_Recieve_Interupt(USART1, 0, true);
@@ -65,7 +65,7 @@ void UART_Config()
 }
 //------------------------------------------------
 
-void ADC_Init()
+void INITCFG_ADC()
 {
 	RCC_ADC_Clk_EN(ADC_12_ClkEN);
 	
@@ -75,7 +75,7 @@ void ADC_Init()
 }
 //------------------------------------------------
 
-void Timer7_Config()
+void INITCFG_Timer7()
 {
 	TIM_Clock_En(TIM_7);
 	TIM_Config(TIM7, SYSCLK, TIMER7_uS);
@@ -84,7 +84,7 @@ void Timer7_Config()
 }
 //------------------------------------------------
 
-void Timer3_Config()
+void INITCFG_Timer3()
 {
 	TIM_Clock_En(TIM_3);
 	TIM_Config(TIM3, SYSCLK, TIMER3_uS);
@@ -94,7 +94,7 @@ void Timer3_Config()
 }
 //------------------------------------------------
 
-void WatchDog_Config()
+void INITCFG_WatchDog()
 {
 	IWDG_Config();
 	IWDG_ConfigureSlowUpdate();

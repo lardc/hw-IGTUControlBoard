@@ -9,28 +9,28 @@ int main()
 	__enable_irq();
 	
 	// Настройка системной частоты тактирования
-	SysClk_Config();
+	INITCFG_SysClk();
 	
 	// Настройка портов
-	IO_Config();
+	INITCFG_IO();
 	
 	// Настройка внешних прерываний
-	EI_Config();
+	INITCFG_EI();
 	
 	// Настройка UART
-	UART_Config();
+	INITCFG_UART();
 	
 	// Настройка системного счетчика
-	Timer7_Config();
+	INITCFG_Timer7();
 	
 	// Настройка таймера таймаута длительности сихронизации
-	Timer3_Config();
+	INITCFG_Timer3();
 
 	// Настройка АЦП
-	ADC_Init();
+	INITCFG_ADC();
 	
 	// Настройка сторожевого таймера
-	WatchDog_Config();
+	INITCFG_WatchDog();
 	
 	// Инициализация логики контроллера
 	CONTROL_Init();
