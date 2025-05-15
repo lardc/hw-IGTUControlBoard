@@ -41,24 +41,13 @@ void IO_Config()
 	// Аналаговые входы
 	GPIO_Config(GPIOA, Pin_3, Analog, NoPull, HighSpeed, NoPull);
 	
-	// Цифровые входы
-	GPIO_InitInput(GPIO_VOUT_STATE, NoPull);
-
-	
 	// Выходы
-	GPIO_InitPushPullOutput(GPIO_RCK);
-	GPIO_InitPushPullOutput(GPIO_SRCK);
-	GPIO_InitPushPullOutput(GPIO_DATA);
-	GPIO_InitPushPullOutput(GPIO_FAN);
 	GPIO_InitPushPullOutput(GPIO_LED);
-	GPIO_InitPushPullOutput(GPIO_LED_EXT);
-	GPIO_InitPushPullOutput(GPIO_BAT_CHARGE);
-	GPIO_InitPushPullOutput(GPIO_HVPS_CTRL);
-	GPIO_InitPushPullOutput(GPIO_MW_CTRL);
+	GPIO_SetState(GPIO_SPI_SS, true);
+	GPIO_SetState(GPIO_SPI_CLK, false);
+	GPIO_SetState(GPIO_SPI_DAT, false);
+	GPIO_SetState(GPIO_SPI_OE, false);
 	
-	//Выходы с ОК
-	GPIO_InitOpenDrainOutput(GPIO_SYNC, NoPull);
-	GPIO_SetState(GPIO_SYNC, true);
 
 	// Альтернативные функции
 	GPIO_InitAltFunction(GPIO_ALT_CAN_RX, AltFn_9);
