@@ -43,6 +43,7 @@ void INITCFG_IO()
 	
 	// Выходы
 	GPIO_InitPushPullOutput(GPIO_LED);
+	GPIO_InitPushPullOutput(GPIO_LED_EXT);
 	GPIO_SetState(GPIO_SPI_SS, true);
 	GPIO_SetState(GPIO_SPI_CLK, false);
 	GPIO_SetState(GPIO_SPI_DAT, false);
