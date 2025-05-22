@@ -11,16 +11,16 @@ const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE] =
 {
 	{0, 0, 0},																	// 0
 	{0, 0, 0},																	// 1
-	{VOLTAGE_ERROR_MIN, VOLTAGE_ERROR_MAX, VOLTAGE_ERROR_DEF},					// 2
-	{CHARGE_TIMEOUT_MIN, CHARGE_TIMEOUT_MAX, CHARGE_TIMEOUT_DEF},				// 3
-	{FAN_OPERATE_MIN, FAN_OPERATE_MAX, FAN_OPERATE_DEF},						// 4
-	{FAN_PERIOD_MIN, FAN_PERIOD_MAX, FAN_PERIOD_DEF},							// 5
-	{RECHARGE_TIMEOUT_MIN, RECHARGE_TIMEOUT_MAX, RECHARGE_TIMEOUT_DEF},			// 6
-	{RESISTANCE_PER_LSB_MIN, RESISTANCE_PER_LSB_MAX, RESISTANCE_PER_LSB_DEF},	// 7
-	{CURRENT_MAX_PER_BIT_MIN, CURRENT_MAX_PER_BIT_MAX, CURRENT_MAX_PER_BIT_DEF},// 8
-	{SYNC_WAIT_TIMEOUT_MIN, SYNC_WAIT_TIMEOUT_MAX, SYNC_WAIT_TIMEOUT_DEF},		// 9
-	{AFTER_PULSE_TIMEOUT_MIN, AFTER_PULSE_TIMEOUT_MAX, AFTER_PULSE_TIMEOUT_DEF},// 10
-	{GATE_RESOLUTION_MIN, GATE_RESOLUTION_MAX, GATE_RESOLUTION_DEF},			// 11
+	{0, 0, 0},																	// 2
+	{0, 0, 0},																	// 3
+	{0, 0, 0},																	// 4
+	{0, 0, 0},																	// 5
+	{0, 0, 0},																	// 6
+	{0, 0, 0},																	// 7
+	{0, 0, 0},																	// 8
+	{0, 0, 0},																	// 9
+	{0, 0, 0},																	// 10
+	{0, 0, 0},																	// 11
 	{0, 0, 0},																	// 12
 	{0, 0, 0},																	// 13
 	{0, 0, 0},																	// 14
@@ -29,11 +29,11 @@ const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE] =
 	{0, 0, 0},																	// 17
 	{0, 0, 0},																	// 18
 	{0, 0, 0},																	// 19
-	{V_BAT_OFFSET_MIN, V_BAT_OFFSET_MAX, V_BAT_OFFSET_DEF},						// 20
-	{V_BAT_K_MIN, V_BAT_K_MAX, V_BAT_K_DEF},									// 21
-	{0, INT16U_MAX, 0},															// 22
-	{GAIN_COEFFICIENT_MIN, GAIN_COEFFICIENT_MAX, GAIN_VOLTAGE_DEF},				// 23
-	{0, INT16U_MAX, 0},															// 24
+	{0, 0, 0},																	// 20
+	{0, 0, 0},																	// 21
+	{0, 0, 0},																	// 22
+	{0, 0, 0},																	// 23
+	{0, 0, 0},																	// 24
 	{0, 0, 0},																	// 25
 	{0, 0, 0},																	// 26
 	{0, 0, 0},																	// 27
@@ -69,7 +69,7 @@ const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE] =
 	{0, 0, 0},																	// 57
 	{0, 0, 0},																	// 58
 	{0, 0, 0},																	// 59
-	{0, INT16U_MAX, 0},															// 60
+	{0, 0, 0},																	// 60
 	{0, 0, 0},																	// 61
 	{0, 0, 0},																	// 62
 	{0, 0, 0},																	// 63
@@ -141,8 +141,8 @@ const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE] =
 
 const TableItemConstraint VConstraint[DATA_TABLE_WP_START - DATA_TABLE_WR_START] =
 {
-	{BAT_VOLTAGE_MIN, BAT_VOLTAGE_MAX, BAT_VOLTAGE_DEF},						// 128
-	{0, INT16U_MAX, 0},															// 129
+	{0, 0, 0},																	// 128
+	{0, 0, 0},																	// 129
 	{0, 0, 0},																	// 130
 	{0, 0, 0},																	// 131
 	{0, 0, 0},																	// 132
@@ -173,7 +173,7 @@ const TableItemConstraint VConstraint[DATA_TABLE_WP_START - DATA_TABLE_WR_START]
 	{0, 0, 0},																	// 157
 	{0, 0, 0},																	// 158
 	{0, 0, 0},																	// 159
-	{0, INT16U_MAX, 0},															// 160
+	{0, 0, 0},																	// 160
 	{0, 0, 0},																	// 161
 	{0, 0, 0},																	// 162
 	{0, 0, 0},																	// 163
