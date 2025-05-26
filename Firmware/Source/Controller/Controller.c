@@ -48,10 +48,10 @@ void CONTROL_ResetToDefaultState();
 void CONTROL_Init()
 {
 	// Переменные для конфигурации EndPoint
-	Int16U EPIndexes[EP_COUNT] = {EP16_ExtInfoData};
-	Int16U EPSized[EP_COUNT] = {VALUES_EXT_INFO_SIZE};
-	pInt16U EPCounters[EP_COUNT] = {(pInt16U)&CONTROL_ExtInfoCounter};
-	pInt16U EPDatas[EP_COUNT] = {(pInt16U)CONTROL_ExtInfoData};
+	Int16U EPIndexes[FEP_COUNT] = {EP16_ExtInfoData};
+	Int16U EPSized[FEP_COUNT] = {VALUES_EXT_INFO_SIZE};
+	pInt16U EPCounters[FEP_COUNT] = {(pInt16U)&CONTROL_ExtInfoCounter};
+	pFloat32 EPDatas[FEP_COUNT] = {(pFloat32)CONTROL_ExtInfoData};
 	
 	// Конфигурация сервиса работы DataTable и EPROM
 	EPROMServiceConfig EPROMService = {(FUNC_EPROM_WriteValues)&NFLASH_WriteDT, (FUNC_EPROM_ReadValues)&NFLASH_ReadDT};
@@ -66,7 +66,7 @@ void CONTROL_Init()
 
 	// Инициализация device profile
 	DEVPROFILE_Init(&CONTROL_DispatchAction, &CycleActive, NodeID);
-	DEVPROFILE_InitEPService(EPIndexes, EPSized, EPCounters, EPDatas);
+	DEVPROFILE_InitFEPService(EPIndexes, EPSized, EPCounters, EPDatas);
 	// Сброс значений
 	DEVPROFILE_ResetControlSection();
 

@@ -17,6 +17,16 @@
 
 // Types
 //
+typedef struct __FEPState
+{
+	Int16U Size;
+	Int16U ReadCounter;
+	Int16U WriteCounter;
+	Int16U LastReadCounter;
+	pInt16U pDataCounter;
+	float* Data;
+} FEPState, *pFEPState;
+//
 typedef struct __EPState
 {
 	Int16U Size;
@@ -31,6 +41,7 @@ typedef struct __EPStates
 {
 	EPState EPs[EP_COUNT];
 	EPState WriteEPs[EP_WRITE_COUNT];
+	FEPState FEPs[FEP_COUNT];
 } EPStates, *pEPStates;
 
 // Variables
@@ -224,6 +235,30 @@ void DEVPROFILE_InitEPService(pInt16U Indexes, pInt16U Sizes, pInt16U* Counters,
 }
 // ----------------------------------------
 
+void DEVPROFILE_InitFEPService(pInt16U Indexes, pInt16U Sizes, pInt16U* Counters, float** Datas)
+{
+	for(Int16U i = 0; i < FEP_COUNT; ++i)
+	{
+		RS232_EPState.FEPs[i].Size = Sizes[i];
+		RS232_EPState.FEPs[i].pDataCounter = Counters[i];
+		RS232_EPState.FEPs[i].Data = Datas[i];
+
+		CAN_EPState.FEPs[i].Size = Sizes[i];
+		CAN_EPState.FEPs[i].pDataCounter = Counters[i];
+		CAN_EPState.FEPs[i].Data = Datas[i];
+
+		RS232_EPState.FEPs[i].ReadCounter = 0;
+		RS232_EPState.FEPs[i].LastReadCounter = 0;
+
+		CAN_EPState.FEPs[i].ReadCounter = 0;
+		CAN_EPState.FEPs[i].LastReadCounter = 0;
+
+		SCCI_RegisterReadEndpointFloat(&DEVICE_RS232_Interface, Indexes[i], &DEVPROFILE_CallbackReadFastFloatX);
+		BCCI_RegisterReadEndpointFloat(&DEVICE_CAN_Interface, Indexes[i], &DEVPROFILE_CallbackReadFastFloatX);
+	}
+}
+// ----------------------------------------
+
 Int16U DEVPROFILE_CallbackReadX(Int16U Endpoint, pInt16U* Buffer, Boolean Streamed,
 	Boolean RepeatLastTransmission, void* EPStateAddress, Int16U MaxNonStreamSize)
 {
@@ -338,6 +373,34 @@ Boolean DEVPROFILE_CallbackWriteX(
 		*(epState->pDataCounter) += Length;
 		return TRUE;
 	}
+}
+// ----------------------------------------
+
+Int16U DEVPROFILE_CallbackReadFastFloatX(Int16U Endpoint, float** Buffer, void* EPStateAddress, Int16U MaxNonStreamSize)
+{
+	// Validate pointer
+	if(!EPStateAddress)
+		return 0;
+
+	// Get endpoint
+	pFEPState epState = &((pEPStates)EPStateAddress)->FEPs[Endpoint - 1];
+
+	// Write possible content reference
+	*Buffer = epState->Data + epState->ReadCounter;
+
+	// Calculate content length
+	Int16U pLen = 0;
+	if(*(epState->pDataCounter) > epState->ReadCounter)
+		pLen = *(epState->pDataCounter) - epState->ReadCounter;
+
+	if(MaxNonStreamSize)
+		pLen = (pLen > MaxNonStreamSize) ? MaxNonStreamSize : pLen;
+
+	// Update content state
+	epState->LastReadCounter = epState->ReadCounter;
+	epState->ReadCounter += pLen;
+
+	return pLen;
 }
 // ----------------------------------------
 

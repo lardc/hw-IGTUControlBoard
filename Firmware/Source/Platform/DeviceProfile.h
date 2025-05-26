@@ -22,6 +22,7 @@ extern BCCIM_Interface MASTER_DEVICE_CAN_Interface;
 void DEVPROFILE_Init(xCCI_FUNC_CallbackAction SpecializedDispatch, Boolean *MaskChanges, Int16U NodeID);
 // Initialize endpoint service
 void DEVPROFILE_InitEPService(pInt16U Indexes, pInt16U Sizes, pInt16U *Counters, pInt16U *Datas);
+void DEVPROFILE_InitFEPService(pInt16U Indexes, pInt16U Sizes, pInt16U* Counters, float** Datas);
 // Process user interface requests
 void DEVPROFILE_ProcessRequests();
 // Reset EP counters
@@ -33,6 +34,7 @@ void DEVPROFILE_UpdateCANDiagStatus();
 //
 Int16U DEVPROFILE_CallbackReadX(Int16U Endpoint, pInt16U *Buffer, Boolean Streamed,
 									   Boolean RepeatLastTransmission, void *EPStateAddress, Int16U MaxNonStreamSize);
+Int16U DEVPROFILE_CallbackReadFastFloatX(Int16U Endpoint, float** Buffer, void* EPStateAddress, Int16U MaxNonStreamSize);
 
 void DEVPROFILE_ResetEPReadState();
 void DEVPROFILE_ResetScopes(Int16U ResetPosition);
