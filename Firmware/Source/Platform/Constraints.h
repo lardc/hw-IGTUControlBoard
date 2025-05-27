@@ -7,13 +7,33 @@
 #include "Global.h"
 
 //Definitions
+#define COEF_P2_MIN					-1e-3
+#define COEF_P2_MAX					1e-3
+#define COEF_P2_DEF					0
+//
+#define COEF_P1_MIN					0.5f
+#define COEF_P1_MAX					1.5f
+#define COEF_P1_DEF					1
+//
+#define COEF_P0_MIN					INT16S_MIN
+#define COEF_P0_MAX					INT16S_MAX
+#define COEF_P0_DEF					0
+//
+#define COEF_K_MIN					0
+#define COEF_K_MAX					INT16U_MAX
+//
+#define COEF_B_MIN					INT16S_MIN
+#define COEF_B_MAX					INT16S_MAX
+//
+#define COEF_RSH_MIN				0
+#define COEF_RSH_MAX				100e+6
 //
 // Types
 typedef struct __TableItemConstraint
 {
-	Int16U Min;
-	Int16U Max;
-	Int16U Default;
+	float Min;
+	float Max;
+	float Default;
 } TableItemConstraint;
 
 // Variables
