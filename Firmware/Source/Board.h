@@ -21,6 +21,8 @@ GPIO_PortPinSettingMacro GPIO_SPI_SS		= {GPIOA, Pin_15};
 //
 GPIO_PortPinSettingMacro GPIO_LED_EXT		= {GPIOB, Pin_4};
 GPIO_PortPinSettingMacro GPIO_SPI_OE		= {GPIOB, Pin_7};
+GPIO_PortPinSettingMacro GPIO_VCC_24		= {GPIOB, Pin_14};
+GPIO_PortPinSettingMacro GPIO_VCC_48		= {GPIOB, Pin_15};
 
 // Определения для портов альтернативных функций
 GPIO_PortPinSettingMacro GPIO_ALT_CAN_RX	= {GPIOA, Pin_11};

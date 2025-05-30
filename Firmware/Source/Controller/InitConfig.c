@@ -45,6 +45,9 @@ void INITCFG_IO()
 	// Выходы
 	GPIO_InitPushPullOutput(GPIO_LED);
 	GPIO_InitPushPullOutput(GPIO_LED_EXT);
+	GPIO_InitPushPullOutput(GPIO_VCC_24);
+	GPIO_InitPushPullOutput(GPIO_VCC_48);
+
 	GPIO_SetState(GPIO_SPI_SS, true);
 	GPIO_SetState(GPIO_SPI_OE, false);
 	

@@ -7,8 +7,8 @@
 #define ACT_FAULT_CLEAR					3	// Очистка fault
 #define ACT_WARNING_CLEAR				4	// Очистка warning
 
-#define ACT_DBG_EXT_INDICATION			5	// Управление внешней индикацией
-#define ACT_DBG_SPI_WRITE_TWO_BYTES		6	// Запись двух байтов для отладки SPI
+#define ACT_DBG_EXT_INDICATION			10	// Управление внешней индикацией
+#define ACT_DBG_SPI_WRITE_TWO_BYTES		11	// Запись двух байтов для отладки SPI
 
 #define ACT_SAVE_TO_ROM					200	// Сохранение пользовательских данных во FLASH процессора
 #define ACT_RESTORE_FROM_ROM			201	// Восстановление данных из FLASH
