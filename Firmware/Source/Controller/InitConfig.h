@@ -14,5 +14,6 @@ void INITCFG_Timer7();
 void INITCFG_Timer3();
 void INITCFG_WatchDog();
 void INITCFG_ConfigCAN(Int16U NodeID);
+void INITCFG_SPI();
 
 #endif //__INITCONFIG_H

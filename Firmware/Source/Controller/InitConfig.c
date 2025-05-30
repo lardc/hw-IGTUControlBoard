@@ -2,6 +2,7 @@
 #include "Board.h"
 #include "SysConfig.h"
 #include "BCCIxParams.h"
+#include "ZwSPI.h"
 
 // Definition
 //
@@ -45,8 +46,6 @@ void INITCFG_IO()
 	GPIO_InitPushPullOutput(GPIO_LED);
 	GPIO_InitPushPullOutput(GPIO_LED_EXT);
 	GPIO_SetState(GPIO_SPI_SS, true);
-	GPIO_SetState(GPIO_SPI_CLK, false);
-	GPIO_SetState(GPIO_SPI_DAT, false);
 	GPIO_SetState(GPIO_SPI_OE, false);
 	
 
@@ -55,6 +54,8 @@ void INITCFG_IO()
 	GPIO_InitAltFunction(GPIO_ALT_CAN_TX, AltFn_9);
 	GPIO_InitAltFunction(GPIO_ALT_UART_RX, AltFn_7);
 	GPIO_InitAltFunction(GPIO_ALT_UART_TX, AltFn_7);
+	GPIO_InitAltFunction(GPIO_ALT_SPI_CLK, AltFn_5);
+	GPIO_InitAltFunction(GPIO_ALT_SPI_MOSI, AltFn_5);
 }
 //------------------------------------------------
 
@@ -111,5 +112,11 @@ void INITCFG_ConfigCAN(Int16U NodeID)
 	NCAN_FIFOInterrupt(TRUE);
 	NCAN_FilterInit(0, Mask, Mask);
 	NCAN_InterruptSetPriority(0);
+}
+//------------------------------------------------
+
+void INITCFG_SPI()
+{
+	SPI_Init(SPI1, SPI_BAUDRATE_BITS, SPI_LSB_FIRST);
 }
 //------------------------------------------------

@@ -9,6 +9,6 @@
 void LL_ToggleBoardLED();
 void LL_ExtIndication(bool State);
 void LL_ToggleExternalLED();
-void LL_SPI_WriteByte(Int8U Data);
+void LL_SPI_WriteByte(Int16U Data);
 
 #endif //__LOWLEVEL_H

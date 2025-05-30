@@ -27,4 +27,9 @@
 #define CAN_BAUDRATE					1000000		// Битрейт CAN
 // ----------------------------------------------
 
+// SPI
+#define SPI_BAUDRATE_BITS				0x5
+#define SPI_LSB_FIRST					false
+// ----------------------------------------------
+
 #endif // __SYSCONFIG_H

@@ -31,6 +31,9 @@ int main()
 	
 	// Настройка сторожевого таймера
 	INITCFG_WatchDog();
+
+	// Настройка SPI
+	INITCFG_SPI();
 	
 	// Инициализация логики контроллера
 	CONTROL_Init();

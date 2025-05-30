@@ -4,6 +4,7 @@
 #include "Board.h"
 #include "Delay.h"
 #include "DataTable.h"
+#include "ZwSPI.h"
 
 // Functions
 //
@@ -25,15 +26,8 @@ void LL_ToggleExternalLED()
 }
 //-----------------------------
 
-void LL_SPI_WriteByte(Int8U Data)
+void LL_SPI_WriteByte(Int16U Data)
 {
-	for (int i = 7; i >= 0; i--)
-	{
-		GPIO_SetState(GPIO_SPI_DAT, (Data >> i) & 0x1);
-		DELAY_US(TIME_SPI_DELAY);
-		GPIO_SetState(GPIO_SPI_CLK, true);
-		DELAY_US(TIME_SPI_DELAY);
-		GPIO_SetState(GPIO_SPI_CLK, false);
-	}
+	SPI_WriteByte(SPI1, Data);
 }
 //-----------------------------
