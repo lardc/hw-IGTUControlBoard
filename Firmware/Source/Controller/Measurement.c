@@ -15,13 +15,17 @@
 // Forward functions
 void MEASURE_ConvertADCtoValx(pFloat32 InputArray, Int16U DataLength, Int16U RegisterOffset,
 		Int16U RegisterK, Int16U RegisterP0, Int16U RegisterP1, Int16U RegisterP2, float RShunt);
-float MEASURE_ConvertX(Int16U SampleADC, Int16U RegisterP2, Int16U RegisterP1, Int16U RegisterP0, Int16U RegisterK, Int16U RegisterB);
+float MEASURE_ConvertX(Int16U SampleADC, Int16U RegisterP2, Int16U RegisterP1, Int16U RegisterP0, Int16U RegisterK, Int16U RegisterB, Int16U RegisterRshunt);
 
 // Functions
 //
-float MEASURE_ConvertX(Int16U SampleADC, Int16U RegisterP2, Int16U RegisterP1, Int16U RegisterP0, Int16U RegisterK, Int16U RegisterB)
+float MEASURE_ConvertX(Int16U SampleADC, Int16U RegisterP2, Int16U RegisterP1, Int16U RegisterP0, Int16U RegisterK, Int16U RegisterB, Int16U RegisterRshunt)
 {
 	float Result = ((float)SampleADC / ADC_RESOLUTION) * DataTable[REG_U_ADC_REF] * DataTable[RegisterK] + DataTable[RegisterB];
+
+	if (RegisterRshunt)
+		Result /= DataTable[RegisterRshunt];
+
 	Result = Result * Result * DataTable[RegisterP2] + Result * DataTable[RegisterP1] + DataTable[RegisterP0];
 
 	return (Result > 0) ? Result : 0;
@@ -31,50 +35,23 @@ float MEASURE_ConvertX(Int16U SampleADC, Int16U RegisterP2, Int16U RegisterP1, I
 float MEASURE_U1(Int16U SampleADC)
 {
 	return MEASURE_ConvertX(SampleADC, REG_U_1_P2, REG_U_1_P1, REG_U_1_P0, REG_U_1_K, 
-			REG_U_1_B);
+			REG_U_1_B, 0);
 }
 //------------------------------------
 
 float MEASURE_U2(Int16U SampleADC)
 {
 	return MEASURE_ConvertX(SampleADC, REG_U_2_P2, REG_U_2_P1, REG_U_2_P0, REG_U_2_K, 
-			REG_U_2_B);
+			REG_U_2_B, 0);
 }
 //------------------------------------
 
 float MEASURE_I(Int16U SampleADC, IChannel Channel)
 {
-	Int16U offset = 0;
+	Int16U offset = 6 * (Channel - 1);
 
-	switch (Channel)
-	{
-		case I_CHANNEL_1:
-			offset = 0;
-			break;
-		case I_CHANNEL_2:
-			offset = 6;
-			break;
-		case I_CHANNEL_3:
-			offset = 12;
-			break;
-		case I_CHANNEL_4:
-			offset = 18;
-			break;
-		case I_CHANNEL_5:
-			offset = 24;
-			break;
-		case I_CHANNEL_6:
-			offset = 30;
-			break;
-		case I_CHANNEL_7:
-			offset = 36;
-			break;
-		case I_CHANNEL_8:
-			offset = 42;
-			break;
-	}
 	return MEASURE_ConvertX(SampleADC, REG_I_1_P2 + offset, REG_I_1_P1 + offset, REG_I_1_P0 + offset, 
-			REG_I_1_K + offset, REG_I_1_B + offset);
+			REG_I_1_K + offset, REG_I_1_B + offset, REG_I_1_RSH + offset);
 }
 //------------------------------------
 
