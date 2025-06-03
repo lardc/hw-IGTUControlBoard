@@ -48,10 +48,6 @@ void INITCFG_IO()
 	GPIO_InitPushPullOutput(GPIO_VCC_24);
 	GPIO_InitPushPullOutput(GPIO_VCC_48);
 
-	GPIO_SetState(GPIO_SPI_SS, true);
-	GPIO_SetState(GPIO_SPI_OE, false);
-	
-
 	// Альтернативные функции
 	GPIO_InitAltFunction(GPIO_ALT_CAN_RX, AltFn_9);
 	GPIO_InitAltFunction(GPIO_ALT_CAN_TX, AltFn_9);
@@ -59,6 +55,7 @@ void INITCFG_IO()
 	GPIO_InitAltFunction(GPIO_ALT_UART_TX, AltFn_7);
 	GPIO_InitAltFunction(GPIO_ALT_SPI_CLK, AltFn_5);
 	GPIO_InitAltFunction(GPIO_ALT_SPI_MOSI, AltFn_5);
+	GPIO_InitAltFunction(GPIO_ALT_SPI_SS, AltFn_5);
 }
 //------------------------------------------------
 
