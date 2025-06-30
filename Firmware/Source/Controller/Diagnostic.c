@@ -30,6 +30,9 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 			LL_SPI_WriteByte(DataTable[REG_DBG]);
 			break;
 
+		case ACT_DBG_PULSE:
+			DIAG_GenerateTrapezoidWave();
+
 		default:
 			return false;
 	}
@@ -38,7 +41,7 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 }
 //------------------------------------------------
 
-void DIAG_GenerateTrapezoidWave(void)
+void DIAG_GenerateTrapezoidWave()
 {
 	float RiseTime = DataTable[REG_PULSE_AMPLITUDE] / DataTable[REG_SLEW_RATE];
 
