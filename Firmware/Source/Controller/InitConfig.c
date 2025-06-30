@@ -3,6 +3,7 @@
 #include "SysConfig.h"
 #include "BCCIxParams.h"
 #include "ZwSPI.h"
+#include "Diagnostic.h"
 
 // Definition
 //
@@ -41,6 +42,7 @@ void INITCFG_IO()
 	
 	// Аналаговые входы
 	GPIO_Config(GPIOA, Pin_3, Analog, NoPull, HighSpeed, NoPull);
+	GPIO_Config(GPIOA, Pin_14, Analog, NoPull, HighSpeed, NoPull);
 	
 	// Выходы
 	GPIO_InitPushPullOutput(GPIO_LED);
@@ -77,6 +79,16 @@ void INITCFG_ADC()
 }
 //------------------------------------------------
 
+void INITCFG_DAC1()
+{
+	DACx_Clk_Enable(DAC_1_ClkEN);
+	DACx_Reset();
+	DAC_Trigger_Config(TRIG1_TIMER6, TRIG1_ENABLE);
+	DAC_Buff(BUFF1, false);
+	DACx_DMA_Config(DAC_DMA1ENABLE, DAC_DMA1UdIntDISABLE);
+	DACx_Enable(DAC1ENABLE);
+}
+
 void INITCFG_Timer7()
 {
 	TIM_Clock_En(TIM_7);
@@ -95,6 +107,14 @@ void INITCFG_Timer3()
 	TIM_Stop(TIM3);
 }
 //------------------------------------------------
+
+void INITCFG_Timer6()
+{
+	TIM_Clock_En(TIM_6);
+	TIM_Config(TIM6, SYSCLK, TIMER6_uS);
+	TIM_MasterMode(TIM6, MMS_UPDATE);
+	TIM_DMA(TIM6, DMAEN);
+}
 
 void INITCFG_WatchDog()
 {
@@ -120,3 +140,23 @@ void INITCFG_SPI()
 	SPI_Init(SPI1, SPI_BAUDRATE_BITS, SPI_LSB_FIRST);
 }
 //------------------------------------------------
+
+void INITCFG_DMA(uint16_t Size)
+{
+	RCC->APB2ENR |= RCC_APB2ENR_SYSCFGEN;
+	SYSCFG->CFGR1 |= SYSCFG_CFGR1_TIM6DAC1Ch1_DMA_RMP;
+
+	DMA_Clk_Enable(DMA_ClkEN);
+	DMA_Reset(DMA1_Channel3);
+	DMA_Interrupt(DMA1_Channel3, DMA_TRANSFER_COMPLETE, 2, true);
+
+	DMA1ChannelX_DataConfig(
+		DMA1_Channel3,
+		(uint32_t)(&DIAG_PulseDataBuffer),
+		(uint32_t)(&DAC->DHR12R1),
+		Size
+	);
+
+	DMA1ChannelX_Config(DMA1_Channel3, DMA_MEM2MEM_DIS, DMA_LvlPriority_LOW, DMA_MSIZE_16BIT, DMA_PSIZE_16BIT,
+	DMA_MINC_EN, false, DMA_CIRCMODE_EN, DMA_READ_FROM_MEM, DMA_CHANNEL_EN);
+}

@@ -1,6 +1,7 @@
 ﻿#include "Controller.h"
 #include "InitConfig.h"
 #include "SysConfig.h"
+#include "Diagnostic.h"
 
 int main()
 {
@@ -26,15 +27,24 @@ int main()
 	// Настройка таймера таймаута длительности сихронизации
 	INITCFG_Timer3();
 
+	// Настройка таймера тактирования DMA
+	INITCFG_Timer6();
+
 	// Настройка АЦП
 	INITCFG_ADC();
+
+	// Настройка ЦАП
+	INITCFG_DAC1();
 	
 	// Настройка сторожевого таймера
 	INITCFG_WatchDog();
 
 	// Настройка SPI
 	INITCFG_SPI();
-	
+
+	// Настройка DMA
+	INITCFG_DMA(DIAG_PULSE_BUFFER_SIZE);
+
 	// Инициализация логики контроллера
 	CONTROL_Init();
 	

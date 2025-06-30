@@ -103,6 +103,9 @@
 #define REG_U_SET_B						65	// Коэффициент преобразования B
 //
 // 66 - 149
+#define REG_SLEW_RATE					66	// Скорость нарастания переднего фронта В/сек
+#define REG_PULSE_WIDTH					67	// Длина импульса сек
+#define REG_PULSE_AMPLITUDE				68	// Амплитуда В
 //
 #define REG_DBG							150	// Отладочный регистр
 //

@@ -8,6 +8,11 @@
 #include "DataTable.h"
 #include "DeviceObjectDictionary.h"
 #include "Controller.h"
+#include "Measurement.h"
+
+// Variables
+//
+Int16U DIAG_PulseDataBuffer[DIAG_PULSE_BUFFER_SIZE];
 
 // Functions
 //
@@ -31,4 +36,36 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 
 	return true;
 }
-//-----------------------------
+//------------------------------------------------
+
+void DIAG_GenerateTrapezoidWave(void)
+{
+	float RiseTime = DataTable[REG_PULSE_AMPLITUDE] / DataTable[REG_SLEW_RATE];
+
+	float PulseTime = RiseTime + DataTable[REG_PULSE_WIDTH] + RiseTime;
+
+	int RiseSamples = (int)(DIAG_PULSE_BUFFER_SIZE * RiseTime / PulseTime);
+	int PlateuSamples = (int)(DIAG_PULSE_BUFFER_SIZE * DataTable[REG_PULSE_WIDTH] / PulseTime);
+	int FallSamples = DIAG_PULSE_BUFFER_SIZE - RiseSamples - PlateuSamples;
+
+	int idx = 0;
+	for (int i = 0; i < RiseSamples; ++i)
+	{
+		float value = (float)i / RiseSamples * DataTable[REG_PULSE_AMPLITUDE];
+		DIAG_PulseDataBuffer[idx++] = MEASURE_ConvertUset(value);
+	}
+
+	for (int i = 0; i < PlateuSamples; ++i)
+		DIAG_PulseDataBuffer[idx++] = MEASURE_ConvertUset(DataTable[REG_PULSE_AMPLITUDE]);
+
+	for (int i = 0; i < FallSamples; ++i)
+	{
+		float value = DataTable[REG_PULSE_AMPLITUDE] * (1.0f - (float)i / FallSamples);
+		DIAG_PulseDataBuffer[idx++] = MEASURE_ConvertUset(value);
+	}
+}
+//------------------------------------------------
+
+
+
+
