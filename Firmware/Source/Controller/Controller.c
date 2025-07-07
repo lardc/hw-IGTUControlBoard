@@ -103,6 +103,15 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 	
 	switch (ActionID)
 	{
+		case 10:
+			GPIO_SetState(GPIO_SPI_SS, false);
+			SPI_WriteByte(SPI1, DataTable[REG_DBG]);
+			GPIO_SetState(GPIO_SPI_SS, true);
+			GPIO_SetState(GPIO_SPI_LDAC, false);
+			DELAY_US(1);
+			GPIO_SetState(GPIO_SPI_LDAC, true);
+			break;
+
 		case ACT_ENABLE_POWER:
 			break;
 			

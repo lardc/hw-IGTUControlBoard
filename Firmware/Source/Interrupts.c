@@ -8,35 +8,11 @@
 #include "Global.h"
 #include "DataTable.h"
 #include "DeviceObjectDictionary.h"
-//
-
-// Variables
-//
-bool Impulse = false;
-
-// Functions prototypes
-void INT_SyncTimeoutControl(bool State);
-//
-
-// Functions
-//
-void EXTI9_5_IRQHandler()
-{
-	EXTI_FlagReset(EXTI_8);
-}
-//-----------------------------------------
-
-void EXTI15_10_IRQHandler()
-{
-	EXTI_FlagReset(EXTI_15);
-}
-//-----------------------------------------
 
 void TIM3_IRQHandler()
 {
 	if(TIM_StatusCheck(TIM3))
 	{
-		INT_SyncTimeoutControl(false);
 		TIM_StatusClear(TIM3);
 	}
 }
@@ -76,12 +52,5 @@ void TIM7_IRQHandler()
 
 		TIM_StatusClear(TIM7);
 	}
-}
-//-----------------------------------------
-
-void INT_SyncTimeoutControl(bool State)
-{
-	State ? TIM_Start(TIM3) : TIM_Stop(TIM3);
-	TIM_Reset(TIM3);
 }
 //-----------------------------------------

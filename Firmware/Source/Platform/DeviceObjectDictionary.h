@@ -22,9 +22,10 @@
 
 // Регистры
 // Сохраняемые регистры
-// 0 - 59
 #define REG_CFG_NODE_ID					60	// Настройка CAN NodeID
-// 61 - 191
+
+#define REG_DBG							150
+
 // Регистры только чтение
 #define REG_DEV_STATE					192	// Регистр состояния
 #define REG_FAULT_REASON				193	// Регистр Fault

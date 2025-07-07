@@ -19,42 +19,27 @@ Boolean INITCFG_SysClk()
 }
 //------------------------------------------------
 
-void INITCFG_EI()
-{
-	EXTI_Config(EXTI_PA, EXTI_8, BOTH_TRIG, 0);
-	EXTI_Config(EXTI_PB, EXTI_15, BOTH_TRIG, 0);
-	//
-	EXTI_EnableInterrupt(EXTI9_5_IRQn, 0, true);
-	EXTI_EnableInterrupt(EXTI15_10_IRQn, 0, true);
-
-	NVIC_SetPriority(EXTI9_5_IRQn, EXTI8_INTERRUPT_PRIORITY);
-	NVIC_SetPriority(EXTI15_10_IRQn, EXTI15_INTERRUPT_PRIORITY);
-}
-//------------------------------------------------
-
 void INITCFG_IO()
 {
 	// Включение тактирования портов
 	RCC_GPIO_Clk_EN(PORTA);
 	RCC_GPIO_Clk_EN(PORTB);
 	
-	// Аналаговые входы
-	GPIO_Config(GPIOA, Pin_3, Analog, NoPull, HighSpeed, NoPull);
-	
 	// Выходы
 	GPIO_InitPushPullOutput(GPIO_LED);
-	GPIO_InitPushPullOutput(GPIO_LED_EXT);
+	GPIO_InitPushPullOutput(GPIO_SPI_SS);
 	GPIO_SetState(GPIO_SPI_SS, true);
-	GPIO_SetState(GPIO_SPI_CLK, false);
-	GPIO_SetState(GPIO_SPI_DAT, false);
-	GPIO_SetState(GPIO_SPI_OE, false);
-	
+	GPIO_InitPushPullOutput(GPIO_SPI_LDAC);
+	GPIO_SetState(GPIO_SPI_LDAC, true);
 
 	// Альтернативные функции
 	GPIO_InitAltFunction(GPIO_ALT_CAN_RX, AltFn_9);
 	GPIO_InitAltFunction(GPIO_ALT_CAN_TX, AltFn_9);
 	GPIO_InitAltFunction(GPIO_ALT_UART_RX, AltFn_7);
 	GPIO_InitAltFunction(GPIO_ALT_UART_TX, AltFn_7);
+
+	GPIO_InitAltFunction(GPIO_ALT_SPI_CLCK, AltFn_5);
+	GPIO_InitAltFunction(GPIO_ALT_SPI_MOSI, AltFn_5);
 }
 //------------------------------------------------
 
@@ -63,16 +48,6 @@ void INITCFG_UART()
 	USART_Init(USART1, SYSCLK, USART_BAUDRATE);
 	USART_Recieve_Interupt(USART1, 0, true);
 	NVIC_SetPriority(EXTI15_10_IRQn, USART1_INTERRUPT_PRIORITY);
-}
-//------------------------------------------------
-
-void INITCFG_ADC()
-{
-	RCC_ADC_Clk_EN(ADC_12_ClkEN);
-	
-	ADC_Calibration(ADC1);
-	ADC_SoftTrigConfig(ADC1);
-	ADC_Enable(ADC1);
 }
 //------------------------------------------------
 
@@ -111,5 +86,11 @@ void INITCFG_ConfigCAN(Int16U NodeID)
 	NCAN_FIFOInterrupt(TRUE);
 	NCAN_FilterInit(0, Mask, Mask);
 	NCAN_InterruptSetPriority(0);
+}
+//------------------------------------------------
+
+void INITCFG_SPI()
+{
+	SPI_Init(SPI1, SPI_BAUDRATE_BITS, SPI_LSB_FIRST);
 }
 //------------------------------------------------
