@@ -13,12 +13,35 @@
 #define ADC_RESOLUTION 4095
 
 // Forward functions
-void MEASURE_ConvertADCtoValx(pFloat32 InputArray, Int16U DataLength, Int16U RegisterOffset,
-		Int16U RegisterK, Int16U RegisterP0, Int16U RegisterP1, Int16U RegisterP2, float RShunt);
 float MEASURE_ConvertX(Int16U SampleADC, Int16U RegisterP2, Int16U RegisterP1, Int16U RegisterP0, Int16U RegisterK, Int16U RegisterB, Int16U RegisterRshunt);
 
 // Functions
 //
+void MEASURE_ConvertADC_X(pFloat32 InputArray, Int16U DataLength, Int16U RegisterP2, Int16U RegisterP1, Int16U RegisterP0, Int16U RegisterK, Int16U RegisterB, Int16U RegisterRshunt)
+{
+	Int16U P2 = DataTable[RegisterP2];
+	Int16U P1 = DataTable[RegisterP1];
+	Int16U P0 = DataTable[RegisterP0];
+	Int16U K = DataTable[RegisterK];
+	Int16U B = DataTable[RegisterB];
+	Int16U Rshunt = DataTable[RegisterRshunt];
+	
+	for(Int16U i = 0; i < DataLength; i++)
+	{
+		float Result = (float)(*((pInt32U)(InputArray + i)));
+		Result = Result * DataTable[REG_U_ADC_REF] * K + B;
+
+		if(Rshunt)
+			Result = Result / Rshunt;
+
+		Result = Result * Result * P2 + Result * P1 + P0;
+		Result = (Result > 0) ? Result : 0;
+
+		InputArray[i] = Result;
+	}
+}
+//------------------------------------
+
 float MEASURE_ConvertX(Int16U SampleADC, Int16U RegisterP2, Int16U RegisterP1, Int16U RegisterP0, Int16U RegisterK, Int16U RegisterB, Int16U RegisterRshunt)
 {
 	float Result = ((float)SampleADC / ADC_RESOLUTION) * DataTable[REG_U_ADC_REF] * DataTable[RegisterK] + DataTable[RegisterB];
@@ -60,5 +83,22 @@ Int16U MEASURE_ConvertUset(float Uset)
 	float Result = Uset * Uset * DataTable[REG_U_SET_P2] + Uset * DataTable[REG_U_SET_P1] + DataTable[REG_U_SET_P0];
 	Result = Result * DataTable[REG_U_SET_K] + DataTable[REG_U_SET_B];
 	return (Int16U)((Result / DataTable[REG_U_ADC_REF]) * ADC_RESOLUTION);
+}
+//------------------------------------
+
+void MEASURE_ConvertIScope(pFloat32 InputArray, Int16U DataLength, IChannel Channel)
+{
+	Int16U offset = 6 * (Channel - 1);
+
+	MEASURE_ConvertADC_X(
+		InputArray,
+		DataLength,
+		DataTable[REG_I_1_P2 + offset],
+		DataTable[REG_I_1_P1 + offset],
+		DataTable[REG_I_1_P0 + offset],
+		DataTable[REG_I_1_K + offset],
+		DataTable[REG_I_1_B + offset],
+		DataTable[REG_I_1_RSH + offset]
+	);
 }
 //------------------------------------

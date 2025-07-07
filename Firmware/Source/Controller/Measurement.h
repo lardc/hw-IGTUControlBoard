@@ -17,7 +17,7 @@ typedef enum IChannel
 	I_CHANNEL_8
 } IChannel;
 
-typedef enum Relay
+typedef enum RelayMask
 {
 	RELAY_NONE = 0,
 	RELAY_CH_1 = 0x01,
@@ -27,13 +27,15 @@ typedef enum Relay
 	RELAY_CH_5 = 0x10,
 	RELAY_CH_6 = 0x20,
 	RELAY_CH_7 = 0x40,
-} Relay;
+} RelayMask;
 
 // Functions
 //
 float MEASURE_U1(Int16U SampleADC);
 float MEASURE_U2(Int16U SampleADC);
 float MEASURE_I(Int16U SampleADC, IChannel Channel);
+//
+void MEASURE_ConvertIScope(pFloat32 InputArray, Int16U DataLength, IChannel Channel);
 //
 Int16U MEASURE_ConvertUset(float Uset);
 
