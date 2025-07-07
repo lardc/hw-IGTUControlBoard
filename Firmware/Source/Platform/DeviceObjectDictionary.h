@@ -103,10 +103,18 @@
 #define REG_U_SET_K						64	// Коэффициент преобразования K
 #define REG_U_SET_B						65	// Коэффициент преобразования B
 //
-// 66 - 149
 #define REG_SLEW_RATE					66	// Скорость нарастания переднего фронта В/сек
 #define REG_PULSE_WIDTH					67	// Длина импульса сек
 #define REG_PULSE_AMPLITUDE				68	// Амплитуда В
+//
+#define REG_RANGE_I_1					69	// Диапазон тока для канала 1
+#define REG_RANGE_I_2					70	// Диапазон тока для канала 2
+#define REG_RANGE_I_3					71	// Диапазон тока для канала 3
+#define REG_RANGE_I_4					72	// Диапазон тока для канала 4
+#define REG_RANGE_I_5					73	// Диапазон тока для канала 5
+#define REG_RANGE_I_6					74	// Диапазон тока для канала 6
+#define REG_RANGE_I_7					75	// Диапазон тока для канала 7
+#define REG_RANGE_I_8					76	// Диапазон тока для канала 8
 //
 #define REG_DBG							150	// Отладочный регистр
 //

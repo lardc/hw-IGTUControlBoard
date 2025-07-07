@@ -17,6 +17,18 @@ typedef enum IChannel
 	I_CHANNEL_8
 } IChannel;
 
+typedef enum Relay
+{
+	RELAY_NONE = 0,
+	RELAY_CH_1 = 0x01,
+	RELAY_CH_2 = 0x02,
+	RELAY_CH_3 = 0x04,
+	RELAY_CH_4 = 0x08,
+	RELAY_CH_5 = 0x10,
+	RELAY_CH_6 = 0x20,
+	RELAY_CH_7 = 0x40,
+} Relay;
+
 // Functions
 //
 float MEASURE_U1(Int16U SampleADC);
