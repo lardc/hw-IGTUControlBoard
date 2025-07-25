@@ -25,6 +25,9 @@
 #define REG_CFG_NODE_ID					60	// Настройка CAN NodeID
 
 #define REG_DBG							150
+#define REG_DBG_PULSE_AMPL				151	// в тиках
+#define REG_DBG_PULSE_STEP				152	// в тиках
+#define REG_DBG_PULSE_TIME				153	// в мкс
 
 // Регистры только чтение
 #define REG_DEV_STATE					192	// Регистр состояния
