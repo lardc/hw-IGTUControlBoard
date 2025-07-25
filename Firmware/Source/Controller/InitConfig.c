@@ -65,8 +65,6 @@ void INITCFG_Timer3()
 	TIM_Clock_En(TIM_3);
 	TIM_Config(TIM3, SYSCLK, TIMER3_uS);
 	TIM_Interupt(TIM3, 0, true);
-	NVIC_SetPriority(EXTI15_10_IRQn, TIM3_INTERRUPT_PRIORITY);
-	TIM_Stop(TIM3);
 }
 //------------------------------------------------
 
@@ -92,5 +90,6 @@ void INITCFG_ConfigCAN(Int16U NodeID)
 void INITCFG_SPI()
 {
 	SPI_Init(SPI1, SPI_BAUDRATE_BITS, SPI_LSB_FIRST);
+	SPI1->CR1 |= BIT1;
 }
 //------------------------------------------------
