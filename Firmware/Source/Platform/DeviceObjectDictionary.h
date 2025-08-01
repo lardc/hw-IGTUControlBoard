@@ -22,15 +22,16 @@
 
 // Регистры
 // Сохраняемые регистры
+#define REG_DBG_PULSE_AMPL				0	// в тиках
+#define REG_DBG_PULSE_STEP				1	// в тиках
+#define REG_DBG_PULSE_TIME				2	// в мкс
+
+#define REG_DBG_BASE_SHIFT				3	// в тиках
+#define REG_DBG_BASE_TIME				4	// в мкс
+
 #define REG_CFG_NODE_ID					60	// Настройка CAN NodeID
 
 #define REG_DBG							150
-#define REG_DBG_PULSE_AMPL				151	// в тиках
-#define REG_DBG_PULSE_STEP				152	// в тиках
-#define REG_DBG_PULSE_TIME				153	// в мкс
-
-#define REG_DBG_BASE_SHIFT				154	// в тиках
-#define REG_DBG_BASE_TIME				155	// в мкс
 
 // Регистры только чтение
 #define REG_DEV_STATE					192	// Регистр состояния
