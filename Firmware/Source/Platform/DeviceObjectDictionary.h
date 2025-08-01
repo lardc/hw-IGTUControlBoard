@@ -29,6 +29,9 @@
 #define REG_DBG_PULSE_STEP				152	// в тиках
 #define REG_DBG_PULSE_TIME				153	// в мкс
 
+#define REG_DBG_BASE_SHIFT				154	// в тиках
+#define REG_DBG_BASE_TIME				155	// в мкс
+
 // Регистры только чтение
 #define REG_DEV_STATE					192	// Регистр состояния
 #define REG_FAULT_REASON				193	// Регистр Fault

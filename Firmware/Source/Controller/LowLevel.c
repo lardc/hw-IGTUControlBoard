@@ -5,8 +5,16 @@
 #include "Delay.h"
 #include "DataTable.h"
 
-Int16U PlateCounter, PulseAmplitude;
-bool PlateReady;
+typedef enum __PulseState
+{
+	PS_None,
+	PS_Start,
+	PS_BaseShift,
+	PS_Rise,
+	PS_Plate
+} PulseState;
+
+static PulseState State;
 
 // Functions
 //
@@ -30,34 +38,57 @@ void LL_SetDAC(Int16U Value)
 
 void LL_StartPulse()
 {
-	PlateReady = false;
-	PulseAmplitude = 0;
-	PlateCounter = 0;
-
+	State = PS_Start;
 	TIM_Start(TIM3);
 }
 //-----------------------------
 
 void LL_HandlePulse()
 {
-	if(PlateReady)
+	static Int16U Counter = 0, PulseAmplitude = 0, MaxPulse = 0;
+
+	switch(State)
 	{
-		PlateCounter += TIMER3_uS;
-		if(PlateCounter >= DataTable[REG_DBG_PULSE_TIME])
-		{
-			PulseAmplitude = 0;
-			TIM_Stop(TIM3);
-		}
+		case PS_Start:
+			State = PS_BaseShift;
+			Counter = 0;
+			PulseAmplitude = DataTable[REG_DBG_BASE_SHIFT];
+			MaxPulse = DataTable[REG_DBG_BASE_SHIFT] + DataTable[REG_DBG_PULSE_AMPL];
+			LL_SetDAC(PulseAmplitude);
+			break;
+
+		case PS_BaseShift:
+			Counter += TIMER3_uS;
+			if(Counter >= DataTable[REG_DBG_BASE_TIME])
+			{
+				Counter = 0;
+				State = PS_Rise;
+			}
+			break;
+
+		case PS_Rise:
+			PulseAmplitude += DataTable[REG_DBG_PULSE_STEP];
+			if(PulseAmplitude >= MaxPulse)
+			{
+				PulseAmplitude = MaxPulse;
+				State = PS_Plate;
+			}
+			LL_SetDAC(PulseAmplitude);
+			break;
+
+		case PS_Plate:
+			Counter += TIMER3_uS;
+			if(Counter >= DataTable[REG_DBG_PULSE_TIME])
+			{
+				State = PS_None;
+				PulseAmplitude = 0;
+				TIM_Stop(TIM3);
+				LL_SetDAC(0);
+			}
+			break;
+
+		default:
+			break;
 	}
-	else
-	{
-		PulseAmplitude += DataTable[REG_DBG_PULSE_STEP];
-		if(PulseAmplitude >= DataTable[REG_DBG_PULSE_AMPL])
-		{
-			PulseAmplitude = DataTable[REG_DBG_PULSE_AMPL];
-			PlateReady = true;
-		}
-	}
-	LL_SetDAC(PulseAmplitude);
 }
 //-----------------------------
