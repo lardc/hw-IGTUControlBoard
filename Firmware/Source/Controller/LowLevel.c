@@ -4,6 +4,7 @@
 #include "Board.h"
 #include "Delay.h"
 #include "DataTable.h"
+#include "math.h"
 
 typedef enum __PulseState
 {
@@ -11,7 +12,9 @@ typedef enum __PulseState
 	PS_Start,
 	PS_BaseShift,
 	PS_Rise,
-	PS_Plate
+	PS_Plate,
+	PS_Sine,
+	PS_Stop
 } PulseState;
 
 static PulseState State;
@@ -46,6 +49,7 @@ void LL_StartPulse()
 void LL_HandlePulse()
 {
 	static Int16U Counter = 0, PulseAmplitude = 0, MaxPulse = 0;
+	float SineMul = 0;
 
 	switch(State)
 	{
@@ -54,6 +58,7 @@ void LL_HandlePulse()
 			Counter = 0;
 			PulseAmplitude = DataTable[REG_DBG_BASE_SHIFT];
 			MaxPulse = DataTable[REG_DBG_BASE_SHIFT] + DataTable[REG_DBG_PULSE_AMPL];
+			SineMul = M_PI / DataTable[REG_DBG_PULSE_TIME];
 			LL_SetDAC(PulseAmplitude);
 			break;
 
@@ -62,7 +67,7 @@ void LL_HandlePulse()
 			if(Counter >= DataTable[REG_DBG_BASE_TIME])
 			{
 				Counter = 0;
-				State = PS_Rise;
+				State = DataTable[REG_DBG_IS_SINE] ? PS_Sine : PS_Rise;
 			}
 			break;
 
@@ -76,15 +81,22 @@ void LL_HandlePulse()
 			LL_SetDAC(PulseAmplitude);
 			break;
 
+		case PS_Sine:
+			{
+				Int16U SineVal = DataTable[REG_DBG_PULSE_AMPL] * sinf(Counter * SineMul);
+				LL_SetDAC(DataTable[REG_DBG_BASE_SHIFT] + SineVal);
+			}
 		case PS_Plate:
 			Counter += TIMER3_uS;
 			if(Counter >= DataTable[REG_DBG_PULSE_TIME])
-			{
-				State = PS_None;
-				PulseAmplitude = 0;
-				TIM_Stop(TIM3);
-				LL_SetDAC(0);
-			}
+				State = PS_Stop;
+			break;
+
+		case PS_Stop:
+			State = PS_None;
+			PulseAmplitude = 0;
+			TIM_Stop(TIM3);
+			LL_SetDAC(0);
 			break;
 
 		default:
