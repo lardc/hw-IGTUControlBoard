@@ -93,12 +93,12 @@ void MEASURE_ConvertIScope(pFloat32 InputArray, Int16U DataLength, IChannel Chan
 	MEASURE_ConvertADC_X(
 		InputArray,
 		DataLength,
-		DataTable[REG_I_1_P2 + offset],
-		DataTable[REG_I_1_P1 + offset],
-		DataTable[REG_I_1_P0 + offset],
-		DataTable[REG_I_1_K + offset],
-		DataTable[REG_I_1_B + offset],
-		DataTable[REG_I_1_RSH + offset]
+		REG_I_1_P2 + offset,
+		REG_I_1_P1 + offset,
+		REG_I_1_P0 + offset,
+		REG_I_1_K + offset,
+		REG_I_1_B + offset,
+		REG_I_1_RSH + offset
 	);
 }
 //------------------------------------
