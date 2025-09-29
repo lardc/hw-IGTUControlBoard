@@ -83,7 +83,7 @@ void LL_HandlePulse()
 
 		case PS_Sine:
 			{
-				Int16U SineVal = DataTable[REG_DBG_PULSE_AMPL] * sinf(Counter * SineMul);
+				Int16U SineVal = DataTable[REG_DBG_PULSE_AMPL] * sinf(M_PI * Counter / DataTable[REG_DBG_PULSE_TIME]);
 				LL_SetDAC(DataTable[REG_DBG_BASE_SHIFT] + SineVal);
 			}
 		case PS_Plate:
