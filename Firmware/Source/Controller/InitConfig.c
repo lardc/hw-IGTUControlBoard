@@ -65,7 +65,7 @@ void INITCFG_UART()
 {
 	USART_Init(USART1, SYSCLK, USART_BAUDRATE);
 	USART_Recieve_Interupt(USART1, 0, true);
-	NVIC_SetPriority(EXTI15_10_IRQn, USART1_INTERRUPT_PRIORITY);
+	NVIC_SetPriority(RTC_Alarm_IRQn, USART1_INTERRUPT_PRIORITY);
 }
 //------------------------------------------------
 

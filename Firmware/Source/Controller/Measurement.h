@@ -7,26 +7,27 @@
 typedef enum IChannel
 {
 	I_CHANNEL_NONE = 0,
+	I_CHANNEL_0,
 	I_CHANNEL_1,
 	I_CHANNEL_2,
 	I_CHANNEL_3,
 	I_CHANNEL_4,
 	I_CHANNEL_5,
 	I_CHANNEL_6,
-	I_CHANNEL_7,
-	I_CHANNEL_8
+	I_CHANNEL_7
 } IChannel;
 
 typedef enum RelayMask
 {
 	RELAY_NONE = 0,
-	RELAY_CH_1 = 0x01,
-	RELAY_CH_2 = 0x02,
-	RELAY_CH_3 = 0x04,
-	RELAY_CH_4 = 0x08,
-	RELAY_CH_5 = 0x10,
-	RELAY_CH_6 = 0x20,
-	RELAY_CH_7 = 0x40,
+	RELAY_CH_0 = BIT0,
+	RELAY_CH_1 = BIT0 | BIT4,
+	RELAY_CH_2 = BIT0 | BIT5,
+	RELAY_CH_3 = BIT0 | BIT6,
+	RELAY_CH_4 = BIT0 | BIT7,
+	RELAY_CH_5 = BIT0 | BIT3,
+	RELAY_CH_6 = BIT0 | BIT2,
+	RELAY_CH_7 = BIT0 | BIT1,
 } RelayMask;
 
 // Functions
