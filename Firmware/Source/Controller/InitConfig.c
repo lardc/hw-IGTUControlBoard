@@ -19,15 +19,21 @@ void INITCFG_IO()
 	RCC_GPIO_Clk_EN(PORTA);
 	RCC_GPIO_Clk_EN(PORTB);
 	
-	// Аналаговые входы
-	GPIO_Config(GPIOA, Pin_3, Analog, NoPull, HighSpeed, NoPull);
-	GPIO_Config(GPIOA, Pin_14, Analog, NoPull, HighSpeed, NoPull);
+	// Аналаговые порты
+	GPIO_InitAnalog(GPIO_ANLG_UG);
+	GPIO_InitAnalog(GPIO_ANLG_UPOT);
+	GPIO_InitAnalog(GPIO_ANLG_IG);
 	
 	// Выходы
+	GPIO_InitPushPullOutput(GPIO_SPI_OE);
 	GPIO_InitPushPullOutput(GPIO_LED);
 	GPIO_InitPushPullOutput(GPIO_LED_EXT);
 	GPIO_InitPushPullOutput(GPIO_VCC_24);
 	GPIO_InitPushPullOutput(GPIO_VCC_48);
+
+	GPIO_SetState(GPIO_SPI_OE, false);
+	GPIO_SetState(GPIO_VCC_24, false);
+	GPIO_SetState(GPIO_VCC_48, false);
 
 	// Альтернативные функции
 	GPIO_InitAltFunction(GPIO_ALT_CAN_RX, AltFn_9);

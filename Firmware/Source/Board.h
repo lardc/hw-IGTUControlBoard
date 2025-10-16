@@ -15,6 +15,11 @@
 #include "ZwIWDG.h"
 #include "ZwNFLASH.h"
 
+// Определения для аналоговых портов
+GPIO_PortPinSettingMacro GPIO_ANLG_UG		= {GPIOA, Pin_0};
+GPIO_PortPinSettingMacro GPIO_ANLG_UPOT		= {GPIOA, Pin_4};
+GPIO_PortPinSettingMacro GPIO_ANLG_IG		= {GPIOB, Pin_1};
+
 // Определения для выходных портов
 GPIO_PortPinSettingMacro GPIO_LED			= {GPIOA, Pin_8};
 GPIO_PortPinSettingMacro GPIO_LED_EXT		= {GPIOB, Pin_4};
