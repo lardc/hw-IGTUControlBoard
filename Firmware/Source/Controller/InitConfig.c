@@ -3,7 +3,7 @@
 #include "SysConfig.h"
 #include "BCCIxParams.h"
 #include "ZwSPI.h"
-#include "Diagnostic.h"
+#include "Regulator.h"
 
 // Forward functions
 void INITCFG_GeneralADC(ADC_TypeDef* ADCx, Int16U Channel, Int32U Trigger);
@@ -136,23 +136,24 @@ void INITCFG_SPI()
 }
 //------------------------------------------------
 
-void INITCFG_DMA(uint16_t Size)
+void INITCFG_GeneralDMA(DMA_Channel_TypeDef* DMA_ChannelX, uint32_t ArrayPointer, uint32_t ADCPointer)
 {
-	RCC->APB2ENR |= RCC_APB2ENR_SYSCFGEN;
-	SYSCFG->CFGR1 |= SYSCFG_CFGR1_TIM6DAC1Ch1_DMA_RMP;
+	DMA_Reset(DMA_ChannelX);
+	DMAChannelX_DataConfig(DMA_ChannelX, ArrayPointer, ADCPointer, ADC_SEQ_LENGTH);
+	DMAChannelX_Config(DMA_ChannelX, DMA_MEM2MEM_DIS, DMA_LvlPriority_LOW, DMA_MSIZE_16BIT, DMA_PSIZE_16BIT,
+			DMA_MINC_EN, DMA_PINC_DIS, DMA_CIRCMODE_EN, DMA_READ_FROM_PERIPH);
+	DMA_Interrupt(DMA_ChannelX, DMA_TRANSFER_COMPLETE, 0, true);
+	DMA_ChannelEnable(DMA_ChannelX, true);
+}
+//------------------------------------------------
 
-	DMA_Clk_Enable(DMA_ClkEN);
-	DMA_Reset(DMA1_Channel3);
-	DMA_Interrupt(DMA1_Channel3, DMA_TRANSFER_COMPLETE, 2, true);
+void INITCFG_DMA()
+{
+	DMA_Clk_Enable(DMA1_ClkEN);
+	DMA_Clk_Enable(DMA2_ClkEN);
 
-	DMA1ChannelX_DataConfig(
-		DMA1_Channel3,
-		(uint32_t)(&DIAG_PulseDataBuffer),
-		(uint32_t)(&DAC->DHR12R1),
-		Size
-	);
-
-	DMA1ChannelX_Config(DMA1_Channel3, DMA_MEM2MEM_DIS, DMA_LvlPriority_LOW, DMA_MSIZE_16BIT, DMA_PSIZE_16BIT,
-	DMA_MINC_EN, false, DMA_CIRCMODE_EN, DMA_READ_FROM_MEM, DMA_CHANNEL_EN);
+	INITCFG_GeneralDMA(DMA1_Channel1, (uint32_t)REGLTR_MemBuffUg,   (uint32_t)(&ADC1->DR));
+	INITCFG_GeneralDMA(DMA2_Channel1, (uint32_t)REGLTR_MemBuffUPot, (uint32_t)(&ADC2->DR));
+	INITCFG_GeneralDMA(DMA2_Channel5, (uint32_t)REGLTR_MemBuffIg,   (uint32_t)(&ADC3->DR));
 }
 //------------------------------------------------
