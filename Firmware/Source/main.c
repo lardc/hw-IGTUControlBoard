@@ -22,7 +22,7 @@ int main()
 	INITCFG_Timer7();
 
 	// Настройка таймера тактирования регулятора
-	INITCFG_Timer6();
+	INITCFG_Timer15();
 
 	// Настройка АЦП
 	INITCFG_ADC();

@@ -83,12 +83,11 @@ void INITCFG_Timer7()
 }
 //------------------------------------------------
 
-void INITCFG_Timer6()
+void INITCFG_Timer15()
 {
-	TIM_Clock_En(TIM_6);
-	TIM_Config(TIM6, SYSCLK, TIMER6_uS);
-	TIM_MasterMode(TIM6, MMS_UPDATE);
-	TIM_DMA(TIM6, DMAEN);
+	TIM_Clock_En(TIM_15);
+	TIM_Config(TIM15, SYSCLK, TIMER15_uS);
+	TIM_MasterMode(TIM15, MMS_UPDATE);
 }
 //------------------------------------------------
 
