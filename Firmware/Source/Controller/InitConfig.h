@@ -15,6 +15,6 @@ void INITCFG_Timer15();
 void INITCFG_WatchDog();
 void INITCFG_ConfigCAN(Int16U NodeID);
 void INITCFG_SPI();
-void INITCFG_DMA(uint16_t Size);
+void INITCFG_DMA();
 
 #endif //__INITCONFIG_H
