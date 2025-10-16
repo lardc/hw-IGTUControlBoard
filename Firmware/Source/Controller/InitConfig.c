@@ -5,14 +5,6 @@
 #include "ZwSPI.h"
 #include "Diagnostic.h"
 
-// Definition
-//
-#define EXTI8_INTERRUPT_PRIORITY	27
-#define EXTI15_INTERRUPT_PRIORITY	30
-#define TIM3_INTERRUPT_PRIORITY		36
-#define USART1_INTERRUPT_PRIORITY	44
-#define CAN_INTERRUPT_PRIORITY		47
-
 // Functions
 //
 Boolean INITCFG_SysClk()
@@ -28,9 +20,6 @@ void INITCFG_EI()
 	//
 	EXTI_EnableInterrupt(EXTI9_5_IRQn, 0, true);
 	EXTI_EnableInterrupt(EXTI15_10_IRQn, 0, true);
-
-	NVIC_SetPriority(EXTI9_5_IRQn, EXTI8_INTERRUPT_PRIORITY);
-	NVIC_SetPriority(EXTI15_10_IRQn, EXTI15_INTERRUPT_PRIORITY);
 }
 //------------------------------------------------
 
@@ -65,7 +54,6 @@ void INITCFG_UART()
 {
 	USART_Init(USART1, SYSCLK, USART_BAUDRATE);
 	USART_Recieve_Interupt(USART1, 0, true);
-	NVIC_SetPriority(RTC_Alarm_IRQn, USART1_INTERRUPT_PRIORITY);
 }
 //------------------------------------------------
 
@@ -88,6 +76,7 @@ void INITCFG_DAC1()
 	DACx_DMA_Config(DAC_DMA1ENABLE, DAC_DMA1UdIntDISABLE);
 	DACx_Enable(DAC1ENABLE);
 }
+//------------------------------------------------
 
 void INITCFG_Timer7()
 {
@@ -103,7 +92,6 @@ void INITCFG_Timer3()
 	TIM_Clock_En(TIM_3);
 	TIM_Config(TIM3, SYSCLK, TIMER3_uS);
 	TIM_Interupt(TIM3, 0, true);
-	NVIC_SetPriority(EXTI15_10_IRQn, TIM3_INTERRUPT_PRIORITY);
 	TIM_Stop(TIM3);
 }
 //------------------------------------------------
@@ -115,6 +103,7 @@ void INITCFG_Timer6()
 	TIM_MasterMode(TIM6, MMS_UPDATE);
 	TIM_DMA(TIM6, DMAEN);
 }
+//------------------------------------------------
 
 void INITCFG_WatchDog()
 {
@@ -131,7 +120,6 @@ void INITCFG_ConfigCAN(Int16U NodeID)
 	NCAN_Init(SYSCLK, CAN_BAUDRATE, FALSE);
 	NCAN_FIFOInterrupt(TRUE);
 	NCAN_FilterInit(0, Mask, Mask);
-	NCAN_InterruptSetPriority(0);
 }
 //------------------------------------------------
 
@@ -160,3 +148,4 @@ void INITCFG_DMA(uint16_t Size)
 	DMA1ChannelX_Config(DMA1_Channel3, DMA_MEM2MEM_DIS, DMA_LvlPriority_LOW, DMA_MSIZE_16BIT, DMA_PSIZE_16BIT,
 	DMA_MINC_EN, false, DMA_CIRCMODE_EN, DMA_READ_FROM_MEM, DMA_CHANNEL_EN);
 }
+//------------------------------------------------
