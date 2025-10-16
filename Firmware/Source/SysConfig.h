@@ -1,6 +1,7 @@
 ﻿#ifndef __SYSCONFIG_H
 #define __SYSCONFIG_H
 
+#include "ZwADC.h"
 
 // Flash loader options
 #define BOOT_LOADER_VARIABLE			(*((volatile uint32_t *)0x20000000))
@@ -30,6 +31,14 @@
 // SPI
 #define SPI_BAUDRATE_BITS				0x5
 #define SPI_LSB_FIRST					false
+// ----------------------------------------------
+
+// ADC
+#define ADC_SEQ_LENGTH					10			// Размер выборки за один цикл
+#define ADC_SAMPLE_TIME					ADC_SMPL_TIME_1_5	// Время сэмплинга
+#define ADC1_CHANNEL_UG					1
+#define ADC2_CHANNEL_UPOT				1
+#define ADC3_CHANNEL_IG					1
 // ----------------------------------------------
 
 #endif // __SYSCONFIG_H

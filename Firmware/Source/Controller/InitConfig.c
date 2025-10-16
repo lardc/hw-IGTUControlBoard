@@ -5,6 +5,9 @@
 #include "ZwSPI.h"
 #include "Diagnostic.h"
 
+// Forward functions
+void INITCFG_GeneralADC(ADC_TypeDef* ADCx, Int16U Channel, Int32U Trigger);
+
 // Functions
 //
 Boolean INITCFG_SysClk()
@@ -53,13 +56,31 @@ void INITCFG_UART()
 }
 //------------------------------------------------
 
+void INITCFG_GeneralADC(ADC_TypeDef* ADCx, Int16U Channel, Int32U Trigger)
+{
+	ADC_Calibration(ADCx);
+	ADC_Enable(ADCx);
+	ADC_TrigConfig(ADCx, Trigger, RISE);
+
+	ADC_ChannelSeqReset(ADCx);
+	for(int i = 1; i <= ADC_SEQ_LENGTH; i++)
+		ADC_ChannelSet_Sequence(ADCx, Channel, i);
+	ADC_ChannelSeqLen(ADCx, ADC_SEQ_LENGTH);
+
+	ADC_ChannelSet_SampleTime(ADCx, Channel, ADC_SAMPLE_TIME);
+	ADC_DMAConfig(ADCx);
+	ADC_SamplingStart(ADCx);
+}
+//------------------------------------------------
+
 void INITCFG_ADC()
 {
 	RCC_ADC_Clk_EN(ADC_12_ClkEN);
-	
-	ADC_Calibration(ADC1);
-	ADC_SoftTrigConfig(ADC1);
-	ADC_Enable(ADC1);
+	RCC_ADC_Clk_EN(ADC_34_ClkEN);
+
+	INITCFG_GeneralADC(ADC1, ADC1_CHANNEL_UG, ADC12_TIM15_TRGO);
+	INITCFG_GeneralADC(ADC2, ADC2_CHANNEL_UPOT, ADC12_TIM15_TRGO);
+	INITCFG_GeneralADC(ADC3, ADC3_CHANNEL_IG, ADC34_TIM15_TRGO);
 }
 //------------------------------------------------
 
