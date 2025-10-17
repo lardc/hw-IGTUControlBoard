@@ -8,7 +8,15 @@
 #include "Global.h"
 #include "DataTable.h"
 #include "DeviceObjectDictionary.h"
+#include "Regulator.h"
 
+// Variables
+static bool UgReady = false, UPotReady = false, IgReady = false;
+
+// Forward functions
+void INT_GeneralDMAHandler(DMA_TypeDef* DMAx, uint32_t Channelx, bool *Flag);
+
+// Functions
 void USART1_IRQHandler()
 {
 	if(ZwSCI_RecieveCheck(USART1))
@@ -41,8 +49,44 @@ void TIM7_IRQHandler()
 			LL_ToggleBoardLED();
 			LED_BlinkTimeCounter = 0;
 		}
-
 		TIM_StatusClear(TIM7);
 	}
+}
+//-----------------------------------------
+
+void INT_ResetDMAFlags()
+{
+	UgReady = UPotReady = IgReady = false;
+}
+//-----------------------------------------
+
+void INT_GeneralDMAHandler(DMA_TypeDef* DMAx, uint32_t Channelx, bool *Flag)
+{
+	if(DMA_IsTransferComplete(DMAx, Channelx))
+	{
+		DMA_TransferCompleteReset(DMAx, Channelx);
+
+		*Flag = true;
+		if(UgReady && UPotReady && IgReady)
+			REGLTR_Process();
+	}
+}
+//-----------------------------------------
+
+void DMA1_Channel1_IRQHandler()
+{
+	INT_GeneralDMAHandler(DMA1, DMA_ISR_TCIF1, &UgReady);
+}
+//-----------------------------------------
+
+void DMA2_Channel1_IRQHandler()
+{
+	INT_GeneralDMAHandler(DMA2, DMA_ISR_TCIF1, &UPotReady);
+}
+//-----------------------------------------
+
+void DMA2_Channel5_IRQHandler()
+{
+	INT_GeneralDMAHandler(DMA2, DMA_ISR_TCIF5, &IgReady);
 }
 //-----------------------------------------

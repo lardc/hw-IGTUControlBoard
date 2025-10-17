@@ -8,4 +8,6 @@ extern Int16U REGLTR_MemBuffUg[];
 extern Int16U REGLTR_MemBuffUPot[];
 extern Int16U REGLTR_MemBuffIg[];
 
+void REGLTR_Process();
+
 #endif // __REGULATOR_H

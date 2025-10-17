@@ -5,6 +5,6 @@
 
 // Variables
 //
-extern bool Impulse;
+void INT_ResetDMAFlags();
 
 #endif // __INTERRUPTS_H
