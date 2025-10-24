@@ -22,12 +22,9 @@
 
 // Регистры
 // Сохраняемые регистры
-#define REG_DBG_PULSE_AMPL				0	// в тиках
-#define REG_DBG_PULSE_STEP				1	// в тиках
+#define REG_DBG_POS_VOLTAGE				0	// в тиках
+#define REG_DBG_NEG_VOLTAGE				1	// в тиках
 #define REG_DBG_PULSE_TIME				2	// в мкс
-#define REG_DBG_BASE_SHIFT				3	// в тиках
-#define REG_DBG_BASE_TIME				4	// в мкс
-#define REG_DBG_IS_SINE					5	// флаг формирования синуса
 
 #define REG_CFG_NODE_ID					60	// Настройка CAN NodeID
 
