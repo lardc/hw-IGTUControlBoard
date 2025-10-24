@@ -26,11 +26,12 @@ void INITCFG_IO()
 	RCC_GPIO_Clk_EN(PORTB);
 	
 	// Выходы
+	GPIO_InitPushPullOutput(GPIO_PULSE);
 	GPIO_InitPushPullOutput(GPIO_LED);
-	GPIO_InitPushPullOutput(GPIO_SPI_SS);
-	GPIO_SetState(GPIO_SPI_SS, true);
-	GPIO_InitPushPullOutput(GPIO_SPI_LDAC);
-	GPIO_SetState(GPIO_SPI_LDAC, true);
+	GPIO_InitPushPullOutput(GPIO_SPI_CS1);
+	GPIO_SetState(GPIO_SPI_CS1, true);
+	GPIO_InitPushPullOutput(GPIO_SPI_CS2);
+	GPIO_SetState(GPIO_SPI_CS2, true);
 
 	// Альтернативные функции
 	GPIO_InitAltFunction(GPIO_ALT_CAN_RX, AltFn_9);

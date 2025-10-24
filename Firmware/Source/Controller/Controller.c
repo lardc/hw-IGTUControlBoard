@@ -104,11 +104,12 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 	switch (ActionID)
 	{
 		case 10:
-			LL_SetDAC(DataTable[REG_DBG]);
+			LL_Pulse(true);
+			DELAY_US(1000);
+			LL_Pulse(false);
 			break;
 
 		case 11:
-			LL_StartPulse();
 			break;
 
 		case ACT_ENABLE_POWER:

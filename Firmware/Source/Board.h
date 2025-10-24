@@ -18,8 +18,9 @@
 
 // Определения для выходных портов
 GPIO_PortPinSettingMacro GPIO_LED			= {GPIOB, Pin_15};
-GPIO_PortPinSettingMacro GPIO_SPI_SS		= {GPIOA, Pin_15};
-GPIO_PortPinSettingMacro GPIO_SPI_LDAC		= {GPIOB, Pin_12};
+GPIO_PortPinSettingMacro GPIO_SPI_CS1		= {GPIOA, Pin_15};
+GPIO_PortPinSettingMacro GPIO_SPI_CS2		= {GPIOB, Pin_12};
+GPIO_PortPinSettingMacro GPIO_PULSE			= {GPIOA, Pin_2};
 
 // Определения для портов альтернативных функций
 GPIO_PortPinSettingMacro GPIO_ALT_CAN_RX	= {GPIOA, Pin_11};

@@ -13,7 +13,6 @@ void TIM3_IRQHandler()
 {
 	if(TIM_StatusCheck(TIM3))
 	{
-		LL_HandlePulse();
 		TIM_StatusClear(TIM3);
 	}
 }

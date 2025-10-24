@@ -7,8 +7,7 @@
 // Functions
 //
 void LL_ToggleBoardLED();
-void LL_SetDAC(Int16U Value);
-void LL_StartPulse();
-void LL_HandlePulse();
+void LL_SetDAC(Int16U Value, bool SecondDAC);
+void LL_Pulse(bool State);
 
 #endif //__LOWLEVEL_H
