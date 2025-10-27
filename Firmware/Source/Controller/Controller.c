@@ -117,6 +117,16 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			LL_SetDAC(DataTable[REG_DBG_NEG_VOLTAGE], true);
 			break;
 			
+		case 14:
+			LL_Pulse(true);
+			DELAY_US(DataTable[REG_DBG_PULSE_TIME]);
+			LL_Pulse(false);
+			DELAY_US(5);
+			LL_Pulse(true);
+			DELAY_US(5);
+			LL_Pulse(false);
+			break;
+
 		case ACT_DISABLE_POWER:
 			{
 				if(CONTROL_State == DS_Ready)
