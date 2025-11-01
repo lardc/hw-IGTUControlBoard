@@ -31,3 +31,9 @@ void LL_SPI_WriteByte(Int16U Data)
 	SPI_WriteByte(SPI1, Data);
 }
 //-----------------------------
+
+void LL_WriteDAC(Int16U Data)
+{
+	DAC_SetValueCh1(DAC1, Data);
+}
+//-----------------------------
