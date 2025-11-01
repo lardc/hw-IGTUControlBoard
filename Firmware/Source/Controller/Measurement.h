@@ -32,9 +32,9 @@ typedef enum RelayMask
 
 // Functions
 //
-float MEASURE_U1(Int16U SampleADC);
-float MEASURE_U2(Int16U SampleADC);
-float MEASURE_I(Int16U SampleADC, IChannel Channel);
+float MEASURE_Ug(float SampleADC);
+float MEASURE_UPot(float SampleADC);
+float MEASURE_I(float SampleADC, IChannel Channel);
 //
 void MEASURE_ConvertIScope(pFloat32 InputArray, Int16U DataLength, IChannel Channel);
 //
