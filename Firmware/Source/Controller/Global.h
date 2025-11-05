@@ -6,7 +6,7 @@
 #define	SCCI_TIMEOUT_TICKS			1000	// Таймаут интерфейса SCCI (в мс)
 #define EP_WRITE_COUNT				0		// Количество массивов для записи
 #define EP_COUNT					0		// Количество массивов для чтения
-#define FEP_COUNT					1		// Количество массивов для чтения типа float
+#define FEP_COUNT					7		// Количество массивов для чтения типа float
 #define ENABLE_LOCKING				FALSE	// Защита NV регистров паролем
 
 // Временные параметры
@@ -16,5 +16,6 @@
 #define TIME_SPI_DELAY				5		// Задержка интерфейса SPI
 
 #define VALUES_EXT_INFO_SIZE		300
+#define VALUES_DEBUG_RGLTR_SIZE		100		// Размер отладочного буфера регулятора
 
 #endif //  __GLOBAL_H

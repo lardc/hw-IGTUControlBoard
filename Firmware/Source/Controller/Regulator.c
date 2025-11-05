@@ -28,6 +28,7 @@ PulseSamples REGLTR_PulseSamples = {0};
 // Forward functions
 float REGLTR_GetSetpoint(Int16U i);
 SamplingResult REGLTR_GetSample();
+void REGLTR_StoreRegulatorDebug(float Ug, float UPot, float Ig, float Setpoint, float Correction, float Error);
 
 // Functions
 void REGLTR_Process()
@@ -58,11 +59,7 @@ void REGLTR_Process()
 	Int16U DACSetpoint = MEASURE_ConvertUset(Sepoint);
 	LL_WriteDAC(DACSetpoint);
 
-	// Вызов функции записи в EP отладочной информации
-	// 1, 2, 3 оцифрованные значения
-	// 4 - задание
-	// 5 - скорректированное задание
-	// 6 - ошибка
+	REGLTR_StoreRegulatorDebug(Sample.Ug, Sample.UPot, Sample.Ig, Sepoint, Qp + Qi, RegulatorError);
 
 	Index++;
 }
@@ -129,5 +126,22 @@ SamplingResult REGLTR_GetSample()
 	t.UPot = MEASURE_UPot(avgUPot);
 	t.Ig   = MEASURE_I(avgIg, I_CHANNEL_0);
 	return t;
+}
+//-----------------------------------------
+
+void REGLTR_StoreRegulatorDebug(float Ug, float UPot, float Ig, float Setpoint, float Correction, float Error)
+{
+	if (CONTROL_RegulatorUgCounter < VALUES_DEBUG_RGLTR_SIZE)
+		CONTROL_RegulatorUg[CONTROL_RegulatorUgCounter++] = Ug;
+	if (CONTROL_RegulatorUpotCounter < VALUES_DEBUG_RGLTR_SIZE)
+		CONTROL_RegulatorUpot[CONTROL_RegulatorUpotCounter++] = UPot;
+	if (CONTROL_RegulatorIgCounter < VALUES_DEBUG_RGLTR_SIZE)
+		CONTROL_RegulatorIg[CONTROL_RegulatorIgCounter++] = Ig;
+	if (CONTROL_RegulatorSetpointCounter < VALUES_DEBUG_RGLTR_SIZE)
+		CONTROL_RegulatorSetpoint[CONTROL_RegulatorSetpointCounter++] = Setpoint;
+	if (CONTROL_RegulatorCorrectionCounter < VALUES_DEBUG_RGLTR_SIZE)
+		CONTROL_RegulatorCorrection[CONTROL_RegulatorCorrectionCounter++] = Correction;
+	if (CONTROL_RegulatorErrorCounter < VALUES_DEBUG_RGLTR_SIZE)
+		CONTROL_RegulatorError[CONTROL_RegulatorErrorCounter++] = Error;
 }
 //-----------------------------------------

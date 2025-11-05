@@ -35,6 +35,25 @@ volatile Int64U CONTROL_TimeCounter = 0;
 Int16U CONTROL_ExtInfoCounter = 0;
 Int16U CONTROL_ExtInfoData[VALUES_EXT_INFO_SIZE] = {0};
 
+Int16U CONTROL_RegulatorIgCounter = 0;
+float CONTROL_RegulatorIg[VALUES_DEBUG_RGLTR_SIZE] = {0};
+
+Int16U CONTROL_RegulatorUgCounter = 0;
+float CONTROL_RegulatorUg[VALUES_DEBUG_RGLTR_SIZE] = {0};
+
+Int16U CONTROL_RegulatorUpotCounter = 0;
+float CONTROL_RegulatorUpot[VALUES_DEBUG_RGLTR_SIZE] = {0};
+
+Int16U CONTROL_RegulatorSetpointCounter = 0;
+float CONTROL_RegulatorSetpoint[VALUES_DEBUG_RGLTR_SIZE] = {0};
+
+Int16U CONTROL_RegulatorCorrectionCounter = 0;
+float CONTROL_RegulatorCorrection[VALUES_DEBUG_RGLTR_SIZE] = {0};
+
+Int16U CONTROL_RegulatorErrorCounter = 0;
+float CONTROL_RegulatorError[VALUES_DEBUG_RGLTR_SIZE] = {0};
+
+
 // Forward functions
 //
 static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError);
@@ -48,11 +67,36 @@ void CONTROL_ResetToDefaultState();
 void CONTROL_Init()
 {
 	// Переменные для конфигурации EndPoint
-	Int16U EPIndexes[FEP_COUNT] = {EP16_ExtInfoData};
-	Int16U EPSized[FEP_COUNT] = {VALUES_EXT_INFO_SIZE};
-	pInt16U EPCounters[FEP_COUNT] = {(pInt16U)&CONTROL_ExtInfoCounter};
-	pFloat32 EPDatas[FEP_COUNT] = {(pFloat32)CONTROL_ExtInfoData};
-	
+	Int16U EPIndexes[FEP_COUNT] = {
+		EP16_ExtInfoData, EP16_RegulatorUg,
+		EP16_RegulatorUpot, EP16_RegulatorIg,
+		EP16_RegulatorSetpoint, EP16_RegulatorCorrection,
+		EP16_RegulatorError
+	};
+	Int16U EPSized[FEP_COUNT] = {
+		VALUES_EXT_INFO_SIZE, VALUES_DEBUG_RGLTR_SIZE, VALUES_DEBUG_RGLTR_SIZE,
+		VALUES_DEBUG_RGLTR_SIZE, VALUES_DEBUG_RGLTR_SIZE,
+		VALUES_DEBUG_RGLTR_SIZE, VALUES_DEBUG_RGLTR_SIZE
+	};
+	pInt16U EPCounters[FEP_COUNT] = {
+		(pInt16U)&CONTROL_ExtInfoCounter,
+		(pInt16U)&CONTROL_RegulatorUgCounter,
+		(pInt16U)&CONTROL_RegulatorUpotCounter,
+		(pInt16U)&CONTROL_RegulatorIgCounter,
+		(pInt16U)&CONTROL_RegulatorSetpointCounter,
+		(pInt16U)&CONTROL_RegulatorCorrectionCounter,
+		(pInt16U)&CONTROL_RegulatorErrorCounter
+	};
+	pFloat32 EPDatas[FEP_COUNT] = {
+		(pFloat32)CONTROL_ExtInfoData,
+		(pFloat32)CONTROL_RegulatorUg,
+		(pFloat32)CONTROL_RegulatorUpot,
+		(pFloat32)CONTROL_RegulatorIg,
+		(pFloat32)CONTROL_RegulatorSetpoint,
+		(pFloat32)CONTROL_RegulatorCorrection,
+		(pFloat32)CONTROL_RegulatorError
+	};
+
 	// Конфигурация сервиса работы DataTable и EPROM
 	EPROMServiceConfig EPROMService = {(FUNC_EPROM_WriteValues)&NFLASH_WriteDT, (FUNC_EPROM_ReadValues)&NFLASH_ReadDT};
 	// Инициализация DataTable
