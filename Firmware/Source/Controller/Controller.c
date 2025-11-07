@@ -35,22 +35,12 @@ volatile Int64U CONTROL_TimeCounter = 0;
 Int16U CONTROL_ExtInfoCounter = 0;
 Int16U CONTROL_ExtInfoData[VALUES_EXT_INFO_SIZE] = {0};
 
-Int16U CONTROL_RegulatorIgCounter = 0;
+Int16U CONTROL_Values_Counter = 0;
 float CONTROL_RegulatorIg[VALUES_DEBUG_RGLTR_SIZE] = {0};
-
-Int16U CONTROL_RegulatorUgCounter = 0;
 float CONTROL_RegulatorUg[VALUES_DEBUG_RGLTR_SIZE] = {0};
-
-Int16U CONTROL_RegulatorUpotCounter = 0;
 float CONTROL_RegulatorUpot[VALUES_DEBUG_RGLTR_SIZE] = {0};
-
-Int16U CONTROL_RegulatorSetpointCounter = 0;
 float CONTROL_RegulatorSetpoint[VALUES_DEBUG_RGLTR_SIZE] = {0};
-
-Int16U CONTROL_RegulatorCorrectionCounter = 0;
 float CONTROL_RegulatorCorrection[VALUES_DEBUG_RGLTR_SIZE] = {0};
-
-Int16U CONTROL_RegulatorErrorCounter = 0;
 float CONTROL_RegulatorError[VALUES_DEBUG_RGLTR_SIZE] = {0};
 
 
@@ -80,12 +70,12 @@ void CONTROL_Init()
 	};
 	pInt16U EPCounters[FEP_COUNT] = {
 		(pInt16U)&CONTROL_ExtInfoCounter,
-		(pInt16U)&CONTROL_RegulatorUgCounter,
-		(pInt16U)&CONTROL_RegulatorUpotCounter,
-		(pInt16U)&CONTROL_RegulatorIgCounter,
-		(pInt16U)&CONTROL_RegulatorSetpointCounter,
-		(pInt16U)&CONTROL_RegulatorCorrectionCounter,
-		(pInt16U)&CONTROL_RegulatorErrorCounter
+		(pInt16U)&CONTROL_Values_Counter,
+		(pInt16U)&CONTROL_Values_Counter,
+		(pInt16U)&CONTROL_Values_Counter,
+		(pInt16U)&CONTROL_Values_Counter,
+		(pInt16U)&CONTROL_Values_Counter,
+		(pInt16U)&CONTROL_Values_Counter
 	};
 	pFloat32 EPDatas[FEP_COUNT] = {
 		(pFloat32)CONTROL_ExtInfoData,
@@ -125,6 +115,8 @@ void CONTROL_ResetToDefaultState()
 	DataTable[REG_WARNING] = WARNING_NONE;
 	DataTable[REG_PROBLEM] = PROBLEM_NONE;
 	DataTable[REG_OP_RESULT] = OPRESULT_NONE;
+
+	CONTROL_Values_Counter = 0;
 	
 	DEVPROFILE_ResetScopes(0);
 	DEVPROFILE_ResetEPReadState();

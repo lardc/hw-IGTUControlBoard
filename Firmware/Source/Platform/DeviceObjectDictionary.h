@@ -106,14 +106,14 @@
 #define REG_SLEW_RATE					66	// Скорость нарастания переднего фронта В/сек
 #define REG_PULSE_WIDTH					67	// Длина импульса сек
 //
-#define REG_RANGE_I_0					69	// Диапазон тока для канала 1
-#define REG_RANGE_I_1					70	// Диапазон тока для канала 2
-#define REG_RANGE_I_2					71	// Диапазон тока для канала 3
-#define REG_RANGE_I_3					72	// Диапазон тока для канала 4
-#define REG_RANGE_I_4					73	// Диапазон тока для канала 5
-#define REG_RANGE_I_5					74	// Диапазон тока для канала 6
-#define REG_RANGE_I_6					75	// Диапазон тока для канала 7
-#define REG_RANGE_I_7					76	// Диапазон тока для канала 8
+#define REG_RANGE_I_0					69	// Диапазон тока для канала 0
+#define REG_RANGE_I_1					70	// Диапазон тока для канала 1
+#define REG_RANGE_I_2					71	// Диапазон тока для канала 2
+#define REG_RANGE_I_3					72	// Диапазон тока для канала 3
+#define REG_RANGE_I_4					73	// Диапазон тока для канала 4
+#define REG_RANGE_I_5					74	// Диапазон тока для канала 5
+#define REG_RANGE_I_6					75	// Диапазон тока для канала 6
+#define REG_RANGE_I_7					76	// Диапазон тока для канала 7
 //
 #define REG_RGLTR_Kp					80	// Пропорциональный коэффициент регулятора
 #define REG_RGLTR_Ki					81	// Интегральный коэффициент регулятора

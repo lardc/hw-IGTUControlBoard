@@ -109,7 +109,7 @@ float REGLTR_GetSetpoint(Int16U i)
 SamplingResult REGLTR_GetSample()
 {
 	SamplingResult t = {0};
-	Int32U sumUg = 0, sumUPot = 0, sumIg = 0;
+	float sumUg = 0, sumUPot = 0, sumIg = 0;
 
 	for (Int16U i = 0; i < ADC_SEQ_LENGTH; ++i)
 	{
@@ -131,17 +131,15 @@ SamplingResult REGLTR_GetSample()
 
 void REGLTR_StoreRegulatorDebug(float Ug, float UPot, float Ig, float Setpoint, float Correction, float Error)
 {
-	if (CONTROL_RegulatorUgCounter < VALUES_DEBUG_RGLTR_SIZE)
-		CONTROL_RegulatorUg[CONTROL_RegulatorUgCounter++] = Ug;
-	if (CONTROL_RegulatorUpotCounter < VALUES_DEBUG_RGLTR_SIZE)
-		CONTROL_RegulatorUpot[CONTROL_RegulatorUpotCounter++] = UPot;
-	if (CONTROL_RegulatorIgCounter < VALUES_DEBUG_RGLTR_SIZE)
-		CONTROL_RegulatorIg[CONTROL_RegulatorIgCounter++] = Ig;
-	if (CONTROL_RegulatorSetpointCounter < VALUES_DEBUG_RGLTR_SIZE)
-		CONTROL_RegulatorSetpoint[CONTROL_RegulatorSetpointCounter++] = Setpoint;
-	if (CONTROL_RegulatorCorrectionCounter < VALUES_DEBUG_RGLTR_SIZE)
-		CONTROL_RegulatorCorrection[CONTROL_RegulatorCorrectionCounter++] = Correction;
-	if (CONTROL_RegulatorErrorCounter < VALUES_DEBUG_RGLTR_SIZE)
-		CONTROL_RegulatorError[CONTROL_RegulatorErrorCounter++] = Error;
+	if (CONTROL_Values_Counter < VALUES_DEBUG_RGLTR_SIZE)
+	{
+		CONTROL_RegulatorUg[CONTROL_Values_Counter] = Ug;
+		CONTROL_RegulatorUpot[CONTROL_Values_Counter] = UPot;
+		CONTROL_RegulatorIg[CONTROL_Values_Counter] = Ig;
+		CONTROL_RegulatorSetpoint[CONTROL_Values_Counter] = Setpoint;
+		CONTROL_RegulatorCorrection[CONTROL_Values_Counter] = Correction;
+		CONTROL_RegulatorError[CONTROL_Values_Counter] = Error;
+		++CONTROL_Values_Counter;
+	}
 }
 //-----------------------------------------
