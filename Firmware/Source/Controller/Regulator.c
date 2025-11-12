@@ -37,14 +37,12 @@ void REGLTR_Process()
 	SamplingResult Sample = REGLTR_GetSample();
 	float RegulatorError = PrevSetPoint - Sample.Ug;
 
-	if (FollowingErrorCounter > DataTable[REG_RGLTR_FOLLOWING_ERR_THRESH])
+	float absError = (RegulatorError >= 0.0f) ? RegulatorError : -RegulatorError;
+	if (absError > (float)DataTable[REG_RGLTR_FOLLOWING_ERR_THRESH])
 	{
-		FollowingErrorCounter++;
-
-		if (FollowingErrorCounter > DataTable[REG_RGLTR_FOLLOWING_ERR_LIMIT])
-		{
-			// заглушка
-		}
+		if (FollowingErrorCounter < DataTable[REG_RGLTR_FOLLOWING_ERR_LIMIT])
+			FollowingErrorCounter++;
+		// обработка превышения лимита
 	}
 	else
 		FollowingErrorCounter = 0;
@@ -58,6 +56,8 @@ void REGLTR_Process()
 
 	Int16U DACSetpoint = MEASURE_ConvertUset(Sepoint);
 	LL_WriteDAC(DACSetpoint);
+
+	PrevSetPoint = Sepoint;
 
 	REGLTR_StoreRegulatorDebug(Sample.Ug, Sample.UPot, Sample.Ig, Sepoint, Qp + Qi, RegulatorError);
 
