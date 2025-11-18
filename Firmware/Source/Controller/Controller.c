@@ -127,6 +127,12 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			LL_Pulse(false);
 			break;
 
+		case 20:
+			LL_Pulse(false);
+			DELAY_US(DataTable[REG_DBG_PULSE_TIME]);
+			LL_Pulse(true);
+			break;
+
 		case ACT_DISABLE_POWER:
 			{
 				if(CONTROL_State == DS_Ready)
