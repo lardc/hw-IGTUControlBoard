@@ -1,4 +1,4 @@
-﻿// Header
+// Header
 #include "Controller.h"
 
 // Includes
@@ -30,7 +30,18 @@ float REGLTR_GetSetpoint(Int16U i);
 SamplingResult REGLTR_GetSample();
 void REGLTR_StoreRegulatorDebug(float Ug, float UPot, float Ig, float Setpoint, float Correction, float Error);
 
-// Functions
+/**
+ * Perform one regulator control cycle: sample inputs, update PI state, compute the next reference,
+ * apply it to the DAC, and record debug data.
+ *
+ * Updates internal controller state and side effects:
+ * - reads averaged measurements,
+ * - updates the integral accumulator and proportional correction,
+ * - increments or resets the following-error counter based on the configured threshold and limit,
+ * - computes the pulsed reference plus PI correction and writes the corresponding DAC code,
+ * - updates PrevSetPoint and Index,
+ * - stores regulator debug values.
+ */
 void REGLTR_Process()
 {
 	// Получение результата оцифровки и расчёт ошибки
@@ -63,7 +74,14 @@ void REGLTR_Process()
 
 	Index++;
 }
-//-----------------------------------------
+/**
+ * Initialize regulator internal state, control gains, sample buffers, and pulse timing.
+ *
+ * Resets runtime indices and error/integral state, loads proportional and integral gains
+ * from the data table, clears ADC sample buffers, and computes pulse timing converted into
+ * sample counts (TotalSamples, RiseSamples, PlateuSamples, FallSamples) based on configured
+ * pulse amplitude, slew rate, pulse width, and the sampling rate.
+ */
 
 void REGLTR_Init()
 {
@@ -88,7 +106,12 @@ void REGLTR_Init()
 	REGLTR_PulseSamples.PlateuSamples = (Int16U)(REGLTR_PulseSamples.TotalSamples * DataTable[REG_PULSE_WIDTH] / PulseTime);
 	REGLTR_PulseSamples.FallSamples = REGLTR_PulseSamples.TotalSamples - REGLTR_PulseSamples.RiseSamples - REGLTR_PulseSamples.PlateuSamples;
 }
-//-----------------------------------------
+/**
+ * Get the target setpoint value for the i-th sample of the configured pulse waveform.
+ * 
+ * @param i Sample index within the pulse period (0-based).
+ * @return Setpoint value for the given sample index: linearly increases from 0 to the configured pulse amplitude during the rise phase, remains at the pulse amplitude during the plateau, linearly decreases back toward 0 during the fall phase, and 0 if the index is beyond the total pulse length.
+ */
 
 float REGLTR_GetSetpoint(Int16U i)
 {
@@ -104,7 +127,14 @@ float REGLTR_GetSetpoint(Int16U i)
 	
 	return 0;
 }
-//-----------------------------------------
+/**
+ * Aggregate recent ADC buffer samples into measured Ug, UPot, and Ig values.
+ *
+ * @returns SamplingResult containing measured signals:
+ *          - Ug: grid voltage value computed from the average of ADC_SEQ_LENGTH Ug samples.
+ *          - UPot: potentiometer voltage value computed from the average of ADC_SEQ_LENGTH UPot samples.
+ *          - Ig: current value computed from the average of ADC_SEQ_LENGTH Ig samples (measured on I_CHANNEL_0).
+ */
 
 SamplingResult REGLTR_GetSample()
 {
@@ -127,7 +157,20 @@ SamplingResult REGLTR_GetSample()
 	t.Ig   = MEASURE_I(avgIg, I_CHANNEL_0);
 	return t;
 }
-//-----------------------------------------
+/**
+ * Store a snapshot of regulator signals and internal values into the debug buffers if space remains.
+ *
+ * Writes the provided measured signals (Ug, UPot, Ig), the active setpoint, the computed correction,
+ * and the current error into the corresponding CONTROL_Regulator* arrays and increments CONTROL_Values_Counter.
+ * If the debug buffer is full (CONTROL_Values_Counter >= VALUES_DEBUG_RGLTR_SIZE) the function does nothing.
+ *
+ * @param Ug Measured grid voltage value to record.
+ * @param UPot Measured potentiometer/auxiliary voltage value to record.
+ * @param Ig Measured current value to record.
+ * @param Setpoint Target reference value active when the snapshot was taken.
+ * @param Correction Combined PI correction (Qp + Qi) applied when the snapshot was taken.
+ * @param Error Regulator error (PrevSetPoint - Ug) at the time of recording.
+ */
 
 void REGLTR_StoreRegulatorDebug(float Ug, float UPot, float Ig, float Setpoint, float Correction, float Error)
 {

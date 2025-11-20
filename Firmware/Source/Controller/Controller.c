@@ -1,4 +1,4 @@
-﻿// Header
+// Header
 #include "Controller.h"
 //
 // Includes
@@ -53,7 +53,16 @@ void CONTROL_WatchDogUpdate();
 void CONTROL_ResetToDefaultState();
 
 // Functions
-//
+/**
+ * Initialize the control subsystem: configure endpoint mappings and sizes, register
+ * EPROM persistence for the DataTable, determine and apply the CAN node ID, initialize
+ * the device profile and FEP service, and reset control values to their default state.
+ *
+ * This performs global side effects including saving firmware/node information to the
+ * DataTable, configuring the CAN node ID, initializing EPROM-backed DataTable services,
+ * registering the action dispatch and cycle flag with the device profile, and clearing
+ * runtime control state and telemetry buffers.
+ */
 void CONTROL_Init()
 {
 	// Переменные для конфигурации EndPoint
@@ -106,7 +115,14 @@ void CONTROL_Init()
 
 	CONTROL_ResetToDefaultState();
 }
-//------------------------------------------
+/**
+ * Reset device state and telemetry to default values.
+ *
+ * Clears DataTable registers REG_FAULT_REASON, REG_DISABLE_REASON, REG_WARNING,
+ * REG_PROBLEM and REG_OP_RESULT, resets CONTROL_Values_Counter, resets
+ * device profile scopes and endpoint read state, and sets device state and
+ * sub-state to DS_None / SS_None.
+ */
 
 void CONTROL_ResetToDefaultState()
 {

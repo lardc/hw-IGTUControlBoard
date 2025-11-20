@@ -1,4 +1,4 @@
-﻿// Header
+// Header
 #include "Diagnostic.h"
 
 // Include
@@ -42,7 +42,13 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 
 	return true;
 }
-//------------------------------------------------
+/**
+ * Output a trapezoid waveform to the DAC using regulator setpoints.
+ *
+ * Writes successive DAC values derived from regulator pulse setpoints (REGLTR_GetSetpoint)
+ * converted to unsigned voltages and applies the configured inter-sample delay (TIMER15_uS).
+ * The number of samples emitted is taken from REGLTR_PulseSamples.TotalSamples.
+ */
 
 void DIAG_GenerateTrapezoidWave()
 {
@@ -53,5 +59,4 @@ void DIAG_GenerateTrapezoidWave()
 	}
 }
 //------------------------------------------------
-
 
