@@ -8,7 +8,7 @@
 
 typedef struct {
 	Int16U RiseSamples;
-	Int16U PlateuSamples;
+	Int16U FlatTopSamples;
 	Int16U FallSamples;
 	Int16U TotalSamples;
 } PulseSamples;

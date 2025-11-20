@@ -51,17 +51,20 @@ void REGLTR_Process()
 	Qi += RegulatorError * Ki;
 
 	// Расчёт следующего задания и его корректировка
-	float Sepoint = REGLTR_GetSetpoint(Index);
-	Sepoint += Qp + Qi;
+	float Setpoint = REGLTR_GetSetpoint(Index);
+	Setpoint += Qp + Qi;
 
-	Int16U DACSetpoint = MEASURE_ConvertUset(Sepoint);
+	Int16U DACSetpoint = MEASURE_ConvertUset(Setpoint);
 	LL_WriteDAC(DACSetpoint);
 
-	PrevSetPoint = Sepoint;
+	PrevSetPoint = Setpoint;
 
-	REGLTR_StoreRegulatorDebug(Sample.Ug, Sample.UPot, Sample.Ig, Sepoint, Qp + Qi, RegulatorError);
+	REGLTR_StoreRegulatorDebug(Sample.Ug, Sample.UPot, Sample.Ig, Setpoint, Qp + Qi, RegulatorError);
 
-	Index++;
+	if (Index < REGLTR_PulseSamples.TotalSamples)
+		Index++;
+	else
+		Index = REGLTR_PulseSamples.TotalSamples;
 }
 //-----------------------------------------
 
@@ -84,9 +87,14 @@ void REGLTR_Init()
 
 	REGLTR_PulseSamples.TotalSamples = (Int16U)(PulseTime * SAMPLE_RATE);
 
-	REGLTR_PulseSamples.RiseSamples = (Int16U)(REGLTR_PulseSamples.TotalSamples * RiseTime / PulseTime);
-	REGLTR_PulseSamples.PlateuSamples = (Int16U)(REGLTR_PulseSamples.TotalSamples * DataTable[REG_PULSE_WIDTH] / PulseTime);
-	REGLTR_PulseSamples.FallSamples = REGLTR_PulseSamples.TotalSamples - REGLTR_PulseSamples.RiseSamples - REGLTR_PulseSamples.PlateuSamples;
+	REGLTR_PulseSamples.RiseSamples = (Int16U)(REGLTR_PulseSamples.TotalSamples * RiseTime / PulseTime + 0.5f);
+	REGLTR_PulseSamples.FlatTopSamples = (Int16U)(REGLTR_PulseSamples.TotalSamples * DataTable[REG_PULSE_WIDTH] / PulseTime + 0.5f);
+
+	Int16U sum = REGLTR_PulseSamples.RiseSamples + REGLTR_PulseSamples.FlatTopSamples;
+	if (sum > REGLTR_PulseSamples.TotalSamples)
+		REGLTR_PulseSamples.FlatTopSamples = REGLTR_PulseSamples.TotalSamples - REGLTR_PulseSamples.RiseSamples;
+
+	REGLTR_PulseSamples.FallSamples = REGLTR_PulseSamples.TotalSamples - REGLTR_PulseSamples.RiseSamples - REGLTR_PulseSamples.FlatTopSamples;
 }
 //-----------------------------------------
 
@@ -94,11 +102,11 @@ float REGLTR_GetSetpoint(Int16U i)
 {
 	if (i < REGLTR_PulseSamples.RiseSamples)
 		return (float)i / REGLTR_PulseSamples.RiseSamples * DataTable[REG_PULSE_AMPLITUDE];
-	else if (i < REGLTR_PulseSamples.RiseSamples + REGLTR_PulseSamples.PlateuSamples)
+	else if (i < REGLTR_PulseSamples.RiseSamples + REGLTR_PulseSamples.FlatTopSamples)
 		return DataTable[REG_PULSE_AMPLITUDE];
 	else if (i < REGLTR_PulseSamples.TotalSamples)
 	{
-		Int16U fallIdx = i - (REGLTR_PulseSamples.RiseSamples + REGLTR_PulseSamples.PlateuSamples);
+		Int16U fallIdx = i - (REGLTR_PulseSamples.RiseSamples + REGLTR_PulseSamples.FlatTopSamples);
 		return DataTable[REG_PULSE_AMPLITUDE] * (1.0f - (float)fallIdx / REGLTR_PulseSamples.FallSamples);
 	}
 	

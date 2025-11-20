@@ -28,6 +28,8 @@
 #define COEF_RSH_MIN				0
 #define COEF_RSH_MAX				100e+6
 //
+#define SLEW_RATE_MIN				1.0f
+//
 // Types
 typedef struct __TableItemConstraint
 {
