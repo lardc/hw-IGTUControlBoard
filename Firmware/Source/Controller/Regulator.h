@@ -1,7 +1,7 @@
 #ifndef __REGULATOR_H
 #define __REGULATOR_H
 
-// Include
+// Includе
 #include "stdinc.h"
 
 #define SAMPLE_RATE (1000000.0f / TIMER15_uS)

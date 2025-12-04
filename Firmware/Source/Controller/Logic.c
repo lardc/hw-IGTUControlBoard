@@ -12,7 +12,7 @@
 #include "Regulator.h"
 #include "Measurement.h"
 
-// Variables
+// Vаriables
 //
 
 // Forward functions
