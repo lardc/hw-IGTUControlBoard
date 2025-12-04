@@ -163,6 +163,5 @@ void REGLTR_StopProcess()
 	DMA_ChannelEnable(DMA2_Channel1, false);
 	DMA_ChannelEnable(DMA2_Channel5, false);
 	TIM_Stop(TIM15);
-	//GATE_SetUg(0);
 }
 //------------------------------------

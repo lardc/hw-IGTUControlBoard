@@ -52,9 +52,10 @@ void LOGIC_HandleMeasurement()
 			case SS_RegulatorProcess:
 				if(CONTROL_TimeCounter > Timeout)
 				{
-					UgResult = REGLTR_GetSample().Ug;
-					UpotResult = REGLTR_GetSample().UPot;
-					IgResult = REGLTR_GetSample().Ig;
+					SamplingResult Result = REGLTR_GetSample();
+					UgResult = Result.Ug;
+					UpotResult = Result.UPot;
+					IgResult = Result.Ig;
 					CONTROL_SetDeviceSubState(SS_FinishProcess);
 				}
 				break;
