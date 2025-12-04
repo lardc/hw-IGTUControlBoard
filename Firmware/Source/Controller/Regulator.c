@@ -8,12 +8,7 @@
 #include "DeviceObjectDictionary.h"
 #include "Regulator.h"
 #include "LowLevel.h"
-
-// Definitions
-typedef struct __SamplingResult
-{
-	float Ug, UPot, Ig;
-} SamplingResult;
+#include "Board.h"
 
 // Variables
 Int16U REGLTR_MemBuffUg[ADC_SEQ_LENGTH];
@@ -151,3 +146,23 @@ void REGLTR_StoreRegulatorDebug(float Ug, float UPot, float Ig, float Setpoint, 
 	}
 }
 //-----------------------------------------
+
+void REGLTR_StartProcess()
+{
+	TIM_Start(TIM15);
+
+	DMA_ChannelEnable(DMA1_Channel1, true);
+	DMA_ChannelEnable(DMA2_Channel1, true);
+	DMA_ChannelEnable(DMA2_Channel5, true);
+}
+//------------------------------------
+
+void REGLTR_StopProcess()
+{
+	DMA_ChannelEnable(DMA1_Channel1, false);
+	DMA_ChannelEnable(DMA2_Channel1, false);
+	DMA_ChannelEnable(DMA2_Channel5, false);
+	TIM_Stop(TIM15);
+	//GATE_SetUg(0);
+}
+//------------------------------------

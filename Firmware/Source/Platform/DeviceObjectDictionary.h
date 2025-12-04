@@ -137,7 +137,11 @@
 #define REG_PROBLEM						196	// Регистр Problem
 #define REG_OP_RESULT					197	// Регистр результата операции
 #define REG_DEV_SUBSTATE				198
+
+#define REG_THERM_RESIS					200	// Полученное сопротивление термистора
+#define REG_THERM_CURRENT				201	// Полученный ток на термисторе
 // -----------------------------
+
 #define REG_FWINFO_SLAVE_NID			256	// Device CAN slave node ID
 #define REG_FWINFO_MASTER_NID			257	// Device CAN master node ID (if presented)
 // 258 - 259

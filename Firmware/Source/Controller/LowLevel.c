@@ -76,7 +76,8 @@ void LL_SetCurrentChannel(IChannel Channel)
 		case I_CHANNEL_7:
 			LL_SPI_WriteByte(RELAY_CH_7);
 			break;
-		default:
+		case I_CHANNEL_NONE:
+			LL_SPI_WriteByte(RELAY_NONE);
 			break;
 	}
 	LL_SPI_SetStateOE(false);

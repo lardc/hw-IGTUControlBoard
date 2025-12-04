@@ -3,7 +3,9 @@
 
 // Definitions
 //
-#define POWER_ON_TIMER 10000 // В мс
+#define INIT_48V_TIMER			10 // Время для выставления 48v на плате, в мс
+#define SW_CURRENT_CH_TIMER		1	// Время для переключения реле тока , в мс
+#define REGLTR_TIMER			10	// Время для выхода регулятора на рабочее напряжение, в мс
 
 // Includes
 //

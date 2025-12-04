@@ -13,6 +13,11 @@ typedef struct {
 	Int16U TotalSamples;
 } PulseSamples;
 
+typedef struct __SamplingResult
+{
+	float Ug, UPot, Ig;
+} SamplingResult;
+
 extern PulseSamples REGLTR_PulseSamples;
 
 extern Int16U REGLTR_MemBuffUg[];
@@ -20,6 +25,10 @@ extern Int16U REGLTR_MemBuffUPot[];
 extern Int16U REGLTR_MemBuffIg[];
 
 void REGLTR_Process();
+void REGLTR_Init();
 float REGLTR_GetSetpoint(Int16U i);
+void REGLTR_StartProcess();
+void REGLTR_StopProcess();
+SamplingResult REGLTR_GetSample();
 
 #endif // __REGULATOR_H
