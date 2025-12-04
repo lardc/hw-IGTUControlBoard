@@ -17,9 +17,7 @@ typedef enum __DeviceState
 typedef enum __DeviceSubState
 {
 	SS_None 			= 0,
-	SS_PowerOn			= 1,
-	SS_WaitCharge		= 2,
-	SS_init				= 3,
+	SS_Init				= 1,
 } DeviceSubState;
 
 // Variables

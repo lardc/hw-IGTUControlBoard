@@ -1,6 +1,7 @@
 ﻿// Header
 #include "Controller.h"
 //
+
 // Includes
 #include "Board.h"
 #include "Delay.h"
@@ -53,6 +54,7 @@ void CONTROL_SwitchToFault(Int16U Reason);
 void Delay_mS(uint32_t Delay);
 void CONTROL_WatchDogUpdate();
 void CONTROL_ResetToDefaultState();
+void CONTROL_ResetData();
 
 // Functions
 //
@@ -112,6 +114,14 @@ void CONTROL_Init()
 
 void CONTROL_ResetToDefaultState()
 {
+	CONTROL_ResetData();
+	CONTROL_SetDeviceState(DS_None);
+	CONTROL_SetDeviceSubState(SS_None);
+}
+//------------------------------------------
+
+void CONTROL_ResetData()
+{
 	DataTable[REG_FAULT_REASON] = DF_NONE;
 	DataTable[REG_DISABLE_REASON] = DF_NONE;
 	DataTable[REG_WARNING] = WARNING_NONE;
@@ -122,16 +132,13 @@ void CONTROL_ResetToDefaultState()
 	
 	DEVPROFILE_ResetScopes(0);
 	DEVPROFILE_ResetEPReadState();
-
-	CONTROL_SetDeviceState(DS_None);
-	CONTROL_SetDeviceSubState(SS_None);
 }
 //------------------------------------------
 
 void CONTROL_Idle()
 {
 	//Обработка логики мастер-команд
-	LOGIC_HandlePowerOn();
+	LOGIC_HandleMeasurement();
 
 	DEVPROFILE_ProcessRequests();
 	CONTROL_WatchDogUpdate();
@@ -145,15 +152,7 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 	switch (ActionID)
 	{
 		case ACT_ENABLE_POWER:
-			{
-				if(CONTROL_State == DS_None)
-				{
-					CONTROL_SetDeviceState(DS_InProcess);
-					CONTROL_SetDeviceSubState(SS_PowerOn);
-				}
-				else if(CONTROL_State != DS_Ready)
-					*pUserError = ERR_OPERATION_BLOCKED;
-			}
+			CONTROL_SetDeviceState(DS_Ready);
 			break;
 			
 		case ACT_DISABLE_POWER:
@@ -184,10 +183,10 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			{
 				if(CONTROL_State == DS_Ready)
 				{
-					CONTROL_ResetToDefaultState();
+					CONTROL_ResetData();
 					// safety
 					CONTROL_SetDeviceState(DS_InProcess);
-					CONTROL_SetDeviceSubState(SS_init);
+					CONTROL_SetDeviceSubState(SS_Init);
 				}
 				else
 					*pUserError = ERR_DEVICE_NOT_READY;

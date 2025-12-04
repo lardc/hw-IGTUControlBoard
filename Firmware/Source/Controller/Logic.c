@@ -8,6 +8,7 @@
 #include "DeviceObjectDictionary.h"
 #include "Controller.h"
 #include "Board.h"
+#include "LowLevel.h"
 
 // Types
 //
@@ -21,28 +22,18 @@
 // Functions
 //
 
-void LOGIC_HandlePowerOn()
+void LOGIC_HandleMeasurement()
 {
-	static Int64U Timeout = 0;
-
 	if(CONTROL_State == DS_InProcess)
 	{
 		switch (CONTROL_SubState)
 		{
-			case SS_PowerOn:
-				Timeout = CONTROL_TimeCounter + POWER_ON_TIMER;
-				GPIO_SetState(GPIO_VCC_48, true);
-				CONTROL_SetDeviceState(DS_InProcess);
-				CONTROL_SetDeviceSubState(SS_WaitCharge);
+			case SS_Init:
+
+				LL_SetCurrentChannel(I_CHANNEL_7);
+				CONTROL_SetDeviceSubState(SS_None);
 				break;
 
-			case SS_WaitCharge:
-				if(CONTROL_TimeCounter > Timeout)
-				{
-					CONTROL_SetDeviceState(DS_Ready);
-					CONTROL_SetDeviceSubState(SS_None);
-				}
-				break;
 
 			default:
 				break;

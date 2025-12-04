@@ -11,7 +11,6 @@
 
 //Functions
 //
-void LOGIC_HandlePowerOn();
-
+void LOGIC_HandleMeasurement();
 
 #endif // CONTROLLER_LOGIC_H_

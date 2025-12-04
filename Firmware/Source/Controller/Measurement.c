@@ -7,6 +7,7 @@
 #include "Global.h"
 #include "DataTable.h"
 #include "DeviceObjectDictionary.h"
+#include "LowLevel.h"
 
 // Definitions
 //
