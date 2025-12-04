@@ -11,15 +11,22 @@ typedef enum __DeviceState
 	DS_Fault 			= 1,
 	DS_Disabled 		= 2,
 	DS_Ready 			= 3,
+	DS_InProcess		= 4,
 } DeviceState;
 
 typedef enum __DeviceSubState
 {
 	SS_None 			= 0,
+	SS_PowerOn			= 1,
+	SS_WaitCharge		= 2,
+	SS_init				= 3,
 } DeviceSubState;
 
 // Variables
 extern volatile Int64U CONTROL_TimeCounter;
+
+extern volatile DeviceState CONTROL_State;
+extern volatile DeviceSubState CONTROL_SubState;
 
 extern Int16U CONTROL_ExtInfoCounter;
 extern Int16U CONTROL_ExtInfoData[];

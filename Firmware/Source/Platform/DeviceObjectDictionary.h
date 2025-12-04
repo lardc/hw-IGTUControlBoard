@@ -11,6 +11,7 @@
 #define ACT_DBG_SPI_WRITE_TWO_BYTES		11	// Запись двух байтов для отладки SPI
 #define ACT_DBG_PULSE					12	// Запуск импульса в виде трапеции
 
+#define ACT_START_TEST					100 // Запуск процесса измерения
 #define ACT_SAVE_TO_ROM					200	// Сохранение пользовательских данных во FLASH процессора
 #define ACT_RESTORE_FROM_ROM			201	// Восстановление данных из FLASH
 #define ACT_RESET_TO_DEFAULT			202	// Сброс DataTable в состояние по умолчанию

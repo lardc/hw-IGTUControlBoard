@@ -14,6 +14,8 @@
 #include "BCCIxParams.h"
 #include "Delay.h"
 #include "InitConfig.h"
+#include "Diagnostic.h"
+#include "Logic.h"
 
 // Macro
 //
@@ -128,6 +130,9 @@ void CONTROL_ResetToDefaultState()
 
 void CONTROL_Idle()
 {
+	//Обработка логики мастер-команд
+	LOGIC_HandlePowerOn();
+
 	DEVPROFILE_ProcessRequests();
 	CONTROL_WatchDogUpdate();
 }
@@ -140,6 +145,15 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 	switch (ActionID)
 	{
 		case ACT_ENABLE_POWER:
+			{
+				if(CONTROL_State == DS_None)
+				{
+					CONTROL_SetDeviceState(DS_InProcess);
+					CONTROL_SetDeviceSubState(SS_PowerOn);
+				}
+				else if(CONTROL_State != DS_Ready)
+					*pUserError = ERR_OPERATION_BLOCKED;
+			}
 			break;
 			
 		case ACT_DISABLE_POWER:
@@ -166,8 +180,22 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			DataTable[REG_WARNING] = 0;
 			break;
 			
+		case ACT_START_TEST:
+			{
+				if(CONTROL_State == DS_Ready)
+				{
+					CONTROL_ResetToDefaultState();
+					// safety
+					CONTROL_SetDeviceState(DS_InProcess);
+					CONTROL_SetDeviceSubState(SS_init);
+				}
+				else
+					*pUserError = ERR_DEVICE_NOT_READY;
+			}
+			break;
+
 		default:
-			return false;
+			return DIAG_HandleDiagnosticAction(ActionID, pUserError);
 	}
 	
 	return true;
@@ -202,12 +230,6 @@ void CONTROL_SetDeviceSubState(DeviceSubState NewSubState)
 {
 	CONTROL_SubState = NewSubState;
 	DataTable[REG_DEV_SUBSTATE] = NewSubState;
-}
-//------------------------------------------
-
-DeviceSubState CONTROL_GetSubState()
-{
-	return CONTROL_SubState;
 }
 //------------------------------------------
 
