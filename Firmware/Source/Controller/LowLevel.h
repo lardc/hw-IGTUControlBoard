@@ -7,7 +7,6 @@
 // Types
 typedef enum IChannel
 {
-	I_CHANNEL_NONE = 0,
 	I_CHANNEL_0,
 	I_CHANNEL_1,
 	I_CHANNEL_2,
@@ -20,8 +19,7 @@ typedef enum IChannel
 
 typedef enum RelayMask
 {
-	RELAY_NONE = 0,
-	RELAY_CH_0 = BIT0,
+	RELAY_CH_0 = 0,
 	RELAY_CH_1 = BIT0 | BIT4,
 	RELAY_CH_2 = BIT0 | BIT5,
 	RELAY_CH_3 = BIT0 | BIT6,

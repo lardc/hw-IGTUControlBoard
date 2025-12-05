@@ -44,7 +44,6 @@ extern float CONTROL_RegulatorError[];
 // Functions
 void CONTROL_Init();
 void CONTROL_Idle();
-DeviceSubState CONTROL_GetSubState();
 void CONTROL_SetDeviceState(DeviceState NewState);
 void CONTROL_SetDeviceSubState(DeviceSubState NewSubState);
 void CONTROL_SwitchToProblem(Int16U Reason);
