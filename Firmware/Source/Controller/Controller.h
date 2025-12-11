@@ -24,11 +24,18 @@ typedef enum __DeviceSubState
 	SS_FinishProcess	= 5,
 } DeviceSubState;
 
+typedef enum __MeasureType
+{
+	MT_Rth = 0,
+	MT_Iges = 1,
+} MeasureType;
+
 // Variables
 extern volatile Int64U CONTROL_TimeCounter;
 
 extern volatile DeviceState CONTROL_State;
 extern volatile DeviceSubState CONTROL_SubState;
+extern volatile MeasureType CONTROL_MeasureType;
 
 extern Int16U CONTROL_ExtInfoCounter;
 extern Int16U CONTROL_ExtInfoData[];

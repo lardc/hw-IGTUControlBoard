@@ -30,6 +30,15 @@
 //
 #define SLEW_RATE_MIN				1.0f
 //
+#define U_RTH_MIN					110		// В мВ
+#define U_RTH_MAX					1100
+#define U_RTH_DEF					550
+//
+#define U_IGES_MIN					94		// В мВ
+#define U_IGES_MAX					940
+#define U_IGES_DEF					470
+
+//
 // Types
 typedef struct __TableItemConstraint
 {

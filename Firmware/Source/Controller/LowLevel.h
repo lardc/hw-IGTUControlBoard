@@ -29,6 +29,10 @@ typedef enum RelayMask
 	RELAY_CH_7 = BIT0 | BIT1,
 } RelayMask;
 
+// Variables
+//
+extern float RelayLimits[7];
+
 // Functions
 //
 void LL_ToggleBoardLED();

@@ -11,7 +11,8 @@
 #define ACT_DBG_SPI_WRITE_TWO_BYTES		11	// Запись двух байтов для отладки SPI
 #define ACT_DBG_PULSE					12	// Запуск импульса в виде трапеции
 
-#define ACT_START_TEST					100 // Запуск процесса измерения
+#define ACT_START_MEASURE_RTH			100 // Запуск процесса измерения Rth
+#define ACT_START_MEASURE_IGES			101	// Запуск процесса измерения Iges
 #define ACT_SAVE_TO_ROM					200	// Сохранение пользовательских данных во FLASH процессора
 #define ACT_RESTORE_FROM_ROM			201	// Восстановление данных из FLASH
 #define ACT_RESET_TO_DEFAULT			202	// Сброс DataTable в состояние по умолчанию
@@ -106,6 +107,7 @@
 //
 #define REG_SLEW_RATE					66	// Скорость нарастания переднего фронта В/сек
 #define REG_PULSE_WIDTH					67	// Длина импульса сек
+#define REG_WORK_VOLTAGE_RTH			68	// Номинальное рабочее напряжение для измерения Rth, мВ
 //
 #define REG_RANGE_I_0					69	// Диапазон тока для канала 0
 #define REG_RANGE_I_1					70	// Диапазон тока для канала 1
@@ -123,6 +125,7 @@
 #define REG_RGLTR_FOLLOWING_ERR_THRESH	83	// Порог ошибки
 //
 #define REG_PULSE_AMPLITUDE				128	// Амплитуда В
+#define REG_WORK_VOLTAGE_IGES			129	// Номинальное рабочее напряжение для измерения Iges, мВ
 //
 #define REG_DBG							150	// Отладочный регистр
 //

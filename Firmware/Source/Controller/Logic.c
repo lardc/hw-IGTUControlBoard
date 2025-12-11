@@ -32,7 +32,7 @@ void LOGIC_HandleMeasurement()
 			case SS_Init:
 				GPIO_SetState(GPIO_VCC_48, true);
 				UgResult = UpotResult = IgResult = 0.0f;
-				//LL_SetCurrentChannel(I_CHANNEL_7);
+				LL_SetCurrentChannel((CONTROL_MeasureType == MT_Rth) ? I_CHANNEL_6 : I_CHANNEL_2);
 				Timeout = CONTROL_TimeCounter + INIT_48V_TIMER;
 				CONTROL_SetDeviceSubState(SS_Wait48VPause);
 				break;
@@ -56,6 +56,18 @@ void LOGIC_HandleMeasurement()
 					UgResult = Result.Ug;
 					UpotResult = Result.UPot;
 					IgResult = Result.Ig;
+					switch(CONTROL_MeasureType)
+						case MT_Iges:
+							for (int i = 5; i < (sizeof(RelayLimits) / sizeof(RelayLimits[0])); i++)
+								if (IgResult < RelayLimits[i])
+								{
+									LL_SetCurrentChannel(i+1);
+									Timeout = CONTROL_TimeCounter + SW_CURRENT_CH_TIMER;
+								}
+								else
+						case MT_Rth:
+									return;
+
 					CONTROL_SetDeviceSubState(SS_FinishProcess);
 				}
 				break;

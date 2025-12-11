@@ -77,7 +77,7 @@ const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE] =
 	{COEF_B_MIN, COEF_B_MAX, 0},												// 65
 	{SLEW_RATE_MIN, INT16U_MAX, SLEW_RATE_MIN},									// 66
 	{0, INT16U_MAX, 0},															// 67
-	{0, 0, 0},																	// 68
+	{U_RTH_MIN, U_RTH_MAX, U_RTH_DEF},											// 68
 	{0, 0, 0},																	// 69
 	{0, 0, 0},																	// 70
 	{0, 0, 0},																	// 71
@@ -142,7 +142,7 @@ const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE] =
 const TableItemConstraint VConstraint[DATA_TABLE_WP_START - DATA_TABLE_WR_START] =
 {
 	{0, INT16U_MAX, 0},															// 128
-	{0, 0, 0},																	// 129
+	{U_IGES_MIN, U_IGES_MAX, U_IGES_DEF},										// 129
 	{0, 0, 0},																	// 130
 	{0, 0, 0},																	// 131
 	{0, 0, 0},																	// 132

@@ -32,6 +32,7 @@ typedef void (*FUNC_AsyncDelegate)();
 volatile DeviceState CONTROL_State = DS_None;
 volatile DeviceSubState CONTROL_SubState = SS_None;
 static Boolean CycleActive = false;
+volatile MeasureType CONTROL_MeasureType = MT_Rth;
 
 volatile Int64U CONTROL_TimeCounter = 0;
 
@@ -179,10 +180,26 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			DataTable[REG_WARNING] = 0;
 			break;
 			
-		case ACT_START_TEST:
+		case ACT_START_MEASURE_RTH:
 			{
 				if(CONTROL_State == DS_Ready)
 				{
+					CONTROL_MeasureType = MT_Rth;
+					CONTROL_ResetData();
+					// safety
+					CONTROL_SetDeviceState(DS_InProcess);
+					CONTROL_SetDeviceSubState(SS_Init);
+				}
+				else
+					*pUserError = ERR_DEVICE_NOT_READY;
+			}
+			break;
+
+		case ACT_START_MEASURE_IGES:
+			{
+				if(CONTROL_State == DS_Ready)
+				{
+					CONTROL_MeasureType = MT_Iges;
 					CONTROL_ResetData();
 					// safety
 					CONTROL_SetDeviceState(DS_InProcess);

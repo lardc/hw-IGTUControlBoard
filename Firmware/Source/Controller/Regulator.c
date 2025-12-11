@@ -17,6 +17,7 @@ Int16U REGLTR_MemBuffIg[ADC_SEQ_LENGTH];
 static float Kp, Ki, Qi = 0, PrevSetPoint = 0;
 static Int16U Index = 0;
 static Int16U FollowingErrorCounter = 0;
+static float PulseAmplutide = 0;
 
 PulseSamples REGLTR_PulseSamples = {0};
 
@@ -66,6 +67,7 @@ void REGLTR_Process()
 void REGLTR_Init()
 {
 	Index = Qi = PrevSetPoint = FollowingErrorCounter = 0;
+	PulseAmplutide = (CONTROL_MeasureType ? DataTable[REG_WORK_VOLTAGE_IGES] : DataTable[REG_WORK_VOLTAGE_RTH])* 0.001;
 
 	Kp = DataTable[REG_RGLTR_Kp];
 	Ki = DataTable[REG_RGLTR_Ki];
@@ -77,7 +79,7 @@ void REGLTR_Init()
 		REGLTR_MemBuffIg[i] = 0;
 	}
 
-	float RiseTime = DataTable[REG_PULSE_AMPLITUDE] / DataTable[REG_SLEW_RATE];
+	float RiseTime = PulseAmplutide / DataTable[REG_SLEW_RATE];
 	float PulseTime = RiseTime + DataTable[REG_PULSE_WIDTH] + RiseTime;
 
 	REGLTR_PulseSamples.TotalSamples = (Int16U)(PulseTime * SAMPLE_RATE);
@@ -96,13 +98,13 @@ void REGLTR_Init()
 float REGLTR_GetSetpoint(Int16U i)
 {
 	if (i < REGLTR_PulseSamples.RiseSamples)
-		return (float)i / REGLTR_PulseSamples.RiseSamples * DataTable[REG_PULSE_AMPLITUDE];
+		return (float)i / REGLTR_PulseSamples.RiseSamples * PulseAmplutide;
 	else if (i < REGLTR_PulseSamples.RiseSamples + REGLTR_PulseSamples.FlatTopSamples)
-		return DataTable[REG_PULSE_AMPLITUDE];
+		return PulseAmplutide;
 	else if (i < REGLTR_PulseSamples.TotalSamples)
 	{
 		Int16U fallIdx = i - (REGLTR_PulseSamples.RiseSamples + REGLTR_PulseSamples.FlatTopSamples);
-		return DataTable[REG_PULSE_AMPLITUDE] * (1.0f - (float)fallIdx / REGLTR_PulseSamples.FallSamples);
+		return PulseAmplutide * (1.0f - (float)fallIdx / REGLTR_PulseSamples.FallSamples);
 	}
 	
 	return 0;

@@ -6,6 +6,9 @@
 #include "DataTable.h"
 #include "ZwSPI.h"
 
+// Variables
+//							50 мА	5 мА   0.5мА	50 мкА	  2 мкА		200 нА		20 нА
+float RelayLimits[7] = {0.05, 0.005, 0.0005, 0.00005, 0.000002, 0.0000002, 0.00000002}; // Мин. значения диапазонов работы реле от 0 до 7, в А
 // Forward functions
 //
 void LL_SPI_SetStateOE(bool State);
