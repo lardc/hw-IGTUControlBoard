@@ -125,6 +125,11 @@
 			<locationURI>PARENT-2-PROJECT_LOC/hw-STM32-libs/Library/Delay.h</locationURI>
 		</link>
 		<link>
+			<name>Source/Library/Utils.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/hw-STM32-libs/Library/Utils.h</locationURI>
+		</link>
+		<link>
 			<name>Source/Library/ZwADC.c</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/hw-STM32-libs/Library/ZwADC.c</locationURI>
@@ -278,6 +283,16 @@
 			<name>Source/Platform/FirmwareInfo.h</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/hw-STM32-libs/Firmware/FirmwareInfo.h</locationURI>
+		</link>
+		<link>
+			<name>Source/Platform/FormatOutputJSON.c</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/hw-STM32-libs/Firmware/FormatOutputJSON.c</locationURI>
+		</link>
+		<link>
+			<name>Source/Platform/FormatOutputJSON.h</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/hw-STM32-libs/Firmware/FormatOutputJSON.h</locationURI>
 		</link>
 		<link>
 			<name>System/Core/arm_common_tables.h</name>
@@ -438,16 +453,6 @@
 			<name>System/System/tiny_printf.c</name>
 			<type>1</type>
 			<locationURI>PARENT-2-PROJECT_LOC/hw-STM32-libs/System/System/tiny_printf.c</locationURI>
-		</link>
-		<link>
-			<name>Source/Platform/FormatOutputJSON.h</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/hw-STM32-libs/Firmware/FormatOutputJSON.h</locationURI>
-		</link>
-		<link>
-			<name>Source/Platform/FormatOutputJSON.c</name>
-			<type>1</type>
-			<locationURI>PARENT-2-PROJECT_LOC/hw-STM32-libs/Firmware/FormatOutputJSON.c</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>

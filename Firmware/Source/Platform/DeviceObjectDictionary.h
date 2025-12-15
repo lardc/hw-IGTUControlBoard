@@ -109,20 +109,21 @@
 #define REG_PULSE_WIDTH					67	// Длина импульса сек
 #define REG_WORK_VOLTAGE_RTH			68	// Номинальное рабочее напряжение для измерения Rth, мВ
 //
-#define REG_RANGE_I_0					69	// Диапазон тока для канала 0
-#define REG_RANGE_I_1					70	// Диапазон тока для канала 1
-#define REG_RANGE_I_2					71	// Диапазон тока для канала 2
-#define REG_RANGE_I_3					72	// Диапазон тока для канала 3
-#define REG_RANGE_I_4					73	// Диапазон тока для канала 4
-#define REG_RANGE_I_5					74	// Диапазон тока для канала 5
-#define REG_RANGE_I_6					75	// Диапазон тока для канала 6
-#define REG_RANGE_I_7					76	// Диапазон тока для канала 7
+#define REG_RANGE_I_0					69	// Диапазон тока для канала 0 - от 50 до 500 мА, в А
+#define REG_RANGE_I_1					70	// Диапазон тока для канала 1 - от 5 до 50 мА, в А
+#define REG_RANGE_I_2					71	// Диапазон тока для канала 2 - от 0.5 до 5 мА, в А
+#define REG_RANGE_I_3					72	// Диапазон тока для канала 3 - от 50 до 500 мкА, в А
+#define REG_RANGE_I_4					73	// Диапазон тока для канала 4 - от 2 до 50 мкА, в А
+#define REG_RANGE_I_5					74	// Диапазон тока для канала 5 - от 200 до 2000 нА, в А
+#define REG_RANGE_I_6					75	// Диапазон тока для канала 6 - от 20 до 200 нА, в А
+#define REG_RANGE_I_7					76	// Диапазон тока для канала 7 - от 5 до 20 нА, в А
 //
 #define REG_RGLTR_Kp					80	// Пропорциональный коэффициент регулятора
 #define REG_RGLTR_Ki					81	// Интегральный коэффициент регулятора
 //
-#define REG_RGLTR_FOLLOWING_ERR_LIMIT	82	// Лимит ошибки
-#define REG_RGLTR_FOLLOWING_ERR_THRESH	83	// Порог ошибки
+#define REG_RGLTR_FOLLOWING_ERR_LIMIT	82	// Лимит ошибки Following Error
+#define REG_RGLTR_FOLLOWING_ERR_THRESH	83	// Порог ошибки Following Error
+#define REG_VOLTAGE_ERR_LIMIT			84	// Допустимая ошибка напряжения для начала измерения
 //
 #define REG_PULSE_AMPLITUDE				128	// Амплитуда В
 #define REG_WORK_VOLTAGE_IGES			129	// Номинальное рабочее напряжение для измерения Iges, мВ
@@ -161,6 +162,7 @@
 
 // Problem
 #define PROBLEM_NONE					0
+#define PROBLEM_FOLLOWING_ERROR			1
 
 //  Warning
 #define WARNING_NONE					0

@@ -11,9 +11,11 @@
 #include "LowLevel.h"
 #include "Regulator.h"
 #include "Measurement.h"
+#include "Utils.h"
 
-// Vаriables
+// Variables
 //
+float RelayLimits[7]; // Мин. значения диапазонов работы реле от 0 до 6, в А
 
 // Forward functions
 //
@@ -25,6 +27,7 @@ void LOGIC_HandleMeasurement()
 {
 	static Int64U Timeout = 0;
 	static float UgResult, UpotResult, IgResult;
+
 	if(CONTROL_State == DS_InProcess)
 	{
 		switch (CONTROL_SubState)
@@ -46,6 +49,10 @@ void LOGIC_HandleMeasurement()
 				REGLTR_Init();
 				REGLTR_StartProcess();
 				Timeout = CONTROL_TimeCounter + REGLTR_TIMER;
+
+				for (int i = 0; i<8;i++)
+					RelayLimits[i] = DataTable[REG_RANGE_I_0 + i];
+
 				CONTROL_SetDeviceSubState(SS_RegulatorProcess);
 				break;
 
@@ -57,30 +64,65 @@ void LOGIC_HandleMeasurement()
 					UpotResult = Result.UPot;
 					IgResult = Result.Ig;
 					switch(CONTROL_MeasureType)
+					{
 						case MT_Iges:
-							for (int i = 5; i < (sizeof(RelayLimits) / sizeof(RelayLimits[0])); i++)
-								if (IgResult < RelayLimits[i])
+						{
+							float VoltageErr = ABS(UgResult - DataTable[REG_WORK_VOLTAGE_IGES]);
+							if(VoltageErr < DataTable[REG_VOLTAGE_ERR_LIMIT])
+							{
+								for(int i = 5; i <= 6; i++)
 								{
-									LL_SetCurrentChannel(i+1);
-									Timeout = CONTROL_TimeCounter + SW_CURRENT_CH_TIMER;
+									if(IgResult < RelayLimits[i])
+									{
+										LL_SetCurrentChannel(i + 1);
+										Timeout = CONTROL_TimeCounter + SW_CURRENT_CH_TIMER;
+									}
+									else
+										CONTROL_SetDeviceSubState(SS_FinishProcess);
 								}
-								else
-						case MT_Rth:
-									return;
+							}
+						}
+						break;
 
-					CONTROL_SetDeviceSubState(SS_FinishProcess);
+						case MT_Rth:
+						{
+							float VoltageErr = ABS(UgResult - DataTable[REG_WORK_VOLTAGE_RTH]);
+							if(VoltageErr < DataTable[REG_VOLTAGE_ERR_LIMIT])
+							{
+								for(int i = 2; i < 5; i++)
+								{
+									if(IgResult < RelayLimits[i])
+									{
+										LL_SetCurrentChannel(i + 1);
+										Timeout = CONTROL_TimeCounter + SW_CURRENT_CH_TIMER;
+									}
+									else
+										CONTROL_SetDeviceSubState(SS_FinishProcess);
+								}
+							}
+						}
+						break;
+					}
 				}
 				break;
 
 			case SS_FinishProcess:
 				REGLTR_StopProcess();
 				GPIO_SetState(GPIO_VCC_48, false);
-				//LL_SetCurrentChannel(I_CHANNEL_NONE);
-				DataTable[REG_THERM_RESIS] = MEASURE_Resis(UgResult, IgResult);
-				DataTable[REG_THERM_CURRENT] = IgResult;
+				LL_SetCurrentChannel(I_CHANNEL_0);
+				Timeout = CONTROL_TimeCounter + INIT_48V_TIMER;
+				CONTROL_SetDeviceSubState(SS_GetResults);
+				break;
 
-				CONTROL_SetDeviceState(DS_Ready);
-				CONTROL_SetDeviceSubState(SS_None);
+			case SS_GetResults:
+				if(CONTROL_TimeCounter > Timeout)
+				{
+					DataTable[REG_THERM_RESIS] = MEASURE_Resis(UgResult, IgResult);
+					DataTable[REG_THERM_CURRENT] = IgResult;
+
+					CONTROL_SetDeviceState(DS_Ready);
+					CONTROL_SetDeviceSubState(SS_None);
+				}
 				break;
 
 			default:

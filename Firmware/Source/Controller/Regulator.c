@@ -38,7 +38,13 @@ void REGLTR_Process()
 	{
 		if (FollowingErrorCounter < DataTable[REG_RGLTR_FOLLOWING_ERR_LIMIT])
 			FollowingErrorCounter++;
-		// обработка превышения лимита
+		else
+		{
+			CONTROL_SwitchToProblem(PROBLEM_FOLLOWING_ERROR);
+			GPIO_SetState(GPIO_VCC_48, false);
+			REGLTR_StopProcess();
+			LL_SetCurrentChannel(I_CHANNEL_7);
+		}
 	}
 	else
 		FollowingErrorCounter = 0;

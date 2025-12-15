@@ -31,7 +31,6 @@ typedef enum RelayMask
 
 // Variables
 //
-extern float RelayLimits[7];
 
 // Functions
 //
