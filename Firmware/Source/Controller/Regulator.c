@@ -17,7 +17,7 @@ Int16U REGLTR_MemBuffIg[ADC_SEQ_LENGTH];
 static float Kp, Ki, Qi = 0, PrevSetPoint = 0;
 static Int16U Index = 0;
 static Int16U FollowingErrorCounter = 0;
-static float PulseAmplutide = 0;
+static float PulseAmplitude = 0;
 
 PulseSamples REGLTR_PulseSamples = {0};
 
@@ -44,6 +44,7 @@ void REGLTR_Process()
 			GPIO_SetState(GPIO_VCC_48, false);
 			REGLTR_StopProcess();
 			LL_SetCurrentChannel(I_CHANNEL_7);
+			return;
 		}
 	}
 	else
@@ -73,7 +74,7 @@ void REGLTR_Process()
 void REGLTR_Init()
 {
 	Index = Qi = PrevSetPoint = FollowingErrorCounter = 0;
-	PulseAmplutide = (CONTROL_MeasureType ? DataTable[REG_WORK_VOLTAGE_IGES] : DataTable[REG_WORK_VOLTAGE_RTH])* 0.001;
+	PulseAmplitude = (CONTROL_MeasureType == MT_Iges ? DataTable[REG_WORK_VOLTAGE_IGES] : DataTable[REG_WORK_VOLTAGE_RTH])* 0.001;
 
 	Kp = DataTable[REG_RGLTR_Kp];
 	Ki = DataTable[REG_RGLTR_Ki];
@@ -85,7 +86,7 @@ void REGLTR_Init()
 		REGLTR_MemBuffIg[i] = 0;
 	}
 
-	float RiseTime = PulseAmplutide / DataTable[REG_SLEW_RATE];
+	float RiseTime = PulseAmplitude / DataTable[REG_SLEW_RATE];
 	float PulseTime = RiseTime + DataTable[REG_PULSE_WIDTH] + RiseTime;
 
 	REGLTR_PulseSamples.TotalSamples = (Int16U)(PulseTime * SAMPLE_RATE);
@@ -104,13 +105,13 @@ void REGLTR_Init()
 float REGLTR_GetSetpoint(Int16U i)
 {
 	if (i < REGLTR_PulseSamples.RiseSamples)
-		return (float)i / REGLTR_PulseSamples.RiseSamples * PulseAmplutide;
+		return (float)i / REGLTR_PulseSamples.RiseSamples * PulseAmplitude;
 	else if (i < REGLTR_PulseSamples.RiseSamples + REGLTR_PulseSamples.FlatTopSamples)
-		return PulseAmplutide;
+		return PulseAmplitude;
 	else if (i < REGLTR_PulseSamples.TotalSamples)
 	{
 		Int16U fallIdx = i - (REGLTR_PulseSamples.RiseSamples + REGLTR_PulseSamples.FlatTopSamples);
-		return PulseAmplutide * (1.0f - (float)fallIdx / REGLTR_PulseSamples.FallSamples);
+		return PulseAmplitude * (1.0f - (float)fallIdx / REGLTR_PulseSamples.FallSamples);
 	}
 	
 	return 0;
@@ -157,11 +158,11 @@ void REGLTR_StoreRegulatorDebug(float Ug, float UPot, float Ig, float Setpoint, 
 
 void REGLTR_StartProcess()
 {
-	TIM_Start(TIM15);
-
 	DMA_ChannelEnable(DMA1_Channel1, true);
 	DMA_ChannelEnable(DMA2_Channel1, true);
 	DMA_ChannelEnable(DMA2_Channel5, true);
+
+	TIM_Start(TIM15);
 }
 //------------------------------------
 

@@ -37,6 +37,10 @@
 #define U_IGES_MIN					94		// В мВ
 #define U_IGES_MAX					940
 #define U_IGES_DEF					470
+//
+#define U_ERR_COUNT_MIN				10		// в шт
+#define U_ERR_COUNT_MAX				20		// в шт
+#define U_ERR_COUNT_DEF				15		// в шт
 
 //
 // Types

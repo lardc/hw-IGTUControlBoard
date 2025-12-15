@@ -27,6 +27,7 @@ void LOGIC_HandleMeasurement()
 {
 	static Int64U Timeout = 0;
 	static float UgResult, UpotResult, IgResult;
+	static Int16U VoltageErrCount;
 
 	if(CONTROL_State == DS_InProcess)
 	{
@@ -35,6 +36,7 @@ void LOGIC_HandleMeasurement()
 			case SS_Init:
 				GPIO_SetState(GPIO_VCC_48, true);
 				UgResult = UpotResult = IgResult = 0.0f;
+				VoltageErrCount = 0;
 				LL_SetCurrentChannel((CONTROL_MeasureType == MT_Rth) ? I_CHANNEL_6 : I_CHANNEL_2);
 				Timeout = CONTROL_TimeCounter + INIT_48V_TIMER;
 				CONTROL_SetDeviceSubState(SS_Wait48VPause);
@@ -50,7 +52,7 @@ void LOGIC_HandleMeasurement()
 				REGLTR_StartProcess();
 				Timeout = CONTROL_TimeCounter + REGLTR_TIMER;
 
-				for (int i = 0; i<8;i++)
+				for (int i = 0; i<7;i++)
 					RelayLimits[i] = DataTable[REG_RANGE_I_0 + i];
 
 				CONTROL_SetDeviceSubState(SS_RegulatorProcess);
@@ -78,8 +80,17 @@ void LOGIC_HandleMeasurement()
 										Timeout = CONTROL_TimeCounter + SW_CURRENT_CH_TIMER;
 									}
 									else
+									{
 										CONTROL_SetDeviceSubState(SS_FinishProcess);
+										break;
+									}
 								}
+							}
+							else
+							{
+								VoltageErrCount++;
+								if(VoltageErrCount > DataTable[REG_VOLTAGE_ERR_COUNT_LIMIT])
+									CONTROL_SwitchToProblem(PROBLEM_VOLTAGE_OUT_OF_RANGE);
 							}
 						}
 						break;
@@ -99,6 +110,12 @@ void LOGIC_HandleMeasurement()
 									else
 										CONTROL_SetDeviceSubState(SS_FinishProcess);
 								}
+							}
+							else
+							{
+								VoltageErrCount++;
+								if(VoltageErrCount > DataTable[REG_VOLTAGE_ERR_COUNT_LIMIT])
+									CONTROL_SwitchToProblem(PROBLEM_VOLTAGE_OUT_OF_RANGE);
 							}
 						}
 						break;

@@ -56,6 +56,7 @@ void Delay_mS(uint32_t Delay);
 void CONTROL_WatchDogUpdate();
 void CONTROL_ResetToDefaultState();
 void CONTROL_ResetData();
+void CONTROL_StartMeasure(MeasureType Type);
 
 // Functions
 //
@@ -183,13 +184,7 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 		case ACT_START_MEASURE_RTH:
 			{
 				if(CONTROL_State == DS_Ready)
-				{
-					CONTROL_MeasureType = MT_Rth;
-					CONTROL_ResetData();
-					// safety
-					CONTROL_SetDeviceState(DS_InProcess);
-					CONTROL_SetDeviceSubState(SS_Init);
-				}
+					CONTROL_StartMeasure(MT_Rth);
 				else
 					*pUserError = ERR_DEVICE_NOT_READY;
 			}
@@ -198,13 +193,7 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 		case ACT_START_MEASURE_IGES:
 			{
 				if(CONTROL_State == DS_Ready)
-				{
-					CONTROL_MeasureType = MT_Iges;
-					CONTROL_ResetData();
-					// safety
-					CONTROL_SetDeviceState(DS_InProcess);
-					CONTROL_SetDeviceSubState(SS_Init);
-				}
+					CONTROL_StartMeasure(MT_Iges);
 				else
 					*pUserError = ERR_DEVICE_NOT_READY;
 			}
@@ -215,6 +204,16 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 	}
 	
 	return true;
+}
+//------------------------------------------
+
+void CONTROL_StartMeasure(MeasureType Type)
+{
+	CONTROL_MeasureType = Type;
+	CONTROL_ResetData();
+	// safety
+	CONTROL_SetDeviceState(DS_InProcess);
+	CONTROL_SetDeviceSubState(SS_Init);
 }
 //------------------------------------------
 

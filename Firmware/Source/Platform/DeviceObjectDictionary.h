@@ -124,6 +124,7 @@
 #define REG_RGLTR_FOLLOWING_ERR_LIMIT	82	// Лимит ошибки Following Error
 #define REG_RGLTR_FOLLOWING_ERR_THRESH	83	// Порог ошибки Following Error
 #define REG_VOLTAGE_ERR_LIMIT			84	// Допустимая ошибка напряжения для начала измерения
+#define REG_VOLTAGE_ERR_COUNT_LIMIT		85  // Лимит ошибки счетчика перед выставлением PROBLEM_VOLTAGE_OUT_OF_RANGE
 //
 #define REG_PULSE_AMPLITUDE				128	// Амплитуда В
 #define REG_WORK_VOLTAGE_IGES			129	// Номинальное рабочее напряжение для измерения Iges, мВ
@@ -163,6 +164,7 @@
 // Problem
 #define PROBLEM_NONE					0
 #define PROBLEM_FOLLOWING_ERROR			1
+#define PROBLEM_VOLTAGE_OUT_OF_RANGE	2 // Измеренное напряжение вне рабочего диапозона
 
 //  Warning
 #define WARNING_NONE					0
