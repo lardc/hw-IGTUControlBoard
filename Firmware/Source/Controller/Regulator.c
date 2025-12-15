@@ -74,7 +74,7 @@ void REGLTR_Process()
 void REGLTR_Init()
 {
 	Index = Qi = PrevSetPoint = FollowingErrorCounter = 0;
-	PulseAmplitude = (CONTROL_MeasureType == MT_Iges ? DataTable[REG_WORK_VOLTAGE_IGES] : DataTable[REG_WORK_VOLTAGE_RTH])* 0.001;
+	PulseAmplitude = (CONTROL_MeasureType == MT_Iges ? DataTable[REG_WORK_VOLTAGE_IGES] : DataTable[REG_WORK_VOLTAGE_RTH]) * 0.001;
 
 	Kp = DataTable[REG_RGLTR_Kp];
 	Ki = DataTable[REG_RGLTR_Ki];

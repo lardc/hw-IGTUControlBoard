@@ -13,7 +13,6 @@
 #include "SysConfig.h"
 #include "math.h"
 #include "BCCIxParams.h"
-#include "Delay.h"
 #include "InitConfig.h"
 #include "Diagnostic.h"
 #include "Logic.h"
@@ -154,7 +153,10 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 	switch (ActionID)
 	{
 		case ACT_ENABLE_POWER:
-			CONTROL_SetDeviceState(DS_Ready);
+			if(CONTROL_State == DS_None)
+				CONTROL_SetDeviceState(DS_Ready);
+			else
+				*pUserError = ERR_OPERATION_BLOCKED;
 			break;
 			
 		case ACT_DISABLE_POWER:
@@ -182,21 +184,17 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			break;
 			
 		case ACT_START_MEASURE_RTH:
-			{
-				if(CONTROL_State == DS_Ready)
-					CONTROL_StartMeasure(MT_Rth);
-				else
-					*pUserError = ERR_DEVICE_NOT_READY;
-			}
+			if(CONTROL_State == DS_Ready)
+				CONTROL_StartMeasure(MT_Rth);
+			else
+				*pUserError = ERR_DEVICE_NOT_READY;
 			break;
 
 		case ACT_START_MEASURE_IGES:
-			{
-				if(CONTROL_State == DS_Ready)
-					CONTROL_StartMeasure(MT_Iges);
-				else
-					*pUserError = ERR_DEVICE_NOT_READY;
-			}
+			if(CONTROL_State == DS_Ready)
+				CONTROL_StartMeasure(MT_Iges);
+			else
+				*pUserError = ERR_DEVICE_NOT_READY;
 			break;
 
 		default:
