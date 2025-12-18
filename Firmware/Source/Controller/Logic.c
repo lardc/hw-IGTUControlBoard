@@ -1,4 +1,4 @@
-// Header
+﻿// Header
 //
 #include "Logic.h"
 
@@ -15,7 +15,7 @@
 
 // Variables
 //
-float RelayLimits[7]; // Мин. значения диапазонов работы реле от 0 до 6, в А
+float RelayLimits[7]; // РњРёРЅ. Р·РЅР°С‡РµРЅРёСЏ РґРёР°РїР°Р·РѕРЅРѕРІ СЂР°Р±РѕС‚С‹ СЂРµР»Рµ РѕС‚ 0 РґРѕ 6, РІ Рђ
 
 // Forward functions
 //

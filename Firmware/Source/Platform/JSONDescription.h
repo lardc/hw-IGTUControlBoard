@@ -1,4 +1,4 @@
-#ifndef __JSON_DESCRIPTION_H
+﻿#ifndef __JSON_DESCRIPTION_H
 #define __JSON_DESCRIPTION_H
 
 #include "Global.h"
