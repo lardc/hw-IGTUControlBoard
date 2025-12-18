@@ -54,15 +54,15 @@ void REGLTR_Process()
 	Qi += RegulatorError * Ki;
 
 	// Расчёт следующего задания и его корректировка
-	float Setpoint = REGLTR_GetSetpoint(Index);
-	Setpoint += Qp + Qi;
+	float RawSetpoint = REGLTR_GetSetpoint(Index);
+	float Setpoint = RawSetpoint + Qp + Qi;
 
 	Int16U DACSetpoint = MEASURE_ConvertUset(Setpoint);
 	LL_WriteDAC(DACSetpoint);
 
 	PrevSetPoint = Setpoint;
 
-	REGLTR_StoreRegulatorDebug(Sample.Ug, Sample.UPot, Sample.Ig, Setpoint, Qp + Qi, RegulatorError);
+	REGLTR_StoreRegulatorDebug(Sample.Ug, Sample.UPot, Sample.Ig, RawSetpoint, Qp + Qi, RegulatorError);
 
 	if (Index < REGLTR_PulseSamples.TotalSamples)
 		Index++;
