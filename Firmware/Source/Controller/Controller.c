@@ -123,14 +123,12 @@ void CONTROL_ResetToDefaultState()
 
 void CONTROL_ResetData()
 {
-	DataTable[REG_FAULT_REASON] = DF_NONE;
-	DataTable[REG_DISABLE_REASON] = DF_NONE;
-	DataTable[REG_WARNING] = WARNING_NONE;
 	DataTable[REG_PROBLEM] = PROBLEM_NONE;
 	DataTable[REG_OP_RESULT] = OPRESULT_NONE;
-
-	CONTROL_Values_Counter = 0;
 	
+	DataTable[REG_THERM_RESIS] = 0;
+	DataTable[REG_THERM_CURRENT] = 0;
+
 	DEVPROFILE_ResetScopes(0);
 	DEVPROFILE_ResetEPReadState();
 }
@@ -160,22 +158,17 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			break;
 			
 		case ACT_DISABLE_POWER:
-			{
-				if(CONTROL_State == DS_Ready)
-				{
-					CONTROL_ResetToDefaultState();
-				}
-				else if(CONTROL_State != DS_None)
-					*pUserError = ERR_OPERATION_BLOCKED;
-			}
+			if(CONTROL_State == DS_Ready)
+				CONTROL_SetDeviceState(DS_None);
+			else if(CONTROL_State != DS_None)
+				*pUserError = ERR_OPERATION_BLOCKED;
 			break;
 			
 		case ACT_FAULT_CLEAR:
+			if(CONTROL_State == DS_Fault)
 			{
-				if(CONTROL_State == DS_Fault)
-				{
-					CONTROL_ResetToDefaultState();
-				}
+				CONTROL_SetDeviceState(DS_None);
+				DataTable[REG_FAULT_REASON] = DF_NONE;
 			}
 			break;
 			
