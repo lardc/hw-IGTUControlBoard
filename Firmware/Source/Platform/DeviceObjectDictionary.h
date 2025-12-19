@@ -123,7 +123,7 @@
 //
 #define REG_RGLTR_FOLLOWING_ERR_LIMIT	82	// Лимит ошибки Following Error
 #define REG_RGLTR_FOLLOWING_ERR_THRESH	83	// Порог ошибки Following Error
-#define REG_VOLTAGE_ERR_LIMIT			84	// Допустимая ошибка напряжения для начала измерения
+#define REG_VOLTAGE_ERR_THRESH			84	// Допустимая ошибка напряжения для начала измерения
 #define REG_VOLTAGE_ERR_COUNT_LIMIT		85  // Лимит ошибки счетчика перед выставлением PROBLEM_VOLTAGE_OUT_OF_RANGE
 //
 #define REG_PULSE_AMPLITUDE				128	// Амплитуда В

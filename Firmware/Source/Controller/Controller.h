@@ -22,8 +22,9 @@ typedef enum __DeviceSubState
 	SS_ConfigPulse		= 3,
 	SS_RegulatorProcess = 4,
 	SS_FollowingErr		= 5,
-	SS_FinishProcess	= 6,
-	SS_GetResults 		= 7,
+	SS_VoltageErr		= 6,
+	SS_FinishProcess	= 7,
+	SS_GetResults 		= 8,
 } DeviceSubState;
 
 typedef enum __MeasureType

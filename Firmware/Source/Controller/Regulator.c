@@ -9,15 +9,17 @@
 #include "Regulator.h"
 #include "LowLevel.h"
 #include "Board.h"
+#include "Utils.h"
 
 // Variables
 Int16U REGLTR_MemBuffUg[ADC_SEQ_LENGTH];
 Int16U REGLTR_MemBuffUPot[ADC_SEQ_LENGTH];
 Int16U REGLTR_MemBuffIg[ADC_SEQ_LENGTH];
-static float Kp, Ki, Qi = 0, PrevSetPoint = 0;
+static float Kp, Ki, Qi = 0, PrevSetPoint = 0, FollowingErrThreshold, VoltagErrThreshold;
 static Int16U Index = 0;
-static Int16U FollowingErrorCounter = 0;
+static Int16U FollowingErrLimit, VoltagErrLimit, VoltageErrCount, FollowingErrorCounter = 0;
 static float PulseAmplitude = 0;
+bool IsVoltageOk = false;
 
 PulseSamples REGLTR_PulseSamples = {0};
 
@@ -34,12 +36,10 @@ void REGLTR_Process()
 	// Получение результата оцифровки и расчёт ошибки
 	SamplingResult Sample = REGLTR_GetSample();
 	float RegulatorError = PrevSetPoint - Sample.Ug;
-	// сюда перенести расчет ошибки по напряжению
-	//bool IsVoltageOk;
 	float absError = (RegulatorError >= 0.0f) ? RegulatorError : -RegulatorError;
-	if (absError > (float)DataTable[REG_RGLTR_FOLLOWING_ERR_THRESH])
+	if (absError > FollowingErrThreshold)
 	{
-		if (FollowingErrorCounter < DataTable[REG_RGLTR_FOLLOWING_ERR_LIMIT])
+		if (FollowingErrorCounter < FollowingErrLimit)
 			FollowingErrorCounter++;
 		else
 		{
@@ -49,6 +49,20 @@ void REGLTR_Process()
 	}
 	else
 		FollowingErrorCounter = 0;
+
+	// Расчет ошибки по напряжению
+	float VoltageErr = ABS(Sample.Ug - PulseAmplitude);
+	if(VoltageErr < VoltagErrThreshold)
+		IsVoltageOk = true;
+	else
+	{
+		VoltageErrCount++;
+		if(VoltageErrCount > VoltagErrLimit)
+		{
+			CONTROL_SetDeviceSubState(SS_VoltageErr);
+			return;
+		}
+	}
 
 	float Qp = RegulatorError * Kp;
 	Qi += RegulatorError * Ki;
@@ -73,9 +87,22 @@ void REGLTR_Process()
 
 void REGLTR_Init()
 {
-	Index = Qi = PrevSetPoint = FollowingErrorCounter = 0;
-	PulseAmplitude = (CONTROL_MeasureType == MT_Iges ? DataTable[REG_WORK_VOLTAGE_IGES] : DataTable[REG_WORK_VOLTAGE_RTH]) * 0.001;
+	IsVoltageOk = false;
+	Index = Qi = PrevSetPoint = FollowingErrorCounter = VoltageErrCount = 0;
+	FollowingErrThreshold = DataTable[REG_RGLTR_FOLLOWING_ERR_THRESH];
+	FollowingErrLimit = DataTable[REG_RGLTR_FOLLOWING_ERR_LIMIT];
+	VoltagErrThreshold = DataTable[REG_VOLTAGE_ERR_THRESH];
+	VoltagErrLimit = DataTable[REG_VOLTAGE_ERR_COUNT_LIMIT];
+	switch(CONTROL_MeasureType)
+	{
+		case MT_Iges:
+			PulseAmplitude = DataTable[REG_WORK_VOLTAGE_IGES] * 0.001;
+			break;
 
+		case MT_Rth:
+			PulseAmplitude = DataTable[REG_WORK_VOLTAGE_RTH] * 0.001;
+			break;
+	}
 	Kp = DataTable[REG_RGLTR_Kp];
 	Ki = DataTable[REG_RGLTR_Ki];
 

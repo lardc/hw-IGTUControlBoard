@@ -11,7 +11,6 @@
 #include "LowLevel.h"
 #include "Regulator.h"
 #include "Measurement.h"
-#include "Utils.h"
 
 // Variables
 //
@@ -26,7 +25,6 @@ void LOGIC_HandleMeasurement()
 {
 	static Int64U Timeout = 0;
 	static float UgResult, UpotResult, IgResult;
-	static Int16U VoltageErrCount;
 
 	if(CONTROL_State == DS_InProcess)
 	{
@@ -35,7 +33,6 @@ void LOGIC_HandleMeasurement()
 			case SS_Init:
 				GPIO_SetState(GPIO_VCC_48, true);
 				UgResult = UpotResult = IgResult = 0.0f;
-				VoltageErrCount = 0;
 				switch(CONTROL_MeasureType)
 				{
 					case MT_Rth:
@@ -75,9 +72,7 @@ void LOGIC_HandleMeasurement()
 					switch(CONTROL_MeasureType)
 					{
 						case MT_Iges:
-						{
-							float VoltageErr = ABS(UgResult - DataTable[REG_WORK_VOLTAGE_IGES]);
-							if(VoltageErr < DataTable[REG_VOLTAGE_ERR_LIMIT])
+							if(IsVoltageOk)
 							{
 								for(int i = 5; i <= 6; i++)
 								{
@@ -93,19 +88,10 @@ void LOGIC_HandleMeasurement()
 									}
 								}
 							}
-							else
-							{
-								VoltageErrCount++;
-								if(VoltageErrCount > DataTable[REG_VOLTAGE_ERR_COUNT_LIMIT])
-									CONTROL_SwitchToProblem(PROBLEM_VOLTAGE_OUT_OF_RANGE);
-							}
-						}
 						break;
 
 						case MT_Rth:
-						{
-							float VoltageErr = ABS(UgResult - DataTable[REG_WORK_VOLTAGE_RTH]);
-							if(VoltageErr < DataTable[REG_VOLTAGE_ERR_LIMIT])
+							if(IsVoltageOk)
 							{
 								for(int i = 2; i < 5; i++)
 								{
@@ -118,13 +104,6 @@ void LOGIC_HandleMeasurement()
 										CONTROL_SetDeviceSubState(SS_FinishProcess);
 								}
 							}
-							else
-							{
-								VoltageErrCount++;
-								if(VoltageErrCount > DataTable[REG_VOLTAGE_ERR_COUNT_LIMIT])
-									CONTROL_SwitchToProblem(PROBLEM_VOLTAGE_OUT_OF_RANGE);
-							}
-						}
 						break;
 					}
 				}
@@ -133,6 +112,11 @@ void LOGIC_HandleMeasurement()
 			case SS_FollowingErr:
 				LOGIC_StopProcess();
 				CONTROL_SwitchToProblem(PROBLEM_FOLLOWING_ERROR);
+				break;
+
+			case SS_VoltageErr:
+				LOGIC_StopProcess();
+				CONTROL_SwitchToProblem(PROBLEM_VOLTAGE_OUT_OF_RANGE);
 				break;
 
 			case SS_FinishProcess:

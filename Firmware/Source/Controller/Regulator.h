@@ -19,10 +19,12 @@ typedef struct __SamplingResult
 } SamplingResult;
 
 extern PulseSamples REGLTR_PulseSamples;
+extern bool IsVoltageOk;
 
 extern Int16U REGLTR_MemBuffUg[];
 extern Int16U REGLTR_MemBuffUPot[];
 extern Int16U REGLTR_MemBuffIg[];
+
 
 void REGLTR_Process();
 void REGLTR_Init();
