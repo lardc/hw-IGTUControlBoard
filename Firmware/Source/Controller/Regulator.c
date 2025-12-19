@@ -22,17 +22,20 @@ static float PulseAmplitude = 0;
 PulseSamples REGLTR_PulseSamples = {0};
 
 // Forward functions
-float REGLTR_GetSetpoint(Int16U i);
 SamplingResult REGLTR_GetSample();
 void REGLTR_StoreRegulatorDebug(float Ug, float UPot, float Ig, float Setpoint, float Correction, float Error);
 
 // Functions
 void REGLTR_Process()
 {
+	if (CONTROL_SubState != SS_RegulatorProcess)
+		return;
+
 	// Получение результата оцифровки и расчёт ошибки
 	SamplingResult Sample = REGLTR_GetSample();
 	float RegulatorError = PrevSetPoint - Sample.Ug;
-
+	// сюда перенести расчет ошибки по напряжению
+	//bool IsVoltageOk;
 	float absError = (RegulatorError >= 0.0f) ? RegulatorError : -RegulatorError;
 	if (absError > (float)DataTable[REG_RGLTR_FOLLOWING_ERR_THRESH])
 	{
@@ -40,10 +43,7 @@ void REGLTR_Process()
 			FollowingErrorCounter++;
 		else
 		{
-			CONTROL_SwitchToProblem(PROBLEM_FOLLOWING_ERROR);
-			GPIO_SetState(GPIO_VCC_48, false);
-			REGLTR_StopProcess();
-			LL_SetCurrentChannel(I_CHANNEL_7);
+			CONTROL_SetDeviceSubState(SS_FollowingErr);
 			return;
 		}
 	}

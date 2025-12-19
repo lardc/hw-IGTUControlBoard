@@ -21,8 +21,9 @@ typedef enum __DeviceSubState
 	SS_Wait48VPause		= 2,
 	SS_ConfigPulse		= 3,
 	SS_RegulatorProcess = 4,
-	SS_FinishProcess	= 5,
-	SS_GetResults 		= 6,
+	SS_FollowingErr		= 5,
+	SS_FinishProcess	= 6,
+	SS_GetResults 		= 7,
 } DeviceSubState;
 
 typedef enum __MeasureType

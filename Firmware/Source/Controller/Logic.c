@@ -15,11 +15,10 @@
 
 // Variables
 //
-float RelayLimits[7];	// Мин. значения диапазонов работы реле от 0 до 6, в А
-
+Int16U ChannelNumber = 0;
 // Forward functions
 //
-
+void LOGIC_StopProcess();
 // Functions
 //
 
@@ -37,7 +36,18 @@ void LOGIC_HandleMeasurement()
 				GPIO_SetState(GPIO_VCC_48, true);
 				UgResult = UpotResult = IgResult = 0.0f;
 				VoltageErrCount = 0;
-				LL_SetCurrentChannel((CONTROL_MeasureType == MT_Rth) ? I_CHANNEL_6 : I_CHANNEL_2);
+				switch(CONTROL_MeasureType)
+				{
+					case MT_Rth:
+						LL_SetCurrentChannel(I_CHANNEL_6);
+						ChannelNumber = I_CHANNEL_6;
+						break;
+
+					case MT_Iges:
+						LL_SetCurrentChannel(I_CHANNEL_2);
+						ChannelNumber = I_CHANNEL_2;
+						break;
+				}
 				Timeout = CONTROL_TimeCounter + INIT_48V_TIMER;
 				CONTROL_SetDeviceSubState(SS_Wait48VPause);
 				break;
@@ -51,10 +61,6 @@ void LOGIC_HandleMeasurement()
 				REGLTR_Init();
 				REGLTR_StartProcess();
 				Timeout = CONTROL_TimeCounter + REGLTR_TIMER;
-
-				for (int i = 0; i<7;i++)
-					RelayLimits[i] = DataTable[REG_RANGE_I_0 + i];
-
 				CONTROL_SetDeviceSubState(SS_RegulatorProcess);
 				break;
 
@@ -62,6 +68,7 @@ void LOGIC_HandleMeasurement()
 				if(CONTROL_TimeCounter > Timeout)
 				{
 					SamplingResult Result = REGLTR_GetSample();
+					//samble получать из регулятора
 					UgResult = Result.Ug;
 					UpotResult = Result.UPot;
 					IgResult = Result.Ig;
@@ -74,7 +81,7 @@ void LOGIC_HandleMeasurement()
 							{
 								for(int i = 5; i <= 6; i++)
 								{
-									if(IgResult < RelayLimits[i])
+									if(IgResult < DataTable[REG_RANGE_I_0 + i])
 									{
 										LL_SetCurrentChannel(i + 1);
 										Timeout = CONTROL_TimeCounter + SW_CURRENT_CH_TIMER;
@@ -102,7 +109,7 @@ void LOGIC_HandleMeasurement()
 							{
 								for(int i = 2; i < 5; i++)
 								{
-									if(IgResult < RelayLimits[i])
+									if(IgResult < DataTable[REG_RANGE_I_0 + i])
 									{
 										LL_SetCurrentChannel(i + 1);
 										Timeout = CONTROL_TimeCounter + SW_CURRENT_CH_TIMER;
@@ -123,10 +130,13 @@ void LOGIC_HandleMeasurement()
 				}
 				break;
 
+			case SS_FollowingErr:
+				LOGIC_StopProcess();
+				CONTROL_SwitchToProblem(PROBLEM_FOLLOWING_ERROR);
+				break;
+
 			case SS_FinishProcess:
-				REGLTR_StopProcess();
-				GPIO_SetState(GPIO_VCC_48, false);
-				LL_SetCurrentChannel(I_CHANNEL_0);
+				LOGIC_StopProcess();
 				Timeout = CONTROL_TimeCounter + INIT_48V_TIMER;
 				CONTROL_SetDeviceSubState(SS_GetResults);
 				break;
@@ -146,5 +156,13 @@ void LOGIC_HandleMeasurement()
 				break;
 		}
 	}
+}
+//------------------------------------------
+
+void LOGIC_StopProcess()
+{
+	REGLTR_StopProcess();
+	GPIO_SetState(GPIO_VCC_48, false);
+	LL_SetCurrentChannel(I_CHANNEL_0);
 }
 //------------------------------------------
