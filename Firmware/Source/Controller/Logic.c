@@ -14,16 +14,18 @@
 
 // Variables
 //
+static Int64U Timeout = 0;
 Int16U ChannelNumber = 0;
 // Forward functions
 //
 void LOGIC_StopProcess();
+void LOGIC_SwitchChannels(float Ig);
+void LOGIC_SingleSw(float Ig);
 // Functions
 //
 
 void LOGIC_HandleMeasurement()
 {
-	static Int64U Timeout = 0;
 	static float UgResult, UpotResult, IgResult;
 
 	if(CONTROL_State == DS_InProcess)
@@ -36,13 +38,13 @@ void LOGIC_HandleMeasurement()
 				switch(CONTROL_MeasureType)
 				{
 					case MT_Rth:
-						LL_SetCurrentChannel(I_CHANNEL_6);
-						ChannelNumber = I_CHANNEL_6;
+						LL_SetCurrentChannel(I_CHANNEL_1);
+						ChannelNumber = I_CHANNEL_1;
 						break;
 
 					case MT_Iges:
-						LL_SetCurrentChannel(I_CHANNEL_2);
-						ChannelNumber = I_CHANNEL_2;
+						LL_SetCurrentChannel(I_CHANNEL_5);
+						ChannelNumber = I_CHANNEL_5;
 						break;
 				}
 				Timeout = CONTROL_TimeCounter + INIT_48V_TIMER;
@@ -64,48 +66,11 @@ void LOGIC_HandleMeasurement()
 			case SS_RegulatorProcess:
 				if(CONTROL_TimeCounter > Timeout)
 				{
-					SamplingResult Result = REGLTR_GetSample();
-					//samble получать из регулятора
-					UgResult = Result.Ug;
-					UpotResult = Result.UPot;
-					IgResult = Result.Ig;
-					switch(CONTROL_MeasureType)
-					{
-						case MT_Iges:
-							if(IsVoltageOk)
-							{
-								for(int i = 5; i <= 6; i++)
-								{
-									if(IgResult < DataTable[REG_RANGE_I_0 + i])
-									{
-										LL_SetCurrentChannel(i + 1);
-										Timeout = CONTROL_TimeCounter + SW_CURRENT_CH_TIMER;
-									}
-									else
-									{
-										CONTROL_SetDeviceSubState(SS_FinishProcess);
-										break;
-									}
-								}
-							}
-						break;
-
-						case MT_Rth:
-							if(IsVoltageOk)
-							{
-								for(int i = 2; i < 5; i++)
-								{
-									if(IgResult < DataTable[REG_RANGE_I_0 + i])
-									{
-										LL_SetCurrentChannel(i + 1);
-										Timeout = CONTROL_TimeCounter + SW_CURRENT_CH_TIMER;
-									}
-									else
-										CONTROL_SetDeviceSubState(SS_FinishProcess);
-								}
-							}
-						break;
-					}
+					UgResult = Sample.Ug;
+					UpotResult = Sample.UPot;
+					IgResult = Sample.Ig;
+					if(IsVoltageOk)
+						LOGIC_SwitchChannels(IgResult);
 				}
 				break;
 
@@ -150,3 +115,50 @@ void LOGIC_StopProcess()
 	LL_SetCurrentChannel(I_CHANNEL_0);
 }
 //------------------------------------------
+
+void LOGIC_SwitchChannels(float Ig)
+{
+	switch(ChannelNumber)
+	{
+		case I_CHANNEL_0:
+			LOGIC_SingleSw(Ig);
+			break;
+
+		case I_CHANNEL_1:
+			LOGIC_SingleSw(Ig);
+			break;
+
+		case I_CHANNEL_2:
+			LOGIC_SingleSw(Ig);
+			break;
+
+		case I_CHANNEL_3:
+			CONTROL_SetDeviceSubState(SS_FinishProcess);
+			break;
+
+		case I_CHANNEL_5:
+			LOGIC_SingleSw(Ig);
+			break;
+
+		case I_CHANNEL_6:
+			LOGIC_SingleSw(Ig);
+			break;
+
+		case I_CHANNEL_7:
+			CONTROL_SetDeviceSubState(SS_FinishProcess);
+			break;
+	}
+}
+//------------------------------------------
+
+void LOGIC_SingleSw(float Ig)
+{
+	if(Ig < DataTable[REG_RANGE_I_0 + ChannelNumber])
+	{
+		LL_SetCurrentChannel(ChannelNumber + 1);
+		Timeout = CONTROL_TimeCounter + SW_CURRENT_CH_TIMER;
+		ChannelNumber++;
+	}
+	else
+		CONTROL_SetDeviceSubState(SS_FinishProcess);
+}

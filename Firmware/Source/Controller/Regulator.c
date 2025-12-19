@@ -15,6 +15,7 @@
 Int16U REGLTR_MemBuffUg[ADC_SEQ_LENGTH];
 Int16U REGLTR_MemBuffUPot[ADC_SEQ_LENGTH];
 Int16U REGLTR_MemBuffIg[ADC_SEQ_LENGTH];
+SamplingResult Sample;
 static float Kp, Ki, Qi = 0, PrevSetPoint = 0, FollowingErrThreshold, VoltagErrThreshold;
 static Int16U Index = 0;
 static Int16U FollowingErrLimit, VoltagErrLimit, VoltageErrCount, FollowingErrorCounter = 0;
@@ -22,6 +23,7 @@ static float PulseAmplitude = 0;
 bool IsVoltageOk = false;
 
 PulseSamples REGLTR_PulseSamples = {0};
+SamplingResult Sample = {0};
 
 // Forward functions
 SamplingResult REGLTR_GetSample();
@@ -34,7 +36,7 @@ void REGLTR_Process()
 		return;
 
 	// Получение результата оцифровки и расчёт ошибки
-	SamplingResult Sample = REGLTR_GetSample();
+	Sample = REGLTR_GetSample();
 	float RegulatorError = PrevSetPoint - Sample.Ug;
 	float absError = (RegulatorError >= 0.0f) ? RegulatorError : -RegulatorError;
 	if (absError > FollowingErrThreshold)
