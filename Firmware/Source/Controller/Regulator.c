@@ -104,8 +104,6 @@ void REGLTR_Init()
 
 float REGLTR_CorrectionAndLog()
 {
-	// Получение результата оцифровки и расчёт ошибки
-	RegulatorError = RawSetPoint - Sample.Ug;
 	RGLTR_ErrorCheck();
 
 	Qp = RegulatorError * Kp;
@@ -121,6 +119,7 @@ float REGLTR_CorrectionAndLog()
 
 void RGLTR_ErrorCheck()
 {
+	RegulatorError = RawSetPoint - Sample.Ug;
 	float absError = (RegulatorError >= 0.0f) ? RegulatorError : -RegulatorError;
 	if(absError > FollowingErrThreshold)
 	{
