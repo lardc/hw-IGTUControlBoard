@@ -1,7 +1,7 @@
 ﻿#ifndef __REGULATOR_H
 #define __REGULATOR_H
 
-// IncludРµ
+// Include
 #include "stdinc.h"
 
 typedef enum __RegulatorState

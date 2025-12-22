@@ -162,3 +162,4 @@ void LOGIC_SingleSw(float Ig)
 	else
 		CONTROL_SetDeviceSubState(SS_FinishProcess);
 }
+//------------------------------------------

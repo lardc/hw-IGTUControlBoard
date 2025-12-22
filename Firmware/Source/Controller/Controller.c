@@ -129,6 +129,8 @@ void CONTROL_ResetData()
 	DataTable[REG_THERM_RESIS] = 0;
 	DataTable[REG_THERM_CURRENT] = 0;
 
+	CONTROL_Values_Counter = 0;
+
 	DEVPROFILE_ResetScopes(0);
 	DEVPROFILE_ResetEPReadState();
 }
