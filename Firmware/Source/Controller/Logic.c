@@ -15,7 +15,7 @@
 // Variables
 //
 static Int64U Timeout = 0;
-Int16U ChannelNumber = 0;
+Int16U LOGIC_ChannelNumber = 0;
 // Forward functions
 //
 void LOGIC_StopProcess();
@@ -39,12 +39,12 @@ void LOGIC_HandleMeasurement()
 				{
 					case MT_Rth:
 						LL_SetCurrentChannel(I_CHANNEL_1);
-						ChannelNumber = I_CHANNEL_1;
+						LOGIC_ChannelNumber = I_CHANNEL_1;
 						break;
 
 					case MT_Iges:
 						LL_SetCurrentChannel(I_CHANNEL_5);
-						ChannelNumber = I_CHANNEL_5;
+						LOGIC_ChannelNumber = I_CHANNEL_5;
 						break;
 				}
 				Timeout = CONTROL_TimeCounter + INIT_48V_TIMER;
@@ -118,7 +118,7 @@ void LOGIC_StopProcess()
 
 void LOGIC_SwitchChannels(float Ig)
 {
-	switch(ChannelNumber)
+	switch(LOGIC_ChannelNumber)
 	{
 		case I_CHANNEL_0:
 			LOGIC_SingleSw(Ig);
@@ -153,11 +153,11 @@ void LOGIC_SwitchChannels(float Ig)
 
 void LOGIC_SingleSw(float Ig)
 {
-	if(Ig < DataTable[REG_RANGE_I_0 + ChannelNumber])
+	if(Ig < DataTable[REG_RANGE_I_0 + LOGIC_ChannelNumber])
 	{
-		LL_SetCurrentChannel(ChannelNumber + 1);
-		Timeout = CONTROL_TimeCounter + SW_CURRENT_CH_TIMER;
-		ChannelNumber++;
+		LL_SetCurrentChannel(LOGIC_ChannelNumber + 1);
+		Timeout = CONTROL_TimeCounter + DataTable[REG_PULSE_WIDTH];
+		LOGIC_ChannelNumber++;
 	}
 	else
 		CONTROL_SetDeviceSubState(SS_FinishProcess);

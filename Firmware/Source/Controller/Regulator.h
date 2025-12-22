@@ -4,21 +4,19 @@
 // IncludРµ
 #include "stdinc.h"
 
-#define SAMPLE_RATE (1000000.0f / TIMER15_uS)
-
-typedef struct {
-	Int16U RiseSamples;
-	Int16U FlatTopSamples;
-	Int16U FallSamples;
-	Int16U TotalSamples;
-} PulseSamples;
+typedef enum __RegulatorState
+{
+	RS_None 			= 0,
+	RS_Rise 			= 1,
+	RS_FlatTop 			= 2,
+	RS_Fall 			= 3,
+} RegulatorState;
 
 typedef struct __SamplingResult
 {
 	float Ug, UPot, Ig;
 } SamplingResult;
 
-extern PulseSamples REGLTR_PulseSamples;
 extern SamplingResult Sample;
 extern bool IsVoltageOk;
 
