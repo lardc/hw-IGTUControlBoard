@@ -43,17 +43,20 @@ void REGLTR_Process()
 	switch(RegState)
 	{
 		case RS_Rise:
-			RawSetPoint += VoltStep;
-			if(RawSetPoint >= PulseAmplitude)
 			{
-				RawSetPoint = PulseAmplitude;
-				RegState = RS_FlatTop;
+				RawSetPoint += VoltStep;
+
+				if(RawSetPoint >= PulseAmplitude)
+				{
+					RawSetPoint = PulseAmplitude;
+					RegState = RS_FlatTop;
+				}
+
+				float Setpoint = REGLTR_CorrectionAndLog();
+
+				Int16U DACSetpoint = MEASURE_ConvertUset(Setpoint);
+				LL_WriteDAC(DACSetpoint);
 			}
-
-			float Setpoint = REGLTR_CorrectionAndLog();
-
-			Int16U DACSetpoint = MEASURE_ConvertUset(Setpoint);
-			LL_WriteDAC(DACSetpoint);
 			break;
 
 		default:
