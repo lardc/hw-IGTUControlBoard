@@ -36,7 +36,7 @@ void RGLTR_ErrorCheck();
 // Functions
 void REGLTR_Process()
 {
-	if (CONTROL_SubState != SS_RegulatorProcess || CONTROL_SubState != SS_RegulatorProcessUgeth)
+	if (CONTROL_SubState != SS_RegulatorProcess && CONTROL_SubState != SS_RegulatorProcessUgeth)
 		return;
 
 	float Setpoint;
@@ -110,8 +110,8 @@ void REGLTR_Init()
 	}
 	Kp = DataTable[REG_RGLTR_Kp];
 	Ki = DataTable[REG_RGLTR_Ki];
-	KpI = DataTable[REG_CURRENT_RGLTR_Ki];
-	KiI = DataTable[REG_CURRENT_RGLTR_Kp];
+	KpI = DataTable[REG_CURRENT_RGLTR_Kp];
+	KiI = DataTable[REG_CURRENT_RGLTR_Ki];
 
 	for (Int16U i = 0; i < ADC_SEQ_LENGTH; ++i)
 	{

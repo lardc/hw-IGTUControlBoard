@@ -13,7 +13,7 @@
 
 #define ACT_START_MEASURE_RTH			100 // Запуск процесса измерения Rth
 #define ACT_START_MEASURE_IGES			101	// Запуск процесса измерения Iges
-#define ACT_START_MEASURE_UGETH			102	// Запусу процесса измерения Uge_th
+#define ACT_START_MEASURE_UGETH			102	// Запуск процесса измерения Uge_th
 #define ACT_SAVE_TO_ROM					200	// Сохранение пользовательских данных во FLASH процессора
 #define ACT_RESTORE_FROM_ROM			201	// Восстановление данных из FLASH
 #define ACT_RESET_TO_DEFAULT			202	// Сброс DataTable в состояние по умолчанию
