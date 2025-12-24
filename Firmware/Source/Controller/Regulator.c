@@ -161,7 +161,7 @@ void RGLTR_ErrorCheck()
 			}
 			break;
 
-		default:
+		case RS_FlatTop:
 			{
 				RegulatorError = RawSetPoint - Sample.Ug;
 				// Расчет ошибки по напряжению
@@ -178,6 +178,10 @@ void RGLTR_ErrorCheck()
 						CONTROL_SetDeviceSubState(SS_VoltageErr);
 				}
 			}
+			break;
+
+		default:
+			RegulatorError = RawSetPoint - Sample.Ug;
 			break;
 	}
 	float absError = ABS(RegulatorError);
