@@ -144,7 +144,7 @@ void RGLTR_ErrorCheck()
 	{
 		case RS_FlatTopUgeth:
 			{
-				RegulatorError = Sample.Ig - DesiredCurrent;
+				RegulatorError = DesiredCurrent - Sample.Ig;
 				// Расчет метрологической ошибки по току
 				CurrentErr = ABS(RegulatorError);
 				if(CurrentErr < CurrentErrThreshold)
