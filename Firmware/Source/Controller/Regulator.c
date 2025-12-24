@@ -16,14 +16,14 @@
 Int16U REGLTR_MemBuffUg[ADC_SEQ_LENGTH];
 Int16U REGLTR_MemBuffUPot[ADC_SEQ_LENGTH];
 Int16U REGLTR_MemBuffIg[ADC_SEQ_LENGTH];
-static float Kp, Ki, Qi = 0, FollowingErrThreshold, VoltagErrThreshold;
-static Int16U FollowingErrLimit, VoltagErrLimit, VoltageErrCount, FollowingErrorCounter = 0;
-static float PulseAmplitude = 0;
+static float Kp, Ki, KiI, KpI, Qi = 0, FollowingErrThreshold, VoltagErrThreshold, CurrentErrThreshold;
+static Int16U FollowingErrLimit, VoltagErrLimit, VoltageErrCount, CurrentErrLimit,CurrentErrCount , FollowingErrorCounter = 0;
+static float PulseAmplitude, DesiredCurrent;
 float RawSetPoint = 0;
 float VoltStep = 0, Qp = 0;
 float RegulatorError = 0;
 RegulatorState RegState = RS_None;
-bool IsVoltageOk = false;
+bool IsMeasureOk = false;
 
 SamplingResult Sample = {0};
 
@@ -36,8 +36,11 @@ void RGLTR_ErrorCheck();
 // Functions
 void REGLTR_Process()
 {
-	if (CONTROL_SubState != SS_RegulatorProcess)
+	if (CONTROL_SubState != SS_RegulatorProcess || CONTROL_SubState != SS_RegulatorProcessUgeth)
 		return;
+
+	float Setpoint;
+	Int16U DACSetpoint;
 
 	Sample = REGLTR_GetSample();
 	switch(RegState)
@@ -45,24 +48,31 @@ void REGLTR_Process()
 		case RS_Rise:
 			{
 				RawSetPoint += VoltStep;
-
-				if(RawSetPoint >= PulseAmplitude)
+				if(CONTROL_MeasureType == MT_Ugeth)
 				{
-					RawSetPoint = PulseAmplitude;
-					RegState = RS_FlatTop;
+					if(Sample.Ig >= DesiredCurrent)
+						RegState = RS_FlatTopUgeth;
 				}
-
-				float Setpoint = REGLTR_CorrectionAndLog();
-
-				Int16U DACSetpoint = MEASURE_ConvertUset(Setpoint);
+				else
+				{
+					if(RawSetPoint >= PulseAmplitude)
+					{
+						RawSetPoint = PulseAmplitude;
+						RegState = RS_FlatTop;
+					}
+				}
+				Setpoint = REGLTR_CorrectionAndLog();
+				DACSetpoint = MEASURE_ConvertUset(Setpoint);
 				LL_WriteDAC(DACSetpoint);
 			}
 			break;
 
-		default:
+		case RS_FlatTopUgeth:
 		case RS_FlatTop:
-			RGLTR_ErrorCheck();
-			REGLTR_StoreRegulatorDebug(Sample.Ug, Sample.UPot, Sample.Ig, RawSetPoint, Qp + Qi, RegulatorError);
+		default:
+			Setpoint = REGLTR_CorrectionAndLog();
+			DACSetpoint = MEASURE_ConvertUset(Setpoint);
+			LL_WriteDAC(DACSetpoint);
 			break;
 	}
 }
@@ -70,16 +80,19 @@ void REGLTR_Process()
 
 void REGLTR_Init()
 {
-	IsVoltageOk = false;
-	Qi = FollowingErrorCounter = VoltageErrCount = 0;
+	IsMeasureOk = false;
+	Qi = FollowingErrorCounter = VoltageErrCount = CurrentErrCount = 0;
 	FollowingErrThreshold = DataTable[REG_RGLTR_FOLLOWING_ERR_THRESH];
 	FollowingErrLimit = DataTable[REG_RGLTR_FOLLOWING_ERR_LIMIT];
 	VoltagErrThreshold = DataTable[REG_VOLTAGE_ERR_THRESH];
 	VoltagErrLimit = DataTable[REG_VOLTAGE_ERR_COUNT_LIMIT];
+	CurrentErrThreshold = DataTable[REG_CURRENT_ERR_THRESH];
+	CurrentErrLimit = DataTable[REG_CURRENT_ERR_COUNT_LIMIT];
 	RawSetPoint = 0;
 	VoltStep = DataTable[REG_SLEW_RATE] / TIMER15_uS;
 	RegState = RS_Rise;
 	RegulatorError = 0;
+
 	switch(CONTROL_MeasureType)
 	{
 		case MT_Iges:
@@ -89,9 +102,16 @@ void REGLTR_Init()
 		case MT_Rth:
 			PulseAmplitude = DataTable[REG_WORK_VOLTAGE_RTH] * 0.001;
 			break;
+
+		case MT_Ugeth:
+			PulseAmplitude = DataTable[REG_MAX_VOLTAGE_UGETH];
+			DesiredCurrent = DataTable[REG_WORK_CURRENT_UGETH];
+			break;
 	}
 	Kp = DataTable[REG_RGLTR_Kp];
 	Ki = DataTable[REG_RGLTR_Ki];
+	KpI = DataTable[REG_CURRENT_RGLTR_Ki];
+	KiI = DataTable[REG_CURRENT_RGLTR_Kp];
 
 	for (Int16U i = 0; i < ADC_SEQ_LENGTH; ++i)
 	{
@@ -106,8 +126,8 @@ float REGLTR_CorrectionAndLog()
 {
 	RGLTR_ErrorCheck();
 
-	Qp = RegulatorError * Kp;
-	Qi += RegulatorError * Ki;
+	Qp = RegulatorError * (RegState == RS_FlatTopUgeth ? KpI : Kp);
+	Qi += RegulatorError * (RegState == RS_FlatTopUgeth ? KiI : Ki);
 
 	float SetPoint = RawSetPoint + Qp + Qi;
 
@@ -119,8 +139,48 @@ float REGLTR_CorrectionAndLog()
 
 void RGLTR_ErrorCheck()
 {
-	RegulatorError = RawSetPoint - Sample.Ug;
-	float absError = (RegulatorError >= 0.0f) ? RegulatorError : -RegulatorError;
+	float CurrentErr, VoltageErr;
+	switch(RegState)
+	{
+		case RS_FlatTopUgeth:
+			{
+				RegulatorError = Sample.Ig - DesiredCurrent;
+				// Расчет метрологической ошибки по току
+				CurrentErr = ABS(RegulatorError);
+				if(CurrentErr < CurrentErrThreshold)
+				{
+					IsMeasureOk = true;
+					CurrentErrCount = 0;
+				}
+				else
+				{
+					CurrentErrCount++;
+					if(CurrentErrCount > CurrentErrLimit)
+						CONTROL_SetDeviceSubState(SS_CurrentErr);
+				}
+			}
+			break;
+
+		default:
+			{
+				RegulatorError = RawSetPoint - Sample.Ug;
+				// Расчет ошибки по напряжению
+				VoltageErr = ABS(Sample.Ug - PulseAmplitude);
+				if(VoltageErr < VoltagErrThreshold)
+				{
+					IsMeasureOk = true;
+					VoltageErrCount = 0;
+				}
+				else
+				{
+					VoltageErrCount++;
+					if(VoltageErrCount > VoltagErrLimit)
+						CONTROL_SetDeviceSubState(SS_VoltageErr);
+				}
+			}
+			break;
+	}
+	float absError = ABS(RegulatorError);
 	if(absError > FollowingErrThreshold)
 	{
 		if(FollowingErrorCounter < FollowingErrLimit)
@@ -130,20 +190,6 @@ void RGLTR_ErrorCheck()
 	}
 	else
 		FollowingErrorCounter = 0;
-
-	// Расчет ошибки по напряжению
-	float VoltageErr = ABS(Sample.Ug - PulseAmplitude);
-	if(VoltageErr < VoltagErrThreshold)
-	{
-		IsVoltageOk = true;
-		VoltageErrCount = 0;
-	}
-	else
-	{
-		VoltageErrCount++;
-		if(VoltageErrCount > VoltagErrLimit)
-			CONTROL_SetDeviceSubState(SS_VoltageErr);
-	}
 }
 //-----------------------------------------
 SamplingResult REGLTR_GetSample()
@@ -196,6 +242,7 @@ void REGLTR_StartProcess()
 
 void REGLTR_StopProcess()
 {
+	LL_WriteDAC(0);
 	DMA_ChannelEnable(DMA1_Channel1, false);
 	DMA_ChannelEnable(DMA2_Channel1, false);
 	DMA_ChannelEnable(DMA2_Channel5, false);

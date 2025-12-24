@@ -13,6 +13,7 @@
 
 #define ACT_START_MEASURE_RTH			100 // Запуск процесса измерения Rth
 #define ACT_START_MEASURE_IGES			101	// Запуск процесса измерения Iges
+#define ACT_START_MEASURE_UGETH			102	// Запусу процесса измерения Uge_th
 #define ACT_SAVE_TO_ROM					200	// Сохранение пользовательских данных во FLASH процессора
 #define ACT_RESTORE_FROM_ROM			201	// Восстановление данных из FLASH
 #define ACT_RESET_TO_DEFAULT			202	// Сброс DataTable в состояние по умолчанию
@@ -105,7 +106,7 @@
 #define REG_U_SET_K						64	// Коэффициент преобразования K
 #define REG_U_SET_B						65	// Коэффициент преобразования B
 //
-#define REG_SLEW_RATE					66	// Скорость нарастания переднего фронта В/сек
+#define REG_SLEW_RATE					66	// Скорость нарастания переднего фронта В/мс
 #define REG_PULSE_WIDTH					67	// Время для переключения реле тока , мс
 #define REG_WORK_VOLTAGE_RTH			68	// Номинальное рабочее напряжение для измерения Rth, мВ
 //
@@ -118,6 +119,10 @@
 #define REG_RANGE_I_6					75	// Диапазон тока для канала 6 - от 20 до 200 нА, в А
 #define REG_RANGE_I_7					76	// Диапазон тока для канала 7 - от 5 до 20 нА, в А
 //
+#define REG_MAX_VOLTAGE_UGETH			77	// Максимальное напряжение при измерении Ugeth, B
+#define REG_CURRENT_RGLTR_Kp			78	// Пропорциональный коэффициент регулятора для тока Ugeth
+#define REG_CURRENT_RGLTR_Ki			79	// Интегральный коэффициент регулятора для тока при измерении Ugeth
+//
 #define REG_RGLTR_Kp					80	// Пропорциональный коэффициент регулятора
 #define REG_RGLTR_Ki					81	// Интегральный коэффициент регулятора
 //
@@ -126,8 +131,12 @@
 #define REG_VOLTAGE_ERR_THRESH			84	// Допустимая ошибка напряжения для начала измерения
 #define REG_VOLTAGE_ERR_COUNT_LIMIT		85  // Лимит ошибки счетчика перед выставлением PROBLEM_VOLTAGE_OUT_OF_RANGE
 //
-#define REG_PULSE_AMPLITUDE				128	// Амплитуда В
-#define REG_WORK_VOLTAGE_IGES			129	// Номинальное рабочее напряжение для измерения Iges, мВ
+#define REG_FLATTOP_DURATION			86 	// Длительность полки поддержания тока, мс
+#define REG_CURRENT_ERR_THRESH			87	// Допустимая ошибка тока для начала измерения
+#define REG_CURRENT_ERR_COUNT_LIMIT		88	// Лимит ошибки счетчика перед выставлением PROBLEM_CURRENT_OUT_OF_RANGE
+//
+#define REG_WORK_VOLTAGE_IGES			128	// Номинальное рабочее напряжение для измерения Iges, мВ
+#define REG_WORK_CURRENT_UGETH			129	// Номинальный рабочий ток для измерения Ugeth, мА
 //
 #define REG_DBG							150	// Отладочный регистр
 //
@@ -145,6 +154,7 @@
 
 #define REG_THERM_RESIS					200	// Полученное сопротивление термистора
 #define REG_THERM_CURRENT				201	// Полученный ток на термисторе
+#define REG_UGE_TH						202 // Полученное пороговое напряжение затвор-эмиттер
 // -----------------------------
 
 #define REG_FWINFO_SLAVE_NID			256	// Device CAN slave node ID
@@ -165,6 +175,7 @@
 #define PROBLEM_NONE					0
 #define PROBLEM_FOLLOWING_ERROR			1
 #define PROBLEM_VOLTAGE_OUT_OF_RANGE	2 // Измеренное напряжение вне рабочего диапозона
+#define PROBLEM_CURRENT_OUT_OF_RANGE	3 // Измеренный ток вне рабочего диапозона
 
 //  Warning
 #define WARNING_NONE					0

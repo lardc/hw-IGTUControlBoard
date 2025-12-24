@@ -9,7 +9,7 @@ typedef enum __RegulatorState
 	RS_None 			= 0,
 	RS_Rise 			= 1,
 	RS_FlatTop 			= 2,
-	RS_Fall 			= 3,
+	RS_FlatTopUgeth		= 3,
 } RegulatorState;
 
 typedef struct __SamplingResult
@@ -18,7 +18,7 @@ typedef struct __SamplingResult
 } SamplingResult;
 
 extern SamplingResult Sample;
-extern bool IsVoltageOk;
+extern bool IsMeasureOk;
 
 extern Int16U REGLTR_MemBuffUg[];
 extern Int16U REGLTR_MemBuffUPot[];

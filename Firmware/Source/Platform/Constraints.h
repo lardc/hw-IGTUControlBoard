@@ -39,9 +39,12 @@
 #define U_IGES_DEF					470
 //
 #define U_ERR_COUNT_MIN				10		// в шт
-#define U_ERR_COUNT_MAX				20		// в шт
-#define U_ERR_COUNT_DEF				15		// в шт
-
+#define U_ERR_COUNT_MAX				20
+#define U_ERR_COUNT_DEF				15
+//
+#define I_UGETH_MIN				5		// в мА
+#define I_UGETH_MAX				500
+#define I_UGETH_DEF				50
 //
 // Types
 typedef struct __TableItemConstraint

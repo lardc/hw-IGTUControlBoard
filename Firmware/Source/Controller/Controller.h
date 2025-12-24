@@ -16,21 +16,24 @@ typedef enum __DeviceState
 
 typedef enum __DeviceSubState
 {
-	SS_None 			= 0,
-	SS_Init				= 1,
-	SS_Wait48VPause		= 2,
-	SS_ConfigPulse		= 3,
-	SS_RegulatorProcess = 4,
-	SS_FollowingErr		= 5,
-	SS_VoltageErr		= 6,
-	SS_FinishProcess	= 7,
-	SS_GetResults 		= 8,
+	SS_None 				= 0,
+	SS_Init					= 1,
+	SS_Wait48VPause			= 2,
+	SS_ConfigPulse			= 3,
+	SS_RegulatorProcess		= 4,
+	SS_RegulatorProcessUgeth= 5,
+	SS_FollowingErr			= 6,
+	SS_VoltageErr			= 7,
+	SS_CurrentErr			= 8,
+	SS_FinishProcess		= 9,
+	SS_GetResults 			= 10,
 } DeviceSubState;
 
 typedef enum __MeasureType
 {
-	MT_Rth = 0,
-	MT_Iges = 1,
+	MT_Rth		= 0,
+	MT_Iges		= 1,
+	MT_Ugeth 	= 2,
 } MeasureType;
 
 // Variables

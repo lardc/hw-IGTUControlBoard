@@ -46,6 +46,18 @@ void LOGIC_HandleMeasurement()
 						LL_SetCurrentChannel(I_CHANNEL_5);
 						LOGIC_ChannelNumber = I_CHANNEL_5;
 						break;
+
+					case MT_Ugeth:
+						if(DataTable[REG_WORK_CURRENT_UGETH] < DataTable[REG_RANGE_I_0])
+						{
+							LL_SetCurrentChannel(I_CHANNEL_1);
+							LOGIC_ChannelNumber = I_CHANNEL_1;
+						}
+						else
+						{
+							LL_SetCurrentChannel(I_CHANNEL_0);
+							LOGIC_ChannelNumber = I_CHANNEL_0;
+						}
 				}
 				Timeout = CONTROL_TimeCounter + INIT_48V_TIMER;
 				CONTROL_SetDeviceSubState(SS_Wait48VPause);
@@ -60,7 +72,7 @@ void LOGIC_HandleMeasurement()
 				REGLTR_Init();
 				REGLTR_StartProcess();
 				Timeout = CONTROL_TimeCounter + REGLTR_TIMER;
-				CONTROL_SetDeviceSubState(SS_RegulatorProcess);
+				CONTROL_SetDeviceSubState(CONTROL_MeasureType == MT_Ugeth ? SS_RegulatorProcessUgeth : SS_RegulatorProcess);
 				break;
 
 			case SS_RegulatorProcess:
@@ -69,11 +81,21 @@ void LOGIC_HandleMeasurement()
 					UgResult = Sample.Ug;
 					UpotResult = Sample.UPot;
 					IgResult = Sample.Ig;
-					if(IsVoltageOk)
+					if(IsMeasureOk)
 						LOGIC_SwitchChannels(IgResult);
 				}
 				break;
 
+			case SS_RegulatorProcessUgeth:
+				if(CONTROL_TimeCounter > (Timeout + DataTable[REG_FLATTOP_DURATION]))
+				{
+					UgResult = Sample.Ug;
+					UpotResult = Sample.UPot;
+					IgResult = Sample.Ig;
+					if(IsMeasureOk)
+						CONTROL_SetDeviceSubState(SS_FinishProcess);
+				}
+				break;
 			case SS_FollowingErr:
 				LOGIC_StopProcess();
 				CONTROL_SwitchToProblem(PROBLEM_FOLLOWING_ERROR);
@@ -82,6 +104,11 @@ void LOGIC_HandleMeasurement()
 			case SS_VoltageErr:
 				LOGIC_StopProcess();
 				CONTROL_SwitchToProblem(PROBLEM_VOLTAGE_OUT_OF_RANGE);
+				break;
+
+			case SS_CurrentErr:
+				LOGIC_StopProcess();
+				CONTROL_SwitchToProblem(PROBLEM_CURRENT_OUT_OF_RANGE);
 				break;
 
 			case SS_FinishProcess:
@@ -95,6 +122,7 @@ void LOGIC_HandleMeasurement()
 				{
 					DataTable[REG_THERM_RESIS] = MEASURE_Resis(UgResult, IgResult);
 					DataTable[REG_THERM_CURRENT] = IgResult;
+					DataTable[REG_UGE_TH] = UgResult;
 
 					CONTROL_SetDeviceState(DS_Ready);
 					CONTROL_SetDeviceSubState(SS_None);

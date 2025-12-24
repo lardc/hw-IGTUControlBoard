@@ -128,6 +128,7 @@ void CONTROL_ResetData()
 	
 	DataTable[REG_THERM_RESIS] = 0;
 	DataTable[REG_THERM_CURRENT] = 0;
+	DataTable[REG_UGE_TH] = 0;
 
 	CONTROL_Values_Counter = 0;
 
@@ -188,6 +189,13 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 		case ACT_START_MEASURE_IGES:
 			if(CONTROL_State == DS_Ready)
 				CONTROL_StartMeasure(MT_Iges);
+			else
+				*pUserError = ERR_DEVICE_NOT_READY;
+			break;
+
+		case ACT_START_MEASURE_UGETH:
+			if(CONTROL_State == DS_Ready)
+				CONTROL_StartMeasure(MT_Ugeth);
 			else
 				*pUserError = ERR_DEVICE_NOT_READY;
 			break;
