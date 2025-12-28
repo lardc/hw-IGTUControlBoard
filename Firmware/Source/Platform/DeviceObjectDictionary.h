@@ -138,6 +138,7 @@
 #define REG_WORK_VOLTAGE_IGES			128	// Номинальное рабочее напряжение для измерения Iges, мВ
 #define REG_WORK_CURRENT_UGETH			129	// Номинальный рабочий ток для измерения Ugeth, мА
 //
+#define REG_SAFETY_ACTIVE				130	// Включение контура безопасности
 #define REG_DBG							150	// Отладочный регистр
 //
 // 151 - 191
@@ -176,6 +177,7 @@
 #define PROBLEM_FOLLOWING_ERROR			1
 #define PROBLEM_VOLTAGE_OUT_OF_RANGE	2 // Измеренное напряжение вне рабочего диапозона
 #define PROBLEM_CURRENT_OUT_OF_RANGE	3 // Измеренный ток вне рабочего диапозона
+#define PROBLEM_SAFETY					4 // Сработала система безопасности
 
 //  Warning
 #define WARNING_NONE					0

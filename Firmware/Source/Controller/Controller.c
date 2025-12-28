@@ -56,6 +56,7 @@ void CONTROL_WatchDogUpdate();
 void CONTROL_ResetToDefaultState();
 void CONTROL_ResetData();
 void CONTROL_StartMeasure(MeasureType Type);
+bool CONTROL_SafetyCheck();
 
 // Functions
 //
@@ -212,11 +213,30 @@ void CONTROL_StartMeasure(MeasureType Type)
 {
 	CONTROL_MeasureType = Type;
 	CONTROL_ResetData();
-	// safety
-	CONTROL_SetDeviceState(DS_InProcess);
-	CONTROL_SetDeviceSubState(SS_Init);
+	if (CONTROL_SafetyCheck())
+	{
+		CONTROL_SetDeviceState(DS_InProcess);
+		CONTROL_SetDeviceSubState(SS_Init);
+	}
 }
 //------------------------------------------
+
+bool CONTROL_SafetyCheck()
+{
+	if(DataTable[REG_SAFETY_ACTIVE])
+	{
+		if(LL_SafetyState())
+		{
+			CONTROL_SwitchToProblem(PROBLEM_SAFETY);
+			return false;
+		}
+		else
+			return true;
+	}
+	else
+		return true;
+}
+//-----------------------------------------------
 
 void CONTROL_SwitchToFault(Int16U Reason)
 {

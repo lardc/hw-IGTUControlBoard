@@ -143,7 +143,7 @@ const TableItemConstraint VConstraint[DATA_TABLE_WP_START - DATA_TABLE_WR_START]
 {
 	{U_IGES_MIN, U_IGES_MAX, U_IGES_DEF},										// 128
 	{I_UGETH_MIN, I_UGETH_MAX, I_UGETH_DEF},									// 129
-	{0, 0, 0},																	// 130
+	{NO, YES, YES},																// 130
 	{0, 0, 0},																	// 131
 	{0, 0, 0},																	// 132
 	{0, 0, 0},																	// 133

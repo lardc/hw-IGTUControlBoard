@@ -80,3 +80,9 @@ void LL_SetCurrentChannel(IChannel Channel)
 	LL_SPI_SetStateOE(false);
 }
 //-----------------------------
+
+bool LL_SafetyState()
+{
+	return GPIO_GetState(GPIO_SAFETY);
+}
+//-----------------------------

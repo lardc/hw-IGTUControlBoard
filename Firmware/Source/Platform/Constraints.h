@@ -46,6 +46,9 @@
 #define I_UGETH_MAX				500
 #define I_UGETH_DEF				50
 //
+#define NO						0
+#define YES						1
+//
 // Types
 typedef struct __TableItemConstraint
 {

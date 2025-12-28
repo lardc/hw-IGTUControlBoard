@@ -27,6 +27,9 @@ void INITCFG_IO()
 	GPIO_InitAnalog(GPIO_ANLG_UPOT);
 	GPIO_InitAnalog(GPIO_ANLG_IG);
 	
+	// Входы
+	GPIO_InitInput(GPIO_SAFETY, NoPull);
+
 	// Выходы
 	GPIO_InitPushPullOutput(GPIO_SPI_OE);
 	GPIO_InitPushPullOutput(GPIO_LED);
