@@ -6,6 +6,9 @@
 #include "DataTable.h"
 #include "ZwSPI.h"
 
+// Variables
+uint16_t PrevMask = 0;
+
 // Forward functions
 //
 void LL_SPI_SetStateOE(bool State);
@@ -49,11 +52,15 @@ void LL_WriteDAC(Int16U Data)
 
 void LL_SetCurrentChannel(IChannel Channel)
 {
+	uint16_t Mask = PrevMask;
 	LL_SPI_SetStateOE(true);
 	switch(Channel)
 	{
 		case I_CHANNEL_0:
-			LL_SPI_WriteByte(RELAY_CH_0);
+			Mask &=~ (RELAY_CH_1|RELAY_CH_2|RELAY_CH_3|RELAY_CH_4|RELAY_CH_5|RELAY_CH_6|RELAY_CH_7);
+			Mask |= RELAY_CH_0;
+			LL_SPI_WriteByte(Mask);
+			PrevMask = Mask;
 			break;
 		case I_CHANNEL_1:
 			LL_SPI_WriteByte(RELAY_CH_1);
