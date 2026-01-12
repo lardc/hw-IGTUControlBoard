@@ -6,8 +6,11 @@
 #include "DataTable.h"
 #include "ZwSPI.h"
 
+#define RELAY_ALL_CHANNELS (RELAY_CH_0|RELAY_CH_1|RELAY_CH_2|RELAY_CH_3|RELAY_CH_4|RELAY_CH_5|RELAY_CH_6|RELAY_CH_7)
+
 // Variables
 uint16_t PrevMask = 0;
+uint16_t Mask = 0;
 
 // Forward functions
 //
@@ -43,6 +46,7 @@ void LL_SPI_SetStateOE(bool State)
 {
 	GPIO_SetState(GPIO_SPI_OE, !State);
 }
+//-----------------------------
 
 void LL_WriteDAC(Int16U Data)
 {
@@ -52,38 +56,38 @@ void LL_WriteDAC(Int16U Data)
 
 void LL_SetCurrentChannel(IChannel Channel)
 {
-	uint16_t Mask = PrevMask;
+	Mask = PrevMask;
 	LL_SPI_SetStateOE(true);
+	Mask &=~ RELAY_ALL_CHANNELS;
 	switch(Channel)
 	{
 		case I_CHANNEL_0:
-			Mask &=~ (RELAY_CH_1|RELAY_CH_2|RELAY_CH_3|RELAY_CH_4|RELAY_CH_5|RELAY_CH_6|RELAY_CH_7);
 			Mask |= RELAY_CH_0;
-			LL_SPI_WriteByte(Mask);
-			PrevMask = Mask;
 			break;
 		case I_CHANNEL_1:
-			LL_SPI_WriteByte(RELAY_CH_1);
+			Mask |= RELAY_CH_1;
 			break;
 		case I_CHANNEL_2:
-			LL_SPI_WriteByte(RELAY_CH_2);
+			Mask |= RELAY_CH_2;
 			break;
 		case I_CHANNEL_3:
-			LL_SPI_WriteByte(RELAY_CH_3);
+			Mask |= RELAY_CH_3;
 			break;
 		case I_CHANNEL_4:
-			LL_SPI_WriteByte(RELAY_CH_4);
+			Mask |= RELAY_CH_4;
 			break;
 		case I_CHANNEL_5:
-			LL_SPI_WriteByte(RELAY_CH_5);
+			Mask |= RELAY_CH_5;
 			break;
 		case I_CHANNEL_6:
-			LL_SPI_WriteByte(RELAY_CH_6);
+			Mask |= RELAY_CH_6;
 			break;
 		case I_CHANNEL_7:
-			LL_SPI_WriteByte(RELAY_CH_7);
+			Mask |= RELAY_CH_7;
 			break;
 	}
+	LL_SPI_WriteByte(Mask);
+	PrevMask = Mask;
 	LL_SPI_SetStateOE(false);
 }
 //-----------------------------
@@ -93,3 +97,13 @@ bool LL_SafetyState()
 	return GPIO_GetState(GPIO_SAFETY);
 }
 //-----------------------------
+
+void LL_SetPolarity(bool State)
+{
+	Mask = PrevMask;
+	LL_SPI_SetStateOE(true);
+	State ? (Mask |= RELAY_POLARITY) : (Mask &=~ RELAY_POLARITY);
+	LL_SPI_WriteByte(Mask);
+	LL_SPI_SetStateOE(false);
+	PrevMask = Mask;
+}

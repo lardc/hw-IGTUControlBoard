@@ -19,14 +19,18 @@ typedef enum IChannel
 
 typedef enum RelayMask
 {
-	RELAY_CH_0 = 0,
-	RELAY_CH_1 = BIT0 | BIT4,
-	RELAY_CH_2 = BIT0 | BIT5,
-	RELAY_CH_3 = BIT0 | BIT6,
-	RELAY_CH_4 = BIT0 | BIT7,
-	RELAY_CH_5 = BIT0 | BIT3,
-	RELAY_CH_6 = BIT0 | BIT2,
-	RELAY_CH_7 = BIT0 | BIT1,
+	RELAY_CH_0 			= 0,
+	RELAY_CH_1 			= BIT0 | BIT4,
+	RELAY_CH_2 			= BIT0 | BIT5,
+	RELAY_CH_3 			= BIT0 | BIT6,
+	RELAY_CH_4 			= BIT0 | BIT7,
+	RELAY_CH_5 			= BIT0 | BIT3,
+	RELAY_CH_6 			= BIT0 | BIT2,
+	RELAY_CH_7 			= BIT0 | BIT1,
+	RELAY_POTENT_ENTRY	= BIT8,
+	RELAY_SELFTEST		= BIT8 | BIT9,
+	RELAY_TEST_LOAD		= BIT8 | BIT10,
+	RELAY_POLARITY		= BIT8 | BIT11,
 } RelayMask;
 
 // Variables
