@@ -135,7 +135,7 @@ void INITCFG_ConfigCAN(Int16U NodeID)
 
 void INITCFG_SPI()
 {
-	SPI_Init(SPI1, SPI_BAUDRATE_BITS, true);
+	SPI_Init(SPI1, SPI_BAUDRATE_BITS, SPI_MSB_FIRST);
 }
 //------------------------------------------------
 

@@ -31,6 +31,7 @@
 // SPI
 #define SPI_BAUDRATE_BITS				0x5
 #define SPI_LSB_FIRST					false
+#define SPI_MSB_FIRST					true
 // ----------------------------------------------
 
 // ADC
