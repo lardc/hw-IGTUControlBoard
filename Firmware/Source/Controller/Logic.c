@@ -146,6 +146,7 @@ void LOGIC_StopProcess()
 	REGLTR_StopProcess();
 	GPIO_SetState(GPIO_VCC_48, false);
 	LL_SetCurrentChannel(I_CHANNEL_0);
+	LL_SetPolarity(false);
 }
 //------------------------------------------
 
