@@ -104,7 +104,7 @@ void LL_SetPolarity(bool State)
 	LL_SPI_SetStateOE(true);
 	State ? (Mask |= RELAY_POLARITY) : (Mask &=~ RELAY_POLARITY);
 	LL_SPI_WriteByte(Mask);
-	LL_SPI_SetStateOE(false);
 	PrevMask = Mask;
+	LL_SPI_SetStateOE(false);
 }
 //-----------------------------
