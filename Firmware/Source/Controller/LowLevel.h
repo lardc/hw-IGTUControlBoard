@@ -46,5 +46,6 @@ void LL_SPI_SetStateOE(bool State);
 void LL_WriteDAC(Int16U Data);
 void LL_SetCurrentChannel(IChannel Channel);
 bool LL_SafetyState();
+void LL_SetPolarity(bool State);
 
 #endif //__LOWLEVEL_H

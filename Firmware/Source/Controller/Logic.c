@@ -48,6 +48,8 @@ void LOGIC_HandleMeasurement()
 					case MT_Iges:
 						LL_SetCurrentChannel(I_CHANNEL_5);
 						LOGIC_ChannelNumber = I_CHANNEL_5;
+						if(DataTable[REG_WORK_VOLTAGE_IGES] < 0)
+							LL_SetPolarity(true);
 						break;
 
 					case MT_Ugeth:
