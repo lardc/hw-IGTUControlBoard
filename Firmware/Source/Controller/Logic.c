@@ -28,11 +28,11 @@ void LOGIC_HandleMeasurement()
 {
 	static float UgResult, UpotResult, IgResult;
 
-	if(!CONTROL_SafetyCheck())
-		LOGIC_StopProcess();
-
 	if(CONTROL_State == DS_InProcess)
 	{
+		if(!CONTROL_SafetyCheck())
+			LOGIC_StopProcess();
+
 		switch (CONTROL_SubState)
 		{
 			case SS_Init:
