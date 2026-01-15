@@ -25,7 +25,7 @@ RingBuffersParams VgsRingBuffers;
 float TrigCurrentHigh = 0;
 float TrigCurrentLow = 0;
 Int16U FlatTopDuration = 0;
-Int16U FlatTopTimer = 0;
+Int64U FlatTopTimer = 0;
 bool FlatTopActive = false;
 
 
