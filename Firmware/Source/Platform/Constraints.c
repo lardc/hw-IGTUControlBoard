@@ -93,7 +93,7 @@ const TableItemConstraint Constraint[DATA_TABLE_WP_START] = {
 		{COEF_K_MIN, COEF_K_MAX, I_ADC_TO_VN_K_DEF},								// 82
 		{COEF_B_MIN, COEF_B_MAX, I_ADC_TO_VN_B_DEF},								// 83
 		{0, INT16U_MAX, 0},															// 84
-		{0, 0, 0},																	// 85
+		{0, VGS_FLATTOP_MAX, 0},													// 85
 		{0, 0, 0},																	// 86
 		{0, 0, 0},																	// 87
 		{0, 0, 0},																	// 88

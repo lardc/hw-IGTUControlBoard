@@ -147,6 +147,8 @@
 #define IGES_V_MIN					2
 #define IGES_V_MAX					30
 #define IGES_V_DEF					20
+//
+#define VGS_FLATTOP_MAX				10000 // в мкс
 
 
 // Types
