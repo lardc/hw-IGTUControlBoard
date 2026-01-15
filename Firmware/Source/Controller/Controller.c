@@ -56,7 +56,7 @@ void CONTROL_WatchDogUpdate();
 void CONTROL_ResetToDefaultState();
 void CONTROL_ResetData();
 void CONTROL_StartMeasure(MeasureType Type);
-bool CONTROL_SafetyCheck();
+bool CONTROL_IsSafetyOk();
 
 // Functions
 //
@@ -117,7 +117,7 @@ void CONTROL_Init()
 void CONTROL_ResetToDefaultState()
 {
 	CONTROL_ResetData();
-	LL_SetPolarity(false);
+	LL_SetNegativePolarity(false);
 	CONTROL_SetDeviceState(DS_None);
 	CONTROL_SetDeviceSubState(SS_None);
 }
@@ -214,7 +214,7 @@ void CONTROL_StartMeasure(MeasureType Type)
 {
 	CONTROL_MeasureType = Type;
 	CONTROL_ResetData();
-	if (CONTROL_SafetyCheck())
+	if (CONTROL_IsSafetyOk())
 	{
 		CONTROL_SetDeviceState(DS_InProcess);
 		CONTROL_SetDeviceSubState(SS_Init);
@@ -222,7 +222,7 @@ void CONTROL_StartMeasure(MeasureType Type)
 }
 //------------------------------------------
 
-bool CONTROL_SafetyCheck()
+bool CONTROL_IsSafetyOk()
 {
 	if(DataTable[REG_SAFETY_ACTIVE])
 	{

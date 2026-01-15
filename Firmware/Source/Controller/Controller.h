@@ -60,6 +60,6 @@ void CONTROL_Idle();
 void CONTROL_SetDeviceState(DeviceState NewState);
 void CONTROL_SetDeviceSubState(DeviceSubState NewSubState);
 void CONTROL_SwitchToProblem(Int16U Reason);
-bool CONTROL_SafetyCheck();
+bool CONTROL_IsSafetyOk();
 
 #endif // __CONTROLLER_H

@@ -39,6 +39,7 @@ void LL_ToggleExternalLED()
 void LL_SPI_WriteByte(Int16U Data)
 {
 	SPI_WriteByte(SPI1, Data);
+	LL_SPI_SetStateOE(true);
 }
 //-----------------------------
 
@@ -57,7 +58,6 @@ void LL_WriteDAC(Int16U Data)
 void LL_SetCurrentChannel(IChannel Channel)
 {
 	Mask = PrevMask;
-	LL_SPI_SetStateOE(true);
 	Mask &=~ RELAY_ALL_CHANNELS;
 	switch(Channel)
 	{
@@ -88,7 +88,6 @@ void LL_SetCurrentChannel(IChannel Channel)
 	}
 	LL_SPI_WriteByte(Mask);
 	PrevMask = Mask;
-	LL_SPI_SetStateOE(false);
 }
 //-----------------------------
 
@@ -98,13 +97,11 @@ bool LL_SafetyState()
 }
 //-----------------------------
 
-void LL_SetPolarity(bool State)
+void LL_SetNegativePolarity(bool State)
 {
 	Mask = PrevMask;
-	LL_SPI_SetStateOE(true);
 	State ? (Mask |= RELAY_POLARITY) : (Mask &=~ RELAY_POLARITY);
 	LL_SPI_WriteByte(Mask);
 	PrevMask = Mask;
-	LL_SPI_SetStateOE(false);
 }
 //-----------------------------

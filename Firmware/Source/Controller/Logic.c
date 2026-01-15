@@ -30,13 +30,14 @@ void LOGIC_HandleMeasurement()
 
 	if(CONTROL_State == DS_InProcess)
 	{
-		if(!CONTROL_SafetyCheck())
+		if(!CONTROL_IsSafetyOk())
 			LOGIC_StopProcess();
 
 		switch (CONTROL_SubState)
 		{
 			case SS_Init:
 				GPIO_SetState(GPIO_VCC_48, true);
+				LL_SetNegativePolarity(DataTable[REG_WORK_VOLTAGE_IGES] < 0);
 				UgResult = UpotResult = IgResult = 0.0f;
 				switch(CONTROL_MeasureType)
 				{
@@ -48,8 +49,6 @@ void LOGIC_HandleMeasurement()
 					case MT_Iges:
 						LL_SetCurrentChannel(I_CHANNEL_5);
 						LOGIC_ChannelNumber = I_CHANNEL_5;
-						if(DataTable[REG_WORK_VOLTAGE_IGES] < 0)
-							LL_SetPolarity(true);
 						break;
 
 					case MT_Ugeth:
@@ -146,7 +145,7 @@ void LOGIC_StopProcess()
 	REGLTR_StopProcess();
 	GPIO_SetState(GPIO_VCC_48, false);
 	LL_SetCurrentChannel(I_CHANNEL_0);
-	LL_SetPolarity(false);
+	LL_SetNegativePolarity(false);
 }
 //------------------------------------------
 
