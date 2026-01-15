@@ -37,7 +37,7 @@ void LOGIC_HandleMeasurement()
 		{
 			case SS_Init:
 				GPIO_SetState(GPIO_VCC_48, true);
-				LL_SetNegativePolarity(DataTable[REG_WORK_VOLTAGE_IGES] < 0);
+				LL_SetNegativePolarity((CONTROL_MeasureType ==  MT_Iges) && (DataTable[REG_WORK_VOLTAGE_IGES] < 0));
 				UgResult = UpotResult = IgResult = 0.0f;
 				switch(CONTROL_MeasureType)
 				{
@@ -145,7 +145,6 @@ void LOGIC_StopProcess()
 	REGLTR_StopProcess();
 	GPIO_SetState(GPIO_VCC_48, false);
 	LL_SetCurrentChannel(I_CHANNEL_0);
-	LL_SetNegativePolarity(false);
 }
 //------------------------------------------
 

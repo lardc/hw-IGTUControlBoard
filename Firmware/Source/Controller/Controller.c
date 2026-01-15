@@ -117,7 +117,6 @@ void CONTROL_Init()
 void CONTROL_ResetToDefaultState()
 {
 	CONTROL_ResetData();
-	LL_SetNegativePolarity(false);
 	CONTROL_SetDeviceState(DS_None);
 	CONTROL_SetDeviceSubState(SS_None);
 }
