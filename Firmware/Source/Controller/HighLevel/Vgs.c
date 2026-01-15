@@ -24,6 +24,10 @@ MeasureSample VgsSampledData;
 RingBuffersParams VgsRingBuffers;
 float TrigCurrentHigh = 0;
 float TrigCurrentLow = 0;
+Int16U FlatTopDuration = 0;
+Int16U FlatTopTimer = 0;
+bool FlatTopActive = false;
+
 
 // Function prototypes
 //
@@ -76,6 +80,9 @@ void VGS_CacheVariables()
 
 	TrigCurrentHigh = DataTable[REG_VGS_I_TRIG];
 	TrigCurrentLow = DataTable[REG_VGS_I_TRIG] - DataTable[REG_VGS_I_TRIG] * DataTable[REG_VGS_dI_TRIG] / 100;
+
+	FlatTopDuration = DataTable[REG_VGS_FLATTOP_DURATION];
+	FlatTopActive = false;
 }
 //-----------------------------
 
@@ -125,21 +132,29 @@ void VGS_Process()
 	}
 	else
 	{
-		CONTROL_StopHighPriorityProcesses();
-
-		if(VgsSampledData.Voltage < VGS_VOLTAGE_MIN)
+		if(FlatTopActive == false && FlatTopDuration != 0)
 		{
-			DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
-			DataTable[REG_PROBLEM] = PROBLEM_SHORT;
-			CONTROL_SetDeviceState(DS_Ready, SS_None);
+			FlatTopActive = true;
+			FlatTopTimer = CONTROL_TimeCounter + FlatTopDuration;
 		}
-		else
+		else if(FlatTopActive == false || (CONTROL_TimeCounter > FlatTopTimer))
 		{
-			DataTable[REG_VGS_RESULT] = AverageSamples.Voltage;
-			DataTable[REG_VGS_I_RESULT] = VgsSampledData.Current;
-			DataTable[REG_OP_RESULT] = OPRESULT_OK;
+			CONTROL_StopHighPriorityProcesses();
 
-			CONTROL_SetDeviceState(DS_Ready, SS_None);
+			if(VgsSampledData.Voltage < VGS_VOLTAGE_MIN)
+			{
+				DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
+				DataTable[REG_PROBLEM] = PROBLEM_SHORT;
+				CONTROL_SetDeviceState(DS_Ready, SS_None);
+			}
+			else
+			{
+				DataTable[REG_VGS_RESULT] = AverageSamples.Voltage;
+				DataTable[REG_VGS_I_RESULT] = VgsSampledData.Current;
+				DataTable[REG_OP_RESULT] = OPRESULT_OK;
+
+				CONTROL_SetDeviceState(DS_Ready, SS_None);
+			}
 		}
 	}
 }
