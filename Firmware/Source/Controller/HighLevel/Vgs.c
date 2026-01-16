@@ -16,6 +16,7 @@
 //
 #define VGS_RING_BUFFER_SIZE				8
 #define VGS_RING_BUFFER_CNT_MASK			VGS_RING_BUFFER_SIZE - 1
+#define VGS_RING_BUFFER_THRESHOLD			500			// мкс, лимит считывания данных из кольцевого буфера, ниже которого будут значения вне полки
 
 // Variables
 //
@@ -150,7 +151,7 @@ void VGS_Process()
 			else
 			{
 				DataTable[REG_VGS_RESULT] = AverageSamples.Voltage;
-				DataTable[REG_VGS_I_RESULT] = VgsSampledData.Current;
+				DataTable[REG_VGS_I_RESULT] = (FlatTopDuration < VGS_RING_BUFFER_THRESHOLD) ? VgsSampledData.Current : AverageSamples.Current;
 				DataTable[REG_OP_RESULT] = OPRESULT_OK;
 
 				CONTROL_SetDeviceState(DS_Ready, SS_None);
