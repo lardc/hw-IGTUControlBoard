@@ -103,6 +103,9 @@ void VGS_Process()
 
 	if(VgsSampledData.Current < TrigCurrentHigh)
 	{
+		if (FlatTopActive) // Проверка при условии падении значения при достижении плоской вершины
+			FlatTopActive = false;
+
 		if(RegulatorParams.Target < DataTable[REG_VGS_V_MAX])
 			RegulatorParams.Target += RegulatorParams.dVg;
 		else
