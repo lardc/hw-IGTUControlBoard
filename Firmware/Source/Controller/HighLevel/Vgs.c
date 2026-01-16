@@ -1,4 +1,4 @@
-// Header
+п»ї// Header
 //
 #include "Vgs.h"
 
@@ -16,7 +16,7 @@
 //
 #define VGS_RING_BUFFER_SIZE				8
 #define VGS_RING_BUFFER_CNT_MASK			VGS_RING_BUFFER_SIZE - 1
-#define VGS_RING_BUFFER_THRESHOLD			500			// мкс, лимит считывания данных из кольцевого буфера, ниже которого будут значения вне полки
+#define VGS_RING_BUFFER_THRESHOLD			500			// РјРєСЃ, Р»РёРјРёС‚ СЃС‡РёС‚С‹РІР°РЅРёСЏ РґР°РЅРЅС‹С… РёР· РєРѕР»СЊС†РµРІРѕРіРѕ Р±СѓС„РµСЂР°, РЅРёР¶Рµ РєРѕС‚РѕСЂРѕРіРѕ Р±СѓРґСѓС‚ Р·РЅР°С‡РµРЅРёСЏ РІРЅРµ РїРѕР»РєРё
 
 // Variables
 //
@@ -103,7 +103,7 @@ void VGS_Process()
 
 	if(VgsSampledData.Current < TrigCurrentHigh)
 	{
-		if (FlatTopActive) // Проверка при условии падении значения при достижении плоской вершины
+		if (FlatTopActive) // РџСЂРѕРІРµСЂРєР° РїСЂРё СѓСЃР»РѕРІРёРё РїР°РґРµРЅРёРё Р·РЅР°С‡РµРЅРёСЏ РїСЂРё РґРѕСЃС‚РёР¶РµРЅРёРё РїРѕР»РєРё
 			FlatTopActive = false;
 
 		if(RegulatorParams.Target < DataTable[REG_VGS_V_MAX])
