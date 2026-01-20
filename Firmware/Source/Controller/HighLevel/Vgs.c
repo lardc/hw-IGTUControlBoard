@@ -103,9 +103,6 @@ void VGS_Process()
 
 	if(VgsSampledData.Current < TrigCurrentHigh)
 	{
-		if (FlatTopActive) // Проверка при условии падении значения при достижении полки
-			FlatTopActive = false;
-
 		if(RegulatorParams.Target < DataTable[REG_VGS_V_MAX])
 			RegulatorParams.Target += RegulatorParams.dVg;
 		else
@@ -139,9 +136,9 @@ void VGS_Process()
 		if(FlatTopActive == false && FlatTopDuration != 0)
 		{
 			FlatTopActive = true;
-			FlatTopTimer = CONTROL_TimeCounter + FlatTopDuration;
+			FlatTopTimer = RegulatorParams.Counter - FlatTopDuration;
 		}
-		else if(FlatTopActive == false || (CONTROL_TimeCounter > FlatTopTimer))
+		else if(FlatTopActive == false || (RegulatorParams.Counter < FlatTopTimer))
 		{
 			CONTROL_StopHighPriorityProcesses();
 
