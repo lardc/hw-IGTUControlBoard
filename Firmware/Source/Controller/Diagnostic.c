@@ -28,6 +28,24 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 			LL_ExtIndication(false);
 			break;
 
+		case ACT_DBG_SWITCH_POWER:
+			GPIO_SetState(GPIO_VCC_48, true);
+			DELAY_MS(500);
+			GPIO_SetState(GPIO_VCC_48, false);
+			GPIO_SetState(GPIO_VCC_24, true);
+			DELAY_MS(500);
+			GPIO_SetState(GPIO_VCC_24,false);
+			break;
+
+		case ACT_DBG_SWITCH_RELAY:
+			for(Int16U i=0; i<8;i++)
+			{
+				LL_SetCurrentChannel(i);
+				DELAY_MS(1000);
+			}
+			LL_SetCurrentChannel(0);
+			break;
+
 		case ACT_DBG_SPI_WRITE_TWO_BYTES:
 			LL_SPI_WriteByte(DataTable[REG_DBG]);
 			break;

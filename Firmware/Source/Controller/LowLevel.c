@@ -36,10 +36,12 @@ void LL_ToggleExternalLED()
 }
 //-----------------------------
 
-void LL_SPI_WriteByte(Int16U Data)
+void LL_SPI_WriteByte(uint16_t Data)
 {
+	GPIO_SetState(GPIO_SPI_SS, false);
 	SPI_WriteByte(SPI1, Data);
 	LL_SPI_SetStateOE(true);
+	GPIO_SetState(GPIO_SPI_SS, true);
 }
 //-----------------------------
 

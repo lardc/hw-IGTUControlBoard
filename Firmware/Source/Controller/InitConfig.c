@@ -36,10 +36,12 @@ void INITCFG_IO()
 	GPIO_InitPushPullOutput(GPIO_LED_EXT);
 	GPIO_InitPushPullOutput(GPIO_VCC_24);
 	GPIO_InitPushPullOutput(GPIO_VCC_48);
+	GPIO_InitPushPullOutput(GPIO_SPI_SS);
 
 	GPIO_SetState(GPIO_SPI_OE, false);
 	GPIO_SetState(GPIO_VCC_24, false);
 	GPIO_SetState(GPIO_VCC_48, false);
+	GPIO_SetState(GPIO_SPI_SS, false);
 
 	// Альтернативные функции
 	GPIO_InitAltFunction(GPIO_ALT_CAN_RX, AltFn_9);
@@ -48,7 +50,6 @@ void INITCFG_IO()
 	GPIO_InitAltFunction(GPIO_ALT_UART_TX, AltFn_7);
 	GPIO_InitAltFunction(GPIO_ALT_SPI_CLK, AltFn_5);
 	GPIO_InitAltFunction(GPIO_ALT_SPI_MOSI, AltFn_5);
-	GPIO_InitAltFunction(GPIO_ALT_SPI_SS, AltFn_5);
 }
 //------------------------------------------------
 
@@ -135,7 +136,7 @@ void INITCFG_ConfigCAN(Int16U NodeID)
 
 void INITCFG_SPI()
 {
-	SPI_Init(SPI1, SPI_BAUDRATE_BITS, SPI_MSB_FIRST);
+	SPI_Init(SPI1, SPI_BAUDRATE_BITS, SPI_LSB_FIRST);
 }
 //------------------------------------------------
 

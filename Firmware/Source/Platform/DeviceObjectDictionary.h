@@ -10,6 +10,8 @@
 #define ACT_DBG_EXT_INDICATION			10	// Управление внешней индикацией
 #define ACT_DBG_SPI_WRITE_TWO_BYTES		11	// Запись двух байтов для отладки SPI
 #define ACT_DBG_PULSE					12	// Запуск импульса в виде трапеции
+#define ACT_DBG_SWITCH_POWER			13	// Диагностическое переключение питаний
+#define ACT_DBG_SWITCH_RELAY			14 	// Диагностическое переключение реле токов
 
 #define ACT_START_MEASURE_RTH			100 // Запуск процесса измерения Rth
 #define ACT_START_MEASURE_IGES			101	// Запуск процесса измерения Iges
