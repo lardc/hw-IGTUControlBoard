@@ -38,7 +38,7 @@ void INITCFG_IO()
 	GPIO_InitPushPullOutput(GPIO_VCC_48);
 	GPIO_InitPushPullOutput(GPIO_SPI_SS);
 
-	GPIO_SetState(GPIO_SPI_OE, false);
+	GPIO_SetState(GPIO_SPI_OE, true);
 	GPIO_SetState(GPIO_VCC_24, false);
 	GPIO_SetState(GPIO_VCC_48, false);
 	GPIO_SetState(GPIO_SPI_SS, false);

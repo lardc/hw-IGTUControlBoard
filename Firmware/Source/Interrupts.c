@@ -9,10 +9,10 @@
 #include "Regulator.h"
 
 // Variables
-static bool UgReady = false, UPotReady = false, IgReady = false;
+volatile bool UgReady = false, UPotReady = false, IgReady = false;
 
 // Forward functions
-void INT_GeneralDMAHandler(DMA_TypeDef* DMAx, uint32_t Channelx, bool *Flag);
+void INT_GeneralDMAHandler(DMA_TypeDef* DMAx, uint32_t Channelx,volatile bool *Flag);
 
 // Functions
 void USART1_IRQHandler()
@@ -58,7 +58,7 @@ void INT_ResetDMAFlags()
 }
 //-----------------------------------------
 
-void INT_GeneralDMAHandler(DMA_TypeDef* DMAx, uint32_t Channelx, bool *Flag)
+void INT_GeneralDMAHandler(DMA_TypeDef* DMAx, uint32_t Channelx,volatile bool *Flag)
 {
 	if(DMA_IsTransferComplete(DMAx, Channelx))
 	{
@@ -66,7 +66,10 @@ void INT_GeneralDMAHandler(DMA_TypeDef* DMAx, uint32_t Channelx, bool *Flag)
 
 		*Flag = true;
 		if(UgReady && UPotReady && IgReady)
+		{
 			REGLTR_Process();
+			CONTROL_WatchDogUpdate();
+		}
 	}
 }
 //-----------------------------------------
