@@ -136,14 +136,15 @@ void VGS_Process()
 		if(FlatTopActive == false && FlatTopDuration != 0)
 		{
 			FlatTopActive = true;
-			FlatTopTimer = RegulatorParams.Counter - FlatTopDuration;
-			if (FlatTopTimer <= 0)
+			if (RegulatorParams.Counter <= FlatTopDuration)
 			{
 				RegulatorParams.Counter = FlatTopDuration;
 				FlatTopTimer = 0;
 			}
+			else
+				FlatTopTimer = RegulatorParams.Counter - FlatTopDuration;
 		}
-		else if(FlatTopActive == false || (RegulatorParams.Counter < FlatTopTimer))
+		else if(FlatTopActive == false || (RegulatorParams.Counter <= FlatTopTimer))
 		{
 			CONTROL_StopHighPriorityProcesses();
 
