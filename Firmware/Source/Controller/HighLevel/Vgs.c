@@ -82,7 +82,7 @@ void VGS_CacheVariables()
 	TrigCurrentHigh = DataTable[REG_VGS_I_TRIG];
 	TrigCurrentLow = DataTable[REG_VGS_I_TRIG] - DataTable[REG_VGS_I_TRIG] * DataTable[REG_VGS_dI_TRIG] / 100;
 
-	FlatTopDuration = DataTable[REG_VGS_FLATTOP_DURATION];
+	FlatTopDuration = DataTable[REG_VGS_FLATTOP_DURATION] / TIMER15_uS;
 	FlatTopActive = false;
 }
 //-----------------------------
@@ -137,6 +137,11 @@ void VGS_Process()
 		{
 			FlatTopActive = true;
 			FlatTopTimer = RegulatorParams.Counter - FlatTopDuration;
+			if (FlatTopTimer <= 0)
+			{
+				RegulatorParams.Counter = FlatTopDuration;
+				FlatTopTimer = 0;
+			}
 		}
 		else if(FlatTopActive == false || (RegulatorParams.Counter < FlatTopTimer))
 		{
