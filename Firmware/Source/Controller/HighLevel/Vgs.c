@@ -157,7 +157,7 @@ void VGS_Process()
 			else
 			{
 				DataTable[REG_VGS_RESULT] = AverageSamples.Voltage;
-				DataTable[REG_VGS_I_RESULT] = (FlatTopDuration < VGS_RING_BUFFER_THRESHOLD) ? VgsSampledData.Current : AverageSamples.Current;
+				DataTable[REG_VGS_I_RESULT] = ((FlatTopDuration * 50) < VGS_RING_BUFFER_THRESHOLD) ? VgsSampledData.Current : AverageSamples.Current;
 				DataTable[REG_OP_RESULT] = OPRESULT_OK;
 
 				CONTROL_SetDeviceState(DS_Ready, SS_None);
