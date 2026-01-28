@@ -12,6 +12,11 @@
 #define ACT_DBG_PULSE					12	// Запуск импульса в виде трапеции
 #define ACT_DBG_SWITCH_POWER			13	// Диагностическое переключение питаний
 #define ACT_DBG_SWITCH_RELAY			14 	// Диагностическое переключение реле токов
+#define ACT_DBG_DAC_WRITE				15	// Прямая запись значения в ЦАП
+#define ACT_DBG_48V_ON					16	// Включить питание 48 В
+#define ACT_DBG_48V_OFF					17	// Выключить питание 48 В
+#define ACT_DBG_24V_ON					18	// Включить питание 24 В
+#define ACT_DBG_24V_OFF					19	// Выключить питание 24 В
 
 #define ACT_START_MEASURE_RTH			100 // Запуск процесса измерения Rth
 #define ACT_START_MEASURE_IGES			101	// Запуск процесса измерения Iges

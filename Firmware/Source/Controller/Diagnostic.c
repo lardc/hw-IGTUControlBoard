@@ -28,6 +28,14 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 			LL_ExtIndication(false);
 			break;
 
+		case ACT_DBG_SPI_WRITE_TWO_BYTES:
+			LL_SPI_WriteByte(DataTable[REG_DBG]);
+			break;
+
+		case ACT_DBG_PULSE:
+			DIAG_GenerateTrapezoidWave();
+			break;
+
 		case ACT_DBG_SWITCH_POWER:
 			GPIO_SetState(GPIO_VCC_48, true);
 			DELAY_MS(500);
@@ -46,12 +54,27 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 			LL_SetCurrentChannel(0);
 			break;
 
-		case ACT_DBG_SPI_WRITE_TWO_BYTES:
-			LL_SPI_WriteByte(DataTable[REG_DBG]);
+		case ACT_DBG_DAC_WRITE:
+			{
+				Int16U DACRaw =(Int16U) DataTable[REG_DBG];
+				LL_WriteDAC(DACRaw);
+			}
 			break;
 
-		case ACT_DBG_PULSE:
-			DIAG_GenerateTrapezoidWave();
+		case ACT_DBG_48V_ON:
+			GPIO_SetState(GPIO_VCC_48, true);
+			break;
+
+		case ACT_DBG_48V_OFF:
+			GPIO_SetState(GPIO_VCC_48, false);
+			break;
+
+		case ACT_DBG_24V_ON:
+			GPIO_SetState(GPIO_VCC_24, true);
+			break;
+
+		case ACT_DBG_24V_OFF:
+			GPIO_SetState(GPIO_VCC_24, false);
 			break;
 
 		default:
