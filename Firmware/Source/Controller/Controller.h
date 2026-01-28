@@ -53,6 +53,7 @@ extern float CONTROL_RegulatorUpot[];
 extern float CONTROL_RegulatorSetpoint[];
 extern float CONTROL_RegulatorCorrection[];
 extern float CONTROL_RegulatorError[];
+extern float CONTROL_DACRaw[];
 
 // Functions
 void CONTROL_Init();

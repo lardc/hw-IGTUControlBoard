@@ -198,6 +198,7 @@
 #define EP16_RegulatorSetpoint			4	// Regulator Setpoint data
 #define EP16_RegulatorCorrection		5	// Regulator Correction data
 #define EP16_RegulatorError				6	// Regulator Error data
+#define EP16_DACRaw						7	// Raw data sent to DAC
 #define EP16_ExtInfoData				20	// Diag data drom flash
 
 #endif //  __DEV_OBJ_DIC_H

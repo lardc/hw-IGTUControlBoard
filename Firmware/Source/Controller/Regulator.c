@@ -29,8 +29,8 @@ SamplingResult Sample = {0};
 
 // Forward functions
 SamplingResult REGLTR_GetSample();
-void REGLTR_StoreRegulatorDebug(float Ug, float UPot, float Ig, float Setpoint, float Correction, float Error);
-float REGLTR_CorrectionLogDACPoint();
+void REGLTR_StoreRegulatorDebug(float Ug, float UPot, float Ig, float Setpoint, float Correction, float Error, float DACRaw);
+Int16U REGLTR_CorrectionLogDACPoint();
 void RGLTR_ErrorCheck();
 
 // Functions
@@ -39,8 +39,7 @@ void REGLTR_Process()
 	if (CONTROL_SubState != SS_RegulatorProcess && CONTROL_SubState != SS_RegulatorProcessUgeth)
 		return;
 
-	float Setpoint;
-	//Int16U DACSetpoint;
+	Int16U DACSetpoint;
 	Sample = REGLTR_GetSample();
 
 	switch(RegState)
@@ -61,18 +60,16 @@ void REGLTR_Process()
 						RegState = RS_FlatTop;
 					}
 				}
-				Setpoint = REGLTR_CorrectionLogDACPoint();
-				//DACSetpoint = MEASURE_ConvertUset(Setpoint);
-				LL_WriteDAC(Setpoint);
+				DACSetpoint = REGLTR_CorrectionLogDACPoint();
+				LL_WriteDAC(DACSetpoint);
 			}
 			break;
 
 		case RS_FlatTopUgeth:
 		case RS_FlatTop:
 		default:
-			Setpoint = REGLTR_CorrectionLogDACPoint();
-			//DACSetpoint = MEASURE_ConvertUset(Setpoint);
-			LL_WriteDAC(Setpoint);
+			DACSetpoint = REGLTR_CorrectionLogDACPoint();
+			LL_WriteDAC(DACSetpoint);
 			break;
 	}
 }
@@ -122,7 +119,7 @@ void REGLTR_Init()
 }
 //-----------------------------------------
 
-float REGLTR_CorrectionLogDACPoint()
+Int16U REGLTR_CorrectionLogDACPoint()
 {
 	RGLTR_ErrorCheck();
 
@@ -132,7 +129,7 @@ float REGLTR_CorrectionLogDACPoint()
 	float SetPoint = RawSetPoint + Qp + Qi;
 	Int16U DACPoint = MEASURE_ConvertUset(SetPoint);
 
-	REGLTR_StoreRegulatorDebug(Sample.Ug, Sample.UPot, Sample.Ig, DACPoint, Qp + Qi, RegulatorError);
+	REGLTR_StoreRegulatorDebug(Sample.Ug, Sample.UPot, Sample.Ig, RawSetPoint, Qp + Qi, RegulatorError, (float)DACPoint);
 
 	return DACPoint;
 }
@@ -220,7 +217,7 @@ SamplingResult REGLTR_GetSample()
 }
 //-----------------------------------------
 
-void REGLTR_StoreRegulatorDebug(float Ug, float UPot, float Ig, float Setpoint, float Correction, float Error)
+void REGLTR_StoreRegulatorDebug(float Ug, float UPot, float Ig, float Setpoint, float Correction, float Error, float DACRaw)
 {
 	if (CONTROL_Values_Counter < VALUES_DEBUG_RGLTR_SIZE)
 	{
@@ -230,6 +227,7 @@ void REGLTR_StoreRegulatorDebug(float Ug, float UPot, float Ig, float Setpoint, 
 		CONTROL_RegulatorSetpoint[CONTROL_Values_Counter] = Setpoint;
 		CONTROL_RegulatorCorrection[CONTROL_Values_Counter] = Correction;
 		CONTROL_RegulatorError[CONTROL_Values_Counter] = Error;
+		CONTROL_DACRaw[CONTROL_Values_Counter] = DACRaw;
 		++CONTROL_Values_Counter;
 	}
 }

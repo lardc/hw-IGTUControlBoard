@@ -45,6 +45,7 @@ float CONTROL_RegulatorUpot[VALUES_DEBUG_RGLTR_SIZE] = {0};
 float CONTROL_RegulatorSetpoint[VALUES_DEBUG_RGLTR_SIZE] = {0};
 float CONTROL_RegulatorCorrection[VALUES_DEBUG_RGLTR_SIZE] = {0};
 float CONTROL_RegulatorError[VALUES_DEBUG_RGLTR_SIZE] = {0};
+float CONTROL_DACRaw[VALUES_DEBUG_RGLTR_SIZE] = {0};
 
 
 // Forward functions
@@ -67,15 +68,16 @@ void CONTROL_Init()
 		EP16_ExtInfoData, EP16_RegulatorUg,
 		EP16_RegulatorUpot, EP16_RegulatorIg,
 		EP16_RegulatorSetpoint, EP16_RegulatorCorrection,
-		EP16_RegulatorError
+		EP16_RegulatorError, EP16_DACRaw
 	};
 	Int16U EPSized[FEP_COUNT] = {
 		VALUES_EXT_INFO_SIZE, VALUES_DEBUG_RGLTR_SIZE, VALUES_DEBUG_RGLTR_SIZE,
 		VALUES_DEBUG_RGLTR_SIZE, VALUES_DEBUG_RGLTR_SIZE,
-		VALUES_DEBUG_RGLTR_SIZE, VALUES_DEBUG_RGLTR_SIZE
+		VALUES_DEBUG_RGLTR_SIZE, VALUES_DEBUG_RGLTR_SIZE, VALUES_DEBUG_RGLTR_SIZE
 	};
 	pInt16U EPCounters[FEP_COUNT] = {
 		(pInt16U)&CONTROL_ExtInfoCounter,
+		(pInt16U)&CONTROL_Values_Counter,
 		(pInt16U)&CONTROL_Values_Counter,
 		(pInt16U)&CONTROL_Values_Counter,
 		(pInt16U)&CONTROL_Values_Counter,
@@ -90,7 +92,8 @@ void CONTROL_Init()
 		(pFloat32)CONTROL_RegulatorIg,
 		(pFloat32)CONTROL_RegulatorSetpoint,
 		(pFloat32)CONTROL_RegulatorCorrection,
-		(pFloat32)CONTROL_RegulatorError
+		(pFloat32)CONTROL_RegulatorError,
+		(pFloat32)CONTROL_DACRaw
 	};
 
 	// Конфигурация сервиса работы DataTable и EPROM
