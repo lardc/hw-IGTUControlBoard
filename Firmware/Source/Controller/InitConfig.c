@@ -92,10 +92,9 @@ void INITCFG_DAC1()
 {
 	DACx_Clk_Enable(DAC_1_ClkEN);
 	DACx_Reset();
-	DAC_Trigger_Config(TRIG1_TIMER6, TRIG1_ENABLE);
-	DAC_Buff(BUFF1, false);
-	DACx_DMA_Config(DAC_DMA1ENABLE, DAC_DMA1UdIntDISABLE);
-	DACx_Enable(DAC1ENABLE);
+	DAC_TriggerConfigCh2(DAC1, TRIG1_TIMER6, TRIG1_ENABLE);
+	DAC_BufferCh2(DAC1, false);
+	DAC_EnableCh2(DAC1);
 }
 //------------------------------------------------
 

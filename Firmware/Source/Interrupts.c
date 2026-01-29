@@ -65,10 +65,12 @@ void INT_GeneralDMAHandler(DMA_TypeDef* DMAx, uint32_t Channelx,volatile bool *F
 		DMA_TransferCompleteReset(DMAx, Channelx);
 
 		*Flag = true;
-		if(UgReady && UPotReady && IgReady)
+
+		if(UgReady && UPotReady)
 		{
 			REGLTR_Process();
 			CONTROL_WatchDogUpdate();
+			INT_ResetDMAFlags();
 		}
 	}
 }

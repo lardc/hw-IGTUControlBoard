@@ -53,7 +53,7 @@ void LL_SPI_SetStateOE(bool State)
 
 void LL_WriteDAC(Int16U Data)
 {
-	DAC_SetValueCh1(DAC1, Data);
+	DAC_SetValueCh2(DAC1, Data);
 }
 //-----------------------------
 
