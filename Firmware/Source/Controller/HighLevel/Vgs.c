@@ -26,7 +26,6 @@ RingBuffersParams VgsRingBuffers;
 float TrigCurrentHigh = 0;
 float TrigCurrentLow = 0;
 Int16U FlatTopDuration = 0;
-Int64U FlatTopTimer = 0;
 bool FlatTopActive = false;
 
 
@@ -82,7 +81,7 @@ void VGS_CacheVariables()
 	TrigCurrentHigh = DataTable[REG_VGS_I_TRIG];
 	TrigCurrentLow = DataTable[REG_VGS_I_TRIG] - DataTable[REG_VGS_I_TRIG] * DataTable[REG_VGS_dI_TRIG] / 100;
 
-	FlatTopDuration = DataTable[REG_VGS_FLATTOP_DURATION] / TIMER15_uS;
+	FlatTopDuration = DataTable[REG_VGS_FLATTOP_DURATION] / TIMER15_uS; // В тиках регулятора
 	FlatTopActive = false;
 }
 //-----------------------------
@@ -101,50 +100,46 @@ void VGS_Process()
 	if(VgsSampledData.Current >= TrigCurrentLow)
 		RegulatorParams.dVg = DataTable[REG_VGS_SLOW_RATE] * TIMER15_uS;
 
-	if(VgsSampledData.Current < TrigCurrentHigh)
+	// Обработка регулятора
+	if(RegulatorParams.Target < DataTable[REG_VGS_V_MAX])
+		RegulatorParams.Target += RegulatorParams.dVg;
+	else
+		RegulatorParams.Target = DataTable[REG_VGS_V_MAX];
+
+	RegulatorParams.SampledData = VgsSampledData.Voltage;
+
+	if(REGULATOR_Process(&RegulatorParams))
 	{
-		if(RegulatorParams.Target < DataTable[REG_VGS_V_MAX])
-			RegulatorParams.Target += RegulatorParams.dVg;
-		else
-			RegulatorParams.Target = DataTable[REG_VGS_V_MAX];
+		CONTROL_StopHighPriorityProcesses();
+		DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
 
-		RegulatorParams.SampledData = VgsSampledData.Voltage;
-
-		if(REGULATOR_Process(&RegulatorParams))
+		if(RegulatorParams.FollowingError)
 		{
-			CONTROL_StopHighPriorityProcesses();
-			DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
-
-			if(RegulatorParams.FollowingError)
+			DataTable[REG_PROBLEM] = PROBLEM_DUT_NOT_FOUND;
+			CONTROL_SetDeviceState(DS_Ready, SS_None);
+			return;
+		}
+		else
+		{
+			if(VgsSampledData.Current < TrigCurrentLow)
 			{
-				DataTable[REG_PROBLEM] = PROBLEM_DUT_NOT_FOUND;
+				DataTable[REG_PROBLEM] = PROBLEM_CURRENT_NOT_REACHED;
 				CONTROL_SetDeviceState(DS_Ready, SS_None);
-				return;
-			}
-			else
-			{
-				if(VgsSampledData.Current < TrigCurrentLow)
-				{
-					DataTable[REG_PROBLEM] = PROBLEM_CURRENT_NOT_REACHED;
-					CONTROL_SetDeviceState(DS_Ready, SS_None);
-				}
 			}
 		}
 	}
-	else
+
+	// Проверка выхода на заданный ток
+	if(VgsSampledData.Current >= TrigCurrentHigh)
 	{
+		// Конфигурация с полкой
 		if(FlatTopActive == false && FlatTopDuration != 0)
 		{
 			FlatTopActive = true;
-			if (RegulatorParams.Counter <= FlatTopDuration)
-			{
-				RegulatorParams.Counter = FlatTopDuration;
-				FlatTopTimer = 0;
-			}
-			else
-				FlatTopTimer = RegulatorParams.Counter - FlatTopDuration;
+			RegulatorParams.Counter = FlatTopDuration;
 		}
-		else if(FlatTopActive == false || (RegulatorParams.Counter <= FlatTopTimer))
+		// Окончание формирования с полкой и без
+		if(FlatTopDuration == 0 || RegulatorParams.Counter == 0)
 		{
 			CONTROL_StopHighPriorityProcesses();
 
@@ -157,7 +152,8 @@ void VGS_Process()
 			else
 			{
 				DataTable[REG_VGS_RESULT] = AverageSamples.Voltage;
-				DataTable[REG_VGS_I_RESULT] = ((FlatTopDuration * 50) < VGS_RING_BUFFER_THRESHOLD) ? VgsSampledData.Current : AverageSamples.Current;
+				DataTable[REG_VGS_I_RESULT] = ((FlatTopDuration * 50) < VGS_RING_BUFFER_THRESHOLD) ?
+						VgsSampledData.Current : AverageSamples.Current;
 				DataTable[REG_OP_RESULT] = OPRESULT_OK;
 
 				CONTROL_SetDeviceState(DS_Ready, SS_None);
