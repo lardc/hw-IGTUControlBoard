@@ -16,6 +16,7 @@
 #include "InitConfig.h"
 #include "Diagnostic.h"
 #include "Logic.h"
+#include "JSONDescription.h"
 
 // Macro
 //
@@ -58,6 +59,7 @@ void CONTROL_ResetToDefaultState();
 void CONTROL_ResetData();
 void CONTROL_StartMeasure(MeasureType Type);
 bool CONTROL_IsSafetyOk();
+void CONTROL_InitJSONPointers();
 
 // Functions
 //
@@ -240,6 +242,70 @@ bool CONTROL_IsSafetyOk()
 		return true;
 }
 //-----------------------------------------------
+
+void CONTROL_InitJSONPointers()
+{
+	UsetMin = USET_MININAL;
+	UsetMax = USET_MAXIMUM;
+
+	UpotMin = UPOT_MINIMAL;
+	UpotMax = UPOT_MAXIMUM;
+
+	Imeas0Min = DataTable[REG_RANGE_I_1] * 1000;
+	Imeas0Max = DataTable[REG_RANGE_I_0] * 1000;
+
+	Imeas1Min = DataTable[REG_RANGE_I_2] * 1000;
+	Imeas1Max = DataTable[REG_RANGE_I_1] * 1000;
+
+	Imeas2Min = DataTable[REG_RANGE_I_3] * 1000;
+	Imeas2Max = DataTable[REG_RANGE_I_2] * 1000;
+
+	Imeas3Min = DataTable[REG_RANGE_I_4] * 1000000;
+	Imeas3Max = DataTable[REG_RANGE_I_3] * 1000000;
+
+	Imeas4Min = DataTable[REG_RANGE_I_5] * 1000000;
+	Imeas4Max = DataTable[REG_RANGE_I_4] * 1000000;
+
+	Imeas5Min = DataTable[REG_RANGE_I_6] * 1000000;
+	Imeas5Max = DataTable[REG_RANGE_I_5] * 1000000;
+
+	Imeas6Min = DataTable[REG_RANGE_I_7] * 1000000000;
+	Imeas6Max = DataTable[REG_RANGE_I_6] * 1000000000;
+
+	Imeas7Min = IMEAS_LOWEST;
+	Imeas7Max = DataTable[REG_RANGE_I_7] * 1000000000;
+
+	JSON_AssignPointer(0, &UsetMin);
+	JSON_AssignPointer(1, &UsetMax);
+
+	JSON_AssignPointer(2, &UpotMin);
+	JSON_AssignPointer(3, &UpotMax);
+
+	JSON_AssignPointer(4, &Imeas0Min);
+	JSON_AssignPointer(5, &Imeas0Max);
+
+	JSON_AssignPointer(6, &Imeas1Min);
+	JSON_AssignPointer(7, &Imeas1Max);
+
+	JSON_AssignPointer(8, &Imeas2Min);
+	JSON_AssignPointer(9, &Imeas2Max);
+
+	JSON_AssignPointer(10, &Imeas3Min);
+	JSON_AssignPointer(11, &Imeas3Max);
+
+	JSON_AssignPointer(12, &Imeas4Min);
+	JSON_AssignPointer(13, &Imeas4Max);
+
+	JSON_AssignPointer(14, &Imeas5Min);
+	JSON_AssignPointer(15, &Imeas5Max);
+
+	JSON_AssignPointer(16, &Imeas6Min);
+	JSON_AssignPointer(17, &Imeas6Max);
+
+	JSON_AssignPointer(18, &Imeas7Min);
+	JSON_AssignPointer(19, &Imeas7Max);
+}
+//------------------------------------------
 
 void CONTROL_SwitchToFault(Int16U Reason)
 {

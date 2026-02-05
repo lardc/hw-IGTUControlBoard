@@ -141,7 +141,8 @@
 #define REG_FLATTOP_DURATION			86 	// Длительность полки поддержания тока, мс
 #define REG_CURRENT_ERR_THRESH			87	// Допустимая ошибка тока для начала измерения
 #define REG_CURRENT_ERR_COUNT_LIMIT		88	// Лимит ошибки счетчика перед выставлением PROBLEM_CURRENT_OUT_OF_RANGE
-//
+
+// Несохраняемы регистры чтения-записи
 #define REG_WORK_VOLTAGE_IGES			128	// Номинальное рабочее напряжение для измерения Iges, мВ
 #define REG_WORK_CURRENT_UGETH			129	// Номинальный рабочий ток для измерения Ugeth, мА
 //
