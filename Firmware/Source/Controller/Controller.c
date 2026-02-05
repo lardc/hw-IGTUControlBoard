@@ -59,7 +59,6 @@ void CONTROL_ResetToDefaultState();
 void CONTROL_ResetData();
 void CONTROL_StartMeasure(MeasureType Type);
 bool CONTROL_IsSafetyOk();
-void CONTROL_InitJSONPointers();
 
 // Functions
 //

@@ -63,5 +63,6 @@ void CONTROL_SetDeviceSubState(DeviceSubState NewSubState);
 void CONTROL_SwitchToProblem(Int16U Reason);
 bool CONTROL_IsSafetyOk();
 void CONTROL_WatchDogUpdate();
+void CONTROL_InitJSONPointers();
 
 #endif // __CONTROLLER_H

@@ -14,6 +14,7 @@
 #include "ZwNCAN.h"
 #include "ZwSCI.h"
 #include "FormatOutputJSON.h"
+#include "Controller.h"
 
 // Types
 //
@@ -192,6 +193,7 @@ static Boolean DEVPROFILE_DispatchAction(Int16U ActionID, pInt16U UserError)
 			break;
 
 		case ACT_JSON_INIT_READ:
+			CONTROL_InitJSONPointers();
 			JSON_ResetStateMachine();
 			break;
 
