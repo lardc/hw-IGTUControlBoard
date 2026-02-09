@@ -15,6 +15,10 @@
 #include "ZwSCI.h"
 #include "FormatOutputJSON.h"
 #include "Controller.h"
+#include "SaveToFlash.h"
+#include "SaveToFlashConfig.h"
+#include "StorageDescription.h"
+#include "LowLevel.h"
 
 // Types
 //
@@ -162,6 +166,9 @@ static Boolean DEVPROFILE_Validate16(Int16U Address, Int16U Data)
 
 static Boolean DEVPROFILE_DispatchAction(Int16U ActionID, pInt16U UserError)
 {
+	static Int32U MemoryPointer = 0;
+	static Int32U MemoryEndPointer = 0;
+
 	switch(ActionID)
 	{
 		case ACT_SAVE_TO_ROM:
@@ -203,6 +210,42 @@ static Boolean DEVPROFILE_DispatchAction(Int16U ActionID, pInt16U UserError)
 				DEVPROFILE_ResetScopes(0);
 				for(CONTROL_ExtInfoCounter = 0; CONTROL_ExtInfoCounter < VALUES_EXT_INFO_SIZE;)
 					CONTROL_ExtInfoData[CONTROL_ExtInfoCounter++] = JSON_ReadSymbol();
+			}
+			break;
+
+		case ACT_SET_COUNTER:
+			CycleCounters[(Int16U)DataTable[REG_CNT_NUMBER]] = DataTable[REG_CNT_VALUE];
+			break;
+
+		case ACT_SAVE_COUNTERS:
+			STF_SaveCounterData();
+			break;
+
+		case ACT_ERASE_COUNTERS:
+			{
+				NFLASH_Unlock();
+				for(int i = 0; i < CounterStorageSize; ++i)
+				{
+					*(pInt32U)CounterTablePointers[i].Address = 0;
+					CounterTablePointers[i].Value = 0;
+				}
+				STF_EraseCounterDataSector();
+			}
+			break;
+
+		case ACT_FLASH_CNT_INIT_READ:
+			STF_ResetStateMachine();
+			MemoryPointer = FLASH_COUNTER_START_ADDR;
+			MemoryEndPointer = FLASH_COUNTER_END_ADDR;
+			break;
+
+		case ACT_FLASH_COUNTER_TO_EP:
+			DEVPROFILE_ResetEPReadState();
+			DEVPROFILE_ResetScopes(0);
+
+			for(CONTROL_ExtInfoCounter = 0; CONTROL_ExtInfoCounter < VALUES_EXT_INFO_SIZE && MemoryPointer <= MemoryEndPointer;)
+			{
+				CONTROL_ExtInfoData[CONTROL_ExtInfoCounter++] = STF_ReadCounter();
 			}
 			break;
 

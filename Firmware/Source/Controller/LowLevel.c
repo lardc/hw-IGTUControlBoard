@@ -6,11 +6,10 @@
 #include "DataTable.h"
 #include "ZwSPI.h"
 
-#define RELAY_ALL_CHANNELS (RELAY_CH_0|RELAY_CH_1|RELAY_CH_2|RELAY_CH_3|RELAY_CH_4|RELAY_CH_5|RELAY_CH_6|RELAY_CH_7)
-
 // Variables
 uint16_t PrevMask = 0;
 uint16_t Mask = 0;
+Int32U CycleCounters[COMMUTATION_TABLE_SIZE] = {0};
 
 // Forward functions
 //

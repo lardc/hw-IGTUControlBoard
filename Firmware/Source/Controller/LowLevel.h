@@ -4,6 +4,10 @@
 // Include
 #include "stdinc.h"
 
+// Defines
+#define COMMUTATION_TABLE_SIZE 12
+#define RELAY_ALL_CHANNELS (RELAY_CH_0|RELAY_CH_1|RELAY_CH_2|RELAY_CH_3|RELAY_CH_4|RELAY_CH_5|RELAY_CH_6|RELAY_CH_7)
+
 // Types
 typedef enum IChannel
 {
@@ -35,6 +39,7 @@ typedef enum RelayMask
 
 // Variables
 //
+extern Int32U CycleCounters[COMMUTATION_TABLE_SIZE];
 
 // Functions
 //

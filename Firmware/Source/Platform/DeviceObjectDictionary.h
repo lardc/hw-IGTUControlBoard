@@ -27,6 +27,12 @@
 
 #define ACT_BOOT_LOADER_REQUEST			320	// Перезапуск процессора с целью перепрограммирования
 
+#define ACT_FLASH_CNT_INIT_READ			334	// Перемещение указателя в область счетчиков
+#define ACT_SET_COUNTER					336	// Установка значения счетчика
+#define ACT_SAVE_COUNTERS				337	// Сохранить счетчики в памяти
+#define ACT_ERASE_COUNTERS				338	// Удалить счетчики из памяти
+#define ACT_FLASH_COUNTER_TO_EP			339 // Выполнить чтение массива из памяти счетчиков отработки в EP
+
 #define ACT_JSON_INIT_READ				341	// Инициализация начала считывания JSON
 #define ACT_JSON_TO_EP					342	// Выполнить чтение шаблона JSON в EP
 // -----------------------------
@@ -141,6 +147,9 @@
 #define REG_FLATTOP_DURATION			86 	// Длительность полки поддержания тока, мс
 #define REG_CURRENT_ERR_THRESH			87	// Допустимая ошибка тока для начала измерения
 #define REG_CURRENT_ERR_COUNT_LIMIT		88	// Лимит ошибки счетчика перед выставлением PROBLEM_CURRENT_OUT_OF_RANGE
+//
+#define REG_CNT_NUMBER					104	// Номер счетчика, в который будет записано значение
+#define REG_CNT_VALUE					105	// Значение, которое будет записано в счетчик
 
 // Несохраняемы регистры чтения-записи
 #define REG_WORK_VOLTAGE_IGES			128	// Номинальное рабочее напряжение для измерения Iges, мВ
