@@ -6,11 +6,11 @@
 #include "SaveToFlash.h"
 
 // Variables
-extern RecordDescription StorageDescription[];
+extern const RecordDescription StorageDescription[];
 extern Int32U TablePointers[];
 extern const Int16U StorageSize;
 
-extern CounterDescription CounterStorageDescription[];
+extern const CounterDescription CounterStorageDescription[];
 extern CounterData CounterTablePointers[];
 extern const Int16U CounterStorageSize;
 
