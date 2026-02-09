@@ -17,6 +17,7 @@
 #include "Diagnostic.h"
 #include "Logic.h"
 #include "JSONDescription.h"
+#include "SaveToFlash.h"
 
 // Macro
 //
@@ -59,6 +60,7 @@ void CONTROL_ResetToDefaultState();
 void CONTROL_ResetData();
 void CONTROL_StartMeasure(MeasureType Type);
 bool CONTROL_IsSafetyOk();
+void CONTROL_InitStoragePointers();
 
 // Functions
 //
@@ -102,17 +104,19 @@ void CONTROL_Init()
 	// Инициализация DataTable
 	DT_Init(EPROMService, false);
 	DT_SaveFirmwareInfo(CAN_SLAVE_NID, 0);
-
 	// Инициализация функций связанных с CAN NodeID
 	Int16U NodeID = DataTable[REG_CFG_NODE_ID] ? DataTable[REG_CFG_NODE_ID] : CAN_SLAVE_NID;
 	DT_SaveFirmwareInfo(NodeID, 0);
 	INITCFG_ConfigCAN(NodeID);
-
 	// Инициализация device profile
 	DEVPROFILE_Init(&CONTROL_DispatchAction, &CycleActive, NodeID);
 	DEVPROFILE_InitFEPService(EPIndexes, EPSized, EPCounters, EPDatas);
 	// Сброс значений
 	DEVPROFILE_ResetControlSection();
+	// Инициализация указателей на счетчики и сами счетчики
+	CONTROL_InitStoragePointers();
+	STF_LoadCounters();
+
 
 	CONTROL_ResetToDefaultState();
 }
@@ -303,6 +307,13 @@ void CONTROL_InitJSONPointers()
 
 	JSON_AssignPointer(18, &Imeas7Min);
 	JSON_AssignPointer(19, &Imeas7Max);
+}
+//------------------------------------------
+
+void CONTROL_InitStoragePointers()
+{
+	for (Int16U i = 0; i < COMMUTATION_TABLE_SIZE; ++i)
+		STF_AssignCounterPointer(i, (Int32U)&CycleCounters[i]);
 }
 //------------------------------------------
 

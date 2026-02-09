@@ -10,10 +10,13 @@
 uint16_t PrevMask = 0;
 uint16_t Mask = 0;
 Int32U CycleCounters[COMMUTATION_TABLE_SIZE] = {0};
+uint16_t const CommMask[] = {RELAY_CH_0, RELAY_CH_1, RELAY_CH_2, RELAY_CH_3, RELAY_CH_4, RELAY_CH_5, RELAY_CH_6, RELAY_CH_7,
+						RELAY_POTENT_ENTRY, RELAY_SELFTEST, RELAY_TEST_LOAD, RELAY_POLARITY};
 
 // Forward functions
 //
 void LL_SPI_SetStateOE(bool State);
+void LL_Counter_Increase();
 
 // Functions
 //
@@ -35,8 +38,21 @@ void LL_ToggleExternalLED()
 }
 //-----------------------------
 
+void LL_Counter_Increase()
+{
+	for(uint8_t i = 0; i < COMMUTATION_TABLE_SIZE; i++)
+	{
+		if((PrevMask & CommMask[i]) == 0 && (Mask & CommMask[i]) == CommMask[i])
+			CycleCounters[i]++;
+	}
+}
+//-----------------------------
+
 void LL_SPI_WriteByte(uint16_t Data)
 {
+	if(DataTable[REG_CNT_ACTIVE])
+		LL_Counter_Increase();
+
 	GPIO_SetState(GPIO_SPI_SS, false);
 	SPI_WriteByte(SPI1, Data);
 	LL_SPI_SetStateOE(true);
