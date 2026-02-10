@@ -19,9 +19,8 @@
 #include "JSONDescription.h"
 #include "SaveToFlash.h"
 
-// Macro
+// Defines
 //
-#define ABS(a)				(((a) < 0) ? -(a) : (a))
 #define CT_SAVE_TIMEOUT		1800000 // в мс
 
 // Types
@@ -37,7 +36,7 @@ static Boolean CycleActive = false;
 volatile MeasureType CONTROL_MeasureType = MT_Rth;
 
 volatile Int64U CONTROL_TimeCounter = 0;
-Int64U CT_SaveTimer = 0;					 // Последняя отметка времени автосохранения
+static Int64U CT_SaveTimer = 0;					 // Последняя отметка времени автосохранения
 
 Int16U CONTROL_ExtInfoCounter = 0;
 Int16U CONTROL_ExtInfoData[VALUES_EXT_INFO_SIZE] = {0};
@@ -153,7 +152,7 @@ void CONTROL_Idle()
 	//Обработка логики мастер-команд
 	LOGIC_HandleMeasurement();
 	// Counter data update
-	if ((CONTROL_TimeCounter - CT_SaveTimer) >= CT_SAVE_TIMEOUT && DataTable[REG_CNT_ACTIVE])
+	if (DataTable[REG_CNT_ACTIVE] && (CONTROL_TimeCounter - CT_SaveTimer) >= CT_SAVE_TIMEOUT)
 	{
 		STF_SaveCounterData();
 		CT_SaveTimer = CONTROL_TimeCounter;

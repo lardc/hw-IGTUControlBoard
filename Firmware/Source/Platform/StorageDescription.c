@@ -3,7 +3,7 @@
 #include "Global.h"
 
 // Variables
-const RecordDescription StorageDescription[] = {};
+const RecordDescription StorageDescription[] = {0};
 
 #define SIZE_OF_POINTERS (sizeof(StorageDescription) / sizeof(StorageDescription[0]))
 Int32U TablePointers[SIZE_OF_POINTERS ? SIZE_OF_POINTERS : 1] = {0};

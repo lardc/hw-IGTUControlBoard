@@ -5,6 +5,7 @@
 #include "stdinc.h"
 #include "DataTable.h"
 #include "Global.h"
+#include "LowLevel.h"
 
 //Definitions
 #define COEF_P2_MIN					-1e-3

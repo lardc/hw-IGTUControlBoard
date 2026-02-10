@@ -14,7 +14,6 @@
 #include "ZwNCAN.h"
 #include "ZwSCI.h"
 #include "FormatOutputJSON.h"
-#include "Controller.h"
 #include "SaveToFlash.h"
 #include "SaveToFlashConfig.h"
 #include "StorageDescription.h"
@@ -224,6 +223,7 @@ static Boolean DEVPROFILE_DispatchAction(Int16U ActionID, pInt16U UserError)
 		case ACT_ERASE_COUNTERS:
 			{
 				NFLASH_Unlock();
+				// Обнуляем RAM-значения счётчиков и их кэш, чтобы последующее сохранение не вернуло старые значения
 				for(int i = 0; i < CounterStorageSize; ++i)
 				{
 					*(pInt32U)CounterTablePointers[i].Address = 0;
@@ -246,6 +246,7 @@ static Boolean DEVPROFILE_DispatchAction(Int16U ActionID, pInt16U UserError)
 			for(CONTROL_ExtInfoCounter = 0; CONTROL_ExtInfoCounter < VALUES_EXT_INFO_SIZE && MemoryPointer <= MemoryEndPointer;)
 			{
 				CONTROL_ExtInfoData[CONTROL_ExtInfoCounter++] = STF_ReadCounter();
+				MemoryPointer += 4;
 			}
 			break;
 

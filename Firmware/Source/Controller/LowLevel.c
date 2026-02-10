@@ -42,6 +42,14 @@ void LL_Counter_Increase()
 {
 	for(uint8_t i = 0; i < COMMUTATION_TABLE_SIZE; i++)
 	{
+		// Проверка для канала 0 тока
+		if(i == 0)
+		{
+			if((PrevMask & RELAY_ALL_CHANNELS) != 0 && (Mask & RELAY_ALL_CHANNELS) == 0)
+				CycleCounters[i]++;
+			continue;
+		}
+
 		if((PrevMask & CommMask[i]) == 0 && (Mask & CommMask[i]) == CommMask[i])
 			CycleCounters[i]++;
 	}
