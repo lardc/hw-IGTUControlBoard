@@ -11,7 +11,7 @@ uint16_t PrevMask = 0;
 uint16_t Mask = 0;
 Int32U CycleCounters[COMMUTATION_TABLE_SIZE] = {0};
 uint16_t const CommMask[] = {RELAY_CH_0, RELAY_CH_1, RELAY_CH_2, RELAY_CH_3, RELAY_CH_4, RELAY_CH_5, RELAY_CH_6, RELAY_CH_7,
-						RELAY_POTENT_ENTRY, RELAY_SELFTEST, RELAY_TEST_LOAD, RELAY_POLARITY};
+							RELAY_POT_DISCON, RELAY_SELFTEST, RELAY_TEST_LOAD, RELAY_NEG_POLARITY};
 
 // Forward functions
 //
@@ -50,7 +50,7 @@ void LL_Counter_Increase()
 			continue;
 		}
 
-		if((PrevMask & CommMask[i]) == 0 && (Mask & CommMask[i]) == CommMask[i])
+		if((PrevMask & CommMask[i]) != CommMask[i] && (Mask & CommMask[i]) == CommMask[i])
 			CycleCounters[i]++;
 	}
 }
@@ -125,7 +125,7 @@ bool LL_SafetyState()
 void LL_SetNegativePolarity(bool State)
 {
 	Mask = PrevMask;
-	State ? (Mask |= RELAY_POLARITY) : (Mask &=~ RELAY_POLARITY);
+	State ? (Mask |= RELAY_NEG_POLARITY) : (Mask &=~ RELAY_NEG_POLARITY);
 	LL_SPI_WriteByte(Mask);
 	PrevMask = Mask;
 }

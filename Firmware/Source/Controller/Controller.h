@@ -43,8 +43,8 @@ extern volatile DeviceState CONTROL_State;
 extern volatile DeviceSubState CONTROL_SubState;
 extern volatile MeasureType CONTROL_MeasureType;
 
-extern Int16U CONTROL_ExtInfoCounter;
-extern Int16U CONTROL_ExtInfoData[];
+extern volatile Int16U CONTROL_ExtInfoCounter;
+extern volatile float CONTROL_ExtInfoData[];
 
 extern Int16U CONTROL_Values_Counter;
 extern float CONTROL_RegulatorIg[];

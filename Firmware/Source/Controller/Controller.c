@@ -38,8 +38,8 @@ volatile MeasureType CONTROL_MeasureType = MT_Rth;
 volatile Int64U CONTROL_TimeCounter = 0;
 static Int64U CT_SaveTimer = 0;					 // Последняя отметка времени автосохранения
 
-Int16U CONTROL_ExtInfoCounter = 0;
-Int16U CONTROL_ExtInfoData[VALUES_EXT_INFO_SIZE] = {0};
+volatile Int16U CONTROL_ExtInfoCounter = 0;
+volatile float CONTROL_ExtInfoData[VALUES_EXT_INFO_SIZE] = {0};
 
 Int16U CONTROL_Values_Counter = 0;
 float CONTROL_RegulatorIg[VALUES_DEBUG_RGLTR_SIZE] = {0};
@@ -264,20 +264,20 @@ void CONTROL_InitJSONPointers()
 	Imeas0Min = DataTable[REG_RANGE_I_1] * 1000;
 	Imeas0Max = DataTable[REG_RANGE_I_0] * 1000;
 
-	Imeas1Min = DataTable[REG_RANGE_I_2] * 1000;
-	Imeas1Max = DataTable[REG_RANGE_I_1] * 1000;
+	Imeas1Min = DataTable[REG_RANGE_I_2] * 10000;
+	Imeas1Max = DataTable[REG_RANGE_I_1] * 10000;
 
-	Imeas2Min = DataTable[REG_RANGE_I_3] * 1000;
-	Imeas2Max = DataTable[REG_RANGE_I_2] * 1000;
+	Imeas2Min = DataTable[REG_RANGE_I_3] * 100000;
+	Imeas2Max = DataTable[REG_RANGE_I_2] * 100000;
 
 	Imeas3Min = DataTable[REG_RANGE_I_4] * 1000000;
 	Imeas3Max = DataTable[REG_RANGE_I_3] * 1000000;
 
-	Imeas4Min = DataTable[REG_RANGE_I_5] * 1000000;
-	Imeas4Max = DataTable[REG_RANGE_I_4] * 1000000;
+	Imeas4Min = DataTable[REG_RANGE_I_5] * 10000000;
+	Imeas4Max = DataTable[REG_RANGE_I_4] * 10000000;
 
-	Imeas5Min = DataTable[REG_RANGE_I_6] * 1000000;
-	Imeas5Max = DataTable[REG_RANGE_I_5] * 1000000;
+	Imeas5Min = DataTable[REG_RANGE_I_6] * 100000000;
+	Imeas5Max = DataTable[REG_RANGE_I_5] * 100000000;
 
 	Imeas6Min = DataTable[REG_RANGE_I_7] * 1000000000;
 	Imeas6Max = DataTable[REG_RANGE_I_6] * 1000000000;

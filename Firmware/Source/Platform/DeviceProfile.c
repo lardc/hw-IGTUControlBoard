@@ -178,6 +178,7 @@ static Boolean DEVPROFILE_DispatchAction(Int16U ActionID, pInt16U UserError)
 					DT_SaveNVPartToEPROM();
 			}
 			break;
+
 		case ACT_RESTORE_FROM_ROM:
 			{
 				if(ENABLE_LOCKING && !UnlockedForNVWrite)
@@ -186,6 +187,7 @@ static Boolean DEVPROFILE_DispatchAction(Int16U ActionID, pInt16U UserError)
 					DT_RestoreNVPartFromEPROM();
 			}
 			break;
+
 		case ACT_RESET_TO_DEFAULT:
 			{
 				if(ENABLE_LOCKING && !UnlockedForNVWrite)
@@ -194,6 +196,7 @@ static Boolean DEVPROFILE_DispatchAction(Int16U ActionID, pInt16U UserError)
 					DT_ResetNVPart(&DEVPROFILE_FillNVPartDefault);
 			}
 			break;
+
 		case ACT_BOOT_LOADER_REQUEST:
 			BOOT_LOADER_VARIABLE = BOOT_LOADER_REQUEST;
 			break;
