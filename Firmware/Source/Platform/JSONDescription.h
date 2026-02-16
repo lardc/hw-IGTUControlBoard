@@ -10,7 +10,7 @@
 #define UPOT_MINIMAL	1
 #define UPOT_MAXIMUM	10
 
-#define IMEAS_LOWEST	1.0f		// в нА
+#define IMEAS_HIGHEST	500.0f	// в мА
 
 extern float UsetMin, UsetMax, UpotMin, UpotMax, Imeas1Min, Imeas1Max, Imeas2Min, Imeas2Max, Imeas3Min, Imeas3Max;
 extern float Imeas4Min, Imeas4Max, Imeas5Min, Imeas5Max, Imeas6Min, Imeas6Max, Imeas7Min, Imeas7Max, Imeas0Min, Imeas0Max;

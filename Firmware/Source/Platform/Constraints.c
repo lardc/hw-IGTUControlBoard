@@ -18,74 +18,74 @@ const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE] =
 	{COEF_P2_MIN, COEF_P2_MAX, COEF_P2_DEF},									// 6
 	{COEF_P1_MIN, COEF_P1_MAX, COEF_P1_DEF},									// 7
 	{COEF_P0_MIN, COEF_P0_MAX, COEF_P0_DEF},									// 8
-	{COEF_K_MIN, COEF_K_MAX, 0},												// 9
+	{COEF_K_MIN, COEF_K_MAX, COEF_K_UMEAS_DEF},									// 9
 	{COEF_B_MIN, COEF_B_MAX, 0},												// 10
 	{COEF_P2_MIN, COEF_P2_MAX, COEF_P2_DEF},									// 11
 	{COEF_P1_MIN, COEF_P1_MAX, COEF_P1_DEF},									// 12
 	{COEF_P0_MIN, COEF_P0_MAX, COEF_P0_DEF},									// 13
-	{COEF_K_MIN, COEF_K_MAX, 0},												// 14
+	{COEF_K_MIN, COEF_K_MAX, COEF_K_IMEAS_DEF},									// 14
 	{COEF_B_MIN, COEF_B_MAX, 0},												// 15
-	{COEF_RSH_MIN, COEF_RSH_MAX, 0},											// 16
+	{COEF_RSH_MIN, COEF_RSH_MAX, COEF_RSH_CH0_DEF},								// 16
 	{COEF_P2_MIN, COEF_P2_MAX, COEF_P2_DEF},									// 17
 	{COEF_P1_MIN, COEF_P1_MAX, COEF_P1_DEF},									// 18
 	{COEF_P0_MIN, COEF_P0_MAX, COEF_P0_DEF},									// 19
-	{COEF_K_MIN, COEF_K_MAX, 0},												// 20
+	{COEF_K_MIN, COEF_K_MAX, COEF_K_IMEAS_DEF},									// 20
 	{COEF_B_MIN, COEF_B_MAX, 0},												// 21
-	{COEF_RSH_MIN, COEF_RSH_MAX, 0},											// 22
+	{COEF_RSH_MIN, COEF_RSH_MAX, COEF_RSH_CH1_DEF},								// 22
 	{COEF_P2_MIN, COEF_P2_MAX, COEF_P2_DEF},									// 23
 	{COEF_P1_MIN, COEF_P1_MAX, COEF_P1_DEF},									// 24
 	{COEF_P0_MIN, COEF_P0_MAX, COEF_P0_DEF},									// 25
-	{COEF_K_MIN, COEF_K_MAX, 0},												// 26
+	{COEF_K_MIN, COEF_K_MAX, COEF_K_IMEAS_DEF},									// 26
 	{COEF_B_MIN, COEF_B_MAX, 0},												// 27
-	{COEF_RSH_MIN, COEF_RSH_MAX, 0},											// 28
+	{COEF_RSH_MIN, COEF_RSH_MAX, COEF_RSH_CH2_DEF},								// 28
 	{COEF_P2_MIN, COEF_P2_MAX, COEF_P2_DEF},									// 29
 	{COEF_P1_MIN, COEF_P1_MAX, COEF_P1_DEF},									// 30
 	{COEF_P0_MIN, COEF_P0_MAX, COEF_P0_DEF},									// 31
-	{COEF_K_MIN, COEF_K_MAX, 0},												// 32
+	{COEF_K_MIN, COEF_K_MAX, COEF_K_IMEAS_DEF},									// 32
 	{COEF_B_MIN, COEF_B_MAX, 0},												// 33
-	{COEF_RSH_MIN, COEF_RSH_MAX, 0},											// 34
+	{COEF_RSH_MIN, COEF_RSH_MAX, COEF_RSH_CH3_DEF},								// 34
 	{COEF_P2_MIN, COEF_P2_MAX, COEF_P2_DEF},									// 35
 	{COEF_P1_MIN, COEF_P1_MAX, COEF_P1_DEF},									// 36
 	{COEF_P0_MIN, COEF_P0_MAX, COEF_P0_DEF},									// 37
-	{COEF_K_MIN, COEF_K_MAX, 0},												// 38
+	{COEF_K_MIN, COEF_K_MAX, COEF_K_IMEAS_DEF},									// 38
 	{COEF_B_MIN, COEF_B_MAX, 0},												// 39
-	{COEF_RSH_MIN, COEF_RSH_MAX, 0},											// 40
+	{COEF_RSH_MIN, COEF_RSH_MAX, COEF_RSH_CH4_DEF},								// 40
 	{COEF_P2_MIN, COEF_P2_MAX, COEF_P2_DEF},									// 41
 	{COEF_P1_MIN, COEF_P1_MAX, COEF_P1_DEF},									// 42
 	{COEF_P0_MIN, COEF_P0_MAX, COEF_P0_DEF},									// 43
-	{COEF_K_MIN, COEF_K_MAX, 0},												// 44
+	{COEF_K_MIN, COEF_K_MAX, COEF_K_IMEAS_DEF},									// 44
 	{COEF_B_MIN, COEF_B_MAX, 0},												// 45
-	{COEF_RSH_MIN, COEF_RSH_MAX, 0},											// 46
+	{COEF_RSH_MIN, COEF_RSH_MAX, COEF_RSH_CH5_DEF},								// 46
 	{COEF_P2_MIN, COEF_P2_MAX, COEF_P2_DEF},									// 47
 	{COEF_P1_MIN, COEF_P1_MAX, COEF_P1_DEF},									// 48
 	{COEF_P0_MIN, COEF_P0_MAX, COEF_P0_DEF},									// 49
-	{COEF_K_MIN, COEF_K_MAX, 0},												// 50
+	{COEF_K_MIN, COEF_K_MAX, COEF_K_IMEAS_DEF},									// 50
 	{COEF_B_MIN, COEF_B_MAX, 0},												// 51
-	{COEF_RSH_MIN, COEF_RSH_MAX, 0},											// 52
+	{COEF_RSH_MIN, COEF_RSH_MAX, COEF_RSH_CH6_DEF},								// 52
 	{COEF_P2_MIN, COEF_P2_MAX, COEF_P2_DEF},									// 53
 	{COEF_P1_MIN, COEF_P1_MAX, COEF_P1_DEF},									// 54
 	{COEF_P0_MIN, COEF_P0_MAX, COEF_P0_DEF},									// 55
-	{COEF_K_MIN, COEF_K_MAX, 0},												// 56
+	{COEF_K_MIN, COEF_K_MAX, COEF_K_IMEAS_DEF},									// 56
 	{COEF_B_MIN, COEF_B_MAX, 0},												// 57
-	{COEF_RSH_MIN, COEF_RSH_MAX, 0},											// 58
+	{COEF_RSH_MIN, COEF_RSH_MAX, COEF_RSH_CH7_DEF},								// 58
 	{0, 0, 0},																	// 59
 	{0, INT16U_MAX, 0},															// 60
 	{COEF_P2_MIN, COEF_P2_MAX, COEF_P2_DEF},									// 61
 	{COEF_P1_MIN, COEF_P1_MAX, COEF_P1_DEF},									// 62
 	{COEF_P0_MIN, COEF_P0_MAX, COEF_P0_DEF},									// 63
-	{COEF_K_MIN, COEF_K_MAX, 0},												// 64
+	{COEF_K_MIN, COEF_K_MAX, COEF_K_USET_DEF},									// 64
 	{COEF_B_MIN, COEF_B_MAX, 0},												// 65
 	{SLEW_RATE_MIN, INT16U_MAX, SLEW_RATE_MIN},									// 66
 	{0, INT16U_MAX, 0},															// 67
 	{U_RTH_MIN, U_RTH_MAX, U_RTH_DEF},											// 68
-	{0, INT16U_MAX, 0},															// 69
-	{0, INT16U_MAX, 0},															// 70
-	{0, INT16U_MAX, 0},															// 71
-	{0, INT16U_MAX, 0},															// 72
-	{0, INT16U_MAX, 0},															// 73
-	{0, INT16U_MAX, 0},															// 74
-	{0, INT16U_MAX, 0},															// 75
-	{0, INT16U_MAX, 0},															// 76
+	{COEF_I_CH0_MIN, INT16U_MAX, COEF_I_CH0_MIN},								// 69
+	{COEF_I_CH1_MIN, INT16U_MAX, COEF_I_CH1_MIN},								// 70
+	{COEF_I_CH2_MIN, INT16U_MAX, COEF_I_CH2_MIN},								// 71
+	{COEF_I_CH3_MIN, INT16U_MAX, COEF_I_CH3_MIN},								// 72
+	{COEF_I_CH4_MIN, INT16U_MAX, COEF_I_CH4_MIN},								// 73
+	{COEF_I_CH5_MIN, INT16U_MAX, COEF_I_CH5_MIN},								// 74
+	{COEF_I_CH6_MIN, INT16U_MAX, COEF_I_CH6_MIN},								// 75
+	{COEF_I_CH7_MIN, INT16U_MAX, COEF_I_CH7_MIN},								// 76
 	{0, INT16U_MAX, 0},															// 77
 	{0, INT16U_MAX, 0},															// 78
 	{0, INT16U_MAX, 0},															// 79

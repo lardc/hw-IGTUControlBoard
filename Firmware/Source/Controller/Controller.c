@@ -261,29 +261,29 @@ void CONTROL_InitJSONPointers()
 	UpotMin = UPOT_MINIMAL;
 	UpotMax = UPOT_MAXIMUM;
 
-	Imeas0Min = DataTable[REG_RANGE_I_1] * 1000;
-	Imeas0Max = DataTable[REG_RANGE_I_0] * 1000;
+	Imeas0Min = DataTable[REG_RANGE_I_0] * 1000;
+	Imeas0Max = IMEAS_HIGHEST;
 
-	Imeas1Min = DataTable[REG_RANGE_I_2] * 10000;
-	Imeas1Max = DataTable[REG_RANGE_I_1] * 10000;
+	Imeas1Min = DataTable[REG_RANGE_I_1] * 10000;
+	Imeas1Max = DataTable[REG_RANGE_I_0] * 10000;
 
-	Imeas2Min = DataTable[REG_RANGE_I_3] * 100000;
-	Imeas2Max = DataTable[REG_RANGE_I_2] * 100000;
+	Imeas2Min = DataTable[REG_RANGE_I_2] * 100000;
+	Imeas2Max = DataTable[REG_RANGE_I_1] * 100000;
 
-	Imeas3Min = DataTable[REG_RANGE_I_4] * 1000000;
-	Imeas3Max = DataTable[REG_RANGE_I_3] * 1000000;
+	Imeas3Min = DataTable[REG_RANGE_I_3] * 1000000;
+	Imeas3Max = DataTable[REG_RANGE_I_2] * 1000000;
 
-	Imeas4Min = DataTable[REG_RANGE_I_5] * 10000000;
-	Imeas4Max = DataTable[REG_RANGE_I_4] * 10000000;
+	Imeas4Min = DataTable[REG_RANGE_I_4] * 10000000;
+	Imeas4Max = DataTable[REG_RANGE_I_3] * 10000000;
 
-	Imeas5Min = DataTable[REG_RANGE_I_6] * 100000000;
-	Imeas5Max = DataTable[REG_RANGE_I_5] * 100000000;
+	Imeas5Min = DataTable[REG_RANGE_I_5] * 100000000;
+	Imeas5Max = DataTable[REG_RANGE_I_4] * 100000000;
 
-	Imeas6Min = DataTable[REG_RANGE_I_7] * 1000000000;
-	Imeas6Max = DataTable[REG_RANGE_I_6] * 1000000000;
+	Imeas6Min = DataTable[REG_RANGE_I_6] * 1000000000;
+	Imeas6Max = DataTable[REG_RANGE_I_5] * 1000000000;
 
-	Imeas7Min = IMEAS_LOWEST;
-	Imeas7Max = DataTable[REG_RANGE_I_7] * 1000000000;
+	Imeas7Min = DataTable[REG_RANGE_I_7] * 1000000000;
+	Imeas7Max = DataTable[REG_RANGE_I_6] * 1000000000;
 
 	JSON_AssignPointer(0, &UsetMin);
 	JSON_AssignPointer(1, &UsetMax);
