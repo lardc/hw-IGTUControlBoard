@@ -124,7 +124,7 @@ void LOGIC_HandleMeasurement()
 			case SS_GetResults:
 				if(CONTROL_TimeCounter > Timeout)
 				{
-					DataTable[REG_THERM_RESIS] = MEASURE_Resis(UgResult, IgResult);
+					DataTable[REG_THERM_RESIS] = MEASURE_Resis(UpotResult, IgResult);
 					DataTable[REG_THERM_CURRENT] = IgResult;
 					DataTable[REG_UGE_TH] = UgResult;
 

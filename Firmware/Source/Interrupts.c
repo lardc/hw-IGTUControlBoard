@@ -1,4 +1,4 @@
-п»ї// Include
+// Include
 #include "Interrupts.h"
 //
 #include "Controller.h"
@@ -79,6 +79,10 @@ void INT_GeneralDMAHandler(DMA_TypeDef* DMAx, uint32_t Channelx,volatile bool *F
 void DMA1_Channel1_IRQHandler()
 {
 	INT_GeneralDMAHandler(DMA1, DMA_ISR_TCIF1, &UgReady);
+	// Очищаем флаг OVR у ADC3 для непрерывной работы DMA2_CH5
+	// Внутри DMA1_Ch1 для получения макс кол-ва измерений
+	if (ADC3->ISR & OVR)
+		ADC3->ISR |= OVR;
 }
 //-----------------------------------------
 

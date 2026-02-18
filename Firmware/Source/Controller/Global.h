@@ -16,6 +16,6 @@
 #define TIME_SPI_DELAY				5		// Задержка интерфейса SPI
 
 #define VALUES_EXT_INFO_SIZE		300
-#define VALUES_DEBUG_RGLTR_SIZE		100		// Размер отладочного буфера регулятора
+#define VALUES_DEBUG_RGLTR_SIZE		600	// Размер отладочного буфера регулятора
 
 #endif //  __GLOBAL_H

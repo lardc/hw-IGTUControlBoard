@@ -1,4 +1,4 @@
-﻿// Header
+// Header
 #include "Controller.h"
 
 // Includes
@@ -161,9 +161,9 @@ void RGLTR_ErrorCheck()
 
 		case RS_FlatTop:
 			{
-				RegulatorError = RawSetPoint - Sample.Ug;
+				RegulatorError = RawSetPoint - Sample.UPot;
 				// Расчет ошибки по напряжению
-				VoltageErr = ABS(Sample.Ug - PulseAmplitude);
+				VoltageErr = ABS(Sample.UPot - PulseAmplitude);
 				if(VoltageErr < VoltagErrThreshold)
 				{
 					IsMeasureOk = true;
@@ -179,7 +179,7 @@ void RGLTR_ErrorCheck()
 			break;
 
 		default:
-			RegulatorError = RawSetPoint - Sample.Ug;
+			RegulatorError = RawSetPoint - Sample.UPot;
 			break;
 	}
 	float absError = ABS(RegulatorError);
@@ -246,9 +246,10 @@ void REGLTR_StartProcess()
 void REGLTR_StopProcess()
 {
 	LL_WriteDAC(0);
+	TIM_Stop(TIM15);
+
 	DMA_ChannelEnable(DMA1_Channel1, false);
 	DMA_ChannelEnable(DMA2_Channel1, false);
 	DMA_ChannelEnable(DMA2_Channel5, false);
-	TIM_Stop(TIM15);
 }
 //------------------------------------
