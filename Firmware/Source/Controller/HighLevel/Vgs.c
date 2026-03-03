@@ -101,10 +101,13 @@ void VGS_Process()
 		RegulatorParams.dVg = DataTable[REG_VGS_SLOW_RATE] * TIMER15_uS;
 
 	// Обработка регулятора
-	if(RegulatorParams.Target < DataTable[REG_VGS_V_MAX])
-		RegulatorParams.Target += RegulatorParams.dVg;
-	else
-		RegulatorParams.Target = DataTable[REG_VGS_V_MAX];
+	if(AverageSamples.Current < TrigCurrentLow)
+	{
+		if(RegulatorParams.Target < DataTable[REG_VGS_V_MAX])
+			RegulatorParams.Target += RegulatorParams.dVg;
+		else
+			RegulatorParams.Target = DataTable[REG_VGS_V_MAX];
+	}
 
 	RegulatorParams.SampledData = VgsSampledData.Voltage;
 

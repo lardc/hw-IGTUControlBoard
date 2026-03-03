@@ -305,6 +305,7 @@ Int16U DEVPROFILE_CallbackReadFastFloatX(Int16U Endpoint, float** Buffer, void* 
 
 	// Update content state
 	epState->LastReadCounter = epState->ReadCounter;
+	epState->ReadCounter += pLen;
 
 	return pLen;
 }
