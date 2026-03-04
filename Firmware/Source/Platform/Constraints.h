@@ -67,7 +67,7 @@
 //
 #define REGULATOR_QI_MAX_DEF		30000
 //
-#define REGULATOR_ERR_MIN			0.05
+#define REGULATOR_ERR_MIN			0
 #define REGULATOR_ERR_MAX			1
 #define REGULATOR_ERR_DEF			0.5
 //

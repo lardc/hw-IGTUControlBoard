@@ -113,7 +113,7 @@
 #define REG_REGULATOR_Kp				51	// Пропорциональный коэффициент регулятора
 #define REG_REGULATOR_Ki				52	// Интегральный коэффициент регулятора
 #define REG_REGULATOR_QI_MAX			53	// Ограничение уровня интегральной составляющей
-#define REG_REGULATOR_ERR_MAX			54	// Уровень ошибки регулятора для Following Error (%)
+#define REG_REGULATOR_ERR_MAX			54	// Уровень ошибки регулятора для Following Error
 #define REG_REGULATOR_FE_COUNTER		55	// Счетчик Following Error
 #define REG_REGULATOR_PARAMETRIC		56	// Режим параметрического формирования
 //
@@ -153,6 +153,9 @@
 #define REG_CTRL_LINE_RES				84	// Сопротивление утечки линии управления, кОм
 //
 #define REG_VGS_FLATTOP_DURATION		85	// Длительность полки тока измерения при измерении Vge(th), мкс
+#define REG_REGULATOR_Kp_I				86	// Пропорциональный коэффициент регулятора для режима поддержания тока
+#define REG_REGULATOR_Ki_I				87	// Интегральный коэффициент регулятора для режима поддержания тока
+#define	REG_DEACTIVATE_FE				88	// Отключение Following Error проверки
 
 // Несохраняемые регистры чтения-записи
 //
