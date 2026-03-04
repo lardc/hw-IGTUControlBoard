@@ -14,6 +14,7 @@
 //
 RegulatorParamsStruct RegulatorParams;
 LogParamsStruct RegulatorLog;
+Boolean ActiveFE = true;
 
 // Functions prototypes
 //
@@ -25,9 +26,9 @@ bool REGULATOR_Process(RegulatorParamsStruct* Regulator)
 {
 	float DesiredValue = (Regulator->CurrentTarget) ? Regulator->CurrentTarget : Regulator->Target;
 	Regulator->Error = (Regulator->Counter == 0) ? 0 : (DesiredValue - Regulator->SampledData);
-	float ABSError = (ABS(Regulator->Error))/ DesiredValue;
+	float ABSError = (ABS(Regulator->Error)) > 0 ? (ABS(Regulator->Error) / DesiredValue) : 0;
 
-	if(Regulator->Mode == FeedBack && ABSError > Regulator->ErrorMax)
+	if(Regulator->Mode == FeedBack && ActiveFE && ABSError > Regulator->ErrorMax)
 	{
 		Regulator->FECounter++;
 
@@ -89,6 +90,7 @@ void REGULATOR_CacheVariables(RegulatorParamsStruct* Regulator)
 	Regulator->FECounterMax = DataTable[REG_REGULATOR_FE_COUNTER];
 	Regulator->DACLimitValue = DataTable[REG_DAC_OUTPUT_LIMIT_VALUE];
 	Regulator->DACLimitValue = DataTable[REG_DAC_OUTPUT_LIMIT_VALUE];
+	ActiveFE = !(DataTable[REG_DEACTIVATE_FE]);
 
 	RegulatorLog.DataA = &Regulator->Out;
 	RegulatorLog.DataB = &Regulator->Error;

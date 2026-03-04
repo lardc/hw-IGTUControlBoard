@@ -32,6 +32,7 @@ VgsState Vgs_State = Vgs_None;
 // Function prototypes
 //
 void VGS_CacheVariables();
+void VGS_ProcessRegulator();
 
 
 // Functions
@@ -109,6 +110,7 @@ void VGS_Process()
 				RegulatorParams.Target = DataTable[REG_VGS_V_MAX];
 
 			RegulatorParams.SampledData = VgsSampledData.Voltage;
+			VGS_ProcessRegulator();
 
 			if(VgsSampledData.Current >= TrigCurrentHigh)
 			{
@@ -128,6 +130,7 @@ void VGS_Process()
 
 		case Vgs_FlatTop:
 			RegulatorParams.SampledData = VgsSampledData.Current;
+			VGS_ProcessRegulator();
 			if (RegulatorParams.Counter == 0)
 				Vgs_State = Vgs_Finish;
 			break;
@@ -153,7 +156,11 @@ void VGS_Process()
 			}
 			break;
 	}
+}
+//-----------------------------
 
+void VGS_ProcessRegulator()
+{
 	if(REGULATOR_Process(&RegulatorParams))
 	{
 		CONTROL_StopHighPriorityProcesses();
@@ -175,4 +182,3 @@ void VGS_Process()
 		}
 	}
 }
-//-----------------------------
