@@ -26,7 +26,7 @@ bool REGULATOR_Process(RegulatorParamsStruct* Regulator)
 {
 	float DesiredValue = (Regulator->CurrentTarget) ? Regulator->CurrentTarget : Regulator->Target;
 	Regulator->Error = (Regulator->Counter == 0) ? 0 : (DesiredValue - Regulator->SampledData);
-	float ABSError = (ABS(Regulator->Error)) > 0 ? (ABS(Regulator->Error) / DesiredValue) : 0;
+	float ABSError = (DesiredValue != 0) ? (ABS(Regulator->Error) / DesiredValue) : 0;
 
 	if(Regulator->Mode == FeedBack && ActiveFE && ABSError > Regulator->ErrorMax)
 	{
@@ -88,7 +88,6 @@ void REGULATOR_CacheVariables(RegulatorParamsStruct* Regulator)
 	Regulator->ErrorMax = DataTable[REG_REGULATOR_ERR_MAX];
 	Regulator->Qimax = DataTable[REG_REGULATOR_QI_MAX];
 	Regulator->FECounterMax = DataTable[REG_REGULATOR_FE_COUNTER];
-	Regulator->DACLimitValue = DataTable[REG_DAC_OUTPUT_LIMIT_VALUE];
 	Regulator->DACLimitValue = DataTable[REG_DAC_OUTPUT_LIMIT_VALUE];
 	ActiveFE = !(DataTable[REG_DEACTIVATE_FE]);
 

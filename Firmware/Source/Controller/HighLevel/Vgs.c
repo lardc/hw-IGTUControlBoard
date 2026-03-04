@@ -32,7 +32,7 @@ VgsState Vgs_State = Vgs_None;
 // Function prototypes
 //
 void VGS_CacheVariables();
-void VGS_ProcessRegulator();
+Boolean VGS_ProcessRegulator();
 
 
 // Functions
@@ -90,6 +90,7 @@ void VGS_CacheVariables()
 void VGS_Process()
 {
 	MeasureSample AverageSamples;
+	bool DetectedError = false;
 
 	VgsSampledData = MEASURE_V_SampleVI();
 
@@ -110,7 +111,7 @@ void VGS_Process()
 				RegulatorParams.Target = DataTable[REG_VGS_V_MAX];
 
 			RegulatorParams.SampledData = VgsSampledData.Voltage;
-			VGS_ProcessRegulator();
+			DetectedError =  VGS_ProcessRegulator();
 
 			if(VgsSampledData.Current >= TrigCurrentHigh)
 			{
@@ -130,7 +131,7 @@ void VGS_Process()
 
 		case Vgs_FlatTop:
 			RegulatorParams.SampledData = VgsSampledData.Current;
-			VGS_ProcessRegulator();
+			DetectedError = VGS_ProcessRegulator();
 			if (RegulatorParams.Counter == 0)
 				Vgs_State = Vgs_Finish;
 			break;
@@ -156,21 +157,24 @@ void VGS_Process()
 			}
 			break;
 	}
-}
-//-----------------------------
 
-void VGS_ProcessRegulator()
-{
-	if(REGULATOR_Process(&RegulatorParams))
+	if (DetectedError)
 	{
 		CONTROL_StopHighPriorityProcesses();
 		DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
+	}
+}
+//-----------------------------
 
+Boolean VGS_ProcessRegulator()
+{
+	if(REGULATOR_Process(&RegulatorParams))
+	{
 		if(RegulatorParams.FollowingError)
 		{
 			DataTable[REG_PROBLEM] = PROBLEM_DUT_NOT_FOUND;
 			CONTROL_SetDeviceState(DS_Ready, SS_None);
-			return;
+			return true;
 		}
 		else
 		{
@@ -178,7 +182,9 @@ void VGS_ProcessRegulator()
 			{
 				DataTable[REG_PROBLEM] = PROBLEM_CURRENT_NOT_REACHED;
 				CONTROL_SetDeviceState(DS_Ready, SS_None);
+				return true;
 			}
 		}
 	}
+	return false;
 }
