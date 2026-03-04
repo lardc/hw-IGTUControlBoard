@@ -16,7 +16,7 @@
 //
 #define VGS_RING_BUFFER_SIZE				8
 #define VGS_RING_BUFFER_CNT_MASK			VGS_RING_BUFFER_SIZE - 1
-#define VGS_RING_BUFFER_THRESHOLD			500			// мкс, лимит считывания данных из кольцевого буфера, ниже которого будут значения вне полки
+#define VGS_RING_BUFFER_THRESHOLD			500		// мкс, лимит считывания данных из кольцевого буфера, ниже которого будут значения вне полки
 
 // Variables
 //
@@ -26,7 +26,7 @@ RingBuffersParams VgsRingBuffers;
 float TrigCurrentHigh = 0;
 float TrigCurrentLow = 0;
 Int16U FlatTopDuration = 0;
-bool FlatTopActive = false;
+VgsState Vgs_State = Vgs_None;
 
 
 // Function prototypes
@@ -82,7 +82,7 @@ void VGS_CacheVariables()
 	TrigCurrentLow = DataTable[REG_VGS_I_TRIG] - DataTable[REG_VGS_I_TRIG] * DataTable[REG_VGS_dI_TRIG] / 100;
 
 	FlatTopDuration = DataTable[REG_VGS_FLATTOP_DURATION] / TIMER15_uS; // В тиках регулятора
-	FlatTopActive = false;
+	Vgs_State = Vgs_Rise;
 }
 //-----------------------------
 
@@ -100,16 +100,59 @@ void VGS_Process()
 	if(VgsSampledData.Current >= TrigCurrentLow)
 		RegulatorParams.dVg = DataTable[REG_VGS_SLOW_RATE] * TIMER15_uS;
 
-	// Обработка регулятора
-	if(AverageSamples.Current < TrigCurrentLow)
+	switch(Vgs_State)
 	{
-		if(RegulatorParams.Target < DataTable[REG_VGS_V_MAX])
+		case Vgs_Rise:
 			RegulatorParams.Target += RegulatorParams.dVg;
-		else
-			RegulatorParams.Target = DataTable[REG_VGS_V_MAX];
-	}
 
-	RegulatorParams.SampledData = VgsSampledData.Voltage;
+			if(RegulatorParams.Target >= DataTable[REG_VGS_V_MAX])
+				RegulatorParams.Target = DataTable[REG_VGS_V_MAX];
+
+			RegulatorParams.SampledData = VgsSampledData.Voltage;
+
+			if(VgsSampledData.Current >= TrigCurrentHigh)
+			{
+				if(FlatTopDuration && FlatTopDuration != 1) // При сбросе прошивки в DataTable[REG_VGS_FLATTOP_DURATION] записывается 1 вместо 0
+				{
+					Vgs_State = Vgs_FlatTop;
+					RegulatorParams.Counter = FlatTopDuration;
+					RegulatorParams.SampledData = VgsSampledData.Current;
+					RegulatorParams.Kp = DataTable[REG_REGULATOR_Kp_I];
+					RegulatorParams.Ki = DataTable[REG_REGULATOR_Ki_I];
+					RegulatorParams.CurrentTarget = TrigCurrentHigh;
+				}
+				else
+					Vgs_State = Vgs_Finish;
+			}
+			break;
+
+		case Vgs_FlatTop:
+			RegulatorParams.SampledData = VgsSampledData.Current;
+			if (RegulatorParams.Counter == 0)
+				Vgs_State = Vgs_Finish;
+			break;
+
+		default:
+		case Vgs_Finish:
+			CONTROL_StopHighPriorityProcesses();
+
+			if(VgsSampledData.Voltage < VGS_VOLTAGE_MIN)
+			{
+				DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
+				DataTable[REG_PROBLEM] = PROBLEM_SHORT;
+				CONTROL_SetDeviceState(DS_Ready, SS_None);
+			}
+			else
+			{
+				DataTable[REG_VGS_RESULT] = AverageSamples.Voltage;
+				DataTable[REG_VGS_I_RESULT] =((FlatTopDuration * 50) < VGS_RING_BUFFER_THRESHOLD) ?
+													VgsSampledData.Current : AverageSamples.Current;
+				DataTable[REG_OP_RESULT] = OPRESULT_OK;
+
+				CONTROL_SetDeviceState(DS_Ready, SS_None);
+			}
+			break;
+	}
 
 	if(REGULATOR_Process(&RegulatorParams))
 	{
@@ -127,38 +170,6 @@ void VGS_Process()
 			if(VgsSampledData.Current < TrigCurrentLow)
 			{
 				DataTable[REG_PROBLEM] = PROBLEM_CURRENT_NOT_REACHED;
-				CONTROL_SetDeviceState(DS_Ready, SS_None);
-			}
-		}
-	}
-
-	// Проверка выхода на заданный ток
-	if(VgsSampledData.Current >= TrigCurrentHigh)
-	{
-		// Конфигурация с полкой
-		if(FlatTopActive == false && FlatTopDuration != 0)
-		{
-			FlatTopActive = true;
-			RegulatorParams.Counter = FlatTopDuration;
-		}
-		// Окончание формирования с полкой и без
-		if(FlatTopDuration == 0 || RegulatorParams.Counter == 0)
-		{
-			CONTROL_StopHighPriorityProcesses();
-
-			if(VgsSampledData.Voltage < VGS_VOLTAGE_MIN)
-			{
-				DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
-				DataTable[REG_PROBLEM] = PROBLEM_SHORT;
-				CONTROL_SetDeviceState(DS_Ready, SS_None);
-			}
-			else
-			{
-				DataTable[REG_VGS_RESULT] = AverageSamples.Voltage;
-				DataTable[REG_VGS_I_RESULT] = ((FlatTopDuration * 50) < VGS_RING_BUFFER_THRESHOLD) ?
-						VgsSampledData.Current : AverageSamples.Current;
-				DataTable[REG_OP_RESULT] = OPRESULT_OK;
-
 				CONTROL_SetDeviceState(DS_Ready, SS_None);
 			}
 		}

@@ -9,11 +9,11 @@
 #include "ConvertUtils.h"
 #include "Logging.h"
 
+
 // Variables
 //
 RegulatorParamsStruct RegulatorParams;
 LogParamsStruct RegulatorLog;
-
 
 // Functions prototypes
 //
@@ -23,9 +23,11 @@ Int16U REGULATOR_DACApplyLimits(Int16S Value, Int16U LimitValue);
 //
 bool REGULATOR_Process(RegulatorParamsStruct* Regulator)
 {
-	Regulator->Error = (Regulator->Counter == 0) ? 0 : (Regulator->Target - Regulator->SampledData);
+	float DesiredValue = (Regulator->CurrentTarget) ? Regulator->CurrentTarget : Regulator->Target;
+	Regulator->Error = (Regulator->Counter == 0) ? 0 : (DesiredValue - Regulator->SampledData);
+	float ABSError = (ABS(Regulator->Error))/ DesiredValue;
 
-	if(Regulator->Mode == FeedBack && Regulator->Error > Regulator->ErrorMax)
+	if(Regulator->Mode == FeedBack && ABSError > Regulator->ErrorMax)
 	{
 		Regulator->FECounter++;
 
@@ -99,6 +101,7 @@ void REGULATOR_CacheVariables(RegulatorParamsStruct* Regulator)
 void REGULATOR_ResetVariables(RegulatorParamsStruct* Regulator)
 {
 	Regulator->Target = 0;
+	Regulator->CurrentTarget = 0;
 	Regulator->SampledData = 0;
 	Regulator->DACSetpoint = 0;
 	Regulator->Error = 0;

@@ -11,6 +11,7 @@
 //
 #define REGULATOR_RING_BUFFER_SIZE		8
 #define RING_COUNTER_MASK				REGULATOR_RING_BUFFER_SIZE - 1
+#define ABS(a)				(((a) < 0) ? -(a) : (a))
 
 // Structs
 //
@@ -33,6 +34,7 @@ typedef struct __RegulatorParams
 	Int64U Counter;
 	float dVg;
 	float Target;
+	float CurrentTarget;
 	float SampledData;
 //
 	Int16U DACSetpoint;
