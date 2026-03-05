@@ -115,7 +115,7 @@ void VGS_Process()
 
 			if(VgsSampledData.Current >= TrigCurrentHigh)
 			{
-				if(FlatTopDuration && FlatTopDuration != 1) // При сбросе прошивки в DataTable[REG_VGS_FLATTOP_DURATION] записывается 1 вместо 0
+				if(FlatTopDuration)
 				{
 					Vgs_State = Vgs_FlatTop;
 					RegulatorParams.Counter = FlatTopDuration;
@@ -149,7 +149,7 @@ void VGS_Process()
 			else
 			{
 				DataTable[REG_VGS_RESULT] = AverageSamples.Voltage;
-				DataTable[REG_VGS_I_RESULT] =((FlatTopDuration * 50) < VGS_RING_BUFFER_THRESHOLD) ?
+				DataTable[REG_VGS_I_RESULT] =((FlatTopDuration * TIMER15_uS) < VGS_RING_BUFFER_THRESHOLD) ?
 													VgsSampledData.Current : AverageSamples.Current;
 				DataTable[REG_OP_RESULT] = OPRESULT_OK;
 

@@ -8,13 +8,12 @@
 #include "LowLevel.h"
 #include "ConvertUtils.h"
 #include "Logging.h"
-
+#include "math.h"
 
 // Variables
 //
 RegulatorParamsStruct RegulatorParams;
 LogParamsStruct RegulatorLog;
-Boolean ActiveFE = true;
 
 // Functions prototypes
 //
@@ -25,10 +24,22 @@ Int16U REGULATOR_DACApplyLimits(Int16S Value, Int16U LimitValue);
 bool REGULATOR_Process(RegulatorParamsStruct* Regulator)
 {
 	float DesiredValue = (Regulator->CurrentTarget) ? Regulator->CurrentTarget : Regulator->Target;
-	Regulator->Error = (Regulator->Counter == 0) ? 0 : (DesiredValue - Regulator->SampledData);
-	float ABSError = (DesiredValue != 0) ? (ABS(Regulator->Error) / DesiredValue) : 0;
+	float ABSError;
+	if(Regulator->Counter == 0)
+	{
+		ABSError = 0;
+		Regulator->Error = 0;
+	}
+	else
+	{
+		Regulator->Error = DesiredValue - Regulator->SampledData;
+		if(DesiredValue == 0)
+			ABSError = 0;
+		else
+			ABSError = fabsf(Regulator->Error) / DesiredValue;
+	}
 
-	if(Regulator->Mode == FeedBack && ActiveFE && ABSError > Regulator->ErrorMax)
+	if(Regulator->Mode == FeedBack && Regulator->ActiveFE && ABSError > Regulator->ErrorMax)
 	{
 		Regulator->FECounter++;
 
@@ -89,7 +100,7 @@ void REGULATOR_CacheVariables(RegulatorParamsStruct* Regulator)
 	Regulator->Qimax = DataTable[REG_REGULATOR_QI_MAX];
 	Regulator->FECounterMax = DataTable[REG_REGULATOR_FE_COUNTER];
 	Regulator->DACLimitValue = DataTable[REG_DAC_OUTPUT_LIMIT_VALUE];
-	ActiveFE = !(DataTable[REG_DEACTIVATE_FE]);
+	Regulator->ActiveFE = !(DataTable[REG_DEACTIVATE_FE]);
 
 	RegulatorLog.DataA = &Regulator->Out;
 	RegulatorLog.DataB = &Regulator->Error;
@@ -110,6 +121,7 @@ void REGULATOR_ResetVariables(RegulatorParamsStruct* Regulator)
 	Regulator->Qp = 0;
 	Regulator->Out = 0;
 	Regulator->FECounter = 0;
+	Regulator->ActiveFE = true;
 	Regulator->FollowingError = false;
 }
 //-----------------------------------------------
