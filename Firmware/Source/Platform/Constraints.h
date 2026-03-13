@@ -68,7 +68,9 @@
 #define COEF_I_CH6_MIN			2e-8
 #define COEF_I_CH7_MIN			5e-9
 //
-#define COEF_SWITCH_TIME_DEF	5		// в мс
+#define COEF_SWITCH_TIME_MIN	5		// в мс
+#define REGULATOR_TIME_MIN		10
+#define REGULATOR_TIME_MAX		10000
 //
 #define COEF_BASE_VOLT_DEF		3 		// в В
 //

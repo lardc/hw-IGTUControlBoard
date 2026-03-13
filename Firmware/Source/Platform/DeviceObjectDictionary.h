@@ -120,7 +120,7 @@
 #define REG_U_SET_B						65	// Коэффициент преобразования B
 //
 #define REG_SLEW_RATE					66	// Скорость нарастания переднего фронта В/мс
-#define REG_PULSE_WIDTH					67	// Время для переключения реле тока , мс
+// 67
 #define REG_WORK_VOLTAGE_RTH			68	// Номинальное рабочее напряжение для измерения Rth, мВ
 //
 #define REG_RANGE_I_0					69	// Диапазон тока для канала 0 - от 50 до 500 мА, в А
@@ -144,12 +144,15 @@
 #define REG_VOLTAGE_ERR_THRESH			84	// Допустимая ошибка напряжения для начала измерения
 #define REG_VOLTAGE_ERR_COUNT_LIMIT		85  // Лимит ошибки счетчика перед выставлением PROBLEM_VOLTAGE_OUT_OF_RANGE
 //
-#define REG_FLATTOP_DURATION			86 	// Длительность полки поддержания тока, мс
+#define REG_CURRENT_FLATTOP_DURATION	86 	// Длительность полки поддержания тока, мс
 #define REG_CURRENT_ERR_THRESH			87	// Допустимая ошибка тока для начала измерения
 #define REG_CURRENT_ERR_COUNT_LIMIT		88	// Лимит ошибки счетчика перед выставлением PROBLEM_CURRENT_OUT_OF_RANGE
 //
-#define REG_CNT_NUMBER					104	// Номер счетчика, в который будет записано значение
-#define REG_CNT_VALUE					105	// Значение, которое будет записано в счетчик
+#define REG_REGLTR_TIMER				89	// Время для выхода регулятора на рабочее напряжение, мс
+#define REG_RELAY_SW_TIMER_RTH			90	// Время для переключения реле тока при измерении Rth, мс
+#define REG_RELAY_SW_TIMER_IGES			91	// Время для переключения реле тока при измерении Iges, мс
+#define REG_RELAY_SW_TIMER_UGETH		92	// Время для переключения реле тока при измерении Uge_th, мс
+//
 #define REG_CNT_ACTIVE					106	// Включение сохранения счетчиков
 
 // Несохраняемы регистры чтения-записи
@@ -157,6 +160,10 @@
 #define REG_WORK_CURRENT_UGETH			129	// Номинальный рабочий ток для измерения Ugeth, мА
 //
 #define REG_SAFETY_ACTIVE				130	// Включение контура безопасности
+//
+#define REG_CNT_NUMBER					131	// Номер счетчика, в который будет записано значение
+#define REG_CNT_VALUE					132	// Значение, которое будет записано в счетчик
+//
 #define REG_DBG							150	// Отладочный регистр
 //
 // 151 - 191
@@ -172,8 +179,10 @@
 #define REG_DEV_SUBSTATE				198
 
 #define REG_THERM_RESIS					200	// Полученное сопротивление термистора
-#define REG_THERM_CURRENT				201	// Полученный ток на термисторе
+#define REG_IGES_RESULT					201	// Полученное значение тока Iges
 #define REG_UGE_TH						202 // Полученное пороговое напряжение затвор-эмиттер
+//
+#define REG_DEBUG_THERM_CURRENT			230	// Полученный ток на термисторе
 // -----------------------------
 
 #define REG_FWINFO_SLAVE_NID			256	// Device CAN slave node ID

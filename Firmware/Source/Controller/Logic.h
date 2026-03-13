@@ -3,8 +3,6 @@
 
 // Definitions
 //
-#define INIT_48V_TIMER			10	// Время для выставления 48v на плате, в мс
-#define REGLTR_TIMER			10	// Время для выхода регулятора на рабочее напряжение, в мс
 
 // Includes
 //

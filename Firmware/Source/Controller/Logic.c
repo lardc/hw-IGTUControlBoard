@@ -16,6 +16,7 @@
 //
 static Int64U Timeout = 0;
 Int16U LOGIC_ChannelNumber = 0;
+Int16U RelaySwitchTimer = 0;
 // Forward functions
 //
 void LOGIC_StopProcess();
@@ -44,14 +45,17 @@ void LOGIC_HandleMeasurement()
 					case MT_Rth:
 						LL_SetCurrentChannel(I_CHANNEL_1);
 						LOGIC_ChannelNumber = I_CHANNEL_1;
+						RelaySwitchTimer = DataTable[REG_RELAY_SW_TIMER_RTH];
 						break;
 
 					case MT_Iges:
 						LL_SetCurrentChannel(I_CHANNEL_5);
 						LOGIC_ChannelNumber = I_CHANNEL_5;
+						RelaySwitchTimer = DataTable[REG_RELAY_SW_TIMER_IGES];
 						break;
 
 					case MT_Ugeth:
+						RelaySwitchTimer = DataTable[REG_RELAY_SW_TIMER_UGETH];
 						if(DataTable[REG_WORK_CURRENT_UGETH] < DataTable[REG_RANGE_I_0])
 						{
 							LL_SetCurrentChannel(I_CHANNEL_1);
@@ -63,7 +67,7 @@ void LOGIC_HandleMeasurement()
 							LOGIC_ChannelNumber = I_CHANNEL_0;
 						}
 				}
-				Timeout = CONTROL_TimeCounter + INIT_48V_TIMER;
+				Timeout = CONTROL_TimeCounter + TIME_INIT_48V_TIMER;
 				CONTROL_SetDeviceSubState(SS_Wait48VPause);
 				break;
 
@@ -75,7 +79,9 @@ void LOGIC_HandleMeasurement()
 			case SS_ConfigPulse:
 				REGLTR_Init();
 				REGLTR_StartProcess();
-				Timeout = CONTROL_TimeCounter + REGLTR_TIMER;
+				float TimeoutTime = (RelaySwitchTimer > DataTable[REG_REGLTR_TIMER]) ?
+								RelaySwitchTimer : DataTable[REG_REGLTR_TIMER];
+				Timeout = CONTROL_TimeCounter + TimeoutTime;
 				CONTROL_SetDeviceSubState(CONTROL_MeasureType == MT_Ugeth ? SS_RegulatorProcessUgeth : SS_RegulatorProcess);
 				break;
 
@@ -91,7 +97,7 @@ void LOGIC_HandleMeasurement()
 				break;
 
 			case SS_RegulatorProcessUgeth:
-				if(CONTROL_TimeCounter > (Timeout + DataTable[REG_FLATTOP_DURATION]))
+				if(CONTROL_TimeCounter > (Timeout + DataTable[REG_CURRENT_FLATTOP_DURATION]))
 				{
 					UgResult = Sample.Ug;
 					UpotResult = Sample.UPot;
@@ -117,17 +123,26 @@ void LOGIC_HandleMeasurement()
 
 			case SS_FinishProcess:
 				LOGIC_StopProcess();
-				Timeout = CONTROL_TimeCounter + INIT_48V_TIMER;
+				Timeout = CONTROL_TimeCounter + TIME_INIT_48V_TIMER;
 				CONTROL_SetDeviceSubState(SS_GetResults);
 				break;
 
 			case SS_GetResults:
 				if(CONTROL_TimeCounter > Timeout)
 				{
-					DataTable[REG_THERM_RESIS] = MEASURE_Resis(UpotResult, IgResult);
-					DataTable[REG_THERM_CURRENT] = IgResult;
-					DataTable[REG_UGE_TH] = UgResult;
-
+					switch(CONTROL_MeasureType)
+					{
+						case MT_Rth:
+							DataTable[REG_THERM_RESIS] = MEASURE_Resis(UpotResult, IgResult);
+							DataTable[REG_DEBUG_THERM_CURRENT] = IgResult;
+							break;
+						case MT_Iges:
+							DataTable[REG_IGES_RESULT] = IgResult;
+							break;
+						case MT_Ugeth:
+							DataTable[REG_UGE_TH] = UgResult;
+							break;
+					}
 					CONTROL_SetDeviceState(DS_Ready);
 					CONTROL_SetDeviceSubState(SS_None);
 				}
@@ -188,7 +203,7 @@ void LOGIC_SingleSw(float Ig)
 	if(Ig < DataTable[REG_RANGE_I_0 + LOGIC_ChannelNumber])
 	{
 		LL_SetCurrentChannel(LOGIC_ChannelNumber + 1);
-		Timeout = CONTROL_TimeCounter + DataTable[REG_PULSE_WIDTH];
+		Timeout = CONTROL_TimeCounter + RelaySwitchTimer;
 		LOGIC_ChannelNumber++;
 	}
 	else
