@@ -159,7 +159,7 @@
 #define REG_WORK_VOLTAGE_IGES			128	// Номинальное рабочее напряжение для измерения Iges, мВ
 #define REG_WORK_CURRENT_UGETH			129	// Номинальный рабочий ток для измерения Ugeth, мА
 //
-#define REG_SAFETY_MUTE				130	// Включение контура безопасности
+#define REG_SAFETY_MUTE					130	// Мьют контура безопасности
 //
 #define REG_CNT_NUMBER					131	// Номер счетчика, в который будет записано значение
 #define REG_CNT_VALUE					132	// Значение, которое будет записано в счетчик

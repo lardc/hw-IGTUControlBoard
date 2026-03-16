@@ -26,8 +26,8 @@ typedef struct __SamplingResult
 
 // Variables
 //
-extern SamplingResult Sample;
-extern bool IsMeasureOk;
+extern volatile SamplingResult Sample;
+extern volatile bool IsMeasureOk;
 
 extern Int16U REGLTR_MemBuffUg[];
 extern Int16U REGLTR_MemBuffUPot[];

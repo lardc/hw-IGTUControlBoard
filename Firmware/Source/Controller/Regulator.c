@@ -24,9 +24,9 @@ float RawSetPoint = 0;
 float VoltStep = 0, Qp = 0;
 float RegulatorError = 0;
 RegulatorState RegState = RS_None;
-bool IsMeasureOk = false;
+volatile bool IsMeasureOk = false;
 
-SamplingResult Sample = {0};
+volatile SamplingResult Sample = {0};
 
 // Forward functions
 SamplingResult REGLTR_GetSample();
@@ -164,12 +164,13 @@ void RGLTR_ErrorCheck()
 		case RS_FlatTop:
 			{
 				RegulatorError = RawSetPoint - Sample.UPot;
-				RINGBUF_AddNewSampleIges(Sample.Ig);
 				// Расчет ошибки по напряжению
 				VoltageErr = ABS(Sample.UPot - PulseAmplitude);
 
 				if(VoltageErr < VoltagErrThreshold)
 				{
+					if(CONTROL_MeasureType == MT_Iges)
+						RINGBUF_AddNewSampleIges(Sample.Ig);
 					IsMeasureOk = true;
 					VoltageErrCount = 0;
 				}
