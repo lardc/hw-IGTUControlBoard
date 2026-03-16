@@ -11,6 +11,7 @@
 #include "Board.h"
 #include "Utils.h"
 #include "Logic.h"
+#include "RingBuffer.h"
 
 // Variables
 Int16U REGLTR_MemBuffUg[ADC_SEQ_LENGTH];
@@ -79,6 +80,7 @@ void REGLTR_Init()
 {
 	IsMeasureOk = false;
 	Qi = FollowingErrorCounter = VoltageErrCount = CurrentErrCount = 0;
+	RINGBUF_ResetIgesAvg();
 	FollowingErrThreshold = DataTable[REG_RGLTR_FOLLOWING_ERR_THRESH];
 	FollowingErrLimit = DataTable[REG_RGLTR_FOLLOWING_ERR_LIMIT];
 	VoltagErrThreshold = DataTable[REG_VOLTAGE_ERR_THRESH];
@@ -143,7 +145,7 @@ void RGLTR_ErrorCheck()
 		case RS_FlatTopUgeth:
 			{
 				RegulatorError = DesiredCurrent - Sample.Ig;
-				// Р Р°СЃС‡РµС‚ РјРµС‚СЂРѕР»РѕРіРёС‡РµСЃРєРѕР№ РѕС€РёР±РєРё РїРѕ С‚РѕРєСѓ
+				// Расчет метрологической ошибки по току
 				CurrentErr = ABS(RegulatorError);
 				if(CurrentErr < CurrentErrThreshold)
 				{
@@ -162,8 +164,10 @@ void RGLTR_ErrorCheck()
 		case RS_FlatTop:
 			{
 				RegulatorError = RawSetPoint - Sample.UPot;
-				// Р Р°СЃС‡РµС‚ РѕС€РёР±РєРё РїРѕ РЅР°РїСЂСЏР¶РµРЅРёСЋ
+				RINGBUF_AddNewSampleIges(Sample.Ig);
+				// Расчет ошибки по напряжению
 				VoltageErr = ABS(Sample.UPot - PulseAmplitude);
+
 				if(VoltageErr < VoltagErrThreshold)
 				{
 					IsMeasureOk = true;

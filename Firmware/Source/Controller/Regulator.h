@@ -9,6 +9,8 @@
 //
 #define ABS(a)				(((a) < 0) ? -(a) : (a))
 
+// Types
+//
 typedef enum __RegulatorState
 {
 	RS_None 			= 0,
@@ -22,6 +24,8 @@ typedef struct __SamplingResult
 	float Ug, UPot, Ig;
 } SamplingResult;
 
+// Variables
+//
 extern SamplingResult Sample;
 extern bool IsMeasureOk;
 
@@ -29,7 +33,8 @@ extern Int16U REGLTR_MemBuffUg[];
 extern Int16U REGLTR_MemBuffUPot[];
 extern Int16U REGLTR_MemBuffIg[];
 
-
+// Functions
+//
 void REGLTR_Process();
 void REGLTR_Init();
 float REGLTR_GetSetpoint(Int16U i);

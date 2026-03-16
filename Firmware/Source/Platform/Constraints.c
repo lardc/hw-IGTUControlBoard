@@ -113,8 +113,8 @@ const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE] =
 	{0, 0, 0},																	// 101
 	{0, 0, 0},																	// 102
 	{0, 0, 0},																	// 103
-	{0, (COMMUTATION_TABLE_SIZE - 1), 0},										// 104
-	{0, INT16U_MAX, 0},															// 105
+	{0, 0, 0},																	// 104
+	{0, 0, 0},																	// 105
 	{NO, YES, NO},																// 106
 	{0, 0, 0},																	// 107
 	{0, 0, 0},																	// 108
@@ -133,7 +133,7 @@ const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE] =
 	{0, 0, 0},																	// 121
 	{0, 0, 0},																	// 122
 	{0, 0, 0},																	// 123
-	{0, 0, 0},														// 124
+	{0, 0, 0},																	// 124
 	{0, 0, 0},																	// 125
 	{0, 0, 0},																	// 126
 	{0, 0, 0}																	// 127
@@ -143,9 +143,9 @@ const TableItemConstraint VConstraint[DATA_TABLE_WP_START - DATA_TABLE_WR_START]
 {
 	{U_IGES_MIN, U_IGES_MAX, U_IGES_DEF},										// 128
 	{I_UGETH_MIN, I_UGETH_MAX, I_UGETH_DEF},									// 129
-	{NO, YES, YES},																// 130
-	{0, 0, 0},																	// 131
-	{0, 0, 0},																	// 132
+	{NO, YES, NO},																// 130
+	{0, (COMMUTATION_TABLE_SIZE - 1), 0},										// 131
+	{0, INT16U_MAX, 0},															// 132
 	{0, 0, 0},																	// 133
 	{0, 0, 0},																	// 134
 	{0, 0, 0},																	// 135

@@ -1,4 +1,4 @@
-﻿// Header
+// Header
 //
 #include "Logic.h"
 
@@ -11,6 +11,7 @@
 #include "LowLevel.h"
 #include "Regulator.h"
 #include "Measurement.h"
+#include "RingBuffer.h"
 
 // Variables
 //
@@ -130,6 +131,9 @@ void LOGIC_HandleMeasurement()
 			case SS_GetResults:
 				if(CONTROL_TimeCounter > Timeout)
 				{
+					CONTROL_SetDeviceState(DS_Ready);
+					CONTROL_SetDeviceSubState(SS_None);
+
 					switch(CONTROL_MeasureType)
 					{
 						case MT_Rth:
@@ -137,14 +141,15 @@ void LOGIC_HandleMeasurement()
 							DataTable[REG_DEBUG_THERM_CURRENT] = IgResult;
 							break;
 						case MT_Iges:
-							DataTable[REG_IGES_RESULT] = IgResult;
+							if(RINGBUF_GetIgesAvgCount() >= IGES_AVG_BUF_SIZE)
+								DataTable[REG_IGES_RESULT] = RINGBUF_GetIgesAvg();
+							else
+								CONTROL_SwitchToProblem(PROBLEM_NEED_MORE_SAMPLES);
 							break;
 						case MT_Ugeth:
 							DataTable[REG_UGE_TH] = UgResult;
 							break;
 					}
-					CONTROL_SetDeviceState(DS_Ready);
-					CONTROL_SetDeviceSubState(SS_None);
 				}
 				break;
 

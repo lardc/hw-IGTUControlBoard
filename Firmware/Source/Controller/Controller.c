@@ -239,7 +239,7 @@ void CONTROL_StartMeasure(MeasureType Type)
 
 bool CONTROL_IsSafetyOk()
 {
-	if(DataTable[REG_SAFETY_ACTIVE])
+	if(!DataTable[REG_SAFETY_MUTE])
 	{
 		if(LL_SafetyState())
 		{
