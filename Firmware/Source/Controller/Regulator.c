@@ -12,13 +12,14 @@
 #include "Utils.h"
 #include "Logic.h"
 #include "RingBuffer.h"
+#include "Math.h"
 
 // Variables
 Int16U REGLTR_MemBuffUg[ADC_SEQ_LENGTH];
 Int16U REGLTR_MemBuffUPot[ADC_SEQ_LENGTH];
 Int16U REGLTR_MemBuffIg[ADC_SEQ_LENGTH];
 static float Kp, Ki, KiI, KpI, Qi = 0, FollowingErrThreshold, VoltagErrThreshold, CurrentErrThreshold;
-static Int16U FollowingErrLimit, VoltagErrLimit, VoltageErrCount, CurrentErrLimit,CurrentErrCount , FollowingErrorCounter = 0;
+static Int16U FollowingErrLimit, VoltagErrLimit, VoltageErrCount, CurrentErrLimit,CurrentErrCount ,ScalingCoef, ScalingCounter, FollowingErrorCounter = 0;
 static float PulseAmplitude, DesiredCurrent;
 float RawSetPoint = 0;
 float VoltStep = 0, Qp = 0;
@@ -33,6 +34,7 @@ SamplingResult REGLTR_GetSample();
 void REGLTR_StoreRegulatorDebug(float Ug, float UPot, float Ig, float Setpoint, float Correction, float Error, float DACRaw);
 Int16U REGLTR_CorrectionLogDACPoint();
 void RGLTR_ErrorCheck();
+Int16U REGLTR_GetScalingCoef();
 
 // Functions
 void REGLTR_Process()
@@ -118,6 +120,9 @@ void REGLTR_Init()
 		REGLTR_MemBuffUPot[i] = 0;
 		REGLTR_MemBuffIg[i] = 0;
 	}
+	DataTable[REG_DEBUG_SCALING_COEF] = ScalingCoef = REGLTR_GetScalingCoef();
+	if(DataTable[REG_SCALING_MUTE])
+		ScalingCoef = 1;
 }
 //-----------------------------------------
 
@@ -199,6 +204,7 @@ void RGLTR_ErrorCheck()
 		FollowingErrorCounter = 0;
 }
 //-----------------------------------------
+
 SamplingResult REGLTR_GetSample()
 {
 	SamplingResult t = {0};
@@ -224,17 +230,57 @@ SamplingResult REGLTR_GetSample()
 
 void REGLTR_StoreRegulatorDebug(float Ug, float UPot, float Ig, float Setpoint, float Correction, float Error, float DACRaw)
 {
-	if (CONTROL_Values_Counter < VALUES_DEBUG_RGLTR_SIZE)
+	if(ScalingCounter > 1)
+		ScalingCounter--;
+	else
 	{
-		CONTROL_RegulatorUg[CONTROL_Values_Counter] = Ug;
-		CONTROL_RegulatorUpot[CONTROL_Values_Counter] = UPot;
-		CONTROL_RegulatorIg[CONTROL_Values_Counter] = Ig;
-		CONTROL_RegulatorSetpoint[CONTROL_Values_Counter] = Setpoint;
-		CONTROL_RegulatorCorrection[CONTROL_Values_Counter] = Correction;
-		CONTROL_RegulatorError[CONTROL_Values_Counter] = Error;
-		CONTROL_DACRaw[CONTROL_Values_Counter] = DACRaw;
-		++CONTROL_Values_Counter;
+		ScalingCounter = ScalingCoef;
+		if(CONTROL_Values_Counter < VALUES_DEBUG_RGLTR_SIZE)
+		{
+			CONTROL_RegulatorUg[CONTROL_Values_Counter] = Ug;
+			CONTROL_RegulatorUpot[CONTROL_Values_Counter] = UPot;
+			CONTROL_RegulatorIg[CONTROL_Values_Counter] = Ig;
+			CONTROL_RegulatorSetpoint[CONTROL_Values_Counter] = Setpoint;
+			CONTROL_RegulatorCorrection[CONTROL_Values_Counter] = Correction;
+			CONTROL_RegulatorError[CONTROL_Values_Counter] = Error;
+			CONTROL_DACRaw[CONTROL_Values_Counter] = DACRaw;
+			++CONTROL_Values_Counter;
+		}
 	}
+}
+//-----------------------------------------
+
+Int16U REGLTR_GetScalingCoef()
+{
+	Int16U Coef = 0;
+	float SingleRelayTimer, RisingPart, SumTicks = 0;
+	RisingPart = PulseAmplitude / DataTable[REG_SLEW_RATE];
+	switch(CONTROL_MeasureType)
+	{
+		case MT_Rth:
+			SingleRelayTimer = (DataTable[REG_RELAY_SW_TIMER_RTH] > DataTable[REG_REGLTR_TIMER]) ?
+								DataTable[REG_RELAY_SW_TIMER_RTH] : DataTable[REG_REGLTR_TIMER];
+			SumTicks = (RisingPart + 3 * SingleRelayTimer) / TIMER15_uS;
+			break;
+
+		case MT_Iges:
+			SingleRelayTimer =(DataTable[REG_RELAY_SW_TIMER_IGES] > DataTable[REG_REGLTR_TIMER]) ?
+							   DataTable[REG_RELAY_SW_TIMER_IGES] : DataTable[REG_REGLTR_TIMER];
+			SumTicks = (RisingPart + 3 * SingleRelayTimer) / TIMER15_uS;
+			break;
+
+		case MT_Ugeth:
+			SingleRelayTimer = (DataTable[REG_RELAY_SW_TIMER_UGETH] > DataTable[REG_REGLTR_TIMER]) ?
+								DataTable[REG_RELAY_SW_TIMER_UGETH] : DataTable[REG_REGLTR_TIMER];
+			SumTicks = (RisingPart + 2 * SingleRelayTimer) / TIMER15_uS;
+			break;
+	}
+	if (fmod(SumTicks ,(float)VALUES_DEBUG_RGLTR_SIZE) > 1)
+		Coef = (Int16U)ceil(SumTicks / (float)VALUES_DEBUG_RGLTR_SIZE);
+	else
+		Coef = 1;
+	ScalingCounter = Coef;
+	return Coef;
 }
 //-----------------------------------------
 

@@ -154,12 +154,13 @@
 #define REG_RELAY_SW_TIMER_UGETH		92	// Время для переключения реле тока при измерении Uge_th, мс
 //
 #define REG_CNT_ACTIVE					106	// Включение сохранения счетчиков
+#define REG_SCALING_MUTE				107	// Отключение масшатибрования значений в EP
 
 // Несохраняемы регистры чтения-записи
 #define REG_WORK_VOLTAGE_IGES			128	// Номинальное рабочее напряжение для измерения Iges, мВ
 #define REG_WORK_CURRENT_UGETH			129	// Номинальный рабочий ток для измерения Ugeth, мА
 //
-#define REG_SAFETY_MUTE					130	// Мьют контура безопасности
+#define REG_SAFETY_MUTE					130	// Отключение контура безопасности
 //
 #define REG_CNT_NUMBER					131	// Номер счетчика, в который будет записано значение
 #define REG_CNT_VALUE					132	// Значение, которое будет записано в счетчик
@@ -183,6 +184,7 @@
 #define REG_UGE_TH						202 // Полученное пороговое напряжение затвор-эмиттер
 //
 #define REG_DEBUG_THERM_CURRENT			230	// Полученный ток на термисторе
+#define REG_DEBUG_SCALING_COEF			231	// Расчитанный коэф масшатибрования
 // -----------------------------
 
 #define REG_FWINFO_SLAVE_NID			256	// Device CAN slave node ID
