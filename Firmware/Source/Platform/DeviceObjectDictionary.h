@@ -207,7 +207,7 @@
 #define PROBLEM_VOLTAGE_OUT_OF_RANGE	2 // Измеренное напряжение вне рабочего диапозона
 #define PROBLEM_CURRENT_OUT_OF_RANGE	3 // Измеренный ток вне рабочего диапозона
 #define PROBLEM_SAFETY					4 // Сработала система безопасности
-#define PROBLEM_NEED_MORE_SAMPLES		5 // Недоставточная длина измерения Iges для получения точного значения
+#define PROBLEM_NEED_MORE_SAMPLES		5 // Недостаточная длина измерения Iges для получения точного значения
 
 //  Warning
 #define WARNING_NONE					0

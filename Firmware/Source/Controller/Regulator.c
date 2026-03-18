@@ -12,7 +12,7 @@
 #include "Utils.h"
 #include "Logic.h"
 #include "RingBuffer.h"
-#include "Math.h"
+#include "math.h"
 
 // Variables
 Int16U REGLTR_MemBuffUg[ADC_SEQ_LENGTH];
