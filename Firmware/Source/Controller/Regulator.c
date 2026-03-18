@@ -1,4 +1,4 @@
-// Header
+п»ї// Header
 #include "Controller.h"
 
 // Includes
@@ -122,7 +122,7 @@ void REGLTR_Init()
 	}
 	DataTable[REG_DEBUG_SCALING_COEF] = ScalingCoef = REGLTR_GetScalingCoef();
 	if(DataTable[REG_SCALING_MUTE])
-		ScalingCoef = 1;
+		ScalingCoef = ScalingCounter = 1;
 }
 //-----------------------------------------
 
@@ -150,7 +150,7 @@ void RGLTR_ErrorCheck()
 		case RS_FlatTopUgeth:
 			{
 				RegulatorError = DesiredCurrent - Sample.Ig;
-				// Расчет метрологической ошибки по току
+				// Р Р°СЃС‡РµС‚ РјРµС‚СЂРѕР»РѕРіРёС‡РµСЃРєРѕР№ РѕС€РёР±РєРё РїРѕ С‚РѕРєСѓ
 				CurrentErr = ABS(RegulatorError);
 				if(CurrentErr < CurrentErrThreshold)
 				{
@@ -169,7 +169,7 @@ void RGLTR_ErrorCheck()
 		case RS_FlatTop:
 			{
 				RegulatorError = RawSetPoint - Sample.UPot;
-				// Расчет ошибки по напряжению
+				// Р Р°СЃС‡РµС‚ РѕС€РёР±РєРё РїРѕ РЅР°РїСЂСЏР¶РµРЅРёСЋ
 				VoltageErr = ABS(Sample.UPot - PulseAmplitude);
 
 				if(VoltageErr < VoltagErrThreshold)
@@ -275,7 +275,7 @@ Int16U REGLTR_GetScalingCoef()
 			SumTicks = (RisingPart + 2 * SingleRelayTimer) / TIMER15_uS;
 			break;
 	}
-	if (fmod(SumTicks ,(float)VALUES_DEBUG_RGLTR_SIZE) > 1)
+	if (SumTicks > (float)VALUES_DEBUG_RGLTR_SIZE)
 		Coef = (Int16U)ceil(SumTicks / (float)VALUES_DEBUG_RGLTR_SIZE);
 	else
 		Coef = 1;

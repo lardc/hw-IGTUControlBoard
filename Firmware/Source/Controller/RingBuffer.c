@@ -1,4 +1,4 @@
-// Header
+﻿// Header
 #include "RingBuffer.h"
 
 // Variables

@@ -1,4 +1,4 @@
-#ifndef _RINGBUFFER_H
+﻿#ifndef _RINGBUFFER_H
 #define _RINGBUFFER_H
 
 // Include

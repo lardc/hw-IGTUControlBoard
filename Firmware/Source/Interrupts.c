@@ -1,4 +1,4 @@
-// Include
+ï»¿// Include
 #include "Interrupts.h"
 //
 #include "Controller.h"
@@ -79,8 +79,8 @@ void INT_GeneralDMAHandler(DMA_TypeDef* DMAx, uint32_t Channelx,volatile bool *F
 void DMA1_Channel1_IRQHandler()
 {
 	INT_GeneralDMAHandler(DMA1, DMA_ISR_TCIF1, &UgReady);
-	// Î÷èùàåì ôëàã OVR ó ADC3 äëÿ íåïðåðûâíîé ðàáîòû DMA2_CH5
-	// Âíóòðè DMA1_Ch1 äëÿ ïîëó÷åíèÿ ìàêñ êîë-âà èçìåðåíèé
+	// ÐžÑ‡Ð¸Ñ‰Ð°ÐµÐ¼ Ñ„Ð»Ð°Ð³ OVR Ñƒ ADC3 Ð´Ð»Ñ Ð½ÐµÐ¿Ñ€ÐµÑ€Ñ‹Ð²Ð½Ð¾Ð¹ Ñ€Ð°Ð±Ð¾Ñ‚Ñ‹ DMA2_CH5
+	// Ð’Ð½ÑƒÑ‚Ñ€Ð¸ DMA1_Ch1 Ð´Ð»Ñ Ð¿Ð¾Ð»ÑƒÑ‡ÐµÐ½Ð¸Ñ Ð¼Ð°ÐºÑ ÐºÐ¾Ð»-Ð²Ð° Ð¸Ð·Ð¼ÐµÑ€ÐµÐ½Ð¸Ð¹
 	if (ADC3->ISR & OVR)
 		ADC3->ISR |= OVR;
 }
