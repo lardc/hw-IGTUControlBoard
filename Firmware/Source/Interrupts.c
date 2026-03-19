@@ -81,8 +81,8 @@ void DMA1_Channel1_IRQHandler()
 	INT_GeneralDMAHandler(DMA1, DMA_ISR_TCIF1, &UgReady);
 	// Очищаем флаг OVR у ADC3 для непрерывной работы DMA2_CH5
 	// Внутри DMA1_Ch1 для получения макс кол-ва измерений
-	if (ADC3->ISR & OVR)
-		ADC3->ISR |= OVR;
+	/*if (ADC3->ISR & OVR)
+		ADC3->ISR |= OVR;*/
 }
 //-----------------------------------------
 

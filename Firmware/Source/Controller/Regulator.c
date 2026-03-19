@@ -253,26 +253,30 @@ void REGLTR_StoreRegulatorDebug(float Ug, float UPot, float Ig, float Setpoint, 
 Int16U REGLTR_GetScalingCoef()
 {
 	Int16U Coef = 0;
-	float SingleRelayTimer, RisingPart, SumTicks = 0;
+	Int16U MsToMks = 1000;
+	float FirstRelayTimer, FollowingRelaysTimer , RisingPart, SumTicks = 0;
 	RisingPart = PulseAmplitude / DataTable[REG_SLEW_RATE];
 	switch(CONTROL_MeasureType)
 	{
 		case MT_Rth:
-			SingleRelayTimer = (DataTable[REG_RELAY_SW_TIMER_RTH] > DataTable[REG_REGLTR_TIMER]) ?
+			FirstRelayTimer = (DataTable[REG_RELAY_SW_TIMER_RTH] > DataTable[REG_REGLTR_TIMER]) ?
 								DataTable[REG_RELAY_SW_TIMER_RTH] : DataTable[REG_REGLTR_TIMER];
-			SumTicks = (RisingPart + 3 * SingleRelayTimer) / TIMER15_uS;
+			FollowingRelaysTimer = DataTable[REG_RELAY_SW_TIMER_RTH];
+			SumTicks = (RisingPart + FirstRelayTimer + 2 * FollowingRelaysTimer) * MsToMks / TIMER15_uS;
 			break;
 
 		case MT_Iges:
-			SingleRelayTimer =(DataTable[REG_RELAY_SW_TIMER_IGES] > DataTable[REG_REGLTR_TIMER]) ?
+			FirstRelayTimer =(DataTable[REG_RELAY_SW_TIMER_IGES] > DataTable[REG_REGLTR_TIMER]) ?
 							   DataTable[REG_RELAY_SW_TIMER_IGES] : DataTable[REG_REGLTR_TIMER];
-			SumTicks = (RisingPart + 3 * SingleRelayTimer) / TIMER15_uS;
+			FollowingRelaysTimer = DataTable[REG_RELAY_SW_TIMER_IGES];
+			SumTicks = (RisingPart + FirstRelayTimer + 2 * FollowingRelaysTimer) * MsToMks / TIMER15_uS;
 			break;
 
 		case MT_Ugeth:
-			SingleRelayTimer = (DataTable[REG_RELAY_SW_TIMER_UGETH] > DataTable[REG_REGLTR_TIMER]) ?
+			FirstRelayTimer = (DataTable[REG_RELAY_SW_TIMER_UGETH] > DataTable[REG_REGLTR_TIMER]) ?
 								DataTable[REG_RELAY_SW_TIMER_UGETH] : DataTable[REG_REGLTR_TIMER];
-			SumTicks = (RisingPart + 2 * SingleRelayTimer) / TIMER15_uS;
+			FollowingRelaysTimer = DataTable[REG_RELAY_SW_TIMER_UGETH];
+			SumTicks = (RisingPart + FirstRelayTimer + FollowingRelaysTimer) * MsToMks / TIMER15_uS;
 			break;
 	}
 	if (SumTicks > (float)VALUES_DEBUG_RGLTR_SIZE)

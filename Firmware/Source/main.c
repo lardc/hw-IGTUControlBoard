@@ -37,7 +37,7 @@ int main()
 	INITCFG_SPI();
 
 	// Настройка DMA
-	INITCFG_DMA(DIAG_PULSE_BUFFER_SIZE);
+	INITCFG_DMA();
 
 	// Инициализация логики контроллера
 	CONTROL_Init();
