@@ -72,7 +72,7 @@ void INITCFG_GeneralADC(ADC_TypeDef* ADCx, Int16U Channel, Int32U Trigger)
 	ADC_ChannelSeqLen(ADCx, ADC_SEQ_LENGTH);
 
 	ADC_ChannelSet_SampleTime(ADCx, Channel, ADC_SAMPLE_TIME);
-	ADC_DMAConfig(ADCx);
+	ADC_DMAConfigWithAutDLY(ADCx);
 	ADC_SamplingStart(ADCx);
 }
 //------------------------------------------------
