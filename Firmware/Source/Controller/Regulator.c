@@ -20,10 +20,11 @@ Int16U REGLTR_MemBuffUPot[ADC_SEQ_LENGTH];
 Int16U REGLTR_MemBuffIg[ADC_SEQ_LENGTH];
 static float Kp, Ki, KiI, KpI, Qi = 0, FollowingErrThreshold, VoltagErrThreshold, CurrentErrThreshold;
 static Int16U FollowingErrLimit, VoltagErrLimit, VoltageErrCount, CurrentErrLimit,CurrentErrCount ,ScalingCoef, ScalingCounter, FollowingErrorCounter = 0;
+static Int16U FollowingErrorCounterUpot = 0;
 static float PulseAmplitude, DesiredCurrent;
 float RawSetPoint = 0;
 float VoltStep = 0, Qp = 0;
-float RegulatorError = 0;
+float RegulatorError = 0, RegulatorErrorUpot = 0;
 RegulatorState RegState = RS_None;
 volatile bool IsMeasureOk = false;
 
@@ -93,6 +94,7 @@ void REGLTR_Init()
 	VoltStep = DataTable[REG_SLEW_RATE] / TIMER15_uS;
 	RegState = RS_Rise;
 	RegulatorError = 0;
+	RegulatorErrorUpot = 0;
 
 	switch(CONTROL_MeasureType)
 	{
@@ -189,7 +191,9 @@ void RGLTR_ErrorCheck()
 			break;
 
 		default:
-			RegulatorError = RawSetPoint - Sample.UPot;
+			if(CONTROL_MeasureType == MT_Ugeth)
+				RegulatorErrorUpot = RawSetPoint - Sample.UPot;
+			RegulatorError = RawSetPoint - Sample.Ug;
 			break;
 	}
 	float absError = ABS(RegulatorError);
@@ -202,6 +206,20 @@ void RGLTR_ErrorCheck()
 	}
 	else
 		FollowingErrorCounter = 0;
+
+	if(RegulatorErrorUpot && RegState == !RS_FlatTopUgeth)
+	{
+		absError = ABS(RegulatorErrorUpot);
+		if(absError > FollowingErrThreshold)
+			{
+				if(FollowingErrorCounterUpot < FollowingErrLimit)
+					FollowingErrorCounterUpot++;
+				else
+					CONTROL_SetDeviceSubState(SS_FollowingErr);
+			}
+			else
+				FollowingErrorCounterUpot = 0;
+	}
 }
 //-----------------------------------------
 
