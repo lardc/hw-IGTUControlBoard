@@ -137,7 +137,7 @@ void LOGIC_HandleMeasurement()
 					switch(CONTROL_MeasureType)
 					{
 						case MT_Rth:
-							DataTable[REG_THERM_RESIS] = MEASURE_Resis(UpotResult, IgResult);
+							DataTable[REG_THERM_RESIS] = MEASURE_Resis(UgResult, IgResult);
 							DataTable[REG_DEBUG_THERM_CURRENT] = IgResult;
 							break;
 						case MT_Iges:

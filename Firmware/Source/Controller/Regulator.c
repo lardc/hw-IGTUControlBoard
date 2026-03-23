@@ -153,7 +153,7 @@ void RGLTR_ErrorCheck()
 			{
 				RegulatorError = DesiredCurrent - Sample.Ig;
 				// Расчет метрологической ошибки по току
-				CurrentErr = ABS(RegulatorError);
+				CurrentErr = ABS(RegulatorError) / DesiredCurrent;
 				if(CurrentErr < CurrentErrThreshold)
 				{
 					IsMeasureOk = true;
@@ -170,9 +170,9 @@ void RGLTR_ErrorCheck()
 
 		case RS_FlatTop:
 			{
-				RegulatorError = RawSetPoint - Sample.UPot;
+				RegulatorError = RawSetPoint - Sample.Ug;
 				// Расчет ошибки по напряжению
-				VoltageErr = ABS(Sample.UPot - PulseAmplitude);
+				VoltageErr = ABS(PulseAmplitude - Sample.Ug) / PulseAmplitude;
 
 				if(VoltageErr < VoltagErrThreshold)
 				{
@@ -196,7 +196,7 @@ void RGLTR_ErrorCheck()
 			RegulatorError = RawSetPoint - Sample.Ug;
 			break;
 	}
-	float absError = ABS(RegulatorError);
+	float absError = ABS(RegulatorError) / RawSetPoint;
 	if(absError > FollowingErrThreshold)
 	{
 		if(FollowingErrorCounter < FollowingErrLimit)
@@ -209,7 +209,7 @@ void RGLTR_ErrorCheck()
 
 	if(RegulatorErrorUpot && RegState == !RS_FlatTopUgeth)
 	{
-		absError = ABS(RegulatorErrorUpot);
+		absError = ABS(RegulatorErrorUpot) / RawSetPoint;
 		if(absError > FollowingErrThreshold)
 			{
 				if(FollowingErrorCounterUpot < FollowingErrLimit)

@@ -140,8 +140,8 @@
 #define REG_RGLTR_Ki					81	// Интегральный коэффициент регулятора
 //
 #define REG_RGLTR_FOLLOWING_ERR_LIMIT	82	// Лимит ошибки Following Error
-#define REG_RGLTR_FOLLOWING_ERR_THRESH	83	// Порог ошибки Following Error
-#define REG_VOLTAGE_ERR_THRESH			84	// Допустимая ошибка напряжения для начала измерения
+#define REG_RGLTR_FOLLOWING_ERR_THRESH	83	// Порог ошибки Following Error, в частях от 0 до 1
+#define REG_VOLTAGE_ERR_THRESH			84	// Допустимая ошибка напряжения для начала измерения, в частях от 0 до 1
 #define REG_VOLTAGE_ERR_COUNT_LIMIT		85  // Лимит ошибки счетчика перед выставлением PROBLEM_VOLTAGE_OUT_OF_RANGE
 //
 #define REG_CURRENT_FLATTOP_DURATION	86 	// Длительность полки поддержания тока, мс
