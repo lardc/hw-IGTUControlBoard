@@ -21,7 +21,7 @@ Int16U REGLTR_MemBuffIg[ADC_SEQ_LENGTH];
 static float Kp, Ki, KiI, KpI, Qi = 0, FollowingErrThreshold, VoltagErrThreshold, CurrentErrThreshold;
 static Int16U FollowingErrLimit, VoltagErrLimit, VoltageErrCount, CurrentErrLimit,CurrentErrCount ,ScalingCoef, ScalingCounter, FollowingErrorCounter = 0;
 static Int16U FollowingErrorCounterUpot = 0;
-static float PulseAmplitude, DesiredCurrent;
+static float PulseAmplitude, DesiredCurrent, RiseRate;
 float RawSetPoint = 0;
 float VoltStep = 0, Qp = 0;
 float RegulatorError = 0, RegulatorErrorUpot = 0;
@@ -93,7 +93,6 @@ void REGLTR_Init()
 	CurrentErrThreshold = DataTable[REG_CURRENT_ERR_THRESH];
 	CurrentErrLimit = DataTable[REG_CURRENT_ERR_COUNT_LIMIT];
 	RawSetPoint = 0;
-	VoltStep = DataTable[REG_SLEW_RATE] / TIMER15_uS;
 	RegState = RS_Rise;
 	RegulatorError = 0;
 	RegulatorErrorUpot = 0;
@@ -101,18 +100,23 @@ void REGLTR_Init()
 	switch(CONTROL_MeasureType)
 	{
 		case MT_Iges:
+			RiseRate = DataTable[REG_SLEW_RATE_IGES];
 			PulseAmplitude = DataTable[REG_WORK_VOLTAGE_IGES] * 0.001;
 			break;
 
 		case MT_Rth:
+			RiseRate = DataTable[REG_SLEW_RATE_RTH];
 			PulseAmplitude = DataTable[REG_WORK_VOLTAGE_RTH] * 0.001;
 			break;
 
 		case MT_Ugeth:
+			RiseRate = DataTable[REG_SLEW_RATE_UGETH];
 			PulseAmplitude = DataTable[REG_MAX_VOLTAGE_UGETH];
 			DesiredCurrent = DataTable[REG_WORK_CURRENT_UGETH];
 			break;
 	}
+	VoltStep = RiseRate / TIMER15_uS;
+
 	Kp = DataTable[REG_RGLTR_Kp];
 	Ki = DataTable[REG_RGLTR_Ki];
 	KpI = DataTable[REG_CURRENT_RGLTR_Kp];
@@ -275,7 +279,7 @@ Int16U REGLTR_GetScalingCoef()
 	Int16U Coef = 0;
 	Int16U MsToMks = 1000;
 	float FirstRelayTimer, FollowingRelaysTimer , RisingPart, SumTicks = 0;
-	RisingPart = PulseAmplitude / DataTable[REG_SLEW_RATE];
+	RisingPart = PulseAmplitude / RiseRate;
 	switch(CONTROL_MeasureType)
 	{
 		case MT_Rth:

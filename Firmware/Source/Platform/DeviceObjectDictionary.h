@@ -119,8 +119,7 @@
 #define REG_U_SET_K						64	// Коэффициент преобразования K
 #define REG_U_SET_B						65	// Коэффициент преобразования B
 //
-#define REG_SLEW_RATE					66	// Скорость нарастания переднего фронта В/мс
-// 67
+// 66 - 67
 #define REG_WORK_VOLTAGE_RTH			68	// Номинальное рабочее напряжение для измерения Rth, мВ
 //
 #define REG_RANGE_I_0					69	// Диапазон тока для канала 0 - от 50 до 500 мА, в А
@@ -133,6 +132,7 @@
 #define REG_RANGE_I_7					76	// Диапазон тока для канала 7 - от 5 до 20 нА, в А
 //
 #define REG_MAX_VOLTAGE_UGETH			77	// Максимальное напряжение при измерении Ugeth, B
+
 #define REG_CURRENT_RGLTR_Kp			78	// Пропорциональный коэффициент регулятора для тока Ugeth
 #define REG_CURRENT_RGLTR_Ki			79	// Интегральный коэффициент регулятора для тока при измерении Ugeth
 //
@@ -153,8 +153,18 @@
 #define REG_RELAY_SW_TIMER_IGES			91	// Время для переключения реле тока при измерении Iges, мс
 #define REG_RELAY_SW_TIMER_UGETH		92	// Время для переключения реле тока при измерении Uge_th, мс
 //
+#define REG_SLEW_RATE_RTH				93	// Скорость нарастания для измерения Rth
+#define REG_SLEW_RATE_IGES				94	// Скорость нарастания для измерения Iges
+#define REG_SLEW_RATE_UGETH				95	// Скорость нарастания для измерения Uge_th
+#define REG_SLEW_RATE_ST_UPOT			96	// Скорость нарастания для самодиагностики Upot
+#define REG_SLEW_RATE_ST_RTH			97	// Скорость нарастания для самодиагностики Rth
+//
+// 98 - 105
+//
 #define REG_CNT_ACTIVE					106	// Включение сохранения счетчиков
 #define REG_SCALING_MUTE				107	// Отключение масштабирования значений в EP
+//
+// 108 - 127
 
 // Несохраняемы регистры чтения-записи
 #define REG_WORK_VOLTAGE_IGES			128	// Номинальное рабочее напряжение для измерения Iges, мВ
@@ -208,7 +218,7 @@
 #define PROBLEM_CURRENT_OUT_OF_RANGE		3 // Измеренный ток вне рабочего диапозона
 #define PROBLEM_SAFETY						4 // Сработала система безопасности
 #define PROBLEM_NEED_MORE_SAMPLES			5 // Недостаточная длина измерения Iges для получения точного значения
-#define PROBLEM_VOLTAGE_LIMIT_NO_CURRENT	6 // Достигнут устновленный лимит напряжения без дсотижения уровня тока
+#define PROBLEM_VOLTAGE_LIMIT_NO_CURRENT	6 // Достигнут устновленный лимит напряжения без достижения уровня тока
 
 //  Warning
 #define WARNING_NONE					0

@@ -52,5 +52,7 @@ void LL_WriteDAC(Int16U Data);
 void LL_SetCurrentChannel(IChannel Channel);
 bool LL_SafetyState();
 void LL_SetNegativePolarity(bool State);
+void LL_SetSelfTestUpot(bool State);
+void LL_SetSelfTestLoad(bool State);
 
 #endif //__LOWLEVEL_H
