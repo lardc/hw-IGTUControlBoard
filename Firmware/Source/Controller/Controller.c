@@ -217,6 +217,20 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 				*pUserError = ERR_DEVICE_NOT_READY;
 			break;
 
+		case ACT_START_SELFTEST_UPOT:
+			if(CONTROL_State == DS_Ready)
+				CONTROL_StartMeasure(MT_ST_Upot);
+			else
+				*pUserError = ERR_DEVICE_NOT_READY;
+			break;
+
+		case ACT_START_SELFTEST_TESTLOAD:
+			if(CONTROL_State == DS_Ready)
+				CONTROL_StartMeasure(MT_ST_TestLoad);
+			else
+				*pUserError = ERR_DEVICE_NOT_READY;
+			break;
+
 		default:
 			return DIAG_HandleDiagnosticAction(ActionID, pUserError);
 	}

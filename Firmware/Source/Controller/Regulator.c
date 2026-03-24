@@ -86,7 +86,8 @@ void REGLTR_Init()
 	IsMeasureOk = false;
 	Qi = FollowingErrorCounter = VoltageErrCount = CurrentErrCount = 0;
 	RINGBUF_ResetIgesAvg();
-	FollowingErrThreshold = DataTable[REG_RGLTR_FOLLOWING_ERR_THRESH];
+	FollowingErrThreshold = (CONTROL_MeasureType == MT_ST_Upot || CONTROL_MeasureType == MT_ST_TestLoad) ?
+								DataTable[REG_RGLTR_ST_ERR_THRESH ] : DataTable[REG_RGLTR_FOLLOWING_ERR_THRESH];
 	FollowingErrLimit = DataTable[REG_RGLTR_FOLLOWING_ERR_LIMIT];
 	VoltagErrThreshold = DataTable[REG_VOLTAGE_ERR_THRESH];
 	VoltagErrLimit = DataTable[REG_VOLTAGE_ERR_COUNT_LIMIT];
@@ -114,6 +115,17 @@ void REGLTR_Init()
 			PulseAmplitude = DataTable[REG_MAX_VOLTAGE_UGETH];
 			DesiredCurrent = DataTable[REG_WORK_CURRENT_UGETH];
 			break;
+
+		case MT_ST_Upot:
+			RiseRate = DataTable[REG_SLEW_RATE_ST_UPOT];
+			PulseAmplitude = DataTable[REG_WORK_VOLTAGE_ST_UPOT];
+			break;
+
+		case MT_ST_TestLoad:
+			RiseRate = DataTable[REG_SLEW_RATE_ST_TESTLOAD];
+			PulseAmplitude = DataTable[REG_WORK_VOLTAGE_ST_TESTLOAD];
+			break;
+
 	}
 	VoltStep = RiseRate / TIMER15_uS;
 
@@ -176,6 +188,8 @@ void RGLTR_ErrorCheck()
 
 		case RS_FlatTop:
 			{
+				if(CONTROL_MeasureType == MT_ST_Upot)
+					RegulatorErrorUpot = RawSetPoint - Sample.UPot;
 				RegulatorError = RawSetPoint - Sample.Ug;
 				// Расчет ошибки по напряжению
 				VoltageErr = ABS(PulseAmplitude - Sample.Ug) / PulseAmplitude;
@@ -196,8 +210,9 @@ void RGLTR_ErrorCheck()
 			}
 			break;
 
+		case RS_Rise:
 		default:
-			if(CONTROL_MeasureType == MT_Ugeth)
+			if(CONTROL_MeasureType == MT_Ugeth || CONTROL_MeasureType == MT_ST_Upot)
 				RegulatorErrorUpot = RawSetPoint - Sample.UPot;
 			RegulatorError = RawSetPoint - Sample.Ug;
 			break;
@@ -301,6 +316,16 @@ Int16U REGLTR_GetScalingCoef()
 								DataTable[REG_RELAY_SW_TIMER_UGETH] : DataTable[REG_REGLTR_TIMER];
 			FollowingRelaysTimer = DataTable[REG_RELAY_SW_TIMER_UGETH];
 			SumTicks = (RisingPart + FirstRelayTimer + FollowingRelaysTimer) * MsToMks / TIMER15_uS;
+			break;
+
+		case MT_ST_Upot:
+			FirstRelayTimer = DataTable[REG_ST_UPOT_FLATTOP_DURATION] + DataTable[REG_REGLTR_TIMER];
+			SumTicks = FirstRelayTimer * MsToMks / TIMER15_uS;
+			break;
+
+		case MT_ST_TestLoad:
+			FirstRelayTimer = DataTable[REG_ST_TL_FLATTOP_DURATION] + DataTable[REG_REGLTR_TIMER];
+			SumTicks = FirstRelayTimer * MsToMks / TIMER15_uS;
 			break;
 	}
 	if (SumTicks > (float)VALUES_DEBUG_RGLTR_SIZE)

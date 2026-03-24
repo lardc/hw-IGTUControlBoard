@@ -23,6 +23,7 @@ Int16U RelaySwitchTimer = 0;
 void LOGIC_StopProcess();
 void LOGIC_SwitchChannels(float Ig);
 void LOGIC_SingleSw(float Ig);
+void LOGIC_TestLoadRelaySwitch();
 // Functions
 //
 
@@ -67,6 +68,17 @@ void LOGIC_HandleMeasurement()
 							LL_SetCurrentChannel(I_CHANNEL_0);
 							LOGIC_ChannelNumber = I_CHANNEL_0;
 						}
+						break;
+
+					case MT_ST_Upot:
+						RelaySwitchTimer = DataTable[REG_REGLTR_TIMER] + DataTable[REG_ST_UPOT_FLATTOP_DURATION];
+						LL_SetCurrentChannel(I_CHANNEL_0);
+						break;
+
+					case MT_ST_TestLoad:
+						RelaySwitchTimer = DataTable[REG_REGLTR_TIMER] + DataTable[REG_ST_TL_FLATTOP_DURATION];
+						LOGIC_TestLoadRelaySwitch();
+						break;
 				}
 				Timeout = CONTROL_TimeCounter + TIME_INIT_48V_TIMER;
 				CONTROL_SetDeviceSubState(SS_Wait48VPause);
@@ -95,6 +107,16 @@ void LOGIC_HandleMeasurement()
 					if(IsMeasureOk)
 						LOGIC_SwitchChannels(IgResult);
 				}
+				break;
+
+			case SS_RegulatorProcessSelfTest:
+				if(CONTROL_TimeCounter > Timeout)
+					if(IsMeasureOk)
+					{
+						IgResult = Sample.Ig;
+						DataTable[REG_OP_RESULT] = OPRESULT_OK;
+						CONTROL_SetDeviceSubState(SS_FinishProcess);
+					}
 				break;
 
 			case SS_RegulatorProcessUgeth:
@@ -153,6 +175,9 @@ void LOGIC_HandleMeasurement()
 							break;
 						case MT_Ugeth:
 							DataTable[REG_UGE_TH] = UgResult;
+							break;
+						default:
+							DataTable[REG_DEBUG_THERM_CURRENT] = IgResult;
 							break;
 					}
 				}
@@ -218,5 +243,51 @@ void LOGIC_SingleSw(float Ig)
 	}
 	else
 		CONTROL_SetDeviceSubState(SS_FinishProcess);
+}
+//------------------------------------------
+
+void LOGIC_TestLoadRelaySwitch()
+{
+	float CalcCurrent = (DataTable[REG_WORK_VOLTAGE_ST_TESTLOAD] * 1000) /  DataTable[REG_ST_TESTLOAD_RESIS];
+	if(CalcCurrent > DataTable[REG_RANGE_I_0])
+	{
+		LL_SetCurrentChannel(I_CHANNEL_0);
+		return;
+	}
+	else if(CalcCurrent > DataTable[REG_RANGE_I_1])
+	{
+		LL_SetCurrentChannel(I_CHANNEL_1);
+		return;
+	}
+	else if(CalcCurrent > DataTable[REG_RANGE_I_2])
+	{
+		LL_SetCurrentChannel(I_CHANNEL_2);
+		return;
+	}
+	else if(CalcCurrent > DataTable[REG_RANGE_I_3])
+	{
+		LL_SetCurrentChannel(I_CHANNEL_3);
+		return;
+	}
+	else if(CalcCurrent > DataTable[REG_RANGE_I_4])
+	{
+		LL_SetCurrentChannel(I_CHANNEL_4);
+		return;
+	}
+	else if(CalcCurrent > DataTable[REG_RANGE_I_5])
+	{
+		LL_SetCurrentChannel(I_CHANNEL_5);
+		return;
+	}
+	else if(CalcCurrent > DataTable[REG_RANGE_I_6])
+	{
+		LL_SetCurrentChannel(I_CHANNEL_6);
+		return;
+	}
+	else if(CalcCurrent > DataTable[REG_RANGE_I_7])
+	{
+		LL_SetCurrentChannel(I_CHANNEL_7);
+		return;
+	}
 }
 //------------------------------------------
