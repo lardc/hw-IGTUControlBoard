@@ -21,6 +21,8 @@
 #define ACT_START_MEASURE_RTH			100 // Запуск процесса измерения Rth
 #define ACT_START_MEASURE_IGES			101	// Запуск процесса измерения Iges
 #define ACT_START_MEASURE_UGETH			102	// Запуск процесса измерения Uge_th
+#define ACT_START_SELFTEST_UPOT			103 // Запуск процесса самодиагностики потенциальных линий
+#define ACT_START_SELFTEST_TESTLOAD		104 // Запуск процесса самодиагностики с тестовой нагрузкой
 #define ACT_SAVE_TO_ROM					200	// Сохранение пользовательских данных во FLASH процессора
 #define ACT_RESTORE_FROM_ROM			201	// Восстановление данных из FLASH
 #define ACT_RESET_TO_DEFAULT			202	// Сброс DataTable в состояние по умолчанию
@@ -119,7 +121,8 @@
 #define REG_U_SET_K						64	// Коэффициент преобразования K
 #define REG_U_SET_B						65	// Коэффициент преобразования B
 //
-// 66 - 67
+#define REG_WORK_VOLTAGE_ST_UPOT		66	// Номинальное рабочее напряжение для самодиагностики потенциальных линий, мВ
+#define REG_WORK_VOLTAGE_ST_TESTLOAD	67	// Номинальное рабочее напряжение для самодиагностики с тестовой нагрузкой, мВ
 #define REG_WORK_VOLTAGE_RTH			68	// Номинальное рабочее напряжение для измерения Rth, мВ
 //
 #define REG_RANGE_I_0					69	// Диапазон тока для канала 0 - от 50 до 500 мА, в А
@@ -153,13 +156,17 @@
 #define REG_RELAY_SW_TIMER_IGES			91	// Время для переключения реле тока при измерении Iges, мс
 #define REG_RELAY_SW_TIMER_UGETH		92	// Время для переключения реле тока при измерении Uge_th, мс
 //
-#define REG_SLEW_RATE_RTH				93	// Скорость нарастания для измерения Rth
-#define REG_SLEW_RATE_IGES				94	// Скорость нарастания для измерения Iges
-#define REG_SLEW_RATE_UGETH				95	// Скорость нарастания для измерения Uge_th
-#define REG_SLEW_RATE_ST_UPOT			96	// Скорость нарастания для самодиагностики Upot
-#define REG_SLEW_RATE_ST_RTH			97	// Скорость нарастания для самодиагностики Rth
+#define REG_SLEW_RATE_RTH				93	// Скорость нарастания для измерения Rth, В\мс
+#define REG_SLEW_RATE_IGES				94	// Скорость нарастания для измерения Iges, В\мс
+#define REG_SLEW_RATE_UGETH				95	// Скорость нарастания для измерения Uge_th, В\мс
+#define REG_SLEW_RATE_ST_UPOT			96	// Скорость нарастания для самодиагностики Upot, В\мс
+#define REG_SLEW_RATE_ST_TESTLOAD		97	// Скорость нарастания для самодиагностики с тестовой нагрузкой, В\мс
 //
-// 98 - 105
+#define REG_ST_UPOT_FLATTOP_DURATION	98	// Длительность полки поддержания напряжения при диагностики пот. линий, мс
+#define REG_ST_TL_FLATTOP_DURATION		99	// Длительность полки поддержания напряжения при диагностики с нагрузкой, мс
+#define REG_RGLTR_ST_ERR_THRESH			100	// Порог ошибки напряжения для диаг. потенциальных линий, в частях от 0 до 1
+#define REG_ST_TESTLOAD_RESIS			101	// Сопротивление тестовой нагрузки, Ом
+// 102 - 105
 //
 #define REG_CNT_ACTIVE					106	// Включение сохранения счетчиков
 #define REG_SCALING_MUTE				107	// Отключение масштабирования значений в EP

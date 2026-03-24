@@ -75,8 +75,8 @@ const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE] =
 	{COEF_P0_MIN, COEF_P0_MAX, COEF_P0_DEF},									// 63
 	{COEF_K_MIN, COEF_K_MAX, COEF_K_USET_DEF},									// 64
 	{COEF_B_MIN, COEF_B_MAX, 0},												// 65
-	{SLEW_RATE_MIN, INT16U_MAX, SLEW_RATE_MIN},									// 66
-	{0, 0, 0},																	// 67
+	{0, INT16U_MAX, U_SELTTEST_DEF},											// 66
+	{0, INT16U_MAX, U_SELTTEST_DEF},											// 67
 	{U_RTH_MIN, U_RTH_MAX, U_RTH_DEF},											// 68
 	{COEF_I_CH0_MIN, INT16U_MAX, COEF_I_CH0_MIN},								// 69
 	{COEF_I_CH1_MIN, INT16U_MAX, COEF_I_CH1_MIN},								// 70
@@ -95,22 +95,22 @@ const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE] =
 	{0, INT16U_MAX, 0},															// 83
 	{0, INT16U_MAX, 0},															// 84
 	{U_ERR_COUNT_MIN, U_ERR_COUNT_MAX, U_ERR_COUNT_DEF},						// 85
-	{0, INT16U_MAX, 0},															// 86
+	{0, INT16U_MAX, COEF_FLATTOP_DURATION_DEF},									// 86
 	{0, INT16U_MAX, 0},															// 87
 	{0, INT16U_MAX, 0},															// 88
 	{REGULATOR_TIME_MIN, REGULATOR_TIME_MAX, REGULATOR_TIME_MIN},				// 89
 	{COEF_SWITCH_TIME_MIN, INT16U_MAX, COEF_SWITCH_TIME_MIN},					// 90
 	{COEF_SWITCH_TIME_IGES_MIN, INT16U_MAX, COEF_SWITCH_TIME_IGES_MIN},			// 91
 	{COEF_SWITCH_TIME_MIN, INT16U_MAX, COEF_SWITCH_TIME_MIN},					// 92
-	{0, 0, 0},																	// 93
-	{0, 0, 0},																	// 94
-	{0, 0, 0},																	// 95
-	{0, 0, 0},																	// 96
-	{0, 0, 0},																	// 97
-	{0, 0, 0},																	// 98
-	{0, 0, 0},																	// 99
-	{0, 0, 0},																	// 100
-	{0, 0, 0},																	// 101
+	{SLEW_RATE_MIN, INT16U_MAX, SLEW_RATE_MIN},									// 93
+	{SLEW_RATE_MIN, INT16U_MAX, SLEW_RATE_MIN},									// 94
+	{SLEW_RATE_MIN, INT16U_MAX, SLEW_RATE_MIN},									// 95
+	{SLEW_RATE_MIN, INT16U_MAX, SLEW_RATE_MIN},									// 96
+	{SLEW_RATE_MIN, INT16U_MAX, SLEW_RATE_MIN},									// 97
+	{0, INT16U_MAX, COEF_FLATTOP_DURATION_DEF},									// 98
+	{0, INT16U_MAX, COEF_FLATTOP_DURATION_DEF},									// 99
+	{0, INT16U_MAX, 0},															// 100
+	{0, INT16U_MAX, R_TESTLOAD_DEF},											// 101
 	{0, 0, 0},																	// 102
 	{0, 0, 0},																	// 103
 	{0, 0, 0},																	// 104

@@ -50,6 +50,7 @@
 #define U_IGES_MIN					-30000		// В мВ
 #define U_IGES_MAX					30000
 #define U_IGES_DEF					5000
+#define U_SELTTEST_DEF				5000
 //
 #define U_ERR_COUNT_MIN				10		// в шт
 #define U_ERR_COUNT_MAX				20
@@ -72,8 +73,11 @@
 #define COEF_SWITCH_TIME_IGES_MIN	20
 #define REGULATOR_TIME_MIN			10
 #define REGULATOR_TIME_MAX			10000
+#define COEF_FLATTOP_DURATION_DEF	10
 //
 #define COEF_BASE_VOLT_DEF		3 		// в В
+//
+#define R_TESTLOAD_DEF			10000	// в Ом
 //
 #define NO						0
 #define YES						1
