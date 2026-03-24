@@ -202,12 +202,13 @@
 #define DF_NONE							0
 
 // Problem
-#define PROBLEM_NONE					0
-#define PROBLEM_FOLLOWING_ERROR			1
-#define PROBLEM_VOLTAGE_OUT_OF_RANGE	2 // Измеренное напряжение вне рабочего диапозона
-#define PROBLEM_CURRENT_OUT_OF_RANGE	3 // Измеренный ток вне рабочего диапозона
-#define PROBLEM_SAFETY					4 // Сработала система безопасности
-#define PROBLEM_NEED_MORE_SAMPLES		5 // Недостаточная длина измерения Iges для получения точного значения
+#define PROBLEM_NONE						0
+#define PROBLEM_FOLLOWING_ERROR				1
+#define PROBLEM_VOLTAGE_OUT_OF_RANGE		2 // Измеренное напряжение вне рабочего диапозона
+#define PROBLEM_CURRENT_OUT_OF_RANGE		3 // Измеренный ток вне рабочего диапозона
+#define PROBLEM_SAFETY						4 // Сработала система безопасности
+#define PROBLEM_NEED_MORE_SAMPLES			5 // Недостаточная длина измерения Iges для получения точного значения
+#define PROBLEM_VOLTAGE_LIMIT_NO_CURRENT	6 // Достигнут устновленный лимит напряжения без дсотижения уровня тока
 
 //  Warning
 #define WARNING_NONE					0

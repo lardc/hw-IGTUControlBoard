@@ -55,6 +55,8 @@ void REGLTR_Process()
 				{
 					if(Sample.Ig >= DesiredCurrent)
 						RegState = RS_FlatTopUgeth;
+					else if(RawSetPoint > PulseAmplitude)
+						CONTROL_SetDeviceSubState(SS_VoltageNoCurrentErr);
 				}
 				else
 				{

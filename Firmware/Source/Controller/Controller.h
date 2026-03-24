@@ -25,8 +25,9 @@ typedef enum __DeviceSubState
 	SS_FollowingErr			= 6,
 	SS_VoltageErr			= 7,
 	SS_CurrentErr			= 8,
-	SS_FinishProcess		= 9,
-	SS_GetResults 			= 10,
+	SS_VoltageNoCurrentErr 	= 9,
+	SS_FinishProcess		= 10,
+	SS_GetResults 			= 11,
 } DeviceSubState;
 
 typedef enum __MeasureType

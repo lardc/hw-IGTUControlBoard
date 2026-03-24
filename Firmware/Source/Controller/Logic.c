@@ -122,6 +122,11 @@ void LOGIC_HandleMeasurement()
 				CONTROL_SwitchToProblem(PROBLEM_CURRENT_OUT_OF_RANGE);
 				break;
 
+			case SS_VoltageNoCurrentErr:
+				LOGIC_StopProcess();
+				CONTROL_SwitchToProblem(PROBLEM_VOLTAGE_LIMIT_NO_CURRENT);
+				break;
+
 			case SS_FinishProcess:
 				LOGIC_StopProcess();
 				Timeout = CONTROL_TimeCounter + TIME_INIT_48V_TIMER;
