@@ -19,8 +19,8 @@ Int16U REGLTR_MemBuffUg[ADC_SEQ_LENGTH];
 Int16U REGLTR_MemBuffUPot[ADC_SEQ_LENGTH];
 Int16U REGLTR_MemBuffIg[ADC_SEQ_LENGTH];
 static float Kp, Ki, KiI, KpI, Qi = 0, FollowingErrThreshold, VoltagErrThreshold, CurrentErrThreshold;
-static Int16U FollowingErrLimit, VoltagErrLimit, VoltageErrCount, CurrentErrLimit,CurrentErrCount ,ScalingCoef, ScalingCounter, FollowingErrorCounter = 0;
-static Int16U FollowingErrorCounterUpot = 0;
+static Int16U FollowingErrLimit, VoltagErrLimit, VoltageErrCount, CurrentErrLimit,CurrentErrCount ,ScalingCoef, ScalingCounter;
+static Int16U FollowingErrorCounterUpot = 0,FollowingErrorCounter = 0;;
 static float PulseAmplitude, DesiredCurrent, RiseRate;
 float RawSetPoint = 0;
 float VoltStep = 0, Qp = 0;
@@ -40,7 +40,8 @@ Int16U REGLTR_GetScalingCoef();
 // Functions
 void REGLTR_Process()
 {
-	if (CONTROL_SubState != SS_RegulatorProcess && CONTROL_SubState != SS_RegulatorProcessUgeth)
+	if (CONTROL_SubState != SS_RegulatorProcess && CONTROL_SubState != SS_RegulatorProcessUgeth
+			&& CONTROL_SubState != SS_RegulatorProcessSelfTest)
 		return;
 
 	Int16U DACSetpoint;
@@ -84,7 +85,7 @@ void REGLTR_Process()
 void REGLTR_Init()
 {
 	IsMeasureOk = false;
-	Qi = FollowingErrorCounter = VoltageErrCount = CurrentErrCount = 0;
+	Qi = FollowingErrorCounter = VoltageErrCount = CurrentErrCount = FollowingErrorCounterUpot = 0;
 	RINGBUF_ResetIgesAvg();
 	FollowingErrThreshold = (CONTROL_MeasureType == MT_ST_Upot || CONTROL_MeasureType == MT_ST_TestLoad) ?
 								DataTable[REG_RGLTR_ST_ERR_THRESH ] : DataTable[REG_RGLTR_FOLLOWING_ERR_THRESH];
@@ -102,7 +103,7 @@ void REGLTR_Init()
 	{
 		case MT_Iges:
 			RiseRate = DataTable[REG_SLEW_RATE_IGES];
-			PulseAmplitude = DataTable[REG_WORK_VOLTAGE_IGES] * 0.001;
+			PulseAmplitude = ABS(DataTable[REG_WORK_VOLTAGE_IGES]) * 0.001;
 			break;
 
 		case MT_Rth:
@@ -118,16 +119,16 @@ void REGLTR_Init()
 
 		case MT_ST_Upot:
 			RiseRate = DataTable[REG_SLEW_RATE_ST_UPOT];
-			PulseAmplitude = DataTable[REG_WORK_VOLTAGE_ST_UPOT];
+			PulseAmplitude = DataTable[REG_WORK_VOLTAGE_ST_UPOT] * 0.001;
 			break;
 
 		case MT_ST_TestLoad:
 			RiseRate = DataTable[REG_SLEW_RATE_ST_TESTLOAD];
-			PulseAmplitude = DataTable[REG_WORK_VOLTAGE_ST_TESTLOAD];
+			PulseAmplitude = DataTable[REG_WORK_VOLTAGE_ST_TESTLOAD] * 0.001;
 			break;
 
 	}
-	VoltStep = RiseRate / TIMER15_uS;
+	VoltStep = RiseRate * TIMER15_uS * 0.001;
 
 	Kp = DataTable[REG_RGLTR_Kp];
 	Ki = DataTable[REG_RGLTR_Ki];
@@ -228,7 +229,7 @@ void RGLTR_ErrorCheck()
 	else
 		FollowingErrorCounter = 0;
 
-	if(RegulatorErrorUpot && RegState == !RS_FlatTopUgeth)
+	if(RegulatorErrorUpot && RegState != RS_FlatTopUgeth)
 	{
 		absError = ABS(RegulatorErrorUpot) / RawSetPoint;
 		if(absError > FollowingErrThreshold)

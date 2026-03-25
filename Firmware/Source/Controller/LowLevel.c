@@ -134,7 +134,7 @@ void LL_SetNegativePolarity(bool State)
 void LL_SetSelfTestUpot(bool State)
 {
 	Mask = PrevMask;
-	State ? (Mask |= RELAY_POT_DISCON | RELAY_SELFTEST) : (Mask &=~ RELAY_POT_DISCON | RELAY_SELFTEST);
+	State ? (Mask |= RELAY_POT_DISCON | RELAY_SELFTEST) : (Mask &=~ (RELAY_POT_DISCON | RELAY_SELFTEST));
 	LL_SPI_WriteByte(Mask);
 	PrevMask = Mask;
 }

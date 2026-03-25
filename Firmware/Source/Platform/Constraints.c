@@ -92,11 +92,11 @@ const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE] =
 	{0, INT16U_MAX, 0},															// 80
 	{0, INT16U_MAX, 0},															// 81
 	{0, INT16U_MAX, 0},															// 82
-	{0, INT16U_MAX, 0},															// 83
-	{0, INT16U_MAX, 0},															// 84
+	{0, COEF_THRESHOLD_MAX, 0},													// 83
+	{0, COEF_THRESHOLD_MAX, 0},													// 84
 	{U_ERR_COUNT_MIN, U_ERR_COUNT_MAX, U_ERR_COUNT_DEF},						// 85
 	{0, INT16U_MAX, COEF_FLATTOP_DURATION_DEF},									// 86
-	{0, INT16U_MAX, 0},															// 87
+	{0, COEF_THRESHOLD_MAX, 0},													// 87
 	{0, INT16U_MAX, 0},															// 88
 	{REGULATOR_TIME_MIN, REGULATOR_TIME_MAX, REGULATOR_TIME_MIN},				// 89
 	{COEF_SWITCH_TIME_MIN, INT16U_MAX, COEF_SWITCH_TIME_MIN},					// 90
@@ -109,8 +109,8 @@ const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE] =
 	{SLEW_RATE_MIN, INT16U_MAX, SLEW_RATE_MIN},									// 97
 	{0, INT16U_MAX, COEF_FLATTOP_DURATION_DEF},									// 98
 	{0, INT16U_MAX, COEF_FLATTOP_DURATION_DEF},									// 99
-	{0, INT16U_MAX, 0},															// 100
-	{0, INT16U_MAX, R_TESTLOAD_DEF},											// 101
+	{0, COEF_THRESHOLD_MAX, 0},													// 100
+	{R_TESTLOAD_MIN, INT16U_MAX, R_TESTLOAD_DEF},								// 101
 	{0, 0, 0},																	// 102
 	{0, 0, 0},																	// 103
 	{0, 0, 0},																	// 104

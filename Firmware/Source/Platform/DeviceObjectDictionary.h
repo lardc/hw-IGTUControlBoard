@@ -148,7 +148,7 @@
 #define REG_VOLTAGE_ERR_COUNT_LIMIT		85  // Лимит ошибки счетчика перед выставлением PROBLEM_VOLTAGE_OUT_OF_RANGE
 //
 #define REG_CURRENT_FLATTOP_DURATION	86 	// Длительность полки поддержания тока, мс
-#define REG_CURRENT_ERR_THRESH			87	// Допустимая ошибка тока для начала измерения
+#define REG_CURRENT_ERR_THRESH			87	// Допустимая ошибка тока для начала измерения, в частях от 0 до 1
 #define REG_CURRENT_ERR_COUNT_LIMIT		88	// Лимит ошибки счетчика перед выставлением PROBLEM_CURRENT_OUT_OF_RANGE
 //
 #define REG_REGLTR_TIMER				89	// Время для выхода регулятора на рабочее напряжение, мс

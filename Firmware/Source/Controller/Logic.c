@@ -73,6 +73,7 @@ void LOGIC_HandleMeasurement()
 					case MT_ST_Upot:
 						RelaySwitchTimer = DataTable[REG_REGLTR_TIMER] + DataTable[REG_ST_UPOT_FLATTOP_DURATION];
 						LL_SetCurrentChannel(I_CHANNEL_0);
+						LOGIC_ChannelNumber = I_CHANNEL_0;
 						break;
 
 					case MT_ST_TestLoad:
@@ -95,7 +96,13 @@ void LOGIC_HandleMeasurement()
 				float TimeoutTime = (RelaySwitchTimer > DataTable[REG_REGLTR_TIMER]) ?
 								RelaySwitchTimer : DataTable[REG_REGLTR_TIMER];
 				Timeout = CONTROL_TimeCounter + TimeoutTime;
-				CONTROL_SetDeviceSubState(CONTROL_MeasureType == MT_Ugeth ? SS_RegulatorProcessUgeth : SS_RegulatorProcess);
+
+				if(CONTROL_MeasureType == MT_Ugeth)
+					CONTROL_SetDeviceSubState(SS_RegulatorProcessUgeth);
+				else if(CONTROL_MeasureType == MT_ST_Upot || CONTROL_MeasureType == MT_ST_TestLoad)
+					CONTROL_SetDeviceSubState(SS_RegulatorProcessSelfTest);
+				else
+					CONTROL_SetDeviceSubState(SS_RegulatorProcess);
 				break;
 
 			case SS_RegulatorProcess:
@@ -248,45 +255,53 @@ void LOGIC_SingleSw(float Ig)
 
 void LOGIC_TestLoadRelaySwitch()
 {
-	float CalcCurrent = (DataTable[REG_WORK_VOLTAGE_ST_TESTLOAD] * 1000) /  DataTable[REG_ST_TESTLOAD_RESIS];
+	float CalcCurrent = (DataTable[REG_WORK_VOLTAGE_ST_TESTLOAD] * 0.001) /  DataTable[REG_ST_TESTLOAD_RESIS];
 	if(CalcCurrent > DataTable[REG_RANGE_I_0])
 	{
 		LL_SetCurrentChannel(I_CHANNEL_0);
+		LOGIC_ChannelNumber = I_CHANNEL_0;
 		return;
 	}
 	else if(CalcCurrent > DataTable[REG_RANGE_I_1])
 	{
 		LL_SetCurrentChannel(I_CHANNEL_1);
+		LOGIC_ChannelNumber = I_CHANNEL_1;
 		return;
 	}
 	else if(CalcCurrent > DataTable[REG_RANGE_I_2])
 	{
 		LL_SetCurrentChannel(I_CHANNEL_2);
+		LOGIC_ChannelNumber = I_CHANNEL_2;
 		return;
 	}
 	else if(CalcCurrent > DataTable[REG_RANGE_I_3])
 	{
 		LL_SetCurrentChannel(I_CHANNEL_3);
+		LOGIC_ChannelNumber = I_CHANNEL_3;
 		return;
 	}
 	else if(CalcCurrent > DataTable[REG_RANGE_I_4])
 	{
 		LL_SetCurrentChannel(I_CHANNEL_4);
+		LOGIC_ChannelNumber = I_CHANNEL_4;
 		return;
 	}
 	else if(CalcCurrent > DataTable[REG_RANGE_I_5])
 	{
 		LL_SetCurrentChannel(I_CHANNEL_5);
+		LOGIC_ChannelNumber = I_CHANNEL_5;
 		return;
 	}
 	else if(CalcCurrent > DataTable[REG_RANGE_I_6])
 	{
 		LL_SetCurrentChannel(I_CHANNEL_6);
+		LOGIC_ChannelNumber = I_CHANNEL_6;
 		return;
 	}
 	else if(CalcCurrent > DataTable[REG_RANGE_I_7])
 	{
 		LL_SetCurrentChannel(I_CHANNEL_7);
+		LOGIC_ChannelNumber = I_CHANNEL_7;
 		return;
 	}
 }

@@ -22,7 +22,6 @@ void RINGBUF_ResetIgesAvg()
 void RINGBUF_AddNewSampleIges(float Ig)
 {
 	if(IgesCount >= IGES_AVG_BUF_SIZE)
-
 		IgesSum -= IgesBuffer[IgesIndex];
 	else
 		IgesCount++;

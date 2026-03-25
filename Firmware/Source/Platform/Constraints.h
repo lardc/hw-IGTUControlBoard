@@ -78,9 +78,11 @@
 #define COEF_BASE_VOLT_DEF		3 		// в В
 //
 #define R_TESTLOAD_DEF			10000	// в Ом
+#define R_TESTLOAD_MIN			1
 //
 #define NO						0
 #define YES						1
+#define COEF_THRESHOLD_MAX		1
 //
 // Types
 typedef struct __TableItemConstraint
