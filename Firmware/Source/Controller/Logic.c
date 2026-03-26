@@ -36,29 +36,32 @@ void LOGIC_HandleMeasurement()
 		if(!CONTROL_IsSafetyOk())
 			LOGIC_StopProcess();
 
-		switch (CONTROL_SubState)
+		switch(CONTROL_SubState)
 		{
 			case SS_Init:
-				GPIO_SetState(GPIO_VCC_48, true);
-				LL_SetNegativePolarity((CONTROL_MeasureType ==  MT_Iges) && (DataTable[REG_WORK_VOLTAGE_IGES] < 0));
 				UgResult = UpotResult = IgResult = 0.0f;
 				switch(CONTROL_MeasureType)
 				{
 					case MT_Rth:
+						GPIO_SetState(GPIO_VCC_48, true);
 						LL_SetCurrentChannel(I_CHANNEL_1);
 						LOGIC_ChannelNumber = I_CHANNEL_1;
 						RelaySwitchTimer = DataTable[REG_RELAY_SW_TIMER_RTH];
 						break;
 
 					case MT_Iges:
+						if (DataTable[REG_WORK_VOLTAGE_IGES] < 0)
+							LL_SetNegativePolarity(true);
+						GPIO_SetState(GPIO_VCC_48, true);
 						LL_SetCurrentChannel(I_CHANNEL_5);
 						LOGIC_ChannelNumber = I_CHANNEL_5;
 						RelaySwitchTimer = DataTable[REG_RELAY_SW_TIMER_IGES];
 						break;
 
 					case MT_Ugeth:
+						GPIO_SetState(GPIO_VCC_24, true);
 						RelaySwitchTimer = DataTable[REG_RELAY_SW_TIMER_UGETH];
-						if(DataTable[REG_WORK_CURRENT_UGETH] < DataTable[REG_RANGE_I_0])
+						if ((DataTable[REG_WORK_CURRENT_UGETH] * 0.001)	< DataTable[REG_RANGE_I_0])
 						{
 							LL_SetCurrentChannel(I_CHANNEL_1);
 							LOGIC_ChannelNumber = I_CHANNEL_1;
@@ -71,13 +74,17 @@ void LOGIC_HandleMeasurement()
 						break;
 
 					case MT_ST_Upot:
+						GPIO_SetState(GPIO_VCC_24, true);
+						LL_SetSelfTestUpot(true);
 						RelaySwitchTimer = DataTable[REG_REGLTR_TIMER] + DataTable[REG_ST_UPOT_FLATTOP_DURATION];
 						LL_SetCurrentChannel(I_CHANNEL_0);
 						LOGIC_ChannelNumber = I_CHANNEL_0;
 						break;
 
 					case MT_ST_TestLoad:
+						GPIO_SetState(GPIO_VCC_48, true);
 						RelaySwitchTimer = DataTable[REG_REGLTR_TIMER] + DataTable[REG_ST_TL_FLATTOP_DURATION];
+						LL_SetSelfTestLoad(true);
 						LOGIC_TestLoadRelaySwitch();
 						break;
 				}
@@ -201,6 +208,10 @@ void LOGIC_StopProcess()
 {
 	REGLTR_StopProcess();
 	GPIO_SetState(GPIO_VCC_48, false);
+	GPIO_SetState(GPIO_VCC_24, false);
+	LL_SetNegativePolarity(false);
+	LL_SetSelfTestLoad(false);
+	LL_SetSelfTestUpot(false);
 	LL_SetCurrentChannel(I_CHANNEL_0);
 }
 //------------------------------------------

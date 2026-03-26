@@ -114,7 +114,7 @@ void REGLTR_Init()
 		case MT_Ugeth:
 			RiseRate = DataTable[REG_SLEW_RATE_UGETH];
 			PulseAmplitude = DataTable[REG_MAX_VOLTAGE_UGETH];
-			DesiredCurrent = DataTable[REG_WORK_CURRENT_UGETH];
+			DesiredCurrent = DataTable[REG_WORK_CURRENT_UGETH] * 0.001;
 			break;
 
 		case MT_ST_Upot:
