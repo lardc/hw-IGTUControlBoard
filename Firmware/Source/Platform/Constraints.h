@@ -144,7 +144,7 @@
 #define QG_V_POWER_MAX				1500
 #define QG_V_POWER_DEF				1000
 //
-#define IGES_V_MIN					2
+#define IGES_V_MIN					0.2
 #define IGES_V_MAX					30
 #define IGES_V_DEF					20
 //
