@@ -33,7 +33,9 @@ typedef struct __RegulatorParams
 	Int64U Counter;
 	float dVg;
 	float Target;
+	float CurrentTarget;
 	float SampledData;
+	Boolean ActiveFE;
 //
 	Int16U DACSetpoint;
 	float Error;

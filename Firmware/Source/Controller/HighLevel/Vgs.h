@@ -6,6 +6,16 @@
 #include "Board.h"
 #include "stdinc.h"
 
+// Types
+//
+typedef enum __VgsState
+{
+	Vgs_None = 0,
+	Vgs_Rise = 1,
+	Vgs_FlatTop = 2,
+	Vgs_Finish = 3,
+} VgsState;
+
 // Functions
 //
 void VGS_Prepare();

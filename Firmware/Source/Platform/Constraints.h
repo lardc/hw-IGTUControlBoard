@@ -67,7 +67,7 @@
 //
 #define REGULATOR_QI_MAX_DEF		30000
 //
-#define REGULATOR_ERR_MIN			0.05
+#define REGULATOR_ERR_MIN			0
 #define REGULATOR_ERR_MAX			1
 #define REGULATOR_ERR_DEF			0.5
 //
@@ -144,9 +144,11 @@
 #define QG_V_POWER_MAX				1500
 #define QG_V_POWER_DEF				1000
 //
-#define IGES_V_MIN					2
+#define IGES_V_MIN					0.2
 #define IGES_V_MAX					30
 #define IGES_V_DEF					20
+//
+#define VGS_FLATTOP_MAX				10000 // в мкс
 
 
 // Types

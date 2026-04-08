@@ -8,12 +8,12 @@
 #include "LowLevel.h"
 #include "ConvertUtils.h"
 #include "Logging.h"
+#include "math.h"
 
 // Variables
 //
 RegulatorParamsStruct RegulatorParams;
 LogParamsStruct RegulatorLog;
-
 
 // Functions prototypes
 //
@@ -23,9 +23,23 @@ Int16U REGULATOR_DACApplyLimits(Int16S Value, Int16U LimitValue);
 //
 bool REGULATOR_Process(RegulatorParamsStruct* Regulator)
 {
-	Regulator->Error = (Regulator->Counter == 0) ? 0 : (Regulator->Target - Regulator->SampledData);
+	float DesiredValue = (Regulator->CurrentTarget) ? Regulator->CurrentTarget : Regulator->Target;
+	float ABSError;
+	if(Regulator->Counter == 0)
+	{
+		ABSError = 0;
+		Regulator->Error = 0;
+	}
+	else
+	{
+		Regulator->Error = DesiredValue - Regulator->SampledData;
+		if(DesiredValue == 0)
+			ABSError = 0;
+		else
+			ABSError = fabsf(Regulator->Error) / DesiredValue;
+	}
 
-	if(Regulator->Mode == FeedBack && Regulator->Error > Regulator->ErrorMax)
+	if(Regulator->Mode == FeedBack && Regulator->ActiveFE && ABSError > Regulator->ErrorMax)
 	{
 		Regulator->FECounter++;
 
@@ -86,7 +100,7 @@ void REGULATOR_CacheVariables(RegulatorParamsStruct* Regulator)
 	Regulator->Qimax = DataTable[REG_REGULATOR_QI_MAX];
 	Regulator->FECounterMax = DataTable[REG_REGULATOR_FE_COUNTER];
 	Regulator->DACLimitValue = DataTable[REG_DAC_OUTPUT_LIMIT_VALUE];
-	Regulator->DACLimitValue = DataTable[REG_DAC_OUTPUT_LIMIT_VALUE];
+	Regulator->ActiveFE = !(DataTable[REG_DEACTIVATE_FE]);
 
 	RegulatorLog.DataA = &Regulator->Out;
 	RegulatorLog.DataB = &Regulator->Error;
@@ -99,6 +113,7 @@ void REGULATOR_CacheVariables(RegulatorParamsStruct* Regulator)
 void REGULATOR_ResetVariables(RegulatorParamsStruct* Regulator)
 {
 	Regulator->Target = 0;
+	Regulator->CurrentTarget = 0;
 	Regulator->SampledData = 0;
 	Regulator->DACSetpoint = 0;
 	Regulator->Error = 0;
@@ -106,6 +121,7 @@ void REGULATOR_ResetVariables(RegulatorParamsStruct* Regulator)
 	Regulator->Qp = 0;
 	Regulator->Out = 0;
 	Regulator->FECounter = 0;
+	Regulator->ActiveFE = true;
 	Regulator->FollowingError = false;
 }
 //-----------------------------------------------
