@@ -100,6 +100,7 @@ void LOGIC_HandleMeasurement()
 			case SS_ConfigPulse:
 				REGLTR_Init();
 				REGLTR_StartProcess();
+				LL_Sync(true);
 				float TimeoutTime = (RelaySwitchTimer > DataTable[REG_REGLTR_TIMER]) ?
 								RelaySwitchTimer : DataTable[REG_REGLTR_TIMER];
 				Timeout = CONTROL_TimeCounter + TimeoutTime;
@@ -212,6 +213,7 @@ void LOGIC_StopProcess()
 	LL_SetNegativePolarity(false);
 	LL_SetSelfTestLoad(false);
 	LL_SetSelfTestUpot(false);
+	LL_Sync(false);
 	LL_SetCurrentChannel(I_CHANNEL_0);
 }
 //------------------------------------------

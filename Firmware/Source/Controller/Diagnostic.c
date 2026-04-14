@@ -77,6 +77,12 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 			GPIO_SetState(GPIO_VCC_24, false);
 			break;
 
+		case ACT_DBG_SYNC:
+			LL_Sync(true);
+			DELAY_US(1000);
+			LL_Sync(false);
+			break;
+
 		default:
 			return false;
 	}

@@ -32,6 +32,12 @@ void LL_ExtIndication(bool State)
 }
 //-----------------------------
 
+void LL_Sync(bool State)
+{
+	GPIO_SetState(GPIO_SYNC, State);
+}
+//-----------------------------
+
 void LL_ToggleExternalLED()
 {
 	GPIO_Toggle(GPIO_LED_EXT);
