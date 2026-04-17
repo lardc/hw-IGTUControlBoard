@@ -46,12 +46,12 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 			break;
 
 		case ACT_DBG_SWITCH_RELAY:
-			for(Int16U i=0; i<8;i++)
+			for(Int16U i=1; i<9;i++)
 			{
 				LL_SetCurrentChannel(i);
 				DELAY_MS(1000);
 			}
-			LL_SetCurrentChannel(0);
+			LL_SetCurrentChannel(1);
 			break;
 
 		case ACT_DBG_DAC_WRITE:

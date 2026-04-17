@@ -18,6 +18,7 @@
 static Int64U Timeout = 0;
 Int16U LOGIC_ChannelNumber = 0;
 Int16U RelaySwitchTimer = 0;
+Int16U ForcedCh = 0;
 // Forward functions
 //
 void LOGIC_StopProcess();
@@ -30,7 +31,6 @@ void LOGIC_TestLoadRelaySwitch();
 void LOGIC_HandleMeasurement()
 {
 	static float UgResult, UpotResult, IgResult;
-	static Int16U ForcedCh;
 
 	if(CONTROL_State == DS_InProcess)
 	{
@@ -48,7 +48,7 @@ void LOGIC_HandleMeasurement()
 					case MT_Rth:
 						GPIO_SetState(GPIO_VCC_48, true);
 
-						if(ForcedCh != I_CHANNEL_1 && ForcedCh != I_CHANNEL_2 && ForcedCh != I_CHANNEL_3)
+						if(ForcedCh && ForcedCh != I_CHANNEL_1 && ForcedCh != I_CHANNEL_2 && ForcedCh != I_CHANNEL_3)
 						{
 							CONTROL_SwitchToProblem(PROBLEM_WRONG_SELECTED_RELAY);
 							return;
@@ -64,20 +64,20 @@ void LOGIC_HandleMeasurement()
 							LL_SetNegativePolarity(true);
 						GPIO_SetState(GPIO_VCC_48, true);
 
-						if(ForcedCh != I_CHANNEL_5 && ForcedCh != I_CHANNEL_6 && ForcedCh != I_CHANNEL_7)
+						if(ForcedCh && ForcedCh != I_CHANNEL_5 && ForcedCh != I_CHANNEL_6 && ForcedCh != I_CHANNEL_7)
 						{
 							CONTROL_SwitchToProblem(PROBLEM_WRONG_SELECTED_RELAY);
 							return;
 						}
 
-						LL_SetCurrentChannel(ForcedCh ? ForcedCh :I_CHANNEL_5);
-						LOGIC_ChannelNumber = ForcedCh ? ForcedCh :I_CHANNEL_5;
+						LL_SetCurrentChannel(ForcedCh ? ForcedCh : I_CHANNEL_5);
+						LOGIC_ChannelNumber = ForcedCh ? ForcedCh : I_CHANNEL_5;
 						RelaySwitchTimer = DataTable[REG_RELAY_SW_TIMER_IGES];
 						break;
 
 					case MT_Ugeth:
 						GPIO_SetState(GPIO_VCC_24, true);
-						if(ForcedCh != I_CHANNEL_1 && ForcedCh != I_CHANNEL_0)
+						if(ForcedCh && ForcedCh != I_CHANNEL_1 && ForcedCh != I_CHANNEL_0)
 						{
 							CONTROL_SwitchToProblem(PROBLEM_WRONG_SELECTED_RELAY);
 							return;
@@ -148,10 +148,8 @@ void LOGIC_HandleMeasurement()
 					UgResult = Sample.Ug;
 					UpotResult = Sample.UPot;
 					IgResult = Sample.Ig;
-					if(IsMeasureOk && !ForcedCh)
-						LOGIC_SwitchChannels(IgResult);
-					else if (ForcedCh)
-						CONTROL_SetDeviceSubState(SS_FinishProcess);
+					if(IsMeasureOk )
+						ForcedCh ? CONTROL_SetDeviceSubState(SS_FinishProcess) : LOGIC_SwitchChannels(IgResult);
 				}
 				break;
 
