@@ -184,6 +184,7 @@
 #define REG_CNT_VALUE					132	// Значение, которое будет записано в счетчик
 //
 #define REG_DBG							150	// Отладочный регистр
+#define REG_DIAG_FORCE_CHANNEL			151	// Принудительное включение определенного диапозона тока
 //
 // 151 - 191
 //
@@ -201,8 +202,9 @@
 #define REG_IGES_RESULT					201	// Полученное значение тока Iges
 #define REG_UGE_TH						202 // Полученное пороговое напряжение затвор-эмиттер
 //
-#define REG_DEBUG_THERM_CURRENT			230	// Полученный ток на термисторе
-#define REG_DEBUG_SCALING_COEF			231	// Расcчитанный коэф масштабирования
+#define REG_DIAG_CURRENT				230	// Полученный ток на термисторе
+#define REG_DIAG_VOLTAGE				231	// Полученное напряжение
+#define REG_DEBUG_SCALING_COEF			232	// Расcчитанный коэф масштабирования
 // -----------------------------
 
 #define REG_FWINFO_SLAVE_NID			256	// Device CAN slave node ID
@@ -227,6 +229,7 @@
 #define PROBLEM_SAFETY						4 // Сработала система безопасности
 #define PROBLEM_NEED_MORE_SAMPLES			5 // Недостаточная длина измерения Iges для получения точного значения
 #define PROBLEM_VOLTAGE_LIMIT_NO_CURRENT	6 // Достигнут устновленный лимит напряжения без достижения уровня тока
+#define PROBLEM_WRONG_SELECTED_RELAY		7 // Выбрано неверное реле для диагностики
 
 //  Warning
 #define WARNING_NONE					0

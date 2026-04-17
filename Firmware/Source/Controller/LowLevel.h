@@ -11,7 +11,7 @@
 // Types
 typedef enum IChannel
 {
-	I_CHANNEL_0,
+	I_CHANNEL_0 = 1,
 	I_CHANNEL_1,
 	I_CHANNEL_2,
 	I_CHANNEL_3,
