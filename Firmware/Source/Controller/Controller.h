@@ -22,6 +22,7 @@ typedef enum __DeviceSubState
 {
 	SS_None = 0,
 	SS_PowerOnProcess,
+	SS_PowerOnProcessPAU,
 
 	SS_Cal_V_Prepare = 10,
 	SS_Cal_V_Process,

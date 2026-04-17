@@ -274,6 +274,7 @@
 #define DF_POWER_CURRENT				8
 #define DF_ST_V_SOURCE_ERROR			9
 #define DF_ST_I_SOURCE_ERROR			10
+#define DF_PAU_PWR_ON_TIMEOUT			11
 
 // Problem
 #define PROBLEM_NONE					0

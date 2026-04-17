@@ -409,19 +409,20 @@ void CONTROL_LogicProcess()
 		{
 			case SS_PowerOnProcess:
 				if(TOCUHP_IsReady())
+					CONTROL_SetDeviceState(DS_InProcess, SS_PowerOnProcessPAU);
+				else if(CONTROL_TimeCounter > CONTROL_Timeout)
+					CONTROL_SwitchToFault(DF_TOCUHP_PWR_ON_TIMEOUT);
+				break;
+
+			case SS_PowerOnProcessPAU:
+				if(PAU_IsReady())
 				{
-					if(PAU_IsReady())
-					{
-						CONTROL_ResetOutputRegisters();
-						DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_NONE;
-						CONTROL_SetDeviceState(DS_SelfTest, SS_V_Prepare_Voltage);
-					}
+					CONTROL_ResetOutputRegisters();
+					DataTable[REG_SELF_TEST_OP_RESULT] = OPRESULT_NONE;
+					CONTROL_SetDeviceState(DS_SelfTest, SS_V_Prepare_Voltage);
 				}
-				else
-				{
-					if(CONTROL_TimeCounter > CONTROL_Timeout)
-						CONTROL_SwitchToFault(DF_TOCUHP_PWR_ON_TIMEOUT);
-				}
+				else if(CONTROL_TimeCounter > CONTROL_Timeout)
+					CONTROL_SwitchToFault(DF_PAU_PWR_ON_TIMEOUT);
 				break;
 
 			case SS_Cal_V_Prepare:
