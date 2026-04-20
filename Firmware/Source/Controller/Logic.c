@@ -18,7 +18,7 @@
 static Int64U Timeout = 0;
 Int16U LOGIC_ChannelNumber = 0;
 Int16U RelaySwitchTimer = 0;
-Int16U ForcedCh = 0;
+static Int16U ForcedCh = 0;
 // Forward functions
 //
 void LOGIC_StopProcess();
@@ -50,6 +50,7 @@ void LOGIC_HandleMeasurement()
 
 						if(ForcedCh && ForcedCh != I_CHANNEL_1 && ForcedCh != I_CHANNEL_2 && ForcedCh != I_CHANNEL_3)
 						{
+							GPIO_SetState(GPIO_VCC_48, false);
 							CONTROL_SwitchToProblem(PROBLEM_WRONG_SELECTED_RELAY);
 							return;
 						}
@@ -66,6 +67,8 @@ void LOGIC_HandleMeasurement()
 
 						if(ForcedCh && ForcedCh != I_CHANNEL_5 && ForcedCh != I_CHANNEL_6 && ForcedCh != I_CHANNEL_7)
 						{
+							LL_SetNegativePolarity(false);
+							GPIO_SetState(GPIO_VCC_48, false);
 							CONTROL_SwitchToProblem(PROBLEM_WRONG_SELECTED_RELAY);
 							return;
 						}
@@ -79,12 +82,18 @@ void LOGIC_HandleMeasurement()
 						GPIO_SetState(GPIO_VCC_24, true);
 						if(ForcedCh && ForcedCh != I_CHANNEL_1 && ForcedCh != I_CHANNEL_0)
 						{
+							GPIO_SetState(GPIO_VCC_24, false);
 							CONTROL_SwitchToProblem(PROBLEM_WRONG_SELECTED_RELAY);
 							return;
 						}
-
 						RelaySwitchTimer = DataTable[REG_RELAY_SW_TIMER_UGETH];
-						if ((DataTable[REG_WORK_CURRENT_UGETH] * 0.001)	< DataTable[REG_RANGE_I_0])
+
+						if(ForcedCh)
+						{
+							LL_SetCurrentChannel(ForcedCh);
+							LOGIC_ChannelNumber = ForcedCh;
+						}
+						else if((DataTable[REG_WORK_CURRENT_UGETH] * 0.001)	< DataTable[REG_RANGE_I_0])
 						{
 							LL_SetCurrentChannel(I_CHANNEL_1);
 							LOGIC_ChannelNumber = I_CHANNEL_1;
@@ -93,12 +102,6 @@ void LOGIC_HandleMeasurement()
 						{
 							LL_SetCurrentChannel(I_CHANNEL_0);
 							LOGIC_ChannelNumber = I_CHANNEL_0;
-						}
-
-						if(ForcedCh)
-						{
-							LL_SetCurrentChannel(ForcedCh);
-							LOGIC_ChannelNumber = ForcedCh;
 						}
 						break;
 
@@ -148,7 +151,7 @@ void LOGIC_HandleMeasurement()
 					UgResult = Sample.Ug;
 					UpotResult = Sample.UPot;
 					IgResult = Sample.Ig;
-					if(IsMeasureOk )
+					if(IsMeasureOk)
 						ForcedCh ? CONTROL_SetDeviceSubState(SS_FinishProcess) : LOGIC_SwitchChannels(IgResult);
 				}
 				break;
@@ -182,7 +185,6 @@ void LOGIC_HandleMeasurement()
 				LOGIC_StopProcess();
 				CONTROL_SwitchToProblem(PROBLEM_VOLTAGE_OUT_OF_RANGE);
 				break;
-
 			case SS_CurrentErr:
 				LOGIC_StopProcess();
 				CONTROL_SwitchToProblem(PROBLEM_CURRENT_OUT_OF_RANGE);
@@ -226,6 +228,7 @@ void LOGIC_HandleMeasurement()
 						case MT_Ugeth:
 							DataTable[REG_DIAG_CURRENT] = IgResult;
 							DataTable[REG_UGE_TH] = UgResult;
+							DataTable[REG_DIAG_VOLTAGE] = UgResult;
 							break;
 
 						default:

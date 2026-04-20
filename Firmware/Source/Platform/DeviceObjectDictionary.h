@@ -204,7 +204,7 @@
 //
 #define REG_DIAG_CURRENT				230	// Полученный ток на термисторе
 #define REG_DIAG_VOLTAGE				231	// Полученное напряжение
-#define REG_DEBUG_SCALING_COEF			232	// Расcчитанный коэф масштабирования
+#define REG_DEBUG_SCALING_COEF			232	// Рассчитанный коэф масштабирования
 // -----------------------------
 
 #define REG_FWINFO_SLAVE_NID			256	// Device CAN slave node ID
