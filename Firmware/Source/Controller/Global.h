@@ -14,7 +14,9 @@
 #define TIME_EXT_LED_BLINK			500		// Время загорания внешнего светодиода (в мс)
 #define TIME_FAULT_LED_BLINK		250		// Мигание светодиодом в состоянии Fault
 #define TIME_SPI_DELAY				5		// Задержка интерфейса SPI
-#define TIME_INIT_48V_TIMER			10	// Время для выставления 48v на плате, в мс
+#define TIME_INIT_48V_TIMER			10		// Время для выставления 48v на плате, в мс
+// Другие параметры
+#define CONVERSION_REDUC_THOUSAND	0.001f	// Коэф уменьшения числа в 1000 раз
 
 #define VALUES_EXT_INFO_SIZE		300
 #define VALUES_DEBUG_RGLTR_SIZE		600	// Размер отладочного буфера регулятора
