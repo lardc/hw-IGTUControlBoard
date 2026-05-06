@@ -210,9 +210,11 @@ void LOGIC_HandleMeasurement()
 							DataTable[REG_THERM_RESIS] = MEASURE_Resis(UgResult, IgResult);
 							DataTable[REG_DIAG_CURRENT] = IgResult;
 							DataTable[REG_DIAG_VOLTAGE] = UgResult;
+							DataTable[REG_DIAG_POT_VOLTAGE] = UpotResult;
 							break;
 						case MT_Iges:
 							DataTable[REG_DIAG_VOLTAGE] = UgResult;
+							DataTable[REG_DIAG_POT_VOLTAGE] = UpotResult;
 							if(RINGBUF_GetIgesAvgCount() >= IGES_AVG_BUF_SIZE)
 							{
 								DataTable[REG_IGES_RESULT] = RINGBUF_GetIgesAvg();
@@ -226,6 +228,7 @@ void LOGIC_HandleMeasurement()
 							DataTable[REG_DIAG_CURRENT] = IgResult;
 							DataTable[REG_UGE_TH] = UgResult;
 							DataTable[REG_DIAG_VOLTAGE] = UgResult;
+							DataTable[REG_DIAG_POT_VOLTAGE] = UpotResult;
 							break;
 
 						default:

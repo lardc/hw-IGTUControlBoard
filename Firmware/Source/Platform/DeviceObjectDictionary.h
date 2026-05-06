@@ -202,9 +202,10 @@
 #define REG_IGES_RESULT					201	// Полученное значение тока Iges
 #define REG_UGE_TH						202 // Полученное пороговое напряжение затвор-эмиттер
 //
-#define REG_DIAG_CURRENT				230	// Полученный ток на термисторе
+#define REG_DIAG_CURRENT				230	// Полученный ток
 #define REG_DIAG_VOLTAGE				231	// Полученное напряжение
-#define REG_DEBUG_SCALING_COEF			232	// Рассчитанный коэф масштабирования
+#define REG_DIAG_POT_VOLTAGE			232	// Полученное потенциальное напряжение
+#define REG_DEBUG_SCALING_COEF			233	// Рассчитанный коэф масштабирования
 // -----------------------------
 
 #define REG_FWINFO_SLAVE_NID			256	// Device CAN slave node ID
