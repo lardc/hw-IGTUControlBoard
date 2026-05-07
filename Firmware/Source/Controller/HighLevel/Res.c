@@ -17,11 +17,11 @@
 
 // Definitions
 //
-#define RES_PULSE_WIDTH_MS			10000	// ÏÍÒ
-#define RES_VG_FRONT_TIME			5000	// ÏÍÒ
-#define RES_TEST_VOLTAGE			10.0f	// ¬
+#define RES_PULSE_WIDTH_MS			10000	// –º–∫—Å
+#define RES_VG_FRONT_TIME			5000	// –º–∫—Å
+#define RES_TEST_VOLTAGE			10.0f	// –í
 #define LINE_SHORT_CURRENT			5
-#define LINE_RESISTANCE				4		// ŒÏ
+#define LINE_RESISTANCE				4		// –û–º
 //
 #define RES_AVG_START_INDEX_DEF		20
 #define RES_AVG_LENGTH				20
