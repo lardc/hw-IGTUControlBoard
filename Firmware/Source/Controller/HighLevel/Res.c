@@ -19,7 +19,6 @@
 //
 #define RES_PULSE_WIDTH_MS			10000	// мкс
 #define RES_VG_FRONT_TIME			5000	// мкс
-#define RES_TEST_VOLTAGE			10.0f	// В
 #define LINE_SHORT_CURRENT			5
 #define LINE_RESISTANCE				4		// Ом
 //
@@ -35,7 +34,7 @@ LogParamsStruct ResMeasureLog;
 MeasureSample ResSampledData;
 RingBuffersParams ResRingBuffers;
 bool ResFineMeasure = false;
-float ResTestCurrent = V_I_R2_MAX;
+static float ResTestCurrent = V_I_R2_MAX, TargetVoltage;
 
 // Functions prototypes
 //
@@ -52,7 +51,9 @@ void RES_CacheVariables()
 	REGULATOR_Mode(&RegulatorParams, FeedBack);
 	LOG_ClearBuffers(&ResRingBuffers);
 
-	RegulatorParams.dVg = RES_TEST_VOLTAGE / (RES_VG_FRONT_TIME / TIMER15_uS);
+	TargetVoltage = DataTable[REG_RES_VOLTAGE] ? DataTable[REG_RES_VOLTAGE] : RES_TEST_VOLTAGE;
+
+	RegulatorParams.dVg = TargetVoltage / (RES_VG_FRONT_TIME / TIMER15_uS);
 	RegulatorParams.Counter = RES_PULSE_WIDTH_MS / TIMER15_uS;
 
 	ResMeasureLog.DataA = &ResSampledData.Voltage;
@@ -92,11 +93,11 @@ void RES_Process()
 	LOG_SaveSampleToRingBuffer(&ResRingBuffers);
 	LOG_LoggingData(&ResMeasureLog);
 
-	if(RegulatorParams.Target < RES_TEST_VOLTAGE)
+	if(RegulatorParams.Target < TargetVoltage)
 		RegulatorParams.Target += RegulatorParams.dVg;
 	else
 	{
-		RegulatorParams.Target = RES_TEST_VOLTAGE;
+		RegulatorParams.Target = TargetVoltage;
 		LL_SyncOSC(true);
 		IsImpulse = true;
 	}

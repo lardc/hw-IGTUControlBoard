@@ -5,6 +5,9 @@
 //
 #include "stdinc.h"
 
+// Definitions
+#define RES_TEST_VOLTAGE			10.0f	// В
+
 // Functions prototypes
 //
 void RES_Prepare();

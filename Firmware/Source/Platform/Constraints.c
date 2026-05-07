@@ -5,6 +5,9 @@
 // Header
 #include "Constraints.h"
 
+// Includes
+#include "Res.h"
+
 // Constants
 //
 const TableItemConstraint Constraint[DATA_TABLE_WP_START] = {
@@ -98,7 +101,7 @@ const TableItemConstraint Constraint[DATA_TABLE_WP_START] = {
 		{REGULATOR_KI_MIN, REGULATOR_KI_MAX, REGULATOR_KI_DEF},						// 87
 		{NO, YES, NO},																// 88
 		{0, 0, 0},																	// 89
-		{0, 0, 0},																	// 90
+		{IGES_V_MIN, RES_TEST_VOLTAGE, IGES_V_MIN},									// 90
 		{0, 0, 0},																	// 91
 		{0, 0, 0},																	// 92
 		{0, 0, 0},																	// 93
