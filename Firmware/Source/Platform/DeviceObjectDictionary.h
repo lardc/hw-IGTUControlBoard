@@ -18,6 +18,7 @@
 #define ACT_DBG_24V_ON					18	// Включить питание 24 В
 #define ACT_DBG_24V_OFF					19	// Выключить питание 24 В
 #define ACT_DBG_SYNC					20	// Запуск синхронизации
+#define ACT_DBG_READ_VPOT				21	// Считывание напряжения с потенциальных линий, в тиках
 
 #define ACT_START_MEASURE_RTH			100 // Запуск процесса измерения Rth
 #define ACT_START_MEASURE_IGES			101	// Запуск процесса измерения Iges

@@ -218,7 +218,7 @@ void LOGIC_HandleMeasurement()
 							if(RINGBUF_GetIgesAvgCount() >= IGES_AVG_BUF_SIZE)
 							{
 								DataTable[REG_IGES_RESULT] = RINGBUF_GetIgesAvg();
-								DataTable[REG_DIAG_CURRENT] = IgResult;
+								DataTable[REG_DIAG_CURRENT] = RINGBUF_GetIgesAvg();
 							}
 							else
 								CONTROL_SwitchToProblem(PROBLEM_NEED_MORE_SAMPLES);

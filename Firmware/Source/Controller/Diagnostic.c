@@ -83,6 +83,24 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 			LL_Sync(false);
 			break;
 
+		case ACT_DBG_READ_VPOT:
+			{
+				TIM_Start(TIM15);
+				LL_Sync(true);
+				DELAY_MS(1);
+
+				Int32U sumUPot = 0;
+				for (Int16U i = 0; i < ADC_SEQ_LENGTH; ++i)
+					sumUPot += REGLTR_MemBuffUPot[i];
+
+				// Возвращаем сырое значение АЦП ADC2/UPOT в тиках.
+				DataTable[REG_DIAG_POT_VOLTAGE] = (Int16U)(sumUPot / ADC_SEQ_LENGTH);
+
+				TIM_Stop(TIM15);
+				LL_Sync(false);
+			}
+			break;
+
 		default:
 			return false;
 	}
