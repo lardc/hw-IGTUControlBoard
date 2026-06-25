@@ -23,7 +23,7 @@ typedef enum IChannel
 
 typedef enum RelayMask
 {
-	RELAY_CH_0 			= 0,
+	RELAY_CH_0 			= BIT4,		// для замыкания ОС в ОУ ТИУ
 	RELAY_CH_1 			= BIT0 | BIT4,
 	RELAY_CH_2 			= BIT0 | BIT5,
 	RELAY_CH_3 			= BIT0 | BIT6,
