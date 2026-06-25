@@ -150,14 +150,15 @@ void REGLTR_Init()
 Int16U REGLTR_CorrectionLogDACPoint()
 {
 	RGLTR_ErrorCheck();
+	float RegError = RegulatorErrorUpot ? RegulatorErrorUpot : RegulatorError;
 
-	Qp = RegulatorError * (RegState == RS_FlatTopUgeth ? KpI : Kp);
-	Qi += RegulatorError * (RegState == RS_FlatTopUgeth ? KiI : Ki);
+	Qp = RegError * (RegState == RS_FlatTopUgeth ? KpI : Kp);
+	Qi += RegError * (RegState == RS_FlatTopUgeth ? KiI : Ki);
 
 	float SetPoint = RawSetPoint + Qp + Qi;
 	Int16U DACPoint = MEASURE_ConvertUset(SetPoint);
 
-	REGLTR_StoreRegulatorDebug(Sample.Ug, Sample.UPot, Sample.Ig, RawSetPoint, Qp + Qi, RegulatorError, (float)DACPoint);
+	REGLTR_StoreRegulatorDebug(Sample.Ug, Sample.UPot, Sample.Ig, RawSetPoint, Qp + Qi, RegError, (float)DACPoint);
 
 	return DACPoint;
 }
@@ -170,6 +171,9 @@ void RGLTR_ErrorCheck()
 	{
 		case RS_FlatTopUgeth:
 			{
+				if(RegulatorErrorUpot)
+					RegulatorErrorUpot = 0;
+
 				RegulatorError = DesiredCurrent - Sample.Ig;
 				// Расчет метрологической ошибки по току
 				CurrentErr = ABS(RegulatorError) / DesiredCurrent;
@@ -189,9 +193,10 @@ void RGLTR_ErrorCheck()
 
 		case RS_FlatTop:
 			{
-				if(CONTROL_MeasureType == MT_ST_Upot)
+				if(CONTROL_MeasureType == MT_ST_Upot || CONTROL_MeasureType == MT_Rth)
 					RegulatorErrorUpot = RawSetPoint - Sample.UPot;
-				RegulatorError = RawSetPoint - Sample.Ug;
+				if(CONTROL_MeasureType != MT_Rth)
+					RegulatorError = RawSetPoint - Sample.Ug;
 				// Расчет ошибки по напряжению
 				VoltageErr = ABS(PulseAmplitude - Sample.Ug) / PulseAmplitude;
 
@@ -213,11 +218,13 @@ void RGLTR_ErrorCheck()
 
 		case RS_Rise:
 		default:
-			if(CONTROL_MeasureType == MT_Ugeth || CONTROL_MeasureType == MT_ST_Upot)
+			if(CONTROL_MeasureType == MT_Ugeth || CONTROL_MeasureType == MT_ST_Upot || CONTROL_MeasureType == MT_Rth)
 				RegulatorErrorUpot = RawSetPoint - Sample.UPot;
-			RegulatorError = RawSetPoint - Sample.Ug;
+			if(CONTROL_MeasureType != MT_Rth)
+				RegulatorError = RawSetPoint - Sample.Ug;
 			break;
 	}
+
 	float absError = ABS(RegulatorError) / RawSetPoint;
 	if(absError > FollowingErrThreshold)
 	{
@@ -229,7 +236,7 @@ void RGLTR_ErrorCheck()
 	else
 		FollowingErrorCounter = 0;
 
-	if(RegulatorErrorUpot && RegState != RS_FlatTopUgeth)
+	if(RegulatorErrorUpot)
 	{
 		absError = ABS(RegulatorErrorUpot) / RawSetPoint;
 		if(absError > FollowingErrThreshold)
