@@ -9,7 +9,7 @@
 
 #define ACT_DBG_EXT_INDICATION			10	// Управление внешней индикацией
 #define ACT_DBG_SPI_WRITE_TWO_BYTES		11	// Запись двух байтов для отладки SPI
-#define ACT_DBG_PULSE					12	// Запуск импульса в виде трапеции
+// 12
 #define ACT_DBG_SWITCH_POWER			13	// Диагностическое переключение питаний
 #define ACT_DBG_SWITCH_RELAY			14 	// Диагностическое переключение реле токов
 #define ACT_DBG_DAC_WRITE				15	// Прямая запись значения в ЦАП

@@ -12,10 +12,6 @@
 #include "Regulator.h"
 #include "SysConfig.h"
 
-// Variables
-//
-Int16U DIAG_PulseDataBuffer[DIAG_PULSE_BUFFER_SIZE];
-
 // Functions
 //
 bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
@@ -32,10 +28,6 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 			LL_SPI_WriteByte(DataTable[REG_DBG]);
 			break;
 
-		case ACT_DBG_PULSE:
-			DIAG_GenerateTrapezoidWave();
-			break;
-
 		case ACT_DBG_SWITCH_POWER:
 			GPIO_SetState(GPIO_VCC_48, true);
 			DELAY_MS(500);
@@ -46,7 +38,7 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 			break;
 
 		case ACT_DBG_SWITCH_RELAY:
-			for(Int16U i=1; i<9;i++)
+			for(Int16U i = I_CHANNEL_0; i <= I_CHANNEL_7; i++)
 			{
 				LL_SetCurrentChannel(i);
 				DELAY_MS(1000);
@@ -106,15 +98,5 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 	}
 
 	return true;
-}
-//------------------------------------------------
-
-void DIAG_GenerateTrapezoidWave()
-{
-	/*for (Int16U i = 0; i < REGLTR_PulseSamples.TotalSamples; ++i)
-	{
-		LL_WriteDAC(MEASURE_ConvertUset(REGLTR_GetSetpoint(i)));
-		DELAY_US(TIMER15_uS);
-	}*/
 }
 //------------------------------------------------
