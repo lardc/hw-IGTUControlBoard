@@ -150,7 +150,12 @@ void REGLTR_Init()
 Int16U REGLTR_CorrectionLogDACPoint()
 {
 	RGLTR_ErrorCheck();
-	float RegError = RegulatorErrorUpot ? RegulatorErrorUpot : RegulatorError;
+	float RegError;
+
+	if(RegState != RS_FlatTopUgeth && (CONTROL_MeasureType == MT_ST_Upot || CONTROL_MeasureType == MT_Rth || CONTROL_MeasureType == MT_ST_Upot))
+		RegError= RegulatorErrorUpot;
+	else
+		RegError = RegulatorError;
 
 	Qp = RegError * (RegState == RS_FlatTopUgeth ? KpI : Kp);
 	Qi += RegError * (RegState == RS_FlatTopUgeth ? KiI : Ki);
@@ -166,7 +171,7 @@ Int16U REGLTR_CorrectionLogDACPoint()
 
 void RGLTR_ErrorCheck()
 {
-	float CurrentErr, VoltageErr;
+	float CurrentErr, VoltageErr, absError;
 	switch(RegState)
 	{
 		case RS_FlatTopUgeth:
@@ -225,16 +230,19 @@ void RGLTR_ErrorCheck()
 			break;
 	}
 
-	float absError = ABS(RegulatorError) / RawSetPoint;
-	if(absError > FollowingErrThreshold)
+	if(CONTROL_MeasureType != MT_Rth)
 	{
-		if(FollowingErrorCounter < FollowingErrLimit)
-			FollowingErrorCounter++;
+		absError = ABS(RegulatorError) / RawSetPoint;
+		if(absError > FollowingErrThreshold)
+		{
+			if(FollowingErrorCounter < FollowingErrLimit)
+				FollowingErrorCounter++;
+			else
+				CONTROL_SetDeviceSubState(SS_FollowingErr);
+		}
 		else
-			CONTROL_SetDeviceSubState(SS_FollowingErr);
+			FollowingErrorCounter = 0;
 	}
-	else
-		FollowingErrorCounter = 0;
 
 	if(RegulatorErrorUpot)
 	{
