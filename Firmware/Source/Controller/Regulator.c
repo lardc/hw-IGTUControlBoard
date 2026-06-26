@@ -198,7 +198,7 @@ void RGLTR_ErrorCheck()
 				if(CONTROL_MeasureType != MT_Rth)
 					RegulatorError = RawSetPoint - Sample.Ug;
 				// Расчет ошибки по напряжению
-				VoltageErr = ABS(PulseAmplitude - Sample.Ug) / PulseAmplitude;
+				VoltageErr = ABS(PulseAmplitude - (CONTROL_MeasureType == MT_Rth ? Sample.UPot : Sample.Ug)) / PulseAmplitude;
 
 				if(VoltageErr < VoltagErrThreshold)
 				{

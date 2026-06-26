@@ -207,7 +207,7 @@ void LOGIC_HandleMeasurement()
 					switch(CONTROL_MeasureType)
 					{
 						case MT_Rth:
-							DataTable[REG_THERM_RESIS] = MEASURE_Resis(UgResult, IgResult);
+							DataTable[REG_THERM_RESIS] = MEASURE_Resis(UpotResult, IgResult);
 							DataTable[REG_DIAG_CURRENT] = IgResult;
 							DataTable[REG_DIAG_VOLTAGE] = UgResult;
 							DataTable[REG_DIAG_POT_VOLTAGE] = UpotResult;
