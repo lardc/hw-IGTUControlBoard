@@ -60,7 +60,7 @@ void LOGIC_HandleMeasurement()
 						break;
 
 					case MT_Iges:
-						if(ForcedCh && ForcedCh != I_CHANNEL_5 && ForcedCh != I_CHANNEL_6 && ForcedCh != I_CHANNEL_7)
+						if(ForcedCh == I_CHANNEL_0)
 						{
 							CONTROL_SwitchToProblem(PROBLEM_WRONG_SELECTED_RELAY);
 							return;
