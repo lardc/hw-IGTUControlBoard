@@ -18,12 +18,13 @@ typedef enum IChannel
 	I_CHANNEL_4,
 	I_CHANNEL_5,
 	I_CHANNEL_6,
-	I_CHANNEL_7
+	I_CHANNEL_7,
+	I_CHANNEL_DEF
 } IChannel;
 
 typedef enum RelayMask
 {
-	RELAY_CH_0 			= BIT4,		// для замыкания ОС в ОУ ТИУ
+	RELAY_CH_0 			= 0,
 	RELAY_CH_1 			= BIT0 | BIT4,
 	RELAY_CH_2 			= BIT0 | BIT5,
 	RELAY_CH_3 			= BIT0 | BIT6,
@@ -31,6 +32,7 @@ typedef enum RelayMask
 	RELAY_CH_5 			= BIT0 | BIT3,
 	RELAY_CH_6 			= BIT0 | BIT2,
 	RELAY_CH_7 			= BIT0 | BIT1,
+	RELAY_CH_DEF		= BIT4,			// для замыкания ОС в ОУ ТИУ
 	RELAY_POT_DISCON	= BIT10,
 	RELAY_SELFTEST		= BIT11,
 	RELAY_TEST_LOAD		= BIT9,

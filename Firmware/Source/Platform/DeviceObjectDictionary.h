@@ -234,7 +234,7 @@
 #define PROBLEM_CURRENT_OUT_OF_RANGE		3 // Измеренный ток вне рабочего диапозона
 #define PROBLEM_SAFETY						4 // Сработала система безопасности
 #define PROBLEM_NEED_MORE_SAMPLES			5 // Недостаточная длина измерения Iges для получения точного значения
-#define PROBLEM_VOLTAGE_LIMIT_NO_CURRENT	6 // Достигнут устновленный лимит напряжения без достижения уровня тока
+#define PROBLEM_VOLTAGE_LIMIT_NO_CURRENT	6 // Достигнут установленный лимит напряжения без достижения уровня тока
 #define PROBLEM_WRONG_SELECTED_RELAY		7 // Выбрано неверное реле для диагностики
 
 //  Warning

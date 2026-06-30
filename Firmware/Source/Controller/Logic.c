@@ -253,7 +253,7 @@ void LOGIC_StopProcess()
 	LL_SetSelfTestLoad(false);
 	LL_SetSelfTestUpot(false);
 	LL_Sync(false);
-	LL_SetCurrentChannel(I_CHANNEL_0);
+	LL_SetCurrentChannel(I_CHANNEL_DEF);
 }
 //------------------------------------------
 

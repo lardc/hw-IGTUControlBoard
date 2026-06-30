@@ -45,7 +45,7 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 					LL_SetCurrentChannel(i);
 					DELAY_MS(1000);
 				}
-				LL_SetCurrentChannel(I_CHANNEL_0);
+				LL_SetCurrentChannel(I_CHANNEL_DEF);
 				break;
 			}
 			else
