@@ -38,13 +38,23 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 			break;
 
 		case ACT_DBG_SWITCH_RELAY:
-			for(Int16U i = I_CHANNEL_0; i <= I_CHANNEL_7; i++)
+			if(!DataTable[REG_DBG])
 			{
-				LL_SetCurrentChannel(i);
-				DELAY_MS(1000);
+				for(Int16U i = I_CHANNEL_0; i <= I_CHANNEL_7; i++)
+				{
+					LL_SetCurrentChannel(i);
+					DELAY_MS(1000);
+				}
+				LL_SetCurrentChannel(I_CHANNEL_0);
+				break;
 			}
-			LL_SetCurrentChannel(I_CHANNEL_0);
-			break;
+			else
+			{
+				Int16U Relay = (Int16U) DataTable[REG_DBG];
+				LL_SetCurrentChannel(Relay);
+				break;
+			}
+
 
 		case ACT_DBG_DAC_WRITE:
 			{
