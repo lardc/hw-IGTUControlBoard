@@ -9,7 +9,6 @@
 #include "Regulator.h"
 #include "LowLevel.h"
 #include "Board.h"
-#include "Utils.h"
 #include "Logic.h"
 #include "RingBuffer.h"
 #include "math.h"
@@ -19,12 +18,12 @@ Int16U REGLTR_MemBuffUg[ADC_SEQ_LENGTH];
 Int16U REGLTR_MemBuffUPot[ADC_SEQ_LENGTH];
 Int16U REGLTR_MemBuffIg[ADC_SEQ_LENGTH];
 static float Kp, Ki, KiI, KpI, Qi = 0, FollowingErrThreshold, VoltagErrThreshold, CurrentErrThreshold;
-static Int16U FollowingErrLimit, VoltagErrLimit, VoltageErrCount, CurrentErrLimit,CurrentErrCount ,ScalingCoef, ScalingCounter;
+static Int16U FollowingErrLimit, VoltagErrLimit, VoltageErrCount, CurrentErrLimit, CurrentErrCount, ScalingCoef,
+		ScalingCounter;
 static Int16U FollowingErrorCounterUpot = 0,FollowingErrorCounter = 0;;
 static float PulseAmplitude, DesiredCurrent, RiseRate;
 float RawSetPoint = 0;
 float VoltStep = 0, Qp = 0;
-float RegulatorError = 0, RegulatorErrorUpot = 0;
 RegulatorState RegState = RS_None;
 volatile bool IsMeasureOk = false;
 
@@ -32,15 +31,16 @@ volatile SamplingResult Sample = {0};
 
 // Forward functions
 SamplingResult REGLTR_GetSample();
-void REGLTR_StoreRegulatorDebug(float Ug, float UPot, float Ig, float Setpoint, float Correction, float Error, float DACRaw);
+void REGLTR_StoreRegulatorDebug(float Ug, float UPot, float Ig, float Setpoint, float Correction, float Error,
+		float DACRaw);
 Int16U REGLTR_CorrectionLogDACPoint();
-void RGLTR_ErrorCheck();
+void RGLTR_ErrorCheck(float *RegulatorError, float *RegulatorErrorUpot);
 Int16U REGLTR_GetScalingCoef();
 
 // Functions
 void REGLTR_Process()
 {
-	if (CONTROL_SubState != SS_RegulatorProcess && CONTROL_SubState != SS_RegulatorProcessUgeth
+	if(CONTROL_SubState != SS_RegulatorProcess && CONTROL_SubState != SS_RegulatorProcessUgeth
 			&& CONTROL_SubState != SS_RegulatorProcessSelfTest)
 		return;
 
@@ -96,14 +96,12 @@ void REGLTR_Init()
 	CurrentErrLimit = DataTable[REG_CURRENT_ERR_COUNT_LIMIT];
 	RawSetPoint = 0;
 	RegState = RS_Rise;
-	RegulatorError = 0;
-	RegulatorErrorUpot = 0;
 
 	switch(CONTROL_MeasureType)
 	{
 		case MT_Iges:
 			RiseRate = DataTable[REG_SLEW_RATE_IGES];
-			PulseAmplitude = ABS(DataTable[REG_WORK_VOLTAGE_IGES]) * CONVERSION_REDUC_THOUSAND;
+			PulseAmplitude = fabsf(DataTable[REG_WORK_VOLTAGE_IGES]) * CONVERSION_REDUC_THOUSAND;
 			break;
 
 		case MT_Rth:
@@ -135,25 +133,26 @@ void REGLTR_Init()
 	KpI = DataTable[REG_CURRENT_RGLTR_Kp];
 	KiI = DataTable[REG_CURRENT_RGLTR_Ki];
 
-	for (Int16U i = 0; i < ADC_SEQ_LENGTH; ++i)
+	for(Int16U i = 0; i < ADC_SEQ_LENGTH; ++i)
 	{
 		REGLTR_MemBuffUg[i] = 0;
 		REGLTR_MemBuffUPot[i] = 0;
 		REGLTR_MemBuffIg[i] = 0;
 	}
-	DataTable[REG_DEBUG_SCALING_COEF] = ScalingCoef = REGLTR_GetScalingCoef();
-	if(DataTable[REG_SCALING_MUTE])
-		ScalingCoef = ScalingCounter = 1;
+
+	DataTable[REG_DEBUG_SCALING_COEF] = ScalingCoef = ScalingCounter =
+			DataTable[REG_SCALING_MUTE] ? 1 : REGLTR_GetScalingCoef();
 }
 //-----------------------------------------
 
 Int16U REGLTR_CorrectionLogDACPoint()
 {
-	RGLTR_ErrorCheck();
-	float RegError;
+	float RegError, RegulatorError, RegulatorErrorUpot;
+	RGLTR_ErrorCheck(&RegulatorError, &RegulatorErrorUpot);
 
-	if(RegState != RS_FlatTopUgeth && (CONTROL_MeasureType == MT_ST_Upot || CONTROL_MeasureType == MT_Rth || CONTROL_MeasureType == MT_ST_Upot))
-		RegError= RegulatorErrorUpot;
+	if(RegState != RS_FlatTopUgeth
+			&& (CONTROL_MeasureType == MT_ST_Upot || CONTROL_MeasureType == MT_Rth || CONTROL_MeasureType == MT_ST_Upot))
+		RegError = RegulatorErrorUpot;
 	else
 		RegError = RegulatorError;
 
@@ -169,19 +168,20 @@ Int16U REGLTR_CorrectionLogDACPoint()
 }
 //-----------------------------------------
 
-void RGLTR_ErrorCheck()
+void RGLTR_ErrorCheck(float *RegulatorError, float *RegulatorErrorUpot)
 {
-	float CurrentErr, VoltageErr, absError;
+	*RegulatorError = RawSetPoint - Sample.Ug;
+	*RegulatorErrorUpot = RawSetPoint - Sample.UPot;
+
 	switch(RegState)
 	{
 		case RS_FlatTopUgeth:
 			{
-				if(RegulatorErrorUpot)
-					RegulatorErrorUpot = 0;
+				*RegulatorError = DesiredCurrent - Sample.Ig;
+				*RegulatorErrorUpot = 0;
 
-				RegulatorError = DesiredCurrent - Sample.Ig;
 				// Расчет метрологической ошибки по току
-				CurrentErr = ABS(RegulatorError) / DesiredCurrent;
+				float CurrentErr = fabsf(*RegulatorError) / DesiredCurrent;
 				if(CurrentErr < CurrentErrThreshold)
 				{
 					IsMeasureOk = true;
@@ -198,12 +198,9 @@ void RGLTR_ErrorCheck()
 
 		case RS_FlatTop:
 			{
-				if(CONTROL_MeasureType == MT_ST_Upot || CONTROL_MeasureType == MT_Rth)
-					RegulatorErrorUpot = RawSetPoint - Sample.UPot;
-				if(CONTROL_MeasureType != MT_Rth)
-					RegulatorError = RawSetPoint - Sample.Ug;
 				// Расчет ошибки по напряжению
-				VoltageErr = ABS(PulseAmplitude - (CONTROL_MeasureType == MT_Rth ? Sample.UPot : Sample.Ug)) / PulseAmplitude;
+				float VoltageErr = fabsf(PulseAmplitude - (CONTROL_MeasureType == MT_Rth ? Sample.UPot : Sample.Ug))
+						/ PulseAmplitude;
 
 				if(VoltageErr < VoltagErrThreshold)
 				{
@@ -223,16 +220,12 @@ void RGLTR_ErrorCheck()
 
 		case RS_Rise:
 		default:
-			if(CONTROL_MeasureType == MT_Ugeth || CONTROL_MeasureType == MT_ST_Upot || CONTROL_MeasureType == MT_Rth)
-				RegulatorErrorUpot = RawSetPoint - Sample.UPot;
-			if(CONTROL_MeasureType != MT_Rth)
-				RegulatorError = RawSetPoint - Sample.Ug;
 			break;
 	}
 
 	if(CONTROL_MeasureType != MT_Rth)
 	{
-		absError = ABS(RegulatorError) / RawSetPoint;
+		float absError = fabsf(*RegulatorError) / RawSetPoint;
 		if(absError > FollowingErrThreshold)
 		{
 			if(FollowingErrorCounter < FollowingErrLimit)
@@ -246,16 +239,16 @@ void RGLTR_ErrorCheck()
 
 	if(RegulatorErrorUpot)
 	{
-		absError = ABS(RegulatorErrorUpot) / RawSetPoint;
+		float absError = fabsf(*RegulatorErrorUpot) / RawSetPoint;
 		if(absError > FollowingErrThreshold)
-			{
-				if(FollowingErrorCounterUpot < FollowingErrLimit)
-					FollowingErrorCounterUpot++;
-				else
-					CONTROL_SetDeviceSubState(SS_FollowingErr);
-			}
+		{
+			if(FollowingErrorCounterUpot < FollowingErrLimit)
+				FollowingErrorCounterUpot++;
 			else
-				FollowingErrorCounterUpot = 0;
+				CONTROL_SetDeviceSubState(SS_FollowingErr);
+		}
+		else
+			FollowingErrorCounterUpot = 0;
 	}
 }
 //-----------------------------------------
@@ -283,7 +276,8 @@ SamplingResult REGLTR_GetSample()
 }
 //-----------------------------------------
 
-void REGLTR_StoreRegulatorDebug(float Ug, float UPot, float Ig, float Setpoint, float Correction, float Error, float DACRaw)
+void REGLTR_StoreRegulatorDebug(float Ug, float UPot, float Ig, float Setpoint, float Correction, float Error,
+		float DACRaw)
 {
 	if(ScalingCounter > 1)
 		ScalingCounter--;
@@ -307,10 +301,10 @@ void REGLTR_StoreRegulatorDebug(float Ug, float UPot, float Ig, float Setpoint, 
 
 Int16U REGLTR_GetScalingCoef()
 {
-	Int16U Coef = 0;
-	Int16U MsToMks = 1000;
+	const float MsToMks = 1000.0f;
 	float FirstRelayTimer, FollowingRelaysTimer , RisingPart, SumTicks = 0;
 	RisingPart = PulseAmplitude / RiseRate;
+
 	switch(CONTROL_MeasureType)
 	{
 		case MT_Rth:
@@ -344,12 +338,11 @@ Int16U REGLTR_GetScalingCoef()
 			SumTicks = FirstRelayTimer * MsToMks / TIMER15_uS;
 			break;
 	}
-	if (SumTicks > (float)VALUES_DEBUG_RGLTR_SIZE)
-		Coef = (Int16U)ceil(SumTicks / (float)VALUES_DEBUG_RGLTR_SIZE);
+
+	if(SumTicks > (float)VALUES_DEBUG_RGLTR_SIZE)
+		return (Int16U)ceil(SumTicks / (float)VALUES_DEBUG_RGLTR_SIZE);
 	else
-		Coef = 1;
-	ScalingCounter = Coef;
-	return Coef;
+		return 1;
 }
 //-----------------------------------------
 
