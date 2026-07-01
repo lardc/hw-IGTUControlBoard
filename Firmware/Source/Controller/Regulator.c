@@ -223,7 +223,7 @@ void RGLTR_ErrorCheck(float *RegulatorError, float *RegulatorErrorUpot)
 			break;
 	}
 
-	if(CONTROL_MeasureType != MT_Rth)
+	if(CONTROL_MeasureType == MT_Iges)
 	{
 		float absError = fabsf(*RegulatorError) / RawSetPoint;
 		if(absError > FollowingErrThreshold)
@@ -236,8 +236,7 @@ void RGLTR_ErrorCheck(float *RegulatorError, float *RegulatorErrorUpot)
 		else
 			FollowingErrorCounter = 0;
 	}
-
-	if(RegulatorErrorUpot)
+	else
 	{
 		float absError = fabsf(*RegulatorErrorUpot) / RawSetPoint;
 		if(absError > FollowingErrThreshold)
@@ -250,6 +249,7 @@ void RGLTR_ErrorCheck(float *RegulatorError, float *RegulatorErrorUpot)
 		else
 			FollowingErrorCounterUpot = 0;
 	}
+
 }
 //-----------------------------------------
 
