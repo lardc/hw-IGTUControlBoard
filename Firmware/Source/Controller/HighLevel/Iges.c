@@ -51,6 +51,7 @@ Int16U IgesSamplesCounter = 0;
 void IGES_CacheVariables();
 void IGES_PAUsyncProcess(bool State);
 bool IGES_CheckDUT(bool PulsePlate, float SampledCurrent);
+static bool IGES_IsPauRangeOverflow(float Iges_mA);
 
 // Functions
 //
@@ -309,6 +310,23 @@ void IGES_PAUsyncProcess(bool State)
 }
 //-----------------------------------------------
 
+static bool IGES_IsPauRangeOverflow(float Iges_mA)
+{
+	switch((Int16U)DataTable[REG_IGES_RANGE])
+	{
+		case PAU_CODE_RANGE0:
+		case PAU_CODE_RANGE1:
+			return Iges_mA >= PAU_I_RANGE_1_OVERFLOW;
+
+		case PAU_CODE_RANGE2:
+			return Iges_mA >= PAU_I_RANGE_2_OVERFLOW;
+
+		default:
+			return false;
+	}
+}
+//-----------------------------------------------
+
 void IGES_SaveResults()
 {
 	float Iges = 0;
@@ -326,7 +344,11 @@ void IGES_SaveResults()
 		{
 			if(PAU_ReadMeasuredData(&Iges))
 			{
-				DataTable[REG_IGES_RESULT] = Iges * 1e6 - DataTable[REG_IGES_V] / DataTable[REG_CTRL_LINE_RES] * 1000; // in nA;
+				if(IGES_IsPauRangeOverflow(Iges))
+					DataTable[REG_IGES_RESULT] = Iges * 1e6; // in nA, без компенсации утечки
+				else
+					DataTable[REG_IGES_RESULT] = Iges * 1e6 - DataTable[REG_IGES_V] / DataTable[REG_CTRL_LINE_RES] * 1000; // in nA;
+
 				DataTable[REG_OP_RESULT] = OPRESULT_OK;
 
 				CONTROL_SetDeviceState(DS_Ready, SS_None);

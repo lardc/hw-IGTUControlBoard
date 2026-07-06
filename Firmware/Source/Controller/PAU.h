@@ -17,6 +17,9 @@
 #define PAU_I_RANGE_0				20e-6	// mA
 #define PAU_I_RANGE_1				200e-6	// mA
 #define PAU_I_RANGE_2				2e-3	// mA
+//
+#define PAU_I_RANGE_1_OVERFLOW		210e-6	// mA, RANGE_200nA на PAU
+#define PAU_I_RANGE_2_OVERFLOW		2.1e-3	// mA, RANGE_2uA на PAU
 
 // Types
 //
