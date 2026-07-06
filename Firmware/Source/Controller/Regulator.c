@@ -101,32 +101,32 @@ void REGLTR_Init()
 	{
 		case MT_Iges:
 			RiseRate = DataTable[REG_SLEW_RATE_IGES];
-			PulseAmplitude = fabsf(DataTable[REG_WORK_VOLTAGE_IGES]) * CONVERSION_REDUC_THOUSAND;
+			PulseAmplitude = fabsf(DataTable[REG_WORK_VOLTAGE_IGES]) * 0.001f;
 			break;
 
 		case MT_Rth:
 			RiseRate = DataTable[REG_SLEW_RATE_RTH];
-			PulseAmplitude = DataTable[REG_WORK_VOLTAGE_RTH] * CONVERSION_REDUC_THOUSAND;
+			PulseAmplitude = DataTable[REG_WORK_VOLTAGE_RTH] * 0.001f;
 			break;
 
 		case MT_Ugeth:
 			RiseRate = DataTable[REG_SLEW_RATE_UGETH];
 			PulseAmplitude = DataTable[REG_MAX_VOLTAGE_UGETH];
-			DesiredCurrent = DataTable[REG_WORK_CURRENT_UGETH] * CONVERSION_REDUC_THOUSAND;
+			DesiredCurrent = DataTable[REG_WORK_CURRENT_UGETH] * 0.001f;
 			break;
 
 		case MT_ST_Upot:
 			RiseRate = DataTable[REG_SLEW_RATE_ST_UPOT];
-			PulseAmplitude = DataTable[REG_WORK_VOLTAGE_ST_UPOT] * CONVERSION_REDUC_THOUSAND;
+			PulseAmplitude = DataTable[REG_WORK_VOLTAGE_ST_UPOT] * 0.001f;
 			break;
 
 		case MT_ST_TestLoad:
 			RiseRate = DataTable[REG_SLEW_RATE_ST_TESTLOAD];
-			PulseAmplitude = DataTable[REG_WORK_VOLTAGE_ST_TESTLOAD] * CONVERSION_REDUC_THOUSAND;
+			PulseAmplitude = DataTable[REG_WORK_VOLTAGE_ST_TESTLOAD] * 0.001f;
 			break;
 
 	}
-	VoltStep = RiseRate * TIMER15_uS * CONVERSION_REDUC_THOUSAND;
+	VoltStep = RiseRate * TIMER15_uS * 0.001f;
 
 	Kp = DataTable[REG_RGLTR_Kp];
 	Ki = DataTable[REG_RGLTR_Ki];
@@ -191,7 +191,10 @@ void RGLTR_ErrorCheck(float *RegulatorError, float *RegulatorErrorUpot)
 				{
 					CurrentErrCount++;
 					if(CurrentErrCount > CurrentErrLimit)
+					{
 						CONTROL_SetDeviceSubState(SS_CurrentErr);
+						return;
+					}
 				}
 			}
 			break;
@@ -213,7 +216,10 @@ void RGLTR_ErrorCheck(float *RegulatorError, float *RegulatorErrorUpot)
 				{
 					VoltageErrCount++;
 					if(VoltageErrCount > VoltagErrLimit)
+					{
 						CONTROL_SetDeviceSubState(SS_VoltageErr);
+						return;
+					}
 				}
 			}
 			break;
@@ -244,7 +250,7 @@ void RGLTR_ErrorCheck(float *RegulatorError, float *RegulatorErrorUpot)
 			if(FollowingErrorCounterUpot < FollowingErrLimit)
 				FollowingErrorCounterUpot++;
 			else
-				CONTROL_SetDeviceSubState(SS_FollowingErr);
+				CONTROL_SetDeviceSubState(SS_FollowingErrUpot);
 		}
 		else
 			FollowingErrorCounterUpot = 0;

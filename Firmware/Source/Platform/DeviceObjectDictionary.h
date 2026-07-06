@@ -230,12 +230,13 @@
 // Problem
 #define PROBLEM_NONE						0
 #define PROBLEM_FOLLOWING_ERROR				1
-#define PROBLEM_VOLTAGE_OUT_OF_RANGE		2 // Измеренное напряжение вне рабочего диапозона
-#define PROBLEM_CURRENT_OUT_OF_RANGE		3 // Измеренный ток вне рабочего диапозона
-#define PROBLEM_SAFETY						4 // Сработала система безопасности
-#define PROBLEM_NEED_MORE_SAMPLES			5 // Недостаточная длина измерения Iges для получения точного значения
-#define PROBLEM_VOLTAGE_LIMIT_NO_CURRENT	6 // Достигнут установленный лимит напряжения без достижения уровня тока
-#define PROBLEM_WRONG_SELECTED_RELAY		7 // Выбрано неверное реле для диагностики
+#define PROBLEM_FOLLOWING_ERROR_UPOT		2 // Ошибка Following Err на потенциальной линии
+#define PROBLEM_VOLTAGE_OUT_OF_RANGE		3 // Измеренное напряжение вне рабочего диапозона
+#define PROBLEM_CURRENT_OUT_OF_RANGE		4 // Измеренный ток вне рабочего диапозона
+#define PROBLEM_SAFETY						5 // Сработала система безопасности
+#define PROBLEM_NEED_MORE_SAMPLES			6 // Недостаточная длина измерения Iges для получения точного значения
+#define PROBLEM_VOLTAGE_LIMIT_NO_CURRENT	7 // Достигнут установленный лимит напряжения без достижения уровня тока
+#define PROBLEM_WRONG_SELECTED_RELAY		8 // Выбрано неверное реле для диагностики
 
 //  Warning
 #define WARNING_NONE					0

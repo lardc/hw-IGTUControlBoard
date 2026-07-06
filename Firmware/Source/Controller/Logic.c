@@ -90,7 +90,7 @@ void LOGIC_HandleMeasurement()
 							LL_SetCurrentChannel(ForcedCh);
 							LOGIC_ChannelNumber = ForcedCh;
 						}
-						else if((DataTable[REG_WORK_CURRENT_UGETH] * CONVERSION_REDUC_THOUSAND)	< DataTable[REG_RANGE_I_0])
+						else if((DataTable[REG_WORK_CURRENT_UGETH] * 0.001f)	< DataTable[REG_RANGE_I_0])
 						{
 							LL_SetCurrentChannel(I_CHANNEL_1);
 							LOGIC_ChannelNumber = I_CHANNEL_1;
@@ -177,7 +177,10 @@ void LOGIC_HandleMeasurement()
 				LOGIC_StopProcess();
 				CONTROL_SwitchToProblem(PROBLEM_FOLLOWING_ERROR);
 				break;
-
+			case SS_FollowingErrUpot:
+				LOGIC_StopProcess();
+				CONTROL_SwitchToProblem(PROBLEM_FOLLOWING_ERROR_UPOT);
+				break;
 			case SS_VoltageErr:
 				LOGIC_StopProcess();
 				CONTROL_SwitchToProblem(PROBLEM_VOLTAGE_OUT_OF_RANGE);
