@@ -1,4 +1,4 @@
-#ifndef CONTROLLER_RES_H_
+﻿#ifndef CONTROLLER_RES_H_
 #define CONTROLLER_RES_H_
 
 // Include

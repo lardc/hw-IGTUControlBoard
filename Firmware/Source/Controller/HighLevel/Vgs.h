@@ -1,4 +1,4 @@
-#ifndef CONTROLLER_VGS_H_
+﻿#ifndef CONTROLLER_VGS_H_
 #define CONTROLLER_VGS_H_
 
 // Include

@@ -45,6 +45,14 @@
 #define ACT_RESET_TO_DEFAULT			202	// Сброс DataTable в состояние по умолчанию
 //
 #define ACT_BOOT_LOADER_REQUEST			320	// Перезапуск процессора с целью перепрограммирования
+
+#define ACT_FLASH_DIAG_READ_SYMBOL		330	// Выполнить чтение символа из памяти отладочной информации
+#define ACT_FLASH_DIAG_INIT_READ		331	// Инициализировать начало считывания отладочной информации
+
+#define ACT_FLASH_DIAG_SAVE				332	// Сохранение блока отладочной информации во флэш
+#define ACT_FLASH_DIAG_ERASE			333	// Стирание области отладочной информации
+
+#define ACT_FLASH_DIAG_TO_EP			340	// Выполнить чтение массива из памяти отладочной информации в EP
 // -----------------------------
 
 // Регистры
@@ -303,5 +311,7 @@
 #define	EP_CURRENT						2
 #define EP_REGULATOR_ERR				3
 #define EP_REGULATOR_OUTPUT				4
+
+#define EP_ExtInfoData					20	// External information from flash
 
 #endif //  __DEV_OBJ_DIC_H

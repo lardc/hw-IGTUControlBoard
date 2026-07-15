@@ -1,4 +1,4 @@
-// Header
+﻿// Header
 //
 #include "Qg.h"
 

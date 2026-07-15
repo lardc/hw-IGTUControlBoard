@@ -1,4 +1,4 @@
-#ifndef CONTROLLER_LOGGING_H_
+﻿#ifndef CONTROLLER_LOGGING_H_
 #define CONTROLLER_LOGGING_H_
 
 // Includes
