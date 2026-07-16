@@ -83,6 +83,7 @@ extern Int16U CONTROL_Values_Counter;
 extern volatile Int16U CONTROL_ExtInfoCounter;
 //
 extern Boolean IsImpulse;
+extern volatile Boolean RequestSaveToFlash;
 
 
 // Functions

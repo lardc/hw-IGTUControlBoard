@@ -102,7 +102,7 @@ const TableItemConstraint Constraint[DATA_TABLE_WP_START] = {
 		{NO, YES, NO},																// 88
 		{0, 0, 0},																	// 89
 		{IGES_V_MIN, RES_TEST_VOLTAGE, IGES_V_MIN},									// 90
-		{0, 0, 0},																	// 91
+		{NO, YES, YES},																// 91
 		{0, 0, 0},																	// 92
 		{0, 0, 0},																	// 93
 		{0, 0, 0},																	// 94
