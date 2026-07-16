@@ -23,7 +23,7 @@
 #define SERT_AVG_LENGTH					20
 #define SERT_AVG_V_START_INDEX			950
 #define SERT_AVG_VN_START_INDEX			400
-#define SERT_AVG_I_START_INDEX			VALUES_x_SIZE - 200
+#define SERT_AVG_I_START_INDEX			(VALUES_x_SIZE - 200)
 #define V_SOURCE_R_INT					34		// Ом
 
 // Types

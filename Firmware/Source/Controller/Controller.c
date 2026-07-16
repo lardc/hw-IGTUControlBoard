@@ -48,7 +48,7 @@ void CONTROL_UpdateWatchDog();
 void CONTROL_ResetToDefaultState();
 void CONTROL_LogicProcess();
 bool CONTROL_IsSafetyEvent();
-void CONTROL_InitStoragePointers();
+static void CONTROL_InitStoragePointers();
 
 // Functions
 //
@@ -586,7 +586,7 @@ void CONTROL_SwitchToFault(Int16U Reason)
 }
 //------------------------------------------
 
-void CONTROL_InitStoragePointers()
+static void CONTROL_InitStoragePointers()
 {
 	STF_AssignPointer(0, (Int32U)&DataTable[REG_VGS_I_TRIG]);
 	STF_AssignPointer(1, (Int32U)&DataTable[REG_VGS_V_MAX]);
