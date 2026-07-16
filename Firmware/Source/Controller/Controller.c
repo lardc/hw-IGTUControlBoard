@@ -150,8 +150,8 @@ void CONTROL_Idle()
 		{
 			IWDG_ConfigureSlowUpdate();
 			STF_EraseDataSector();
-			IWDG_ConfigureFastUpdate();
 			STF_SaveDiagData();
+			IWDG_ConfigureFastUpdate();
 		}
 	}
 

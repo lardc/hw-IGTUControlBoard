@@ -22,5 +22,6 @@ void DBGACT_C_VNegativeSet();
 void DBGACT_C_TestPulse();
 void DBGACT_SwitchToDIAG();
 void DBGACT_Protection();
+void DBGACT_Filldata();
 
 #endif //__DEBUGACTIONS_H
