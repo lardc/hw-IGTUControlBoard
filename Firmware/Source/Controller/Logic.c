@@ -18,6 +18,7 @@
 static Int64U Timeout = 0;
 Int16U LOGIC_ChannelNumber = 0;
 Int16U RelaySwitchTimer = 0;
+static Int16U ForcedCh = 0;
 // Forward functions
 //
 void LOGIC_StopProcess();
@@ -40,28 +41,56 @@ void LOGIC_HandleMeasurement()
 		{
 			case SS_Init:
 				UgResult = UpotResult = IgResult = 0.0f;
+				ForcedCh = DataTable[REG_DIAG_FORCE_CHANNEL];
+
 				switch(CONTROL_MeasureType)
 				{
 					case MT_Rth:
+						if(ForcedCh && ForcedCh != I_CHANNEL_1 && ForcedCh != I_CHANNEL_2 && ForcedCh != I_CHANNEL_3)
+						{
+							CONTROL_SwitchToProblem(PROBLEM_WRONG_SELECTED_RELAY);
+							return;
+						}
+
 						GPIO_SetState(GPIO_VCC_48, true);
-						LL_SetCurrentChannel(I_CHANNEL_1);
-						LOGIC_ChannelNumber = I_CHANNEL_1;
+
+						LL_SetCurrentChannel(ForcedCh ? ForcedCh : I_CHANNEL_1);
+						LOGIC_ChannelNumber = ForcedCh ? ForcedCh : I_CHANNEL_1;
 						RelaySwitchTimer = DataTable[REG_RELAY_SW_TIMER_RTH];
 						break;
 
 					case MT_Iges:
+						if(ForcedCh == I_CHANNEL_0)
+						{
+							CONTROL_SwitchToProblem(PROBLEM_WRONG_SELECTED_RELAY);
+							return;
+						}
+
 						if (DataTable[REG_WORK_VOLTAGE_IGES] < 0)
 							LL_SetNegativePolarity(true);
 						GPIO_SetState(GPIO_VCC_48, true);
-						LL_SetCurrentChannel(I_CHANNEL_5);
-						LOGIC_ChannelNumber = I_CHANNEL_5;
+
+						LL_SetCurrentChannel(ForcedCh ? ForcedCh : I_CHANNEL_5);
+						LOGIC_ChannelNumber = ForcedCh ? ForcedCh : I_CHANNEL_5;
 						RelaySwitchTimer = DataTable[REG_RELAY_SW_TIMER_IGES];
 						break;
 
 					case MT_Ugeth:
+						if(ForcedCh && ForcedCh != I_CHANNEL_1 && ForcedCh != I_CHANNEL_0)
+						{
+							CONTROL_SwitchToProblem(PROBLEM_WRONG_SELECTED_RELAY);
+							return;
+						}
+
 						GPIO_SetState(GPIO_VCC_24, true);
 						RelaySwitchTimer = DataTable[REG_RELAY_SW_TIMER_UGETH];
-						if ((DataTable[REG_WORK_CURRENT_UGETH] * 0.001)	< DataTable[REG_RANGE_I_0])
+
+						if(ForcedCh)
+						{
+							LL_SetCurrentChannel(ForcedCh);
+							LOGIC_ChannelNumber = ForcedCh;
+						}
+						else if((DataTable[REG_WORK_CURRENT_UGETH] * 0.001f)	< DataTable[REG_RANGE_I_0])
 						{
 							LL_SetCurrentChannel(I_CHANNEL_1);
 							LOGIC_ChannelNumber = I_CHANNEL_1;
@@ -100,6 +129,7 @@ void LOGIC_HandleMeasurement()
 			case SS_ConfigPulse:
 				REGLTR_Init();
 				REGLTR_StartProcess();
+				LL_Sync(true);
 				float TimeoutTime = (RelaySwitchTimer > DataTable[REG_REGLTR_TIMER]) ?
 								RelaySwitchTimer : DataTable[REG_REGLTR_TIMER];
 				Timeout = CONTROL_TimeCounter + TimeoutTime;
@@ -119,7 +149,7 @@ void LOGIC_HandleMeasurement()
 					UpotResult = Sample.UPot;
 					IgResult = Sample.Ig;
 					if(IsMeasureOk)
-						LOGIC_SwitchChannels(IgResult);
+						ForcedCh ? CONTROL_SetDeviceSubState(SS_FinishProcess) : LOGIC_SwitchChannels(IgResult);
 				}
 				break;
 
@@ -147,12 +177,14 @@ void LOGIC_HandleMeasurement()
 				LOGIC_StopProcess();
 				CONTROL_SwitchToProblem(PROBLEM_FOLLOWING_ERROR);
 				break;
-
+			case SS_FollowingErrUpot:
+				LOGIC_StopProcess();
+				CONTROL_SwitchToProblem(PROBLEM_FOLLOWING_ERROR_UPOT);
+				break;
 			case SS_VoltageErr:
 				LOGIC_StopProcess();
 				CONTROL_SwitchToProblem(PROBLEM_VOLTAGE_OUT_OF_RANGE);
 				break;
-
 			case SS_CurrentErr:
 				LOGIC_StopProcess();
 				CONTROL_SwitchToProblem(PROBLEM_CURRENT_OUT_OF_RANGE);
@@ -178,20 +210,31 @@ void LOGIC_HandleMeasurement()
 					switch(CONTROL_MeasureType)
 					{
 						case MT_Rth:
-							DataTable[REG_THERM_RESIS] = MEASURE_Resis(UgResult, IgResult);
-							DataTable[REG_DEBUG_THERM_CURRENT] = IgResult;
+							DataTable[REG_THERM_RESIS] = MEASURE_Resis(UpotResult, IgResult);
+							DataTable[REG_DIAG_CURRENT] = IgResult;
+							DataTable[REG_DIAG_VOLTAGE] = UgResult;
+							DataTable[REG_DIAG_POT_VOLTAGE] = UpotResult;
 							break;
 						case MT_Iges:
+							DataTable[REG_DIAG_VOLTAGE] = UgResult;
+							DataTable[REG_DIAG_POT_VOLTAGE] = UpotResult;
 							if(RINGBUF_GetIgesAvgCount() >= IGES_AVG_BUF_SIZE)
+							{
 								DataTable[REG_IGES_RESULT] = RINGBUF_GetIgesAvg();
+								DataTable[REG_DIAG_CURRENT] = RINGBUF_GetIgesAvg();
+							}
 							else
 								CONTROL_SwitchToProblem(PROBLEM_NEED_MORE_SAMPLES);
 							break;
+
 						case MT_Ugeth:
+							DataTable[REG_DIAG_CURRENT] = IgResult;
 							DataTable[REG_UGE_TH] = UgResult;
+							DataTable[REG_DIAG_VOLTAGE] = UgResult;
+							DataTable[REG_DIAG_POT_VOLTAGE] = UpotResult;
 							break;
+
 						default:
-							DataTable[REG_DEBUG_THERM_CURRENT] = IgResult;
 							break;
 					}
 				}
@@ -212,7 +255,8 @@ void LOGIC_StopProcess()
 	LL_SetNegativePolarity(false);
 	LL_SetSelfTestLoad(false);
 	LL_SetSelfTestUpot(false);
-	LL_SetCurrentChannel(I_CHANNEL_0);
+	LL_Sync(false);
+	LL_SetCurrentChannel(I_CHANNEL_DEF);
 }
 //------------------------------------------
 
@@ -253,7 +297,7 @@ void LOGIC_SwitchChannels(float Ig)
 
 void LOGIC_SingleSw(float Ig)
 {
-	if(Ig < DataTable[REG_RANGE_I_0 + LOGIC_ChannelNumber])
+	if(Ig < DataTable[REG_RANGE_I_0 + LOGIC_ChannelNumber - 1])
 	{
 		LL_SetCurrentChannel(LOGIC_ChannelNumber + 1);
 		Timeout = CONTROL_TimeCounter + RelaySwitchTimer;

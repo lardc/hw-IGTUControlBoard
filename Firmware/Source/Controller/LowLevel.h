@@ -11,14 +11,15 @@
 // Types
 typedef enum IChannel
 {
-	I_CHANNEL_0,
+	I_CHANNEL_0 = 1,
 	I_CHANNEL_1,
 	I_CHANNEL_2,
 	I_CHANNEL_3,
 	I_CHANNEL_4,
 	I_CHANNEL_5,
 	I_CHANNEL_6,
-	I_CHANNEL_7
+	I_CHANNEL_7,
+	I_CHANNEL_DEF
 } IChannel;
 
 typedef enum RelayMask
@@ -31,6 +32,7 @@ typedef enum RelayMask
 	RELAY_CH_5 			= BIT0 | BIT3,
 	RELAY_CH_6 			= BIT0 | BIT2,
 	RELAY_CH_7 			= BIT0 | BIT1,
+	RELAY_CH_DEF		= BIT4,			// для замыкания ОС в ОУ ТИУ
 	RELAY_POT_DISCON	= BIT10,
 	RELAY_SELFTEST		= BIT11,
 	RELAY_TEST_LOAD		= BIT9,
@@ -45,6 +47,7 @@ extern Int32U CycleCounters[COMMUTATION_TABLE_SIZE];
 //
 void LL_ToggleBoardLED();
 void LL_ExtIndication(bool State);
+void LL_Sync(bool State);
 void LL_ToggleExternalLED();
 void LL_SPI_WriteByte(Int16U Data);
 void LL_SPI_SetStateOE(bool State);

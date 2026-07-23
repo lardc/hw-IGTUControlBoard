@@ -139,7 +139,8 @@ void CONTROL_ResetData()
 	DataTable[REG_THERM_RESIS] = 0;
 	DataTable[REG_IGES_RESULT] = 0;
 	DataTable[REG_UGE_TH] = 0;
-	DataTable[REG_DEBUG_THERM_CURRENT] = 0;
+	DataTable[REG_DIAG_CURRENT] = 0;
+	DataTable[REG_DIAG_VOLTAGE] = 0;
 
 	CONTROL_Values_Counter = 0;
 

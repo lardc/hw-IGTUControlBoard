@@ -26,6 +26,7 @@ GPIO_PortPinSettingMacro GPIO_SAFETY		= {GPIOB, Pin_8};
 // Определения для выходных портов
 GPIO_PortPinSettingMacro GPIO_LED			= {GPIOA, Pin_8};
 GPIO_PortPinSettingMacro GPIO_LED_EXT		= {GPIOB, Pin_4};
+GPIO_PortPinSettingMacro GPIO_SYNC			= {GPIOB, Pin_6};
 GPIO_PortPinSettingMacro GPIO_SPI_OE		= {GPIOB, Pin_7};
 GPIO_PortPinSettingMacro GPIO_VCC_24		= {GPIOB, Pin_14};
 GPIO_PortPinSettingMacro GPIO_VCC_48		= {GPIOB, Pin_15};

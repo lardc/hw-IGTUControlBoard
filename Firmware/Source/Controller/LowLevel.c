@@ -10,7 +10,7 @@
 uint16_t PrevMask = 0;
 uint16_t Mask = 0;
 Int32U CycleCounters[COMMUTATION_TABLE_SIZE] = {0};
-uint16_t const CommMask[] = {RELAY_CH_0, RELAY_CH_1, RELAY_CH_2, RELAY_CH_3, RELAY_CH_4, RELAY_CH_5, RELAY_CH_6, RELAY_CH_7,
+uint16_t const CommMask[] = {RELAY_CH_0, RELAY_CH_1, RELAY_CH_2, RELAY_CH_3, RELAY_CH_4, RELAY_CH_5, RELAY_CH_6, RELAY_CH_7,RELAY_CH_DEF,
 							RELAY_POT_DISCON, RELAY_SELFTEST, RELAY_TEST_LOAD, RELAY_NEG_POLARITY};
 
 // Forward functions
@@ -29,6 +29,12 @@ void LL_ToggleBoardLED()
 void LL_ExtIndication(bool State)
 {
 	GPIO_SetState(GPIO_LED_EXT, State);
+}
+//-----------------------------
+
+void LL_Sync(bool State)
+{
+	GPIO_SetState(GPIO_SYNC, State);
 }
 //-----------------------------
 
@@ -110,6 +116,8 @@ void LL_SetCurrentChannel(IChannel Channel)
 		case I_CHANNEL_7:
 			Mask |= RELAY_CH_7;
 			break;
+		case I_CHANNEL_DEF:
+			Mask |= RELAY_CH_DEF;
 	}
 	LL_SPI_WriteByte(Mask);
 	PrevMask = Mask;

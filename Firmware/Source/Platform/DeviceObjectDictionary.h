@@ -9,7 +9,7 @@
 
 #define ACT_DBG_EXT_INDICATION			10	// Управление внешней индикацией
 #define ACT_DBG_SPI_WRITE_TWO_BYTES		11	// Запись двух байтов для отладки SPI
-#define ACT_DBG_PULSE					12	// Запуск импульса в виде трапеции
+// 12
 #define ACT_DBG_SWITCH_POWER			13	// Диагностическое переключение питаний
 #define ACT_DBG_SWITCH_RELAY			14 	// Диагностическое переключение реле токов
 #define ACT_DBG_DAC_WRITE				15	// Прямая запись значения в ЦАП
@@ -17,12 +17,17 @@
 #define ACT_DBG_48V_OFF					17	// Выключить питание 48 В
 #define ACT_DBG_24V_ON					18	// Включить питание 24 В
 #define ACT_DBG_24V_OFF					19	// Выключить питание 24 В
+#define ACT_DBG_SYNC					20	// Запуск синхронизации
+#define ACT_DBG_READ_VPOT				21	// Считывание напряжения с потенциальных линий, в тиках
 
-#define ACT_START_MEASURE_RTH			100 // Запуск процесса измерения Rth
-#define ACT_START_MEASURE_IGES			101	// Запуск процесса измерения Iges
-#define ACT_START_MEASURE_UGETH			102	// Запуск процесса измерения Uge_th
-#define ACT_START_SELFTEST_UPOT			103 // Запуск процесса самодиагностики потенциальных линий
-#define ACT_START_SELFTEST_TESTLOAD		104 // Запуск процесса самодиагностики с тестовой нагрузкой
+#define ACT_START_MEASURE_UGETH			100	// Запуск процесса измерения Uge_th
+//101
+#define ACT_START_MEASURE_IGES			102	// Запуск процесса измерения Iges
+#define ACT_START_MEASURE_RTH			103 // Запуск процесса измерения Rth
+
+#define ACT_START_SELFTEST_UPOT			110 // Запуск процесса самодиагностики потенциальных линий
+#define ACT_START_SELFTEST_TESTLOAD		111 // Запуск процесса самодиагностики с тестовой нагрузкой
+
 #define ACT_SAVE_TO_ROM					200	// Сохранение пользовательских данных во FLASH процессора
 #define ACT_RESTORE_FROM_ROM			201	// Восстановление данных из FLASH
 #define ACT_RESET_TO_DEFAULT			202	// Сброс DataTable в состояние по умолчанию
@@ -174,17 +179,19 @@
 // 108 - 127
 
 // Несохраняемы регистры чтения-записи
-#define REG_WORK_VOLTAGE_IGES			128	// Номинальное рабочее напряжение для измерения Iges, мВ
-#define REG_WORK_CURRENT_UGETH			129	// Номинальный рабочий ток для измерения Ugeth, мА
+#define REG_WORK_CURRENT_UGETH			128	// Номинальный рабочий ток для измерения Ugeth, мА
 //
 #define REG_SAFETY_MUTE					130	// Отключение контура безопасности
 //
 #define REG_CNT_NUMBER					131	// Номер счетчика, в который будет записано значение
 #define REG_CNT_VALUE					132	// Значение, которое будет записано в счетчик
 //
-#define REG_DBG							150	// Отладочный регистр
+#define REG_WORK_VOLTAGE_IGES			136	// Номинальное рабочее напряжение для измерения Iges, мВ
 //
-// 151 - 191
+#define REG_DBG							150	// Отладочный регистр
+#define REG_DIAG_FORCE_CHANNEL			151	// Принудительное включение определенного диапазона тока
+//
+// 152 - 191
 //
 
 // Регистры только чтение
@@ -196,12 +203,14 @@
 #define REG_OP_RESULT					197	// Регистр результата операции
 #define REG_DEV_SUBSTATE				198
 
-#define REG_THERM_RESIS					200	// Полученное сопротивление термистора
-#define REG_IGES_RESULT					201	// Полученное значение тока Iges
-#define REG_UGE_TH						202 // Полученное пороговое напряжение затвор-эмиттер
+#define REG_UGE_TH						200 // Полученное пороговое напряжение затвор-эмиттер
+#define REG_IGES_RESULT					204	// Полученное значение тока Iges
+#define REG_THERM_RESIS					205	// Полученное сопротивление термистора
 //
-#define REG_DEBUG_THERM_CURRENT			230	// Полученный ток на термисторе
-#define REG_DEBUG_SCALING_COEF			231	// Расcчитанный коэф масштабирования
+#define REG_DIAG_CURRENT				230	// Полученный ток
+#define REG_DIAG_VOLTAGE				231	// Полученное напряжение
+#define REG_DIAG_POT_VOLTAGE			232	// Полученное потенциальное напряжение
+#define REG_DEBUG_SCALING_COEF			233	// Рассчитанный коэф масштабирования
 // -----------------------------
 
 #define REG_FWINFO_SLAVE_NID			256	// Device CAN slave node ID
@@ -221,11 +230,13 @@
 // Problem
 #define PROBLEM_NONE						0
 #define PROBLEM_FOLLOWING_ERROR				1
-#define PROBLEM_VOLTAGE_OUT_OF_RANGE		2 // Измеренное напряжение вне рабочего диапозона
-#define PROBLEM_CURRENT_OUT_OF_RANGE		3 // Измеренный ток вне рабочего диапозона
-#define PROBLEM_SAFETY						4 // Сработала система безопасности
-#define PROBLEM_NEED_MORE_SAMPLES			5 // Недостаточная длина измерения Iges для получения точного значения
-#define PROBLEM_VOLTAGE_LIMIT_NO_CURRENT	6 // Достигнут устновленный лимит напряжения без достижения уровня тока
+#define PROBLEM_FOLLOWING_ERROR_UPOT		2 // Ошибка Following Err на потенциальной линии
+#define PROBLEM_VOLTAGE_OUT_OF_RANGE		3 // Измеренное напряжение вне рабочего диапозона
+#define PROBLEM_CURRENT_OUT_OF_RANGE		4 // Измеренный ток вне рабочего диапозона
+#define PROBLEM_SAFETY						5 // Сработала система безопасности
+#define PROBLEM_NEED_MORE_SAMPLES			6 // Недостаточная длина измерения Iges для получения точного значения
+#define PROBLEM_VOLTAGE_LIMIT_NO_CURRENT	7 // Достигнут установленный лимит напряжения без достижения уровня тока
+#define PROBLEM_WRONG_SELECTED_RELAY		8 // Выбрано неверное реле для диагностики
 
 //  Warning
 #define WARNING_NONE					0

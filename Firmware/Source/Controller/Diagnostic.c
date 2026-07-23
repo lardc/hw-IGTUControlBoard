@@ -12,10 +12,6 @@
 #include "Regulator.h"
 #include "SysConfig.h"
 
-// Variables
-//
-Int16U DIAG_PulseDataBuffer[DIAG_PULSE_BUFFER_SIZE];
-
 // Functions
 //
 bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
@@ -32,10 +28,6 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 			LL_SPI_WriteByte(DataTable[REG_DBG]);
 			break;
 
-		case ACT_DBG_PULSE:
-			DIAG_GenerateTrapezoidWave();
-			break;
-
 		case ACT_DBG_SWITCH_POWER:
 			GPIO_SetState(GPIO_VCC_48, true);
 			DELAY_MS(500);
@@ -46,13 +38,23 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 			break;
 
 		case ACT_DBG_SWITCH_RELAY:
-			for(Int16U i=0; i<8;i++)
+			if(!DataTable[REG_DBG])
 			{
-				LL_SetCurrentChannel(i);
-				DELAY_MS(1000);
+				for(Int16U i = I_CHANNEL_0; i <= I_CHANNEL_7; i++)
+				{
+					LL_SetCurrentChannel(i);
+					DELAY_MS(1000);
+				}
+				LL_SetCurrentChannel(I_CHANNEL_DEF);
+				break;
 			}
-			LL_SetCurrentChannel(0);
-			break;
+			else
+			{
+				Int16U Relay = (Int16U) DataTable[REG_DBG];
+				LL_SetCurrentChannel(Relay);
+				break;
+			}
+
 
 		case ACT_DBG_DAC_WRITE:
 			{
@@ -77,20 +79,34 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 			GPIO_SetState(GPIO_VCC_24, false);
 			break;
 
+		case ACT_DBG_SYNC:
+			LL_Sync(true);
+			DELAY_US(1000);
+			LL_Sync(false);
+			break;
+
+		case ACT_DBG_READ_VPOT:
+			{
+				TIM_Start(TIM15);
+				LL_Sync(true);
+				DELAY_MS(1);
+
+				Int32U sumUPot = 0;
+				for (Int16U i = 0; i < ADC_SEQ_LENGTH; ++i)
+					sumUPot += REGLTR_MemBuffUPot[i];
+
+				// Возвращаем сырое значение АЦП ADC2/UPOT в тиках.
+				DataTable[REG_DIAG_POT_VOLTAGE] = (Int16U)(sumUPot / ADC_SEQ_LENGTH);
+
+				TIM_Stop(TIM15);
+				LL_Sync(false);
+			}
+			break;
+
 		default:
 			return false;
 	}
 
 	return true;
-}
-//------------------------------------------------
-
-void DIAG_GenerateTrapezoidWave()
-{
-	/*for (Int16U i = 0; i < REGLTR_PulseSamples.TotalSamples; ++i)
-	{
-		LL_WriteDAC(MEASURE_ConvertUset(REGLTR_GetSetpoint(i)));
-		DELAY_US(TIMER15_uS);
-	}*/
 }
 //------------------------------------------------
