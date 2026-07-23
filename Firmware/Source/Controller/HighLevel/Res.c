@@ -1,4 +1,4 @@
-﻿// Header
+// Header
 //
 #include "Res.h"
 

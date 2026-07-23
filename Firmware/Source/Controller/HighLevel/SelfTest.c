@@ -1,4 +1,4 @@
-﻿// Header
+// Header
 //
 #include "SelfTest.h"
 #include "Calibration.h"

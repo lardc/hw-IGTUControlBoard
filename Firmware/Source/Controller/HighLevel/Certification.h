@@ -1,4 +1,4 @@
-﻿#ifndef CERTIFICATION_H_
+#ifndef CERTIFICATION_H_
 #define CERTIFICATION_H_
 
 // Include

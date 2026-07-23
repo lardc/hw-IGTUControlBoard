@@ -1,4 +1,4 @@
-﻿// Header
+// Header
 #include "LowLevel.h"
 // Include
 #include "Board.h"

@@ -1,4 +1,4 @@
-﻿// Header
+// Header
 //
 #include "Logging.h"
 #include "ConvertUtils.h"

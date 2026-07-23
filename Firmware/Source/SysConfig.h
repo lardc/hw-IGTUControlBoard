@@ -1,4 +1,4 @@
-﻿#ifndef __SYSCONFIG_H
+#ifndef __SYSCONFIG_H
 #define __SYSCONFIG_H
 
 // Flash loader options

@@ -1,4 +1,4 @@
-﻿#ifndef __GLOBAL_H
+#ifndef __GLOBAL_H
 #define __GLOBAL_H
 
 #include "SysConfig.h"

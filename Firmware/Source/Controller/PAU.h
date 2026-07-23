@@ -1,4 +1,4 @@
-﻿#ifndef CONTROLLER_PAU_H_
+#ifndef CONTROLLER_PAU_H_
 #define CONTROLLER_PAU_H_
 
 // Includes

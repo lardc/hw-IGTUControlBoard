@@ -1,4 +1,4 @@
-﻿// Header
+// Header
 #include "StorageDescription.h"
 #include "Global.h"
 

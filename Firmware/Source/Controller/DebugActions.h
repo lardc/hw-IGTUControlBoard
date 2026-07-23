@@ -1,4 +1,4 @@
-﻿#ifndef __DEBUGACTIONS_H
+#ifndef __DEBUGACTIONS_H
 #define __DEBUGACTIONS_H
 
 // Include
