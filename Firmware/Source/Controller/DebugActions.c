@@ -169,12 +169,12 @@ void DBGACT_C_TestPulse()
 
 void DBGACT_Filldata()
 {
-	for(int i =0; i<VALUES_x_SIZE; i++)
+	for(int i = 0; i < VALUES_x_SIZE; i++)
 	{
 		CONTROL_VoltageValues[i] = i;
-		CONTROL_CurrentValues[i] = i*10;
-		CONTROL_RegulatorOutputValues[i] = i *0.1f;
-		CONTROL_RegulatorErrValues[i] = i *0.01f;
+		CONTROL_CurrentValues[i] = i * 10;
+		CONTROL_RegulatorOutputValues[i] = i * 0.1f;
+		CONTROL_RegulatorErrValues[i] = i * 0.01f;
 	}
 	DataTable[REG_VGS_RESULT] = 100;
 	DataTable[REG_VGS_I_RESULT] = 101;
