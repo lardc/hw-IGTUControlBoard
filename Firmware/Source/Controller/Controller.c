@@ -69,10 +69,10 @@ void CONTROL_Init()
 {
 	// Переменные для конфигурации EndPoint
 	Int16U EPIndexes[FEP_COUNT] = {
-		EP16_ExtInfoData, EP16_RegulatorUg,
-		EP16_RegulatorUpot, EP16_RegulatorIg,
-		EP16_RegulatorSetpoint, EP16_RegulatorCorrection,
-		EP16_RegulatorError, EP16_DACRaw
+		EPF_ExtInfoData, EPF_RegulatorUg,
+		EPF_RegulatorUpot, EPF_RegulatorIg,
+		EPF_RegulatorSetpoint, EPF_RegulatorCorrection,
+		EPF_RegulatorError, EPF_DACRaw
 	};
 	Int16U EPSized[FEP_COUNT] = {
 		VALUES_EXT_INFO_SIZE, VALUES_DEBUG_RGLTR_SIZE, VALUES_DEBUG_RGLTR_SIZE,
