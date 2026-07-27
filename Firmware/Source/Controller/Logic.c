@@ -52,7 +52,7 @@ void LOGIC_HandleMeasurement()
 							return;
 						}
 
-						GPIO_SetState(GPIO_VCC_48, true);
+						GPIO_SetState(GPIO_VCC_24, true);
 
 						LL_SetCurrentChannel(ForcedCh ? ForcedCh : I_CHANNEL_1);
 						LOGIC_ChannelNumber = ForcedCh ? ForcedCh : I_CHANNEL_1;
@@ -90,7 +90,7 @@ void LOGIC_HandleMeasurement()
 							LL_SetCurrentChannel(ForcedCh);
 							LOGIC_ChannelNumber = ForcedCh;
 						}
-						else if((DataTable[REG_WORK_CURRENT_UGETH] * 0.001f)	< DataTable[REG_RANGE_I_0])
+						else if((DataTable[REG_WORK_CURRENT_UGETH] * 0.001f) < DataTable[REG_RANGE_I_0])
 						{
 							LL_SetCurrentChannel(I_CHANNEL_1);
 							LOGIC_ChannelNumber = I_CHANNEL_1;
@@ -117,11 +117,11 @@ void LOGIC_HandleMeasurement()
 						LOGIC_TestLoadRelaySwitch();
 						break;
 				}
-				Timeout = CONTROL_TimeCounter + TIME_INIT_48V_TIMER;
-				CONTROL_SetDeviceSubState(SS_Wait48VPause);
+				Timeout = CONTROL_TimeCounter + TIME_INIT_PS_TIMER;
+				CONTROL_SetDeviceSubState(SS_WaitPowerSupply);
 				break;
 
-			case SS_Wait48VPause:
+			case SS_WaitPowerSupply:
 				if(CONTROL_TimeCounter > Timeout)
 					CONTROL_SetDeviceSubState(SS_ConfigPulse);
 				break;
@@ -197,7 +197,7 @@ void LOGIC_HandleMeasurement()
 
 			case SS_FinishProcess:
 				LOGIC_StopProcess();
-				Timeout = CONTROL_TimeCounter + TIME_INIT_48V_TIMER;
+				Timeout = CONTROL_TimeCounter + TIME_INIT_PS_TIMER;
 				CONTROL_SetDeviceSubState(SS_GetResults);
 				break;
 
@@ -310,7 +310,7 @@ void LOGIC_SingleSw(float Ig)
 
 void LOGIC_TestLoadRelaySwitch()
 {
-	float CalcCurrent = (DataTable[REG_WORK_VOLTAGE_ST_TESTLOAD] * 0.001) /  DataTable[REG_ST_TESTLOAD_RESIS];
+	float CalcCurrent = (DataTable[REG_WORK_VOLTAGE_ST_TESTLOAD] * 0.001f) /  DataTable[REG_ST_TESTLOAD_RESIS];
 	if(CalcCurrent > DataTable[REG_RANGE_I_0])
 	{
 		LL_SetCurrentChannel(I_CHANNEL_0);
