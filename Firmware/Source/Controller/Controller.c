@@ -118,7 +118,6 @@ void CONTROL_Init()
 	CONTROL_InitStoragePointers();
 	STF_LoadCounters();
 
-
 	CONTROL_ResetToDefaultState();
 }
 //------------------------------------------
@@ -128,6 +127,8 @@ void CONTROL_ResetToDefaultState()
 	CONTROL_ResetData();
 	CONTROL_SetDeviceState(DS_None);
 	CONTROL_SetDeviceSubState(SS_None);
+
+	LL_SetCurrentChannel(I_CHANNEL_0);
 }
 //------------------------------------------
 
