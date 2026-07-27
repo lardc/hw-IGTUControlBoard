@@ -128,7 +128,7 @@ void CONTROL_ResetToDefaultState()
 	CONTROL_SetDeviceState(DS_None);
 	CONTROL_SetDeviceSubState(SS_None);
 
-	LL_SetCurrentChannel(I_CHANNEL_0);
+	LL_SetCurrentChannel(RELAY_CH_DEF);
 }
 //------------------------------------------
 

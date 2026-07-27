@@ -10,8 +10,8 @@
 uint16_t PrevMask = 0;
 uint16_t Mask = 0;
 Int32U CycleCounters[COMMUTATION_TABLE_SIZE] = {0};
-uint16_t const CommMask[] = {RELAY_CH_0, RELAY_CH_1, RELAY_CH_2, RELAY_CH_3, RELAY_CH_4, RELAY_CH_5, RELAY_CH_6, RELAY_CH_7,RELAY_CH_DEF,
-							RELAY_POT_DISCON, RELAY_SELFTEST, RELAY_TEST_LOAD, RELAY_NEG_POLARITY};
+uint16_t const CommMask[] = {RELAY_CH_0, RELAY_CH_1, RELAY_CH_2, RELAY_CH_3, RELAY_CH_4, RELAY_CH_5, RELAY_CH_6,
+		RELAY_CH_7, RELAY_CH_DEF, RELAY_POT_DISCON, RELAY_SELFTEST, RELAY_TEST_LOAD, RELAY_NEG_POLARITY};
 
 // Forward functions
 //
@@ -53,10 +53,8 @@ void LL_Counter_Increase()
 		{
 			if((PrevMask & RELAY_ALL_CHANNELS) != 0 && (Mask & RELAY_ALL_CHANNELS) == 0)
 				CycleCounters[i]++;
-			continue;
 		}
-
-		if((PrevMask & CommMask[i]) != CommMask[i] && (Mask & CommMask[i]) == CommMask[i])
+		else if((PrevMask & CommMask[i]) != CommMask[i] && (Mask & CommMask[i]) == CommMask[i])
 			CycleCounters[i]++;
 	}
 }
@@ -88,8 +86,7 @@ void LL_WriteDAC(Int16U Data)
 
 void LL_SetCurrentChannel(IChannel Channel)
 {
-	Mask = PrevMask;
-	Mask &=~ RELAY_ALL_CHANNELS;
+	Mask = PrevMask & (~RELAY_ALL_CHANNELS);
 	switch(Channel)
 	{
 		case I_CHANNEL_0:
@@ -116,8 +113,10 @@ void LL_SetCurrentChannel(IChannel Channel)
 		case I_CHANNEL_7:
 			Mask |= RELAY_CH_7;
 			break;
+		default:
 		case I_CHANNEL_DEF:
 			Mask |= RELAY_CH_DEF;
+			break;
 	}
 	LL_SPI_WriteByte(Mask);
 	PrevMask = Mask;
