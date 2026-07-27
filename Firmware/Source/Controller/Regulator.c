@@ -12,6 +12,7 @@
 #include "Logic.h"
 #include "RingBuffer.h"
 #include "math.h"
+#include "Utils.h"
 
 // Variables
 Int16U REGLTR_MemBuffUg[ADC_SEQ_LENGTH];
@@ -314,15 +315,13 @@ Int16U REGLTR_GetScalingCoef()
 	switch(CONTROL_MeasureType)
 	{
 		case MT_Rth:
-			FirstRelayTimer = (DataTable[REG_RELAY_SW_TIMER_RTH] > DataTable[REG_REGLTR_TIMER]) ?
-								DataTable[REG_RELAY_SW_TIMER_RTH] : DataTable[REG_REGLTR_TIMER];
+			FirstRelayTimer = MAX(DataTable[REG_RELAY_SW_TIMER_RTH], DataTable[REG_REGLTR_TIMER]);
 			FollowingRelaysTimer = DataTable[REG_RELAY_SW_TIMER_RTH];
 			SumTicks = (RisingPart + FirstRelayTimer + 2 * FollowingRelaysTimer) * MsToMks / TIMER15_uS;
 			break;
 
 		case MT_Iges:
-			FirstRelayTimer =(DataTable[REG_RELAY_SW_TIMER_IGES] > DataTable[REG_REGLTR_TIMER]) ?
-							   DataTable[REG_RELAY_SW_TIMER_IGES] : DataTable[REG_REGLTR_TIMER];
+			FirstRelayTimer = MAX(DataTable[REG_RELAY_SW_TIMER_IGES], DataTable[REG_REGLTR_TIMER]);
 			FollowingRelaysTimer = DataTable[REG_RELAY_SW_TIMER_IGES];
 			SumTicks = (RisingPart + FirstRelayTimer + 2 * FollowingRelaysTimer) * MsToMks / TIMER15_uS;
 			break;
