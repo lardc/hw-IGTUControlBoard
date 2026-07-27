@@ -140,8 +140,8 @@ void REGLTR_Init()
 		REGLTR_MemBuffIg[i] = 0;
 	}
 
-	DataTable[REG_DEBUG_SCALING_COEF] = ScalingCoef = ScalingCounter =
-			DataTable[REG_SCALING_MUTE] ? 1 : REGLTR_GetScalingCoef();
+	ScalingCoef = ScalingCounter = DataTable[REG_SCALING_MUTE] ? 1 : REGLTR_GetScalingCoef();
+	DataTable[REG_EP_DATA_STEP] = ScalingCoef * TIMER15_uS;
 }
 //-----------------------------------------
 
@@ -328,10 +328,9 @@ Int16U REGLTR_GetScalingCoef()
 			break;
 
 		case MT_Ugeth:
-			FirstRelayTimer = (DataTable[REG_RELAY_SW_TIMER_UGETH] > DataTable[REG_REGLTR_TIMER]) ?
-								DataTable[REG_RELAY_SW_TIMER_UGETH] : DataTable[REG_REGLTR_TIMER];
-			FollowingRelaysTimer = DataTable[REG_RELAY_SW_TIMER_UGETH];
-			SumTicks = (RisingPart + FirstRelayTimer + FollowingRelaysTimer) * MsToMks / TIMER15_uS;
+			FirstRelayTimer = DataTable[REG_RELAY_SW_TIMER_UGETH];
+			SumTicks = (RisingPart + FirstRelayTimer + DataTable[REG_CURRENT_FLATTOP_DURATION])
+					* MsToMks / TIMER15_uS;
 			break;
 
 		case MT_ST_Upot:

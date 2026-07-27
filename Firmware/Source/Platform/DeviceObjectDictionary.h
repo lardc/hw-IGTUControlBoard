@@ -210,7 +210,7 @@
 #define REG_DIAG_CURRENT				230	// Полученный ток
 #define REG_DIAG_VOLTAGE				231	// Полученное напряжение
 #define REG_DIAG_POT_VOLTAGE			232	// Полученное потенциальное напряжение
-#define REG_DEBUG_SCALING_COEF			233	// Рассчитанный коэф масштабирования
+#define REG_EP_DATA_STEP				233	// Шаг данных в EP, мкс
 // -----------------------------
 
 #define REG_FWINFO_SLAVE_NID			256	// Device CAN slave node ID
