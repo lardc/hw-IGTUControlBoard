@@ -27,7 +27,7 @@ float RawSetPoint = 0;
 float VoltStep = 0, Qp = 0;
 RegulatorState RegState = RS_None;
 volatile bool IsMeasureOk = false;
-
+static volatile Int32U Counter, RegulatorPause;
 volatile SamplingResult Sample = {0};
 
 // Forward functions
@@ -97,6 +97,7 @@ void REGLTR_Init()
 	CurrentErrLimit = DataTable[REG_CURRENT_ERR_COUNT_LIMIT];
 	RawSetPoint = 0;
 	RegState = RS_Rise;
+	Counter = RegulatorPause = 0;
 
 	switch(CONTROL_MeasureType)
 	{
@@ -157,15 +158,25 @@ Int16U REGLTR_CorrectionLogDACPoint()
 	else
 		RegError = RegulatorError;
 
-	Qp = RegError * (RegState == RS_FlatTopUgeth ? KpI : Kp);
-	Qi += RegError * (RegState == RS_FlatTopUgeth ? KiI : Ki);
+	if(Counter >= RegulatorPause)
+	{
+		Qp = RegError * (RegState == RS_FlatTopUgeth ? KpI : Kp);
+		Qi += RegError * (RegState == RS_FlatTopUgeth ? KiI : Ki);
+	}
 
 	float SetPoint = RawSetPoint + Qp + Qi;
 	Int16U DACPoint = MEASURE_ConvertUset(SetPoint);
 
 	REGLTR_StoreRegulatorDebug(Sample.Ug, Sample.UPot, Sample.Ig, RawSetPoint, Qp + Qi, RegError, (float)DACPoint);
+	Counter++;
 
 	return DACPoint;
+}
+//-----------------------------------------
+
+void REGLTR_SetPause()
+{
+	RegulatorPause = Counter + TIME_RGLTR_PAUSE_RNG_SWITCH * 1000 / TIMER15_uS;
 }
 //-----------------------------------------
 
@@ -246,7 +257,7 @@ void RGLTR_ErrorCheck(float *RegulatorError, float *RegulatorErrorUpot)
 	else
 	{
 		float absError = fabsf(*RegulatorErrorUpot) / RawSetPoint;
-		if(absError > FollowingErrThreshold)
+		if(absError > FollowingErrThreshold && Counter >= RegulatorPause)
 		{
 			if(FollowingErrorCounterUpot < FollowingErrLimit)
 				FollowingErrorCounterUpot++;
@@ -316,7 +327,8 @@ Int16U REGLTR_GetScalingCoef()
 	{
 		case MT_Rth:
 			FirstRelayTimer = MAX(DataTable[REG_RELAY_SW_TIMER_RTH], DataTable[REG_REGLTR_TIMER]);
-			FollowingRelaysTimer = DataTable[REG_RELAY_SW_TIMER_RTH];
+			FirstRelayTimer = MAX(FirstRelayTimer, TIME_RGLTR_PAUSE_RNG_SWITCH);
+			FollowingRelaysTimer = MAX(DataTable[REG_RELAY_SW_TIMER_RTH], TIME_RGLTR_PAUSE_RNG_SWITCH);
 			SumTicks = (RisingPart + FirstRelayTimer + 2 * FollowingRelaysTimer) * MsToMks / TIMER15_uS;
 			break;
 

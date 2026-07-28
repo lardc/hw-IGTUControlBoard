@@ -46,7 +46,8 @@ void LOGIC_HandleMeasurement()
 				switch(CONTROL_MeasureType)
 				{
 					case MT_Rth:
-						if(ForcedCh && ForcedCh != I_CHANNEL_1 && ForcedCh != I_CHANNEL_2 && ForcedCh != I_CHANNEL_3)
+						if(ForcedCh && ForcedCh != I_CHANNEL_0 && ForcedCh != I_CHANNEL_1 && ForcedCh != I_CHANNEL_2
+								&& ForcedCh != I_CHANNEL_3)
 						{
 							CONTROL_SwitchToProblem(PROBLEM_WRONG_SELECTED_RELAY);
 							return;
@@ -54,8 +55,8 @@ void LOGIC_HandleMeasurement()
 
 						GPIO_SetState(GPIO_VCC_24, true);
 
-						LL_SetCurrentChannel(ForcedCh ? ForcedCh : I_CHANNEL_1);
-						LOGIC_ChannelNumber = ForcedCh ? ForcedCh : I_CHANNEL_1;
+						LOGIC_ChannelNumber = ForcedCh ? ForcedCh : I_CHANNEL_0;
+						LL_SetCurrentChannel(LOGIC_ChannelNumber);
 						RelaySwitchTimer = DataTable[REG_RELAY_SW_TIMER_RTH];
 						break;
 
@@ -70,8 +71,8 @@ void LOGIC_HandleMeasurement()
 							LL_SetNegativePolarity(true);
 						GPIO_SetState(GPIO_VCC_48, true);
 
-						LL_SetCurrentChannel(ForcedCh ? ForcedCh : I_CHANNEL_5);
 						LOGIC_ChannelNumber = ForcedCh ? ForcedCh : I_CHANNEL_5;
+						LL_SetCurrentChannel(LOGIC_ChannelNumber);
 						RelaySwitchTimer = DataTable[REG_RELAY_SW_TIMER_IGES];
 						break;
 
@@ -149,7 +150,16 @@ void LOGIC_HandleMeasurement()
 					UpotResult = Sample.UPot;
 					IgResult = Sample.Ig;
 					if(IsMeasureOk)
-						ForcedCh ? CONTROL_SetDeviceSubState(SS_FinishProcess) : LOGIC_SwitchChannels(IgResult);
+					{
+						if(ForcedCh)
+							CONTROL_SetDeviceSubState(SS_FinishProcess);
+						else
+						{
+							if(CONTROL_MeasureType == MT_Rth)
+								REGLTR_SetPause();
+							LOGIC_SwitchChannels(IgResult);
+						}
+					}
 				}
 				break;
 

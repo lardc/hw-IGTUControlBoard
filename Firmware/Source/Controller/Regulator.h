@@ -37,6 +37,7 @@ extern Int16U REGLTR_MemBuffIg[];
 //
 void REGLTR_Process();
 void REGLTR_Init();
+void REGLTR_SetPause();
 float REGLTR_GetSetpoint(Int16U i);
 void REGLTR_StartProcess();
 void REGLTR_StopProcess();
