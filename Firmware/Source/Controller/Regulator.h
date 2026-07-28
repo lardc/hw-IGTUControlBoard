@@ -1,4 +1,4 @@
-﻿#ifndef REGULATOR_H_
+#ifndef REGULATOR_H_
 #define REGULATOR_H_
 
 // Includes

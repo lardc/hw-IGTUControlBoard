@@ -1,4 +1,4 @@
-﻿// Header
+// Header
 //
 #include "Vgs.h"
 
@@ -173,6 +173,7 @@ Boolean VGS_ProcessRegulator()
 		if(RegulatorParams.FollowingError)
 		{
 			DataTable[REG_PROBLEM] = PROBLEM_DUT_NOT_FOUND;
+			RequestSaveToFlash = true;
 			CONTROL_SetDeviceState(DS_Ready, SS_None);
 			return true;
 		}

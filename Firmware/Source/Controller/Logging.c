@@ -11,7 +11,7 @@
 //
 void LOG_LoggingData(LogParamsStruct* Log)
 {
-	// Ñáðîñ ëîêàëüíîãî ñ÷åò÷èêà â íà÷àëå ëîããèðîâàíèÿ
+	// Ð¡Ð±Ñ€Ð¾Ñ Ð»Ð¾ÐºÐ°Ð»ÑŒÐ½Ð¾Ð³Ð¾ ÑÑ‡ÐµÑ‚Ñ‡Ð¸ÐºÐ° Ð² Ð½Ð°Ñ‡Ð°Ð»Ðµ Ð»Ð¾Ð³Ð³Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð¸Ñ
 	if(*Log->LogBufferCounter == 0)
 		Log->LocalCounter = 0;
 
@@ -26,11 +26,11 @@ void LOG_LoggingData(LogParamsStruct* Log)
 		Log->LocalCounter++;
 	}
 
-	// Óñëîâèå îáíîâëåíèÿ ãëîáàëüíîãî ñ÷åò÷èêà äàííûõ
+	// Ð£ÑÐ»Ð¾Ð²Ð¸Ðµ Ð¾Ð±Ð½Ð¾Ð²Ð»ÐµÐ½Ð¸Ñ Ð³Ð»Ð¾Ð±Ð°Ð»ÑŒÐ½Ð¾Ð³Ð¾ ÑÑ‡ÐµÑ‚Ñ‡Ð¸ÐºÐ° Ð´Ð°Ð½Ð½Ñ‹Ñ…
 	if(*Log->LogBufferCounter < VALUES_x_SIZE)
 		*Log->LogBufferCounter = Log->LocalCounter;
 
-	// Ñáðîñ ëîêàëüíîãî ñ÷åò÷èêà
+	// Ð¡Ð±Ñ€Ð¾Ñ Ð»Ð¾ÐºÐ°Ð»ÑŒÐ½Ð¾Ð³Ð¾ ÑÑ‡ÐµÑ‚Ñ‡Ð¸ÐºÐ°
 	if(Log->LocalCounter >= VALUES_x_SIZE)
 		Log->LocalCounter = 0;
 }

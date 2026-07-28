@@ -1,4 +1,4 @@
-﻿// Header
+// Header
 #include "Diagnostic.h"
 
 // Includes
@@ -71,6 +71,10 @@ bool DIAG_HandleDiagnosticAction(uint16_t ActionID, uint16_t *pUserError)
 
 		case ACT_DBG_PROTECTION:
 			DBGACT_Protection();
+			break;
+
+		case ACT_DBG_FILL_DATA:
+			DBGACT_Filldata();
 			break;
 
 		default:

@@ -1,4 +1,4 @@
-﻿#ifndef __CONTROLLER_H
+#ifndef __CONTROLLER_H
 #define __CONTROLLER_H
 
 // Include
@@ -77,10 +77,13 @@ extern float CONTROL_RegulatorOutputValues[VALUES_x_SIZE];
 extern float CONTROL_VoltageValues[VALUES_x_SIZE];
 extern float CONTROL_CurrentValues[VALUES_x_SIZE];
 extern float CONTROL_RegulatorErrValues[VALUES_x_SIZE];
+extern volatile float  CONTROL_ExtInfoData[VALUES_EXT_INFO_SIZE];
 extern Int16U CONTROL_RegulatorValues_Counter;
 extern Int16U CONTROL_Values_Counter;
+extern volatile Int16U CONTROL_ExtInfoCounter;
 //
 extern Boolean IsImpulse;
+extern volatile Boolean RequestSaveToFlash;
 
 
 // Functions

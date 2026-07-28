@@ -1,4 +1,4 @@
-﻿// Header
+// Header
 #include "Controller.h"
 //
 // Includes
@@ -19,6 +19,7 @@
 #include "TOCUHP.h"
 #include "Res.h"
 #include "Certification.h"
+#include "SaveToFlash.h"
 
 // Variables
 //
@@ -28,14 +29,17 @@ volatile Int64U CONTROL_TimeCounter = 0;
 volatile Int64U CONTROL_Timeout = 0;
 static Boolean CycleActive = false;
 Boolean IsImpulse = false;
+volatile Boolean RequestSaveToFlash = false;
 //
 float CONTROL_RegulatorOutputValues[VALUES_x_SIZE];
 float CONTROL_RegulatorErrValues[VALUES_x_SIZE];
 float CONTROL_VoltageValues[VALUES_x_SIZE];
 float CONTROL_CurrentValues[VALUES_x_SIZE];
+volatile float  CONTROL_ExtInfoData[VALUES_EXT_INFO_SIZE];
 //
 Int16U CONTROL_RegulatorValues_Counter = 0;
 Int16U CONTROL_Values_Counter = 0;
+volatile Int16U CONTROL_ExtInfoCounter = 0;
 
 // Forward functions
 //
@@ -44,19 +48,20 @@ void CONTROL_UpdateWatchDog();
 void CONTROL_ResetToDefaultState();
 void CONTROL_LogicProcess();
 bool CONTROL_IsSafetyEvent();
+static void CONTROL_InitStoragePointers();
 
 // Functions
 //
 void CONTROL_Init()
 {
 	// Переменные для конфигурации EndPoint
-	Int16U EPIndexes[FEP_COUNT] = {EP_VOLTAGE, EP_CURRENT, EP_REGULATOR_ERR, EP_REGULATOR_OUTPUT};
-	Int16U EPSized[FEP_COUNT] = {VALUES_x_SIZE, VALUES_x_SIZE, VALUES_x_SIZE, VALUES_x_SIZE};
+	Int16U EPIndexes[FEP_COUNT] = {EP_VOLTAGE, EP_CURRENT, EP_REGULATOR_ERR, EP_REGULATOR_OUTPUT, EP_ExtInfoData};
+	Int16U EPSized[FEP_COUNT] = {VALUES_x_SIZE, VALUES_x_SIZE, VALUES_x_SIZE, VALUES_x_SIZE, VALUES_EXT_INFO_SIZE};
 	pInt16U EPCounters[FEP_COUNT] = {(pInt16U)&CONTROL_Values_Counter, (pInt16U)&CONTROL_Values_Counter,
-			(pInt16U)&CONTROL_RegulatorValues_Counter, (pInt16U)&CONTROL_RegulatorValues_Counter};
+			(pInt16U)&CONTROL_RegulatorValues_Counter, (pInt16U)&CONTROL_RegulatorValues_Counter, (pInt16U)&CONTROL_ExtInfoCounter};
 
 	pFloat32 EPDatas[FEP_COUNT] = {(pFloat32)CONTROL_VoltageValues, (pFloat32)CONTROL_CurrentValues,
-			(pFloat32)CONTROL_RegulatorErrValues, (pFloat32)CONTROL_RegulatorOutputValues};
+			(pFloat32)CONTROL_RegulatorErrValues, (pFloat32)CONTROL_RegulatorOutputValues, (pFloat32)CONTROL_ExtInfoData};
 
 	// Конфигурация сервиса работы Data-table и EPROM
 	EPROMServiceConfig EPROMService = {(FUNC_EPROM_WriteValues)&NFLASH_WriteDT, (FUNC_EPROM_ReadValues)&NFLASH_ReadDT};
@@ -70,6 +75,7 @@ void CONTROL_Init()
 	// Сброс значений
 	DEVPROFILE_ResetControlSection();
 
+	CONTROL_InitStoragePointers();
 	CONTROL_ResetToDefaultState();
 	TOCUHP_UpdateCANid();
 }
@@ -135,6 +141,19 @@ void CONTROL_ResetHardwareToDefaultState()
 void CONTROL_Idle()
 {
 	CONTROL_LogicProcess();
+
+	if (RequestSaveToFlash)
+	{
+		RequestSaveToFlash = false;
+
+		if(DataTable[REG_ACTIVE_SAVE_TO_FLASH])
+		{
+			IWDG_ConfigureSlowUpdate();
+			STF_EraseDataSector();
+			STF_SaveDiagData();
+			IWDG_ConfigureFastUpdate();
+		}
+	}
 
 	DEVPROFILE_ProcessRequests();
 	CONTROL_UpdateWatchDog();
@@ -564,6 +583,60 @@ void CONTROL_SwitchToFault(Int16U Reason)
 
 	QG_ResetConfigStageToDefault();
 	CONTROL_ResetHardwareToDefaultState();
+}
+//------------------------------------------
+
+static void CONTROL_InitStoragePointers()
+{
+	STF_AssignPointer(0, (Int32U)&DataTable[REG_VGS_I_TRIG]);
+	STF_AssignPointer(1, (Int32U)&DataTable[REG_VGS_V_MAX]);
+
+	STF_AssignPointer(2, (Int32U)&DataTable[REG_QG_V_CUTOFF]);
+	STF_AssignPointer(3, (Int32U)&DataTable[REG_QG_V_NEGATIVE]);
+	STF_AssignPointer(4, (Int32U)&DataTable[REG_QG_I]);
+	STF_AssignPointer(5, (Int32U)&DataTable[REG_QG_I_DURATION]);
+	STF_AssignPointer(6, (Int32U)&DataTable[REG_QG_I_POWER]);
+	STF_AssignPointer(7, (Int32U)&DataTable[REG_QG_V_POWER]);
+
+	STF_AssignPointer(8, (Int32U)&DataTable[REG_IGES_V]);
+	STF_AssignPointer(9, (Int32U)&DataTable[REG_IGES_RANGE]);
+
+	STF_AssignPointer(10, (Int32U)&DataTable[REG_SERTIFICATION]);
+	STF_AssignPointer(11, (Int32U)&DataTable[REG_CAL_VP]);
+	STF_AssignPointer(12, (Int32U)&DataTable[REG_CAL_VN]);
+	STF_AssignPointer(13, (Int32U)&DataTable[REG_CAL_I]);
+
+	STF_AssignPointer(14, (Int32U)&DataTable[REG_DEV_STATE]);
+	STF_AssignPointer(15, (Int32U)&DataTable[REG_FAULT_REASON]);
+	STF_AssignPointer(16, (Int32U)&DataTable[REG_DISABLE_REASON]);
+	STF_AssignPointer(17, (Int32U)&DataTable[REG_WARNING]);
+	STF_AssignPointer(18, (Int32U)&DataTable[REG_PROBLEM]);
+	STF_AssignPointer(19, (Int32U)&DataTable[REG_OP_RESULT]);
+	STF_AssignPointer(20, (Int32U)&DataTable[REG_SELF_TEST_OP_RESULT]);
+	STF_AssignPointer(21, (Int32U)&DataTable[REG_SUB_STATE]);
+
+	STF_AssignPointer(22, (Int32U)&DataTable[REG_VGS_RESULT]);
+	STF_AssignPointer(23, (Int32U)&DataTable[REG_VGS_I_RESULT]);
+	STF_AssignPointer(24, (Int32U)&DataTable[REG_QG_RESULT]);
+	STF_AssignPointer(25, (Int32U)&DataTable[REG_QG_I_RESULT]);
+	STF_AssignPointer(26, (Int32U)&DataTable[REG_IGES_RESULT]);
+	STF_AssignPointer(27, (Int32U)&DataTable[REG_RES_RESULT]);
+
+	STF_AssignPointer(28, (Int32U)&DataTable[REG_CAL_V_RESULT]);
+	STF_AssignPointer(29, (Int32U)&DataTable[REG_CAL_VN_RESULT]);
+	STF_AssignPointer(30, (Int32U)&DataTable[REG_CAL_I_RESULT]);
+
+	STF_AssignPointer(31, (Int32U)&DataTable[REG_EXT_UNIT_ERROR_CODE]);
+	STF_AssignPointer(32, (Int32U)&DataTable[REG_EXT_UNIT_FUNCTION]);
+	STF_AssignPointer(33, (Int32U)&DataTable[REG_EXT_UNIT_EXT_DATA]);
+
+	STF_AssignPointer(34, (Int32U)CONTROL_VoltageValues);
+	STF_AssignPointer(35, (Int32U)CONTROL_CurrentValues);
+	STF_AssignPointer(36, (Int32U)CONTROL_RegulatorErrValues);
+	STF_AssignPointer(37, (Int32U)CONTROL_RegulatorOutputValues);
+
+	STF_AssignPointer(38, (Int32U)&CONTROL_Values_Counter);
+	STF_AssignPointer(39, (Int32U)&CONTROL_RegulatorValues_Counter);
 }
 //------------------------------------------
 

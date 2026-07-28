@@ -226,6 +226,7 @@ bool IGES_CheckDUT(bool PulsePlate, float SampledCurrent)
 					CurrentMax = 0;
 					DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
 					DataTable[REG_PROBLEM] = PROBLEM_DUT_NOT_FOUND;
+					RequestSaveToFlash = true;
 					CONTROL_SetDeviceState(DS_Ready, SS_None);
 					return false;
 				}
