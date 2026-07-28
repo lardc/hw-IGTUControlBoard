@@ -112,8 +112,6 @@ void MEASURE_ConvertIScope(pFloat32 InputArray, Int16U DataLength, IChannel Chan
 
 float MEASURE_Resis(float Voltage, float Current)
 {
-	if (Current == 0.0f)
-		return 0.0f;
-	float Result = Voltage / Current;
-	return Result;
+	return (Current == 0.0f) ? 0.0f : (Voltage / Current);
 }
+//------------------------------------

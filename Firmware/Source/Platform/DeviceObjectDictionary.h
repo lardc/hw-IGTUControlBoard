@@ -171,7 +171,11 @@
 #define REG_ST_TL_FLATTOP_DURATION		99	// Длительность полки поддержания напряжения при диагностики с нагрузкой, мс
 #define REG_RGLTR_ST_ERR_THRESH			100	// Порог ошибки напряжения для диаг. потенциальных линий, в частях от 0 до 1
 #define REG_ST_TESTLOAD_RESIS			101	// Сопротивление тестовой нагрузки, Ом
-// 102 - 105
+//
+#define REG_MAX_RTH_RESISTANCE			102	// Максимальное допустимое сопротивление Rth, Ом
+#define REG_MIN_RTH_RESISTANCE			103	// Минимальное допустимое сопротивление Rth, Ом
+//
+// 104 - 105
 //
 #define REG_CNT_ACTIVE					106	// Включение сохранения счетчиков
 #define REG_SCALING_MUTE				107	// Отключение масштабирования значений в EP
@@ -192,7 +196,6 @@
 #define REG_DIAG_FORCE_CHANNEL			151	// Принудительное включение определенного диапазона тока
 //
 // 152 - 191
-//
 
 // Регистры только чтение
 #define REG_DEV_STATE					192	// Регистр состояния
@@ -230,13 +233,15 @@
 // Problem
 #define PROBLEM_NONE						0
 #define PROBLEM_FOLLOWING_ERROR				1
-#define PROBLEM_FOLLOWING_ERROR_UPOT		2 // Ошибка Following Err на потенциальной линии
-#define PROBLEM_VOLTAGE_OUT_OF_RANGE		3 // Измеренное напряжение вне рабочего диапозона
-#define PROBLEM_CURRENT_OUT_OF_RANGE		4 // Измеренный ток вне рабочего диапозона
-#define PROBLEM_SAFETY						5 // Сработала система безопасности
-#define PROBLEM_NEED_MORE_SAMPLES			6 // Недостаточная длина измерения Iges для получения точного значения
-#define PROBLEM_VOLTAGE_LIMIT_NO_CURRENT	7 // Достигнут установленный лимит напряжения без достижения уровня тока
-#define PROBLEM_WRONG_SELECTED_RELAY		8 // Выбрано неверное реле для диагностики
+#define PROBLEM_FOLLOWING_ERROR_UPOT		2	// Ошибка Following Err на потенциальной линии
+#define PROBLEM_VOLTAGE_OUT_OF_RANGE		3	// Измеренное напряжение вне рабочего диапозона
+#define PROBLEM_CURRENT_OUT_OF_RANGE		4	// Измеренный ток вне рабочего диапозона
+#define PROBLEM_SAFETY						5	// Сработала система безопасности
+#define PROBLEM_NEED_MORE_SAMPLES			6	// Недостаточная длина измерения Iges для получения точного значения
+#define PROBLEM_VOLTAGE_LIMIT_NO_CURRENT	7	// Достигнут установленный лимит напряжения без достижения уровня тока
+#define PROBLEM_WRONG_SELECTED_RELAY		8	// Выбрано неверное реле для диагностики
+#define PROBLEM_RTH_TOO_HIGH				9	// Значение Rth превысило допустимое максимальное значение
+#define PROBLEM_RTH_TOO_LOW					10	// Значение Rth превысило допустимое минимальное значение
 
 //  Warning
 #define WARNING_NONE					0

@@ -216,15 +216,31 @@ void LOGIC_HandleMeasurement()
 				{
 					CONTROL_SetDeviceState(DS_Ready);
 					CONTROL_SetDeviceSubState(SS_None);
+					bool ResultOk = true;
+					float R;
 
 					switch(CONTROL_MeasureType)
 					{
 						case MT_Rth:
-							DataTable[REG_THERM_RESIS] = MEASURE_Resis(UpotResult, IgResult);
+							R = MEASURE_Resis(UpotResult, IgResult);
+							if(R >= DataTable[REG_MAX_RTH_RESISTANCE])
+							{
+								ResultOk = false;
+								DataTable[REG_PROBLEM] = PROBLEM_RTH_TOO_HIGH;
+							}
+							else if(R <= DataTable[REG_MIN_RTH_RESISTANCE])
+							{
+								ResultOk = false;
+								DataTable[REG_PROBLEM] = PROBLEM_RTH_TOO_LOW;
+							}
+							else
+								DataTable[REG_THERM_RESIS] = R;
+
 							DataTable[REG_DIAG_CURRENT] = IgResult;
 							DataTable[REG_DIAG_VOLTAGE] = UgResult;
 							DataTable[REG_DIAG_POT_VOLTAGE] = UpotResult;
 							break;
+
 						case MT_Iges:
 							DataTable[REG_DIAG_VOLTAGE] = UgResult;
 							DataTable[REG_DIAG_POT_VOLTAGE] = UpotResult;
@@ -234,7 +250,10 @@ void LOGIC_HandleMeasurement()
 								DataTable[REG_DIAG_CURRENT] = RINGBUF_GetIgesAvg();
 							}
 							else
-								CONTROL_SwitchToProblem(PROBLEM_NEED_MORE_SAMPLES);
+							{
+								ResultOk = false;
+								DataTable[REG_PROBLEM] = PROBLEM_NEED_MORE_SAMPLES;
+							}
 							break;
 
 						case MT_Ugeth:
@@ -247,6 +266,7 @@ void LOGIC_HandleMeasurement()
 						default:
 							break;
 					}
+					DataTable[REG_OP_RESULT] = ResultOk ? OPRESULT_OK : OPRESULT_FAIL;
 				}
 				break;
 

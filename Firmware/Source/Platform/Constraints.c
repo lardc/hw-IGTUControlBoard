@@ -111,8 +111,8 @@ const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE] =
 	{0, INT16U_MAX, COEF_FLATTOP_DURATION_DEF},									// 99
 	{0, COEF_THRESHOLD_MAX, 0},													// 100
 	{R_TESTLOAD_MIN, INT16U_MAX, R_TESTLOAD_DEF},								// 101
-	{0, 0, 0},																	// 102
-	{0, 0, 0},																	// 103
+	{RTH_MIN, RTH_MAX, RTH_DEF},												// 102
+	{RTH_MIN, RTH_MAX, RTH_DEF},												// 103
 	{0, 0, 0},																	// 104
 	{0, 0, 0},																	// 105
 	{NO, YES, NO},																// 106
