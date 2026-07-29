@@ -155,7 +155,8 @@ void CONTROL_Idle()
 	//Обработка логики мастер-команд
 	LOGIC_HandleMeasurement();
 	// Counter data update
-	if (DataTable[REG_CNT_ACTIVE] && (CONTROL_TimeCounter - CT_SaveTimer) >= CT_SAVE_TIMEOUT)
+	if(DataTable[REG_CNT_ACTIVE] && (CONTROL_TimeCounter - CT_SaveTimer) >= CT_SAVE_TIMEOUT
+			&& CONTROL_State != DS_InProcess)
 	{
 		STF_SaveCounterData();
 		CT_SaveTimer = CONTROL_TimeCounter;
