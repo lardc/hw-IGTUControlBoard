@@ -222,7 +222,7 @@ void RGLTR_ErrorCheck(float *RegulatorError, float *RegulatorErrorUpot)
 		case RS_FlatTop:
 			{
 				// Расчет ошибки по напряжению
-				float VoltageErr = fabsf(PulseAmplitude - (CONTROL_MeasureType == MT_Rth ? Sample.UPot : Sample.Ug))
+				float VoltageErr = fabsf(PulseAmplitude - ((CONTROL_MeasureType == MT_Iges) ? Sample.Ug : Sample.UPot))
 						/ PulseAmplitude;
 
 				if(VoltageErr < VoltagErrThreshold)
