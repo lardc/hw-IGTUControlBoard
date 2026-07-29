@@ -216,7 +216,9 @@ void LOGIC_HandleMeasurement()
 				{
 					CONTROL_SetDeviceState(DS_Ready);
 					CONTROL_SetDeviceSubState(SS_None);
-					bool ResultOk = RINGBUF_IsFull();
+					bool MainMeasurement = CONTROL_MeasureType == MT_Rth || CONTROL_MeasureType == MT_Iges
+							|| CONTROL_MeasureType == MT_Ugeth;
+					bool ResultOk = RINGBUF_IsFull() || !MainMeasurement;
 
 					if(ResultOk)
 					{
@@ -268,8 +270,8 @@ void LOGIC_HandleMeasurement()
 					else
 						DataTable[REG_PROBLEM] = PROBLEM_RING_BUFFER_NOT_FILLED;
 
-					// Последние мгновенные значения в случае проблемы
-					if(!ResultOk)
+					// Последние мгновенные значения в случае проблемы или неосновного измерения
+					if(!ResultOk || !MainMeasurement)
 					{
 						DataTable[REG_DIAG_CURRENT] = IgResult;
 						DataTable[REG_DIAG_VOLTAGE] = UgResult;
