@@ -32,7 +32,6 @@ typedef enum RelayMask
 	RELAY_CH_5 			= BIT0 | BIT3,
 	RELAY_CH_6 			= BIT0 | BIT2,
 	RELAY_CH_7 			= BIT0 | BIT1,
-	RELAY_CH_DEF		= BIT4,			// для замыкания ОС в ОУ ТИУ
 	RELAY_POT_DISCON	= BIT10,
 	RELAY_SELFTEST		= BIT11,
 	RELAY_TEST_LOAD		= BIT9,
