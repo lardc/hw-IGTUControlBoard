@@ -152,8 +152,7 @@ Int16U REGLTR_CorrectionLogDACPoint()
 	float RegError, RegulatorError, RegulatorErrorUpot;
 
 	// Проверка на ошибки только при активном регуляторе
-	if(Counter >= RegulatorPause)
-		RGLTR_ErrorCheck(&RegulatorError, &RegulatorErrorUpot);
+	RGLTR_ErrorCheck(&RegulatorError, &RegulatorErrorUpot);
 
 	if(RegState != RS_FlatTopUgeth
 			&& (CONTROL_MeasureType == MT_ST_Upot || CONTROL_MeasureType == MT_Rth || CONTROL_MeasureType == MT_ST_Upot))
@@ -187,6 +186,9 @@ void RGLTR_ErrorCheck(float *RegulatorError, float *RegulatorErrorUpot)
 {
 	*RegulatorError = RawSetPoint - Sample.Ug;
 	*RegulatorErrorUpot = RawSetPoint - Sample.UPot;
+
+	if(Counter < RegulatorPause)
+		return;
 
 	switch(RegState)
 	{
