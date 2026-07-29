@@ -175,7 +175,8 @@
 #define REG_MAX_RTH_RESISTANCE			102	// Максимальное допустимое сопротивление Rth, Ом
 #define REG_MIN_RTH_RESISTANCE			103	// Минимальное допустимое сопротивление Rth, Ом
 //
-// 104 - 105
+#define REG_RELAY_SW_TIMER_IGES_RANGE7	104	// Время для переключения реле тока при измерении Iges на диапазоне 7, мс
+#define REG_IGES_MAX_CURRENT			105	// Максимальный допустимый ток Iges, A
 //
 #define REG_CNT_ACTIVE					106	// Включение сохранения счетчиков
 #define REG_SCALING_MUTE				107	// Отключение масштабирования значений в EP
@@ -242,6 +243,7 @@
 #define PROBLEM_WRONG_SELECTED_RELAY		8	// Выбрано неверное реле для диагностики
 #define PROBLEM_RTH_TOO_HIGH				9	// Значение Rth превысило допустимое максимальное значение
 #define PROBLEM_RTH_TOO_LOW					10	// Значение Rth превысило допустимое минимальное значение
+#define PROBLEM_IGES_TOO_HIGH				11	// Значение Iges превысило допустимый предел
 
 //  Warning
 #define WARNING_NONE					0

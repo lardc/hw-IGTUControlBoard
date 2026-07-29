@@ -331,38 +331,36 @@ void REGLTR_StoreRegulatorDebug(float Ug, float UPot, float Ig, float Setpoint, 
 Int16U REGLTR_GetScalingCoef()
 {
 	const float MsToMks = 1000.0f;
-	float FirstRelayTimer, FollowingRelaysTimer , RisingPart, SumTicks = 0;
+	float RangeTime, RangeTimeX, RisingPart, SumTicks = 0;
 	RisingPart = PulseAmplitude / RiseRate;
 
 	switch(CONTROL_MeasureType)
 	{
 		case MT_Rth:
-			FirstRelayTimer = MAX(DataTable[REG_RELAY_SW_TIMER_RTH], DataTable[REG_REGLTR_TIMER]);
-			FirstRelayTimer = MAX(FirstRelayTimer, TIME_RGLTR_PAUSE_RNG_SWITCH);
-			FollowingRelaysTimer = MAX(DataTable[REG_RELAY_SW_TIMER_RTH], TIME_RGLTR_PAUSE_RNG_SWITCH);
-			SumTicks = (RisingPart + FirstRelayTimer + 2 * FollowingRelaysTimer) * MsToMks / TIMER15_uS;
+			RangeTime = MAX(DataTable[REG_RELAY_SW_TIMER_RTH], DataTable[REG_REGLTR_TIMER]);
+			RangeTime = MAX(RangeTime, TIME_RGLTR_PAUSE_RNG_SWITCH);
+			SumTicks = (RisingPart + 3 * RangeTime) * MsToMks / TIMER15_uS;
 			break;
 
 		case MT_Iges:
-			FirstRelayTimer = MAX(DataTable[REG_RELAY_SW_TIMER_IGES], DataTable[REG_REGLTR_TIMER]);
-			FollowingRelaysTimer = DataTable[REG_RELAY_SW_TIMER_IGES];
-			SumTicks = (RisingPart + FirstRelayTimer + 2 * FollowingRelaysTimer) * MsToMks / TIMER15_uS;
+			RangeTime = MAX(DataTable[REG_RELAY_SW_TIMER_IGES], DataTable[REG_REGLTR_TIMER]);
+			RangeTimeX = MAX(DataTable[REG_RELAY_SW_TIMER_IGES_RANGE7], DataTable[REG_REGLTR_TIMER]);
+			SumTicks = (RisingPart + 2 * RangeTime + RangeTimeX) * MsToMks / TIMER15_uS;
 			break;
 
 		case MT_Ugeth:
-			FirstRelayTimer = DataTable[REG_RELAY_SW_TIMER_UGETH];
-			SumTicks = (RisingPart + FirstRelayTimer + DataTable[REG_CURRENT_FLATTOP_DURATION])
+			SumTicks = (RisingPart + DataTable[REG_RELAY_SW_TIMER_UGETH] + DataTable[REG_CURRENT_FLATTOP_DURATION])
 					* MsToMks / TIMER15_uS;
 			break;
 
 		case MT_ST_Upot:
-			FirstRelayTimer = DataTable[REG_ST_UPOT_FLATTOP_DURATION] + DataTable[REG_REGLTR_TIMER];
-			SumTicks = FirstRelayTimer * MsToMks / TIMER15_uS;
+			RangeTime = DataTable[REG_ST_UPOT_FLATTOP_DURATION] + DataTable[REG_REGLTR_TIMER];
+			SumTicks = RangeTime * MsToMks / TIMER15_uS;
 			break;
 
 		case MT_ST_TestLoad:
-			FirstRelayTimer = DataTable[REG_ST_TL_FLATTOP_DURATION] + DataTable[REG_REGLTR_TIMER];
-			SumTicks = FirstRelayTimer * MsToMks / TIMER15_uS;
+			RangeTime = DataTable[REG_ST_TL_FLATTOP_DURATION] + DataTable[REG_REGLTR_TIMER];
+			SumTicks = RangeTime * MsToMks / TIMER15_uS;
 			break;
 	}
 

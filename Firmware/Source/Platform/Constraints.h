@@ -69,8 +69,10 @@
 #define COEF_I_CH6_MIN				2e-8
 #define COEF_I_CH7_MIN				5e-9
 //
-#define COEF_SWITCH_TIME_MIN		5		// в мс
-#define COEF_SWITCH_TIME_IGES_MIN	20
+#define SWITCH_TIME_MIN				5		// в мс
+#define SWITCH_TIME_MAX				20000	// в мс
+#define SWITCH_TIME_DEF				1000	// в мс
+//
 #define REGULATOR_TIME_MIN			10
 #define REGULATOR_TIME_MAX			10000
 #define COEF_FLATTOP_DURATION_DEF	10
@@ -87,6 +89,10 @@
 #define RTH_MIN						0.01f
 #define RTH_MAX						1e+6f
 #define RTH_DEF						10
+//
+#define IGES_MIN_MIN				1e-12f
+#define IGES_MIN_MAX				1.0f
+#define IGES_MIN_DEF				2.2e-6f
 //
 #define MEASUREMENT_AVG_MIN			1
 #define MEASUREMENT_AVG_MAX			1000

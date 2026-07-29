@@ -99,9 +99,9 @@ const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE] =
 	{0, COEF_THRESHOLD_MAX, 0},													// 87
 	{0, INT16U_MAX, 0},															// 88
 	{REGULATOR_TIME_MIN, REGULATOR_TIME_MAX, REGULATOR_TIME_MIN},				// 89
-	{COEF_SWITCH_TIME_MIN, INT16U_MAX, COEF_SWITCH_TIME_MIN},					// 90
-	{COEF_SWITCH_TIME_IGES_MIN, INT16U_MAX, COEF_SWITCH_TIME_IGES_MIN},			// 91
-	{COEF_SWITCH_TIME_MIN, INT16U_MAX, COEF_SWITCH_TIME_MIN},					// 92
+	{SWITCH_TIME_MIN, SWITCH_TIME_MAX, SWITCH_TIME_DEF},						// 90
+	{SWITCH_TIME_MIN, SWITCH_TIME_MAX, SWITCH_TIME_DEF},						// 91
+	{SWITCH_TIME_MIN, SWITCH_TIME_MAX, SWITCH_TIME_DEF},						// 92
 	{SLEW_RATE_MIN, INT16U_MAX, SLEW_RATE_MIN},									// 93
 	{SLEW_RATE_MIN, INT16U_MAX, SLEW_RATE_MIN},									// 94
 	{SLEW_RATE_MIN, INT16U_MAX, SLEW_RATE_MIN},									// 95
@@ -113,8 +113,8 @@ const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE] =
 	{R_TESTLOAD_MIN, INT16U_MAX, R_TESTLOAD_DEF},								// 101
 	{RTH_MIN, RTH_MAX, RTH_DEF},												// 102
 	{RTH_MIN, RTH_MAX, RTH_DEF},												// 103
-	{0, 0, 0},																	// 104
-	{0, 0, 0},																	// 105
+	{SWITCH_TIME_MIN, SWITCH_TIME_MAX, SWITCH_TIME_DEF},						// 104
+	{IGES_MIN_MIN, IGES_MIN_MAX, IGES_MIN_DEF},									// 105
 	{NO, YES, NO},																// 106
 	{NO, YES, NO},																// 107
 	{0, 0, 0},																	// 108

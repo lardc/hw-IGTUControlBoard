@@ -12,6 +12,7 @@
 #include "Regulator.h"
 #include "Measurement.h"
 #include "RingBuffer.h"
+#include "Utils.h"
 
 // Variables
 //
@@ -67,13 +68,17 @@ void LOGIC_HandleMeasurement()
 							return;
 						}
 
-						if (DataTable[REG_WORK_VOLTAGE_IGES] < 0)
+						if(DataTable[REG_WORK_VOLTAGE_IGES] < 0)
 							LL_SetNegativePolarity(true);
 						GPIO_SetState(GPIO_VCC_48, true);
 
 						LOGIC_ChannelNumber = ForcedCh ? ForcedCh : I_CHANNEL_5;
 						LL_SetCurrentChannel(LOGIC_ChannelNumber);
-						RelaySwitchTimer = DataTable[REG_RELAY_SW_TIMER_IGES];
+
+						// Для форсированного канала 7 выбирается отдельная задержка
+						RelaySwitchTimer = DataTable[
+								(LOGIC_ChannelNumber == I_CHANNEL_7) ?
+										REG_RELAY_SW_TIMER_IGES_RANGE7 : REG_RELAY_SW_TIMER_IGES];
 						break;
 
 					case MT_Ugeth:
@@ -131,9 +136,7 @@ void LOGIC_HandleMeasurement()
 				REGLTR_Init();
 				REGLTR_StartProcess();
 				LL_Sync(true);
-				float TimeoutTime = (RelaySwitchTimer > DataTable[REG_REGLTR_TIMER]) ?
-								RelaySwitchTimer : DataTable[REG_REGLTR_TIMER];
-				Timeout = CONTROL_TimeCounter + TimeoutTime;
+				Timeout = CONTROL_TimeCounter + MAX(RelaySwitchTimer, DataTable[REG_REGLTR_TIMER]);
 
 				if(CONTROL_MeasureType == MT_Ugeth)
 					CONTROL_SetDeviceSubState(SS_RegulatorProcessUgeth);
@@ -157,6 +160,10 @@ void LOGIC_HandleMeasurement()
 						{
 							if(CONTROL_MeasureType == MT_Rth)
 								REGLTR_SetPause();
+							else if(CONTROL_MeasureType == MT_Iges && LOGIC_ChannelNumber == I_CHANNEL_6)
+								// Перед включением канала 7 выставляем задержку из выделенного регистра
+								RelaySwitchTimer = DataTable[REG_RELAY_SW_TIMER_IGES_RANGE7];
+
 							LOGIC_SwitchChannels(IgResult);
 						}
 					}
@@ -252,9 +259,17 @@ void LOGIC_HandleMeasurement()
 								break;
 
 							case MT_Iges:
-								DataTable[REG_DIAG_CURRENT] = DataTable[REG_IGES_RESULT] = AvgI;
-								DataTable[REG_DIAG_VOLTAGE] = AvgU;
-								DataTable[REG_DIAG_POT_VOLTAGE] = UpotResult;
+								if(AvgI < DataTable[REG_IGES_MAX_CURRENT])
+								{
+									DataTable[REG_DIAG_CURRENT] = DataTable[REG_IGES_RESULT] = AvgI;
+									DataTable[REG_DIAG_VOLTAGE] = AvgU;
+									DataTable[REG_DIAG_POT_VOLTAGE] = UpotResult;
+								}
+								else
+								{
+									ResultOk = false;
+									DataTable[REG_PROBLEM] = PROBLEM_IGES_TOO_HIGH;
+								}
 								break;
 
 							case MT_Ugeth:
@@ -341,7 +356,7 @@ void LOGIC_SingleSw(float Ig)
 	if(Ig < DataTable[REG_RANGE_I_0 + LOGIC_ChannelNumber - 1])
 	{
 		LL_SetCurrentChannel(LOGIC_ChannelNumber + 1);
-		Timeout = CONTROL_TimeCounter + RelaySwitchTimer;
+		Timeout = CONTROL_TimeCounter + MAX(RelaySwitchTimer, DataTable[REG_REGLTR_TIMER]);
 		LOGIC_ChannelNumber++;
 	}
 	else
