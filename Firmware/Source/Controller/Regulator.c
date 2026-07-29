@@ -87,7 +87,7 @@ void REGLTR_Init()
 {
 	IsMeasureOk = false;
 	Qi = FollowingErrorCounter = VoltageErrCount = CurrentErrCount = FollowingErrorCounterUpot = 0;
-	RINGBUF_ResetIgesAvg();
+	RINGBUF_Reset((CONTROL_MeasureType == MT_Iges) ? RINGBUF_MAX_SIZE : DataTable[REG_MEASUREMENT_AVG_COUNT]);
 	FollowingErrThreshold = (CONTROL_MeasureType == MT_ST_Upot || CONTROL_MeasureType == MT_ST_TestLoad) ?
 								DataTable[REG_RGLTR_ST_ERR_THRESH ] : DataTable[REG_RGLTR_FOLLOWING_ERR_THRESH];
 	FollowingErrLimit = DataTable[REG_RGLTR_FOLLOWING_ERR_LIMIT];
@@ -150,7 +150,10 @@ void REGLTR_Init()
 Int16U REGLTR_CorrectionLogDACPoint()
 {
 	float RegError, RegulatorError, RegulatorErrorUpot;
-	RGLTR_ErrorCheck(&RegulatorError, &RegulatorErrorUpot);
+
+	// Проверка на ошибки только при активном регуляторе
+	if(Counter >= RegulatorPause)
+		RGLTR_ErrorCheck(&RegulatorError, &RegulatorErrorUpot);
 
 	if(RegState != RS_FlatTopUgeth
 			&& (CONTROL_MeasureType == MT_ST_Upot || CONTROL_MeasureType == MT_Rth || CONTROL_MeasureType == MT_ST_Upot))
@@ -198,6 +201,9 @@ void RGLTR_ErrorCheck(float *RegulatorError, float *RegulatorErrorUpot)
 				{
 					IsMeasureOk = true;
 					CurrentErrCount = 0;
+
+					if(CONTROL_MeasureType == MT_Ugeth)
+						RINGBUF_AddSample(Sample.Ig, Sample.UPot);
 				}
 				else
 				{
@@ -219,10 +225,13 @@ void RGLTR_ErrorCheck(float *RegulatorError, float *RegulatorErrorUpot)
 
 				if(VoltageErr < VoltagErrThreshold)
 				{
-					if(CONTROL_MeasureType == MT_Iges)
-						RINGBUF_AddNewSampleIges(Sample.Ig);
 					IsMeasureOk = true;
 					VoltageErrCount = 0;
+
+					if(CONTROL_MeasureType == MT_Iges)
+						RINGBUF_AddSample(Sample.Ig, Sample.Ug);
+					else if(CONTROL_MeasureType == MT_Rth)
+						RINGBUF_AddSample(Sample.Ig, Sample.UPot);
 				}
 				else
 				{
@@ -257,7 +266,7 @@ void RGLTR_ErrorCheck(float *RegulatorError, float *RegulatorErrorUpot)
 	else
 	{
 		float absError = fabsf(*RegulatorErrorUpot) / RawSetPoint;
-		if(absError > FollowingErrThreshold && Counter >= RegulatorPause)
+		if(absError > FollowingErrThreshold)
 		{
 			if(FollowingErrorCounterUpot < FollowingErrLimit)
 				FollowingErrorCounterUpot++;

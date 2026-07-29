@@ -109,9 +109,3 @@ void MEASURE_ConvertIScope(pFloat32 InputArray, Int16U DataLength, IChannel Chan
 	);
 }
 //------------------------------------
-
-float MEASURE_Resis(float Voltage, float Current)
-{
-	return (Current == 0.0f) ? 0.0f : (Voltage / Current);
-}
-//------------------------------------

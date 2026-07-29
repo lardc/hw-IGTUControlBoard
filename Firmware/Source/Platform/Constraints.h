@@ -88,6 +88,10 @@
 #define RTH_MAX						1e+6f
 #define RTH_DEF						10
 //
+#define MEASUREMENT_AVG_MIN			1
+#define MEASUREMENT_AVG_MAX			1000
+#define MEASUREMENT_AVG_DEF			10
+//
 // Types
 typedef struct __TableItemConstraint
 {

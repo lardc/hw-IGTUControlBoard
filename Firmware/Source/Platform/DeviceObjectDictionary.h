@@ -116,7 +116,7 @@
 #define REG_I_7_B						57	// Коэффициент преобразования B
 #define REG_I_7_RSH						58	// Сопротивление шунта
 //
-// 59
+#define REG_MEASUREMENT_AVG_COUNT		59	// Число усреднений при измерении Rth, Uge_th
 //
 #define REG_CFG_NODE_ID					60	// Настройка CAN NodeID
 //
@@ -237,7 +237,7 @@
 #define PROBLEM_VOLTAGE_OUT_OF_RANGE		3	// Измеренное напряжение вне рабочего диапозона
 #define PROBLEM_CURRENT_OUT_OF_RANGE		4	// Измеренный ток вне рабочего диапозона
 #define PROBLEM_SAFETY						5	// Сработала система безопасности
-#define PROBLEM_NEED_MORE_SAMPLES			6	// Недостаточная длина измерения Iges для получения точного значения
+#define PROBLEM_RING_BUFFER_NOT_FILLED		6	// Кольцевой буфер усреднения не заполнен
 #define PROBLEM_VOLTAGE_LIMIT_NO_CURRENT	7	// Достигнут установленный лимит напряжения без достижения уровня тока
 #define PROBLEM_WRONG_SELECTED_RELAY		8	// Выбрано неверное реле для диагностики
 #define PROBLEM_RTH_TOO_HIGH				9	// Значение Rth превысило допустимое максимальное значение

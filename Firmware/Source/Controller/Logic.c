@@ -216,55 +216,64 @@ void LOGIC_HandleMeasurement()
 				{
 					CONTROL_SetDeviceState(DS_Ready);
 					CONTROL_SetDeviceSubState(SS_None);
-					bool ResultOk = true;
-					float R;
+					bool ResultOk = RINGBUF_IsFull();
 
-					switch(CONTROL_MeasureType)
+					if(ResultOk)
 					{
-						case MT_Rth:
-							R = MEASURE_Resis(UpotResult, IgResult);
-							if(R >= DataTable[REG_MAX_RTH_RESISTANCE])
-							{
-								ResultOk = false;
-								DataTable[REG_PROBLEM] = PROBLEM_RTH_TOO_HIGH;
-							}
-							else if(R <= DataTable[REG_MIN_RTH_RESISTANCE])
-							{
-								ResultOk = false;
-								DataTable[REG_PROBLEM] = PROBLEM_RTH_TOO_LOW;
-							}
-							else
-								DataTable[REG_THERM_RESIS] = R;
+						float AvgI = RINGBUF_GetAvgI();
+						float AvgU = RINGBUF_GetAvgU();
+						float R;
 
-							DataTable[REG_DIAG_CURRENT] = IgResult;
-							DataTable[REG_DIAG_VOLTAGE] = UgResult;
-							DataTable[REG_DIAG_POT_VOLTAGE] = UpotResult;
-							break;
+						switch(CONTROL_MeasureType)
+						{
+							case MT_Rth:
+								R = (AvgI == 0.0f) ? 0.0f : (AvgU / AvgI);
+								if(R >= DataTable[REG_MAX_RTH_RESISTANCE])
+								{
+									ResultOk = false;
+									DataTable[REG_PROBLEM] = PROBLEM_RTH_TOO_HIGH;
+								}
+								else if(R <= DataTable[REG_MIN_RTH_RESISTANCE])
+								{
+									ResultOk = false;
+									DataTable[REG_PROBLEM] = PROBLEM_RTH_TOO_LOW;
+								}
+								else
+									DataTable[REG_THERM_RESIS] = R;
 
-						case MT_Iges:
-							DataTable[REG_DIAG_VOLTAGE] = UgResult;
-							DataTable[REG_DIAG_POT_VOLTAGE] = UpotResult;
-							if(RINGBUF_GetIgesAvgCount() >= IGES_AVG_BUF_SIZE)
-							{
-								DataTable[REG_IGES_RESULT] = RINGBUF_GetIgesAvg();
-								DataTable[REG_DIAG_CURRENT] = RINGBUF_GetIgesAvg();
-							}
-							else
-							{
-								ResultOk = false;
-								DataTable[REG_PROBLEM] = PROBLEM_NEED_MORE_SAMPLES;
-							}
-							break;
+								if(ResultOk)
+								{
+									DataTable[REG_DIAG_CURRENT] = AvgI;
+									DataTable[REG_DIAG_VOLTAGE] = UgResult;
+									DataTable[REG_DIAG_POT_VOLTAGE] = AvgU;
+								}
+								break;
 
-						case MT_Ugeth:
-							DataTable[REG_DIAG_CURRENT] = IgResult;
-							DataTable[REG_UGE_TH] = UgResult;
-							DataTable[REG_DIAG_VOLTAGE] = UgResult;
-							DataTable[REG_DIAG_POT_VOLTAGE] = UpotResult;
-							break;
+							case MT_Iges:
+								DataTable[REG_DIAG_CURRENT] = DataTable[REG_IGES_RESULT] = AvgI;
+								DataTable[REG_DIAG_VOLTAGE] = AvgU;
+								DataTable[REG_DIAG_POT_VOLTAGE] = UpotResult;
+								break;
 
-						default:
-							break;
+							case MT_Ugeth:
+								DataTable[REG_DIAG_CURRENT] = AvgI;
+								DataTable[REG_DIAG_VOLTAGE] = UgResult;
+								DataTable[REG_DIAG_POT_VOLTAGE] = DataTable[REG_UGE_TH] = AvgU;
+								break;
+
+							default:
+								break;
+						}
+					}
+					else
+						DataTable[REG_PROBLEM] = PROBLEM_RING_BUFFER_NOT_FILLED;
+
+					// Последние мгновенные значения в случае проблемы
+					if(!ResultOk)
+					{
+						DataTable[REG_DIAG_CURRENT] = IgResult;
+						DataTable[REG_DIAG_VOLTAGE] = UgResult;
+						DataTable[REG_DIAG_POT_VOLTAGE] = UpotResult;
 					}
 					DataTable[REG_OP_RESULT] = ResultOk ? OPRESULT_OK : OPRESULT_FAIL;
 				}

@@ -68,7 +68,7 @@ const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE] =
 	{COEF_K_MIN, COEF_K_MAX, COEF_K_IMEAS_DEF},									// 56
 	{COEF_B_MIN, COEF_B_MAX, 0},												// 57
 	{COEF_RSH_MIN, COEF_RSH_MAX, COEF_RSH_CH7_DEF},								// 58
-	{0, 0, 0},																	// 59
+	{MEASUREMENT_AVG_MIN, MEASUREMENT_AVG_MAX, MEASUREMENT_AVG_DEF},			// 59
 	{0, INT16U_MAX, 0},															// 60
 	{COEF_P2_MIN, COEF_P2_MAX, COEF_P2_DEF},									// 61
 	{COEF_P1_MIN, COEF_P1_MAX, COEF_P1_DEF},									// 62
