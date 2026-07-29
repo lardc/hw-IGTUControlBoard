@@ -18,6 +18,7 @@
 // Определения для аналоговых портов
 GPIO_PortPinSettingMacro GPIO_ANLG_UG		= {GPIOA, Pin_0};
 GPIO_PortPinSettingMacro GPIO_ANLG_UPOT		= {GPIOA, Pin_4};
+GPIO_PortPinSettingMacro GPIO_ANLG_USET		= {GPIOA, Pin_5};
 GPIO_PortPinSettingMacro GPIO_ANLG_IG		= {GPIOB, Pin_1};
 
 // Определения для входных портов
