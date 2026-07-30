@@ -67,9 +67,7 @@ void LOGIC_HandleMeasurement()
 							CONTROL_SwitchToProblem(PROBLEM_WRONG_SELECTED_RELAY);
 							return;
 						}
-
-						if(DataTable[REG_WORK_VOLTAGE_IGES] < 0)
-							LL_SetNegativePolarity(true);
+						LL_SetNegativePolarity(DataTable[REG_WORK_VOLTAGE_IGES] < 0);
 						GPIO_SetState(GPIO_VCC_48, true);
 
 						LOGIC_ChannelNumber = ForcedCh ? ForcedCh : I_CHANNEL_5;
@@ -237,12 +235,12 @@ void LOGIC_HandleMeasurement()
 						{
 							case MT_Rth:
 								R = (AvgI == 0.0f) ? 0.0f : (AvgU / AvgI);
-								if(R >= DataTable[REG_MAX_RTH_RESISTANCE])
+								if(R > DataTable[REG_MAX_RTH_RESISTANCE])
 								{
 									ResultOk = false;
 									DataTable[REG_PROBLEM] = PROBLEM_RTH_TOO_HIGH;
 								}
-								else if(R <= DataTable[REG_MIN_RTH_RESISTANCE])
+								else if(R < DataTable[REG_MIN_RTH_RESISTANCE])
 								{
 									ResultOk = false;
 									DataTable[REG_PROBLEM] = PROBLEM_RTH_TOO_LOW;
@@ -259,7 +257,7 @@ void LOGIC_HandleMeasurement()
 								break;
 
 							case MT_Iges:
-								if(AvgI < DataTable[REG_IGES_MAX_CURRENT])
+								if(AvgI <= DataTable[REG_IGES_MAX_CURRENT])
 								{
 									DataTable[REG_DIAG_CURRENT] = DataTable[REG_IGES_RESULT] = AvgI;
 									DataTable[REG_DIAG_VOLTAGE] = AvgU;
