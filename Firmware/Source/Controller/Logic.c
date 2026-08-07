@@ -12,6 +12,7 @@
 #include "Regulator.h"
 #include "Measurement.h"
 #include "RingBuffer.h"
+#include "Utils.h"
 
 // Variables
 //
@@ -46,16 +47,17 @@ void LOGIC_HandleMeasurement()
 				switch(CONTROL_MeasureType)
 				{
 					case MT_Rth:
-						if(ForcedCh && ForcedCh != I_CHANNEL_1 && ForcedCh != I_CHANNEL_2 && ForcedCh != I_CHANNEL_3)
+						if(ForcedCh && ForcedCh != I_CHANNEL_0 && ForcedCh != I_CHANNEL_1 && ForcedCh != I_CHANNEL_2
+								&& ForcedCh != I_CHANNEL_3)
 						{
 							CONTROL_SwitchToProblem(PROBLEM_WRONG_SELECTED_RELAY);
 							return;
 						}
 
-						GPIO_SetState(GPIO_VCC_48, true);
+						GPIO_SetState(GPIO_VCC_24, true);
 
-						LL_SetCurrentChannel(ForcedCh ? ForcedCh : I_CHANNEL_1);
-						LOGIC_ChannelNumber = ForcedCh ? ForcedCh : I_CHANNEL_1;
+						LOGIC_ChannelNumber = ForcedCh ? ForcedCh : I_CHANNEL_0;
+						LL_SetCurrentChannel(LOGIC_ChannelNumber);
 						RelaySwitchTimer = DataTable[REG_RELAY_SW_TIMER_RTH];
 						break;
 
@@ -65,14 +67,16 @@ void LOGIC_HandleMeasurement()
 							CONTROL_SwitchToProblem(PROBLEM_WRONG_SELECTED_RELAY);
 							return;
 						}
-
-						if (DataTable[REG_WORK_VOLTAGE_IGES] < 0)
-							LL_SetNegativePolarity(true);
+						LL_SetNegativePolarity(DataTable[REG_WORK_VOLTAGE_IGES] < 0);
 						GPIO_SetState(GPIO_VCC_48, true);
 
-						LL_SetCurrentChannel(ForcedCh ? ForcedCh : I_CHANNEL_5);
 						LOGIC_ChannelNumber = ForcedCh ? ForcedCh : I_CHANNEL_5;
-						RelaySwitchTimer = DataTable[REG_RELAY_SW_TIMER_IGES];
+						LL_SetCurrentChannel(LOGIC_ChannelNumber);
+
+						// Для форсированного канала 7 выбирается отдельная задержка
+						RelaySwitchTimer = DataTable[
+								(LOGIC_ChannelNumber == I_CHANNEL_7) ?
+										REG_RELAY_SW_TIMER_IGES_RANGE7 : REG_RELAY_SW_TIMER_IGES];
 						break;
 
 					case MT_Ugeth:
@@ -90,7 +94,7 @@ void LOGIC_HandleMeasurement()
 							LL_SetCurrentChannel(ForcedCh);
 							LOGIC_ChannelNumber = ForcedCh;
 						}
-						else if((DataTable[REG_WORK_CURRENT_UGETH] * 0.001f)	< DataTable[REG_RANGE_I_0])
+						else if((DataTable[REG_WORK_CURRENT_UGETH] * 0.001f) < DataTable[REG_RANGE_I_0])
 						{
 							LL_SetCurrentChannel(I_CHANNEL_1);
 							LOGIC_ChannelNumber = I_CHANNEL_1;
@@ -117,11 +121,11 @@ void LOGIC_HandleMeasurement()
 						LOGIC_TestLoadRelaySwitch();
 						break;
 				}
-				Timeout = CONTROL_TimeCounter + TIME_INIT_48V_TIMER;
-				CONTROL_SetDeviceSubState(SS_Wait48VPause);
+				Timeout = CONTROL_TimeCounter + TIME_INIT_PS_TIMER;
+				CONTROL_SetDeviceSubState(SS_WaitPowerSupply);
 				break;
 
-			case SS_Wait48VPause:
+			case SS_WaitPowerSupply:
 				if(CONTROL_TimeCounter > Timeout)
 					CONTROL_SetDeviceSubState(SS_ConfigPulse);
 				break;
@@ -130,9 +134,7 @@ void LOGIC_HandleMeasurement()
 				REGLTR_Init();
 				REGLTR_StartProcess();
 				LL_Sync(true);
-				float TimeoutTime = (RelaySwitchTimer > DataTable[REG_REGLTR_TIMER]) ?
-								RelaySwitchTimer : DataTable[REG_REGLTR_TIMER];
-				Timeout = CONTROL_TimeCounter + TimeoutTime;
+				Timeout = CONTROL_TimeCounter + MAX(RelaySwitchTimer, DataTable[REG_REGLTR_TIMER]);
 
 				if(CONTROL_MeasureType == MT_Ugeth)
 					CONTROL_SetDeviceSubState(SS_RegulatorProcessUgeth);
@@ -149,7 +151,20 @@ void LOGIC_HandleMeasurement()
 					UpotResult = Sample.UPot;
 					IgResult = Sample.Ig;
 					if(IsMeasureOk)
-						ForcedCh ? CONTROL_SetDeviceSubState(SS_FinishProcess) : LOGIC_SwitchChannels(IgResult);
+					{
+						if(ForcedCh)
+							CONTROL_SetDeviceSubState(SS_FinishProcess);
+						else
+						{
+							if(CONTROL_MeasureType == MT_Rth)
+								REGLTR_SetPause();
+							else if(CONTROL_MeasureType == MT_Iges && LOGIC_ChannelNumber == I_CHANNEL_6)
+								// Перед включением канала 7 выставляем задержку из выделенного регистра
+								RelaySwitchTimer = DataTable[REG_RELAY_SW_TIMER_IGES_RANGE7];
+
+							LOGIC_SwitchChannels(IgResult);
+						}
+					}
 				}
 				break;
 
@@ -197,7 +212,7 @@ void LOGIC_HandleMeasurement()
 
 			case SS_FinishProcess:
 				LOGIC_StopProcess();
-				Timeout = CONTROL_TimeCounter + TIME_INIT_48V_TIMER;
+				Timeout = CONTROL_TimeCounter + TIME_INIT_PS_TIMER;
 				CONTROL_SetDeviceSubState(SS_GetResults);
 				break;
 
@@ -206,37 +221,76 @@ void LOGIC_HandleMeasurement()
 				{
 					CONTROL_SetDeviceState(DS_Ready);
 					CONTROL_SetDeviceSubState(SS_None);
+					bool MainMeasurement = CONTROL_MeasureType == MT_Rth || CONTROL_MeasureType == MT_Iges
+							|| CONTROL_MeasureType == MT_Ugeth;
+					bool ResultOk = RINGBUF_IsFull() || !MainMeasurement;
 
-					switch(CONTROL_MeasureType)
+					if(ResultOk)
 					{
-						case MT_Rth:
-							DataTable[REG_THERM_RESIS] = MEASURE_Resis(UpotResult, IgResult);
-							DataTable[REG_DIAG_CURRENT] = IgResult;
-							DataTable[REG_DIAG_VOLTAGE] = UgResult;
-							DataTable[REG_DIAG_POT_VOLTAGE] = UpotResult;
-							break;
-						case MT_Iges:
-							DataTable[REG_DIAG_VOLTAGE] = UgResult;
-							DataTable[REG_DIAG_POT_VOLTAGE] = UpotResult;
-							if(RINGBUF_GetIgesAvgCount() >= IGES_AVG_BUF_SIZE)
-							{
-								DataTable[REG_IGES_RESULT] = RINGBUF_GetIgesAvg();
-								DataTable[REG_DIAG_CURRENT] = RINGBUF_GetIgesAvg();
-							}
-							else
-								CONTROL_SwitchToProblem(PROBLEM_NEED_MORE_SAMPLES);
-							break;
+						float AvgI = RINGBUF_GetAvgI();
+						float AvgU = RINGBUF_GetAvgU();
+						float R;
 
-						case MT_Ugeth:
-							DataTable[REG_DIAG_CURRENT] = IgResult;
-							DataTable[REG_UGE_TH] = UgResult;
-							DataTable[REG_DIAG_VOLTAGE] = UgResult;
-							DataTable[REG_DIAG_POT_VOLTAGE] = UpotResult;
-							break;
+						switch(CONTROL_MeasureType)
+						{
+							case MT_Rth:
+								R = (AvgI == 0.0f) ? 0.0f : (AvgU / AvgI);
+								if(R > DataTable[REG_MAX_RTH_RESISTANCE])
+								{
+									ResultOk = false;
+									DataTable[REG_PROBLEM] = PROBLEM_RTH_TOO_HIGH;
+								}
+								else if(R < DataTable[REG_MIN_RTH_RESISTANCE])
+								{
+									ResultOk = false;
+									DataTable[REG_PROBLEM] = PROBLEM_RTH_TOO_LOW;
+								}
+								else
+									DataTable[REG_THERM_RESIS] = R;
 
-						default:
-							break;
+								if(ResultOk)
+								{
+									DataTable[REG_DIAG_CURRENT] = AvgI;
+									DataTable[REG_DIAG_VOLTAGE] = UgResult;
+									DataTable[REG_DIAG_POT_VOLTAGE] = AvgU;
+								}
+								break;
+
+							case MT_Iges:
+								if(AvgI <= DataTable[REG_IGES_MAX_CURRENT])
+								{
+									DataTable[REG_DIAG_CURRENT] = DataTable[REG_IGES_RESULT] = AvgI;
+									DataTable[REG_DIAG_VOLTAGE] = AvgU;
+									DataTable[REG_DIAG_POT_VOLTAGE] = UpotResult;
+								}
+								else
+								{
+									ResultOk = false;
+									DataTable[REG_PROBLEM] = PROBLEM_IGES_TOO_HIGH;
+								}
+								break;
+
+							case MT_Ugeth:
+								DataTable[REG_DIAG_CURRENT] = AvgI;
+								DataTable[REG_DIAG_VOLTAGE] = UgResult;
+								DataTable[REG_DIAG_POT_VOLTAGE] = DataTable[REG_UGE_TH] = AvgU;
+								break;
+
+							default:
+								break;
+						}
 					}
+					else
+						DataTable[REG_PROBLEM] = PROBLEM_RING_BUFFER_NOT_FILLED;
+
+					// Последние мгновенные значения в случае проблемы или неосновного измерения
+					if(!ResultOk || !MainMeasurement)
+					{
+						DataTable[REG_DIAG_CURRENT] = IgResult;
+						DataTable[REG_DIAG_VOLTAGE] = UgResult;
+						DataTable[REG_DIAG_POT_VOLTAGE] = UpotResult;
+					}
+					DataTable[REG_OP_RESULT] = ResultOk ? OPRESULT_OK : OPRESULT_FAIL;
 				}
 				break;
 
@@ -300,7 +354,7 @@ void LOGIC_SingleSw(float Ig)
 	if(Ig < DataTable[REG_RANGE_I_0 + LOGIC_ChannelNumber - 1])
 	{
 		LL_SetCurrentChannel(LOGIC_ChannelNumber + 1);
-		Timeout = CONTROL_TimeCounter + RelaySwitchTimer;
+		Timeout = CONTROL_TimeCounter + MAX(RelaySwitchTimer, DataTable[REG_REGLTR_TIMER]);
 		LOGIC_ChannelNumber++;
 	}
 	else
@@ -310,7 +364,7 @@ void LOGIC_SingleSw(float Ig)
 
 void LOGIC_TestLoadRelaySwitch()
 {
-	float CalcCurrent = (DataTable[REG_WORK_VOLTAGE_ST_TESTLOAD] * 0.001) /  DataTable[REG_ST_TESTLOAD_RESIS];
+	float CalcCurrent = (DataTable[REG_WORK_VOLTAGE_ST_TESTLOAD] * 0.001f) /  DataTable[REG_ST_TESTLOAD_RESIS];
 	if(CalcCurrent > DataTable[REG_RANGE_I_0])
 	{
 		LL_SetCurrentChannel(I_CHANNEL_0);

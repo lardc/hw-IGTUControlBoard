@@ -69,10 +69,10 @@ void CONTROL_Init()
 {
 	// Переменные для конфигурации EndPoint
 	Int16U EPIndexes[FEP_COUNT] = {
-		EP16_ExtInfoData, EP16_RegulatorUg,
-		EP16_RegulatorUpot, EP16_RegulatorIg,
-		EP16_RegulatorSetpoint, EP16_RegulatorCorrection,
-		EP16_RegulatorError, EP16_DACRaw
+		EPF_ExtInfoData, EPF_RegulatorUg,
+		EPF_RegulatorUpot, EPF_RegulatorIg,
+		EPF_RegulatorSetpoint, EPF_RegulatorCorrection,
+		EPF_RegulatorError, EPF_DACRaw
 	};
 	Int16U EPSized[FEP_COUNT] = {
 		VALUES_EXT_INFO_SIZE, VALUES_DEBUG_RGLTR_SIZE, VALUES_DEBUG_RGLTR_SIZE,
@@ -118,7 +118,6 @@ void CONTROL_Init()
 	CONTROL_InitStoragePointers();
 	STF_LoadCounters();
 
-
 	CONTROL_ResetToDefaultState();
 }
 //------------------------------------------
@@ -128,6 +127,8 @@ void CONTROL_ResetToDefaultState()
 	CONTROL_ResetData();
 	CONTROL_SetDeviceState(DS_None);
 	CONTROL_SetDeviceSubState(SS_None);
+
+	LL_SetCurrentChannel(I_CHANNEL_DEF);
 }
 //------------------------------------------
 
@@ -154,7 +155,8 @@ void CONTROL_Idle()
 	//Обработка логики мастер-команд
 	LOGIC_HandleMeasurement();
 	// Counter data update
-	if (DataTable[REG_CNT_ACTIVE] && (CONTROL_TimeCounter - CT_SaveTimer) >= CT_SAVE_TIMEOUT)
+	if(DataTable[REG_CNT_ACTIVE] && (CONTROL_TimeCounter - CT_SaveTimer) >= CT_SAVE_TIMEOUT
+			&& CONTROL_State != DS_InProcess)
 	{
 		STF_SaveCounterData();
 		CT_SaveTimer = CONTROL_TimeCounter;
@@ -174,7 +176,7 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 		case ACT_ENABLE_POWER:
 			if(CONTROL_State == DS_None)
 				CONTROL_SetDeviceState(DS_Ready);
-			else
+			else if(CONTROL_State != DS_Ready)
 				*pUserError = ERR_OPERATION_BLOCKED;
 			break;
 			

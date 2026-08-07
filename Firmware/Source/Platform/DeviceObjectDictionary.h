@@ -116,7 +116,7 @@
 #define REG_I_7_B						57	// Коэффициент преобразования B
 #define REG_I_7_RSH						58	// Сопротивление шунта
 //
-// 59
+#define REG_MEASUREMENT_AVG_COUNT		59	// Число усреднений при измерении Rth, Uge_th
 //
 #define REG_CFG_NODE_ID					60	// Настройка CAN NodeID
 //
@@ -171,7 +171,12 @@
 #define REG_ST_TL_FLATTOP_DURATION		99	// Длительность полки поддержания напряжения при диагностики с нагрузкой, мс
 #define REG_RGLTR_ST_ERR_THRESH			100	// Порог ошибки напряжения для диаг. потенциальных линий, в частях от 0 до 1
 #define REG_ST_TESTLOAD_RESIS			101	// Сопротивление тестовой нагрузки, Ом
-// 102 - 105
+//
+#define REG_MAX_RTH_RESISTANCE			102	// Максимальное допустимое сопротивление Rth, Ом
+#define REG_MIN_RTH_RESISTANCE			103	// Минимальное допустимое сопротивление Rth, Ом
+//
+#define REG_RELAY_SW_TIMER_IGES_RANGE7	104	// Время для переключения реле тока при измерении Iges на диапазоне 7, мс
+#define REG_IGES_MAX_CURRENT			105	// Максимальный допустимый ток Iges, A
 //
 #define REG_CNT_ACTIVE					106	// Включение сохранения счетчиков
 #define REG_SCALING_MUTE				107	// Отключение масштабирования значений в EP
@@ -192,7 +197,6 @@
 #define REG_DIAG_FORCE_CHANNEL			151	// Принудительное включение определенного диапазона тока
 //
 // 152 - 191
-//
 
 // Регистры только чтение
 #define REG_DEV_STATE					192	// Регистр состояния
@@ -210,7 +214,7 @@
 #define REG_DIAG_CURRENT				230	// Полученный ток
 #define REG_DIAG_VOLTAGE				231	// Полученное напряжение
 #define REG_DIAG_POT_VOLTAGE			232	// Полученное потенциальное напряжение
-#define REG_DEBUG_SCALING_COEF			233	// Рассчитанный коэф масштабирования
+#define REG_EP_DATA_STEP				233	// Шаг данных в EP, мкс
 // -----------------------------
 
 #define REG_FWINFO_SLAVE_NID			256	// Device CAN slave node ID
@@ -230,13 +234,16 @@
 // Problem
 #define PROBLEM_NONE						0
 #define PROBLEM_FOLLOWING_ERROR				1
-#define PROBLEM_FOLLOWING_ERROR_UPOT		2 // Ошибка Following Err на потенциальной линии
-#define PROBLEM_VOLTAGE_OUT_OF_RANGE		3 // Измеренное напряжение вне рабочего диапозона
-#define PROBLEM_CURRENT_OUT_OF_RANGE		4 // Измеренный ток вне рабочего диапозона
-#define PROBLEM_SAFETY						5 // Сработала система безопасности
-#define PROBLEM_NEED_MORE_SAMPLES			6 // Недостаточная длина измерения Iges для получения точного значения
-#define PROBLEM_VOLTAGE_LIMIT_NO_CURRENT	7 // Достигнут установленный лимит напряжения без достижения уровня тока
-#define PROBLEM_WRONG_SELECTED_RELAY		8 // Выбрано неверное реле для диагностики
+#define PROBLEM_FOLLOWING_ERROR_UPOT		2	// Ошибка Following Err на потенциальной линии
+#define PROBLEM_VOLTAGE_OUT_OF_RANGE		3	// Измеренное напряжение вне рабочего диапозона
+#define PROBLEM_CURRENT_OUT_OF_RANGE		4	// Измеренный ток вне рабочего диапозона
+#define PROBLEM_SAFETY						5	// Сработала система безопасности
+#define PROBLEM_RING_BUFFER_NOT_FILLED		6	// Кольцевой буфер усреднения не заполнен
+#define PROBLEM_VOLTAGE_LIMIT_NO_CURRENT	7	// Достигнут установленный лимит напряжения без достижения уровня тока
+#define PROBLEM_WRONG_SELECTED_RELAY		8	// Выбрано неверное реле для диагностики
+#define PROBLEM_RTH_TOO_HIGH				9	// Значение Rth превысило допустимое максимальное значение
+#define PROBLEM_RTH_TOO_LOW					10	// Значение Rth превысило допустимое минимальное значение
+#define PROBLEM_IGES_TOO_HIGH				11	// Значение Iges превысило допустимый предел
 
 //  Warning
 #define WARNING_NONE					0
@@ -249,13 +256,13 @@
 #define ERR_WRONG_PWD					4	//  Неправильный ключ
 
 // EP
-#define EP16_RegulatorIg				1	// Regulator Ig data
-#define EP16_RegulatorUg				2	// Regulator Ug data
-#define EP16_RegulatorUpot				3	// Regulator Upot data
-#define EP16_RegulatorSetpoint			4	// Regulator Setpoint data
-#define EP16_RegulatorCorrection		5	// Regulator Correction data
-#define EP16_RegulatorError				6	// Regulator Error data
-#define EP16_DACRaw						7	// Raw data sent to DAC
-#define EP16_ExtInfoData				20	// Diag data drom flash
+#define EPF_RegulatorIg					1	// Regulator Ig data
+#define EPF_RegulatorUg					2	// Regulator Ug data
+#define EPF_RegulatorUpot				3	// Regulator Upot data
+#define EPF_RegulatorSetpoint			4	// Regulator Setpoint data
+#define EPF_RegulatorCorrection			5	// Regulator Correction data
+#define EPF_RegulatorError				6	// Regulator Error data
+#define EPF_DACRaw						7	// Raw data sent to DAC
+#define EPF_ExtInfoData					20	// Diag data drom flash
 
 #endif //  __DEV_OBJ_DIC_H

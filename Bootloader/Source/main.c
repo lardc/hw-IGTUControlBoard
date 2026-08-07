@@ -53,10 +53,14 @@ void IO_Config()
 	RCC_GPIO_Clk_EN(PORTA);
 	RCC_GPIO_Clk_EN(PORTB);
 	
-	//Выходы
+	// Выходы
 	GPIO_Config(LED_BLINK_PORT, LED_BLINK_PIN, Output, PushPull, HighSpeed, NoPull);
 	
-	//Альтернативные функции портов
+	// Выход ЦАП
+	GPIO_Config(GPIOA, Pin_5, Output, PushPull, HighSpeed, NoPull);
+	GPIO_Bit_Rst(GPIOA, Pin_5);
+
+	// Альтернативные функции портов
 	GPIO_Config(GPIOA, Pin_9, AltFn, PushPull, HighSpeed, NoPull); //PA9(USART1 TX)
 	GPIO_AltFn(GPIOA, Pin_9, AltFn_7);
 	
@@ -68,7 +72,6 @@ void IO_Config()
 	
 	GPIO_Config(GPIOA, Pin_12, AltFn, PushPull, HighSpeed, NoPull); //PA12(CAN TX)
 	GPIO_AltFn(GPIOA, Pin_12, AltFn_9);
-	
 }
 //--------------------------------------------
 

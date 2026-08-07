@@ -68,7 +68,7 @@ const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE] =
 	{COEF_K_MIN, COEF_K_MAX, COEF_K_IMEAS_DEF},									// 56
 	{COEF_B_MIN, COEF_B_MAX, 0},												// 57
 	{COEF_RSH_MIN, COEF_RSH_MAX, COEF_RSH_CH7_DEF},								// 58
-	{0, 0, 0},																	// 59
+	{MEASUREMENT_AVG_MIN, MEASUREMENT_AVG_MAX, MEASUREMENT_AVG_DEF},			// 59
 	{0, INT16U_MAX, 0},															// 60
 	{COEF_P2_MIN, COEF_P2_MAX, COEF_P2_DEF},									// 61
 	{COEF_P1_MIN, COEF_P1_MAX, COEF_P1_DEF},									// 62
@@ -99,9 +99,9 @@ const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE] =
 	{0, COEF_THRESHOLD_MAX, 0},													// 87
 	{0, INT16U_MAX, 0},															// 88
 	{REGULATOR_TIME_MIN, REGULATOR_TIME_MAX, REGULATOR_TIME_MIN},				// 89
-	{COEF_SWITCH_TIME_MIN, INT16U_MAX, COEF_SWITCH_TIME_MIN},					// 90
-	{COEF_SWITCH_TIME_IGES_MIN, INT16U_MAX, COEF_SWITCH_TIME_IGES_MIN},			// 91
-	{COEF_SWITCH_TIME_MIN, INT16U_MAX, COEF_SWITCH_TIME_MIN},					// 92
+	{SWITCH_TIME_MIN, SWITCH_TIME_MAX, SWITCH_TIME_DEF},						// 90
+	{SWITCH_TIME_MIN, SWITCH_TIME_MAX, SWITCH_TIME_DEF},						// 91
+	{SWITCH_TIME_MIN, SWITCH_TIME_MAX, SWITCH_TIME_DEF},						// 92
 	{SLEW_RATE_MIN, INT16U_MAX, SLEW_RATE_MIN},									// 93
 	{SLEW_RATE_MIN, INT16U_MAX, SLEW_RATE_MIN},									// 94
 	{SLEW_RATE_MIN, INT16U_MAX, SLEW_RATE_MIN},									// 95
@@ -111,10 +111,10 @@ const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE] =
 	{0, INT16U_MAX, COEF_FLATTOP_DURATION_DEF},									// 99
 	{0, COEF_THRESHOLD_MAX, 0},													// 100
 	{R_TESTLOAD_MIN, INT16U_MAX, R_TESTLOAD_DEF},								// 101
-	{0, 0, 0},																	// 102
-	{0, 0, 0},																	// 103
-	{0, 0, 0},																	// 104
-	{0, 0, 0},																	// 105
+	{RTH_MIN, RTH_MAX, RTH_DEF},												// 102
+	{RTH_MIN, RTH_MAX, RTH_DEF},												// 103
+	{SWITCH_TIME_MIN, SWITCH_TIME_MAX, SWITCH_TIME_DEF},						// 104
+	{IGES_MIN_MIN, IGES_MIN_MAX, IGES_MIN_DEF},									// 105
 	{NO, YES, NO},																// 106
 	{NO, YES, NO},																// 107
 	{0, 0, 0},																	// 108

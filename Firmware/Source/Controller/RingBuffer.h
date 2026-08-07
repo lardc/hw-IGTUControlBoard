@@ -1,19 +1,20 @@
-﻿#ifndef _RINGBUFFER_H
-#define _RINGBUFFER_H
+﻿#ifndef __RINGBUFFER_H
+#define __RINGBUFFER_H
 
 // Include
 #include "stdinc.h"
 #include "SysConfig.h"
 
 // Defines
-#define IGES_AVG_WINDOW_US			20000
-#define IGES_AVG_BUF_SIZE			((Int16U)(IGES_AVG_WINDOW_US / (Int32U)TIMER15_uS))
+#define RINGBUF_MAX_AVG_WINDOW_US		20000
+#define RINGBUF_MAX_SIZE				((Int16U)(RINGBUF_MAX_AVG_WINDOW_US / (Int32U)TIMER15_uS))
 
 // Functions
 //
-void RINGBUF_ResetIgesAvg();
-void RINGBUF_AddNewSampleIges(float Ig);
-float RINGBUF_GetIgesAvg();
-Int16U RINGBUF_GetIgesAvgCount();
+void RINGBUF_Reset(Int16U Size);
+void RINGBUF_AddSample(float I, float U);
+float RINGBUF_GetAvgI();
+float RINGBUF_GetAvgU();
+Boolean RINGBUF_IsFull();
 
-#endif // _RINGBUFFER_H
+#endif // __RINGBUFFER_H

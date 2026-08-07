@@ -25,6 +25,7 @@ void INITCFG_IO()
 	// Аналаговые порты
 	GPIO_InitAnalog(GPIO_ANLG_UG);
 	GPIO_InitAnalog(GPIO_ANLG_UPOT);
+	GPIO_InitAnalog(GPIO_ANLG_USET);
 	GPIO_InitAnalog(GPIO_ANLG_IG);
 	
 	// Входы
