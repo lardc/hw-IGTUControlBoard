@@ -1,13 +1,28 @@
 ﻿// Header
 #include "StorageDescription.h"
-#include "Global.h"
 
-// Variables
-const RecordDescription StorageDescription[] = {0};
+RecordDescription StorageDescription[] =
+{
+	{"REG_DEV_STATE",			DT_Float, 1},
+	{"REG_FAULT_REASON",		DT_Float, 1},
+	{"REG_DISABLE_REASON",		DT_Float, 1},
+	{"REG_WARNING",				DT_Float, 1},
+	{"REG_PROBLEM",				DT_Float, 1},
+	{"REG_OP_RESULT",			DT_Float, 1},
+	{"REG_DEV_SUBSTATE",		DT_Float, 1},
 
-#define SIZE_OF_POINTERS (sizeof(StorageDescription) / sizeof(StorageDescription[0]))
-Int32U TablePointers[SIZE_OF_POINTERS ? SIZE_OF_POINTERS : 1] = {0};
-const Int16U StorageSize = SIZE_OF_POINTERS;
+	{"REG_UGE_TH",				DT_Float, 1},
+	{"REG_IGES_RESULT",			DT_Float, 1},
+	{"REG_THERM_RESIS",			DT_Float, 1},
+
+	{"REG_DIAG_CURRENT",		DT_Float, 1},
+	{"REG_DIAG_VOLTAGE",		DT_Float, 1},
+	{"REG_DIAG_POT_VOLTAGE",	DT_Float, 1},
+	{"REG_EP_DATA_STEP",		DT_Float, 1},
+};
+
+Int32U TablePointers[sizeof(StorageDescription) / sizeof(StorageDescription[0])] = {0};
+const Int16U StorageSize = sizeof(StorageDescription) / sizeof(StorageDescription[0]);
 
 const CounterDescription CounterStorageDescription[] =
 {
@@ -26,4 +41,3 @@ const CounterDescription CounterStorageDescription[] =
 };
 CounterData CounterTablePointers[sizeof(CounterStorageDescription) / sizeof(CounterStorageDescription[0])] = {0};
 const Int16U CounterStorageSize = sizeof(CounterStorageDescription) / sizeof(CounterStorageDescription[0]);
-
