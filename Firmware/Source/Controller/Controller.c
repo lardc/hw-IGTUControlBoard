@@ -69,37 +69,18 @@ void CONTROL_InitStoragePointers();
 void CONTROL_Init()
 {
 	// Переменные для конфигурации EndPoint
-	Int16U EPIndexes[FEP_COUNT] = {
-		EPF_ExtInfoData, EPF_RegulatorUg,
-		EPF_RegulatorUpot, EPF_RegulatorIg,
-		EPF_RegulatorSetpoint, EPF_RegulatorCorrection,
-		EPF_RegulatorError, EPF_DACRaw
-	};
-	Int16U EPSized[FEP_COUNT] = {
-		VALUES_EXT_INFO_SIZE, VALUES_DEBUG_RGLTR_SIZE, VALUES_DEBUG_RGLTR_SIZE,
-		VALUES_DEBUG_RGLTR_SIZE, VALUES_DEBUG_RGLTR_SIZE,
-		VALUES_DEBUG_RGLTR_SIZE, VALUES_DEBUG_RGLTR_SIZE, VALUES_DEBUG_RGLTR_SIZE
-	};
-	pInt16U EPCounters[FEP_COUNT] = {
-		(pInt16U)&CONTROL_ExtInfoCounter,
-		(pInt16U)&CONTROL_Values_Counter,
-		(pInt16U)&CONTROL_Values_Counter,
-		(pInt16U)&CONTROL_Values_Counter,
-		(pInt16U)&CONTROL_Values_Counter,
-		(pInt16U)&CONTROL_Values_Counter,
-		(pInt16U)&CONTROL_Values_Counter,
-		(pInt16U)&CONTROL_Values_Counter
-	};
-	pFloat32 EPDatas[FEP_COUNT] = {
-		(pFloat32)CONTROL_ExtInfoData,
-		(pFloat32)CONTROL_RegulatorUg,
-		(pFloat32)CONTROL_RegulatorUpot,
-		(pFloat32)CONTROL_RegulatorIg,
-		(pFloat32)CONTROL_RegulatorSetpoint,
-		(pFloat32)CONTROL_RegulatorCorrection,
-		(pFloat32)CONTROL_RegulatorError,
-		(pFloat32)CONTROL_DACRaw
-	};
+	Int16U EPIndexes[FEP_COUNT] = {EP_ExtInfoData, EP_RegulatorUg, EP_RegulatorUpot,
+		EP_RegulatorIg, EP_RegulatorSetpoint, EP_RegulatorCorrection,
+		EP_RegulatorError, EP_DACRaw};
+	Int16U EPSized[FEP_COUNT] = {VALUES_EXT_INFO_SIZE, VALUES_DEBUG_RGLTR_SIZE, VALUES_DEBUG_RGLTR_SIZE,
+		VALUES_DEBUG_RGLTR_SIZE, VALUES_DEBUG_RGLTR_SIZE, VALUES_DEBUG_RGLTR_SIZE,
+		VALUES_DEBUG_RGLTR_SIZE, VALUES_DEBUG_RGLTR_SIZE};
+	pInt16U EPCounters[FEP_COUNT] = {(pInt16U)&CONTROL_ExtInfoCounter, (pInt16U)&CONTROL_Values_Counter, (pInt16U)&CONTROL_Values_Counter,
+		(pInt16U)&CONTROL_Values_Counter, (pInt16U)&CONTROL_Values_Counter, (pInt16U)&CONTROL_Values_Counter,
+		(pInt16U)&CONTROL_Values_Counter, (pInt16U)&CONTROL_Values_Counter};
+	pFloat32 EPDatas[FEP_COUNT] = {(pFloat32)CONTROL_ExtInfoData, (pFloat32)CONTROL_RegulatorUg, (pFloat32)CONTROL_RegulatorUpot,
+		(pFloat32)CONTROL_RegulatorIg, (pFloat32)CONTROL_RegulatorSetpoint, (pFloat32)CONTROL_RegulatorCorrection,
+		(pFloat32)CONTROL_RegulatorError, (pFloat32)CONTROL_DACRaw};
 
 	// Конфигурация сервиса работы DataTable и EPROM
 	EPROMServiceConfig EPROMService = {(FUNC_EPROM_WriteValues)&NFLASH_WriteDT, (FUNC_EPROM_ReadValues)&NFLASH_ReadDT};
@@ -362,6 +343,13 @@ void CONTROL_InitStoragePointers()
 	STF_AssignPointer(11, (Int32U)&DataTable[REG_DIAG_VOLTAGE]);
 	STF_AssignPointer(12, (Int32U)&DataTable[REG_DIAG_POT_VOLTAGE]);
 	STF_AssignPointer(13, (Int32U)&DataTable[REG_EP_DATA_STEP]);
+	STF_AssignPointer(14, (Int32U)CONTROL_RegulatorIg);
+	STF_AssignPointer(15, (Int32U)CONTROL_RegulatorUg);
+	STF_AssignPointer(16, (Int32U)CONTROL_RegulatorUpot);
+	STF_AssignPointer(17, (Int32U)CONTROL_RegulatorSetpoint);
+	STF_AssignPointer(18, (Int32U)CONTROL_RegulatorCorrection);
+	STF_AssignPointer(19, (Int32U)CONTROL_RegulatorError);
+	STF_AssignPointer(20, (Int32U)CONTROL_DACRaw);
 }
 //------------------------------------------
 

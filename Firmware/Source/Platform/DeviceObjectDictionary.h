@@ -262,13 +262,13 @@
 #define ERR_WRONG_PWD					4	//  Неправильный ключ
 
 // EP
-#define EPF_RegulatorIg					1	// Regulator Ig data
-#define EPF_RegulatorUg					2	// Regulator Ug data
-#define EPF_RegulatorUpot				3	// Regulator Upot data
-#define EPF_RegulatorSetpoint			4	// Regulator Setpoint data
-#define EPF_RegulatorCorrection			5	// Regulator Correction data
-#define EPF_RegulatorError				6	// Regulator Error data
-#define EPF_DACRaw						7	// Raw data sent to DAC
-#define EPF_ExtInfoData					20	// Diag data drom flash
+#define EP_RegulatorIg					1	// Regulator Ig data
+#define EP_RegulatorUg					2	// Regulator Ug data
+#define EP_RegulatorUpot				3	// Regulator Upot data
+#define EP_RegulatorSetpoint			4	// Regulator Setpoint data
+#define EP_RegulatorCorrection			5	// Regulator Correction data
+#define EP_RegulatorError				6	// Regulator Error data
+#define EP_DACRaw						7	// Raw data sent to DAC
+#define EP_ExtInfoData					20	// Diag data drom flash
 
 #endif //  __DEV_OBJ_DIC_H
