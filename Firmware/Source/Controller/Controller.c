@@ -142,14 +142,13 @@ void CONTROL_Idle()
 {
 	CONTROL_LogicProcess();
 
-	if (RequestSaveToFlash)
+	if(RequestSaveToFlash && (CONTROL_State != DS_InProcess) && (CONTROL_State != DS_SelfTest))
 	{
 		RequestSaveToFlash = false;
 
 		if(DataTable[REG_ACTIVE_SAVE_TO_FLASH])
 		{
 			IWDG_ConfigureSlowUpdate();
-			STF_EraseDataSector();
 			STF_SaveDiagData();
 			IWDG_ConfigureFastUpdate();
 		}
