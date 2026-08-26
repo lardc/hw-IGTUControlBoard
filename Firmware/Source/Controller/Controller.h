@@ -71,5 +71,6 @@ void CONTROL_SwitchToProblem(Int16U Reason);
 bool CONTROL_IsSafetyOk();
 void CONTROL_WatchDogUpdate();
 void CONTROL_InitJSONPointers();
+void CONTROL_StartMeasure(MeasureType Type);
 
 #endif // __CONTROLLER_H

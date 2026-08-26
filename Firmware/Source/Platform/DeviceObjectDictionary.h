@@ -20,13 +20,13 @@
 #define ACT_DBG_SYNC					20	// Запуск синхронизации
 #define ACT_DBG_READ_VPOT				21	// Считывание напряжения с потенциальных линий, в тиках
 
+#define ACT_DBG_START_SELFTEST_UPOT		30 // Запуск процесса самодиагностики потенциальных линий
+#define ACT_DBG_START_SELFTEST_TESTLOAD	31 // Запуск процесса самодиагностики с тестовой нагрузкой
+
 #define ACT_START_MEASURE_UGETH			100	// Запуск процесса измерения Uge_th
 //101
 #define ACT_START_MEASURE_IGES			102	// Запуск процесса измерения Iges
 #define ACT_START_MEASURE_RTH			103 // Запуск процесса измерения Rth
-
-#define ACT_START_SELFTEST_UPOT			110 // Запуск процесса самодиагностики потенциальных линий
-#define ACT_START_SELFTEST_TESTLOAD		111 // Запуск процесса самодиагностики с тестовой нагрузкой
 
 #define ACT_SAVE_TO_ROM					200	// Сохранение пользовательских данных во FLASH процессора
 #define ACT_RESTORE_FROM_ROM			201	// Восстановление данных из FLASH
@@ -186,8 +186,9 @@
 //
 #define REG_CNT_ACTIVE					106	// Включение сохранения счетчиков
 #define REG_SCALING_MUTE				107	// Отключение масштабирования значений в EP
-//
-// 108 - 127
+#define REG_USE_SELFTEST				108	// Включение режимов самодиагностики(0 - выкл, 1 - только самодиаг. потенц. линий, 2 - только тест нагрузка
+											// 3 - обе самодиагностики.
+// 109 - 127
 
 // Несохраняемы регистры чтения-записи
 #define REG_WORK_CURRENT_UGETH			128	// Номинальный рабочий ток для измерения Ugeth, мА

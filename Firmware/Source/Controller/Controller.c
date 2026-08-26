@@ -18,6 +18,7 @@
 #include "Logic.h"
 #include "JSONDescription.h"
 #include "SaveToFlash.h"
+#include "Constraints.h"
 
 // Defines
 //
@@ -60,7 +61,6 @@ void Delay_mS(uint32_t Delay);
 void CONTROL_WatchDogUpdate();
 void CONTROL_ResetToDefaultState();
 void CONTROL_ResetData();
-void CONTROL_StartMeasure(MeasureType Type);
 bool CONTROL_IsSafetyOk();
 void CONTROL_InitStoragePointers();
 
@@ -101,6 +101,10 @@ void CONTROL_Init()
 	STF_LoadCounters();
 
 	CONTROL_ResetToDefaultState();
+	if(DataTable[REG_USE_SELFTEST] == ONLY_POT_ST ||DataTable[REG_USE_SELFTEST] == BOTH_ST)
+		CONTROL_StartMeasure(MT_ST_Upot);
+	else if(DataTable[REG_USE_SELFTEST] == ONLY_LOAD_ST)
+		CONTROL_StartMeasure(MT_ST_TestLoad);
 }
 //------------------------------------------
 
@@ -209,14 +213,14 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 				*pUserError = ERR_DEVICE_NOT_READY;
 			break;
 
-		case ACT_START_SELFTEST_UPOT:
+		case ACT_DBG_START_SELFTEST_UPOT:
 			if(CONTROL_State == DS_Ready)
 				CONTROL_StartMeasure(MT_ST_Upot);
 			else
 				*pUserError = ERR_DEVICE_NOT_READY;
 			break;
 
-		case ACT_START_SELFTEST_TESTLOAD:
+		case ACT_DBG_START_SELFTEST_TESTLOAD:
 			if(CONTROL_State == DS_Ready)
 				CONTROL_StartMeasure(MT_ST_TestLoad);
 			else

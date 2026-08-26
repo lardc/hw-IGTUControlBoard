@@ -13,6 +13,7 @@
 #include "Measurement.h"
 #include "RingBuffer.h"
 #include "Utils.h"
+#include "Constraints.h"
 
 // Variables
 //
@@ -32,11 +33,15 @@ void LOGIC_TestLoadRelaySwitch();
 void LOGIC_HandleMeasurement()
 {
 	static float UgResult, UpotResult, IgResult;
+	static Boolean SecondaryST = false;
 
 	if(CONTROL_State == DS_InProcess)
 	{
 		if(!CONTROL_IsSafetyOk())
+		{
 			LOGIC_StopProcess();
+			SecondaryST = false;
+		}
 
 		switch(CONTROL_SubState)
 		{
@@ -112,6 +117,8 @@ void LOGIC_HandleMeasurement()
 						RelaySwitchTimer = DataTable[REG_REGLTR_TIMER] + DataTable[REG_ST_UPOT_FLATTOP_DURATION];
 						LL_SetCurrentChannel(I_CHANNEL_0);
 						LOGIC_ChannelNumber = I_CHANNEL_0;
+						if(DataTable[REG_USE_SELFTEST] == BOTH_ST)
+							SecondaryST = true;
 						break;
 
 					case MT_ST_TestLoad:
@@ -190,23 +197,28 @@ void LOGIC_HandleMeasurement()
 				break;
 			case SS_FollowingErr:
 				LOGIC_StopProcess();
+				SecondaryST = false;
 				CONTROL_SwitchToProblem(PROBLEM_FOLLOWING_ERROR);
 				break;
 			case SS_FollowingErrUpot:
 				LOGIC_StopProcess();
+				SecondaryST = false;
 				CONTROL_SwitchToProblem(PROBLEM_FOLLOWING_ERROR_UPOT);
 				break;
 			case SS_VoltageErr:
 				LOGIC_StopProcess();
+				SecondaryST = false;
 				CONTROL_SwitchToProblem(PROBLEM_VOLTAGE_OUT_OF_RANGE);
 				break;
 			case SS_CurrentErr:
 				LOGIC_StopProcess();
+				SecondaryST = false;
 				CONTROL_SwitchToProblem(PROBLEM_CURRENT_OUT_OF_RANGE);
 				break;
 
 			case SS_VoltageNoCurrentErr:
 				LOGIC_StopProcess();
+				SecondaryST = false;
 				CONTROL_SwitchToProblem(PROBLEM_VOLTAGE_LIMIT_NO_CURRENT);
 				break;
 
@@ -219,8 +231,6 @@ void LOGIC_HandleMeasurement()
 			case SS_GetResults:
 				if(CONTROL_TimeCounter > Timeout)
 				{
-					CONTROL_SetDeviceState(DS_Ready);
-					CONTROL_SetDeviceSubState(SS_None);
 					bool MainMeasurement = CONTROL_MeasureType == MT_Rth || CONTROL_MeasureType == MT_Iges
 							|| CONTROL_MeasureType == MT_Ugeth;
 					bool ResultOk = RINGBUF_IsFull() || !MainMeasurement;
@@ -291,6 +301,17 @@ void LOGIC_HandleMeasurement()
 						DataTable[REG_DIAG_POT_VOLTAGE] = UpotResult;
 					}
 					DataTable[REG_OP_RESULT] = ResultOk ? OPRESULT_OK : OPRESULT_FAIL;
+
+					if(SecondaryST)
+					{
+						CONTROL_StartMeasure(MT_ST_TestLoad);
+						SecondaryST = false;
+					}
+					else
+					{
+						CONTROL_SetDeviceState(DS_Ready);
+						CONTROL_SetDeviceSubState(SS_None);
+					}
 				}
 				break;
 

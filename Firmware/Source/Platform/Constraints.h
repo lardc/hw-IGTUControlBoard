@@ -85,6 +85,9 @@
 #define NO							0
 #define YES							1
 #define COEF_THRESHOLD_MAX			1
+#define ONLY_POT_ST					1
+#define ONLY_LOAD_ST				2
+#define BOTH_ST						3
 //
 #define RTH_MIN						0.01f
 #define RTH_MAX						1e+6f
