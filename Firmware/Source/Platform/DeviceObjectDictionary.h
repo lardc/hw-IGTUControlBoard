@@ -237,6 +237,9 @@
 
 //  Fault and disable codes
 #define DF_NONE							0
+#define DF_FOLLOWING_ERROR				1	// Ошибка Following Error при самодиагностике
+#define DF_VOLTAGE_OUT_OF_RANGE			2	// Ошибка по напряжению при самодиагностике
+#define DF_CURRENT_OUT_OF_RANGE			3	// Ошибка по току при самодиагностике
 
 // Problem
 #define PROBLEM_NONE						0

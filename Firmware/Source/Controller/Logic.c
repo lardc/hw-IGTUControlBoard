@@ -27,6 +27,7 @@ void LOGIC_StopProcess();
 void LOGIC_SwitchChannels(float Ig);
 void LOGIC_SingleSw(float Ig);
 void LOGIC_TestLoadRelaySwitch();
+Boolean LOGIC_IsSelfTest();
 // Functions
 //
 
@@ -197,28 +198,35 @@ void LOGIC_HandleMeasurement()
 				break;
 			case SS_FollowingErr:
 				LOGIC_StopProcess();
-				SecondaryST = false;
 				CONTROL_SwitchToProblem(PROBLEM_FOLLOWING_ERROR);
 				break;
 			case SS_FollowingErrUpot:
 				LOGIC_StopProcess();
 				SecondaryST = false;
-				CONTROL_SwitchToProblem(PROBLEM_FOLLOWING_ERROR_UPOT);
+				if(LOGIC_IsSelfTest())
+					CONTROL_SwitchToFault(DF_FOLLOWING_ERROR);
+				else
+					CONTROL_SwitchToProblem(PROBLEM_FOLLOWING_ERROR_UPOT);
 				break;
 			case SS_VoltageErr:
 				LOGIC_StopProcess();
 				SecondaryST = false;
-				CONTROL_SwitchToProblem(PROBLEM_VOLTAGE_OUT_OF_RANGE);
+				if(LOGIC_IsSelfTest())
+					CONTROL_SwitchToFault(DF_VOLTAGE_OUT_OF_RANGE);
+				else
+					CONTROL_SwitchToProblem(PROBLEM_VOLTAGE_OUT_OF_RANGE);
 				break;
 			case SS_CurrentErr:
 				LOGIC_StopProcess();
 				SecondaryST = false;
-				CONTROL_SwitchToProblem(PROBLEM_CURRENT_OUT_OF_RANGE);
+				if(LOGIC_IsSelfTest())
+					CONTROL_SwitchToFault(DF_CURRENT_OUT_OF_RANGE);
+				else
+					CONTROL_SwitchToProblem(PROBLEM_CURRENT_OUT_OF_RANGE);
 				break;
 
 			case SS_VoltageNoCurrentErr:
 				LOGIC_StopProcess();
-				SecondaryST = false;
 				CONTROL_SwitchToProblem(PROBLEM_VOLTAGE_LIMIT_NO_CURRENT);
 				break;
 
@@ -332,6 +340,12 @@ void LOGIC_StopProcess()
 	LL_SetSelfTestUpot(false);
 	LL_Sync(false);
 	LL_SetCurrentChannel(I_CHANNEL_DEF);
+}
+//------------------------------------------
+
+Boolean LOGIC_IsSelfTest()
+{
+	return CONTROL_MeasureType == MT_ST_Upot || CONTROL_MeasureType == MT_ST_TestLoad;
 }
 //------------------------------------------
 

@@ -68,6 +68,7 @@ void CONTROL_Idle();
 void CONTROL_SetDeviceState(DeviceState NewState);
 void CONTROL_SetDeviceSubState(DeviceSubState NewSubState);
 void CONTROL_SwitchToProblem(Int16U Reason);
+void CONTROL_SwitchToFault(Int16U Reason);
 bool CONTROL_IsSafetyOk();
 void CONTROL_WatchDogUpdate();
 void CONTROL_InitJSONPointers();

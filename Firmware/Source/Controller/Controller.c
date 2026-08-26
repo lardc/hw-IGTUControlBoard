@@ -115,6 +115,7 @@ void CONTROL_ResetToDefaultState()
 	CONTROL_SetDeviceSubState(SS_None);
 
 	LL_SetCurrentChannel(I_CHANNEL_DEF);
+	DataTable[REG_FAULT_REASON] = DF_NONE;
 }
 //------------------------------------------
 
@@ -183,7 +184,7 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 		case ACT_FAULT_CLEAR:
 			if(CONTROL_State == DS_Fault)
 			{
-				CONTROL_SetDeviceState(DS_None);
+				CONTROL_SetDeviceState(DS_Ready);
 				DataTable[REG_FAULT_REASON] = DF_NONE;
 			}
 			break;
@@ -362,6 +363,7 @@ void CONTROL_SwitchToFault(Int16U Reason)
 	CONTROL_SetDeviceSubState(SS_None);
 	CONTROL_SetDeviceState(DS_Fault);
 	DataTable[REG_FAULT_REASON] = Reason;
+	DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
 }
 //------------------------------------------
 
