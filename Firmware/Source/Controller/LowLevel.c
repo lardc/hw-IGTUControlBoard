@@ -121,7 +121,7 @@ void LL_SetCurrentChannel(IChannel Channel)
 }
 //-----------------------------
 
-bool LL_SafetyState()
+bool LL_IsSafetyOk()
 {
 	return GPIO_GetState(GPIO_SAFETY);
 }

@@ -266,7 +266,7 @@ bool CONTROL_IsSafetyOk()
 {
 	if(!DataTable[REG_SAFETY_MUTE])
 	{
-		if(LL_SafetyState())
+		if(LL_IsSafetyOk())
 		{
 			CONTROL_SwitchToProblem(PROBLEM_SAFETY);
 			return false;
