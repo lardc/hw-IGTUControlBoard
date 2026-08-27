@@ -184,6 +184,7 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 		case ACT_FAULT_CLEAR:
 			if(CONTROL_State == DS_Fault)
 			{
+				LL_ExtIndication(false);
 				CONTROL_SetDeviceState(DS_Ready);
 				DataTable[REG_FAULT_REASON] = DF_NONE;
 			}

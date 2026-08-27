@@ -21,6 +21,7 @@ static Int64U Timeout = 0;
 Int16U LOGIC_ChannelNumber = 0;
 Int16U RelaySwitchTimer = 0;
 static Int16U ForcedCh = 0;
+static Boolean SecondaryST = false;
 // Forward functions
 //
 void LOGIC_StopProcess();
@@ -28,13 +29,13 @@ void LOGIC_SwitchChannels(float Ig);
 void LOGIC_SingleSw(float Ig);
 void LOGIC_TestLoadRelaySwitch();
 Boolean LOGIC_IsSelfTest();
+void LOGIC_ErrorHandler(DeviceSubState SubState);
 // Functions
 //
 
 void LOGIC_HandleMeasurement()
 {
 	static float UgResult, UpotResult, IgResult;
-	static Boolean SecondaryST = false;
 
 	if(CONTROL_State == DS_InProcess)
 	{
@@ -180,6 +181,8 @@ void LOGIC_HandleMeasurement()
 				if(CONTROL_TimeCounter > Timeout)
 					if(IsMeasureOk)
 					{
+						UgResult = Sample.Ug;
+						UpotResult = Sample.UPot;
 						IgResult = Sample.Ig;
 						DataTable[REG_OP_RESULT] = OPRESULT_OK;
 						CONTROL_SetDeviceSubState(SS_FinishProcess);
@@ -197,32 +200,10 @@ void LOGIC_HandleMeasurement()
 				}
 				break;
 			case SS_FollowingErr:
-				LOGIC_StopProcess();
-				CONTROL_SwitchToProblem(PROBLEM_FOLLOWING_ERROR);
-				break;
 			case SS_FollowingErrUpot:
-				LOGIC_StopProcess();
-				SecondaryST = false;
-				if(LOGIC_IsSelfTest())
-					CONTROL_SwitchToFault(DF_FOLLOWING_ERROR);
-				else
-					CONTROL_SwitchToProblem(PROBLEM_FOLLOWING_ERROR_UPOT);
-				break;
 			case SS_VoltageErr:
-				LOGIC_StopProcess();
-				SecondaryST = false;
-				if(LOGIC_IsSelfTest())
-					CONTROL_SwitchToFault(DF_VOLTAGE_OUT_OF_RANGE);
-				else
-					CONTROL_SwitchToProblem(PROBLEM_VOLTAGE_OUT_OF_RANGE);
-				break;
 			case SS_CurrentErr:
-				LOGIC_StopProcess();
-				SecondaryST = false;
-				if(LOGIC_IsSelfTest())
-					CONTROL_SwitchToFault(DF_CURRENT_OUT_OF_RANGE);
-				else
-					CONTROL_SwitchToProblem(PROBLEM_CURRENT_OUT_OF_RANGE);
+				LOGIC_ErrorHandler(CONTROL_SubState);
 				break;
 
 			case SS_VoltageNoCurrentErr:
@@ -448,5 +429,54 @@ void LOGIC_TestLoadRelaySwitch()
 		LOGIC_ChannelNumber = I_CHANNEL_7;
 		return;
 	}
+}
+//------------------------------------------
+
+void LOGIC_ErrorHandler(DeviceSubState SubState)
+{
+	Int16U FaultReason, ProblemReason;
+
+	switch(SubState)
+	{
+		case SS_FollowingErr:
+			FaultReason = DF_FOLLOWING_ERROR;
+			ProblemReason = PROBLEM_FOLLOWING_ERROR;
+			break;
+
+		case SS_FollowingErrUpot:
+			FaultReason = DF_FOLLOWING_ERROR_UPOT;
+			ProblemReason = PROBLEM_FOLLOWING_ERROR_UPOT;
+			break;
+
+		case SS_VoltageErr:
+			FaultReason = DF_VOLTAGE_OUT_OF_RANGE;
+			ProblemReason = PROBLEM_VOLTAGE_OUT_OF_RANGE;
+			break;
+
+		case SS_CurrentErr:
+			FaultReason = DF_CURRENT_OUT_OF_RANGE;
+			ProblemReason = PROBLEM_CURRENT_OUT_OF_RANGE;
+			break;
+
+		default:
+			return;
+	}
+
+	float Ug = Sample.Ug;
+	float Upot = Sample.UPot;
+	float Ig = Sample.Ig;
+
+	LOGIC_StopProcess();
+	SecondaryST = false;
+
+	if(LOGIC_IsSelfTest())
+	{
+		DataTable[REG_DIAG_CURRENT] = Ig;
+		DataTable[REG_DIAG_VOLTAGE] = Ug;
+		DataTable[REG_DIAG_POT_VOLTAGE] = Upot;
+		CONTROL_SwitchToFault(FaultReason);
+	}
+	else
+		CONTROL_SwitchToProblem(ProblemReason);
 }
 //------------------------------------------
