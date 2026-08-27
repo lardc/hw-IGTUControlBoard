@@ -20,13 +20,13 @@
 #define ACT_DBG_SYNC					20	// Запуск синхронизации
 #define ACT_DBG_READ_VPOT				21	// Считывание напряжения с потенциальных линий, в тиках
 
+#define ACT_DBG_START_SELFTEST_UPOT		30 // Запуск процесса самодиагностики потенциальных линий
+#define ACT_DBG_START_SELFTEST_TESTLOAD	31 // Запуск процесса самодиагностики с тестовой нагрузкой
+
 #define ACT_START_MEASURE_UGETH			100	// Запуск процесса измерения Uge_th
 //101
 #define ACT_START_MEASURE_IGES			102	// Запуск процесса измерения Iges
 #define ACT_START_MEASURE_RTH			103 // Запуск процесса измерения Rth
-
-#define ACT_START_SELFTEST_UPOT			110 // Запуск процесса самодиагностики потенциальных линий
-#define ACT_START_SELFTEST_TESTLOAD		111 // Запуск процесса самодиагностики с тестовой нагрузкой
 
 #define ACT_SAVE_TO_ROM					200	// Сохранение пользовательских данных во FLASH процессора
 #define ACT_RESTORE_FROM_ROM			201	// Восстановление данных из FLASH
@@ -186,8 +186,9 @@
 //
 #define REG_CNT_ACTIVE					106	// Включение сохранения счетчиков
 #define REG_SCALING_MUTE				107	// Отключение масштабирования значений в EP
-//
-// 108 - 127
+#define REG_USE_SELFTEST				108	// Включение режимов самодиагностики(0 - выкл, 1 - только самодиаг. потенц. линий, 2 - только тест нагрузка
+											// 3 - обе самодиагностики.
+// 109 - 127
 
 // Несохраняемы регистры чтения-записи
 #define REG_WORK_CURRENT_UGETH			128	// Номинальный рабочий ток для измерения Ugeth, мА
@@ -236,6 +237,10 @@
 
 //  Fault and disable codes
 #define DF_NONE							0
+#define DF_FOLLOWING_ERROR				1	// Ошибка Following Error при самодиагностике
+#define DF_FOLLOWING_ERROR_UPOT			2	// Ошибка Following Error на потенциальных линиях при самодиагностике
+#define DF_VOLTAGE_OUT_OF_RANGE			3	// Ошибка по напряжению при самодиагностике
+#define DF_CURRENT_OUT_OF_RANGE			4	// Ошибка по току при самодиагностике
 
 // Problem
 #define PROBLEM_NONE						0
@@ -262,13 +267,13 @@
 #define ERR_WRONG_PWD					4	//  Неправильный ключ
 
 // EP
-#define EPF_RegulatorIg					1	// Regulator Ig data
-#define EPF_RegulatorUg					2	// Regulator Ug data
-#define EPF_RegulatorUpot				3	// Regulator Upot data
-#define EPF_RegulatorSetpoint			4	// Regulator Setpoint data
-#define EPF_RegulatorCorrection			5	// Regulator Correction data
-#define EPF_RegulatorError				6	// Regulator Error data
-#define EPF_DACRaw						7	// Raw data sent to DAC
-#define EPF_ExtInfoData					20	// Diag data drom flash
+#define EP_RegulatorIg					1	// Regulator Ig data
+#define EP_RegulatorUg					2	// Regulator Ug data
+#define EP_RegulatorUpot				3	// Regulator Upot data
+#define EP_RegulatorSetpoint			4	// Regulator Setpoint data
+#define EP_RegulatorCorrection			5	// Regulator Correction data
+#define EP_RegulatorError				6	// Regulator Error data
+#define EP_DACRaw						7	// Raw data sent to DAC
+#define EP_ExtInfoData					20	// Diag data drom flash
 
 #endif //  __DEV_OBJ_DIC_H

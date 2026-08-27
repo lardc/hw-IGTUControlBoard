@@ -117,7 +117,7 @@ const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE] =
 	{IGES_MIN_MIN, IGES_MIN_MAX, IGES_MIN_DEF},									// 105
 	{NO, YES, NO},																// 106
 	{NO, YES, NO},																// 107
-	{0, 0, 0},																	// 108
+	{NO, BOTH_ST, NO},															// 108
 	{0, 0, 0},																	// 109
 	{0, 0, 0},																	// 110
 	{0, 0, 0},																	// 111
