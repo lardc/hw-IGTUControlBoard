@@ -103,6 +103,10 @@ bool DIAG_HandleDiagnosticAction(Int16U ActionID, Int16U *pUserError)
 			}
 			break;
 
+		case ACT_DBG_SFT:
+			DataTable[REG_DBG] = LL_IsSafetyOk();
+			break;
+
 		default:
 			return false;
 	}

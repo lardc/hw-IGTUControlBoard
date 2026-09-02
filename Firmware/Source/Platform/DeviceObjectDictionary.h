@@ -19,6 +19,7 @@
 #define ACT_DBG_24V_OFF					19	// Выключить питание 24 В
 #define ACT_DBG_SYNC					20	// Запуск синхронизации
 #define ACT_DBG_READ_VPOT				21	// Считывание напряжения с потенциальных линий, в тиках
+#define ACT_DBG_SFT						22	// Считывание состояния с пина SYNC_SAFETY
 
 #define ACT_DBG_START_SELFTEST_UPOT		30 // Запуск процесса самодиагностики потенциальных линий
 #define ACT_DBG_START_SELFTEST_TESTLOAD	31 // Запуск процесса самодиагностики с тестовой нагрузкой
