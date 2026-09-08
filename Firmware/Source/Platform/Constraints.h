@@ -44,7 +44,7 @@
 #define SLEW_RATE_MIN				1.0f
 //
 #define U_RTH_MIN					110		// В мВ
-#define U_RTH_MAX					1100
+#define U_RTH_MAX					2000
 #define U_RTH_DEF					550
 //
 #define U_IGES_MIN					-30000		// В мВ
