@@ -76,7 +76,7 @@ const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE] =
 	{COEF_K_MIN, COEF_K_MAX, COEF_K_USET_DEF},									// 64
 	{COEF_B_MIN, COEF_B_MAX, 0},												// 65
 	{0, INT16U_MAX, U_SELTTEST_DEF},											// 66
-	{0, INT16U_MAX, U_SELTTEST_DEF},											// 67
+	{U_SELFTEST_MIN, INT16U_MAX, U_SELTTEST_DEF},								// 67
 	{U_RTH_MIN, U_RTH_MAX, U_RTH_DEF},											// 68
 	{COEF_I_CH0_MIN, INT16U_MAX, COEF_I_CH0_MIN},								// 69
 	{COEF_I_CH1_MIN, INT16U_MAX, COEF_I_CH1_MIN},								// 70
@@ -117,7 +117,7 @@ const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE] =
 	{IGES_MIN_MIN, IGES_MIN_MAX, IGES_MIN_DEF},									// 105
 	{NO, YES, NO},																// 106
 	{NO, YES, NO},																// 107
-	{0, 0, 0},																	// 108
+	{NO, BOTH_ST, NO},															// 108
 	{0, 0, 0},																	// 109
 	{0, 0, 0},																	// 110
 	{0, 0, 0},																	// 111

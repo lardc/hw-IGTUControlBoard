@@ -18,6 +18,7 @@
 #include "Logic.h"
 #include "JSONDescription.h"
 #include "SaveToFlash.h"
+#include "Constraints.h"
 
 // Defines
 //
@@ -60,7 +61,6 @@ void Delay_mS(uint32_t Delay);
 void CONTROL_WatchDogUpdate();
 void CONTROL_ResetToDefaultState();
 void CONTROL_ResetData();
-void CONTROL_StartMeasure(MeasureType Type);
 bool CONTROL_IsSafetyOk();
 void CONTROL_InitStoragePointers();
 
@@ -69,37 +69,18 @@ void CONTROL_InitStoragePointers();
 void CONTROL_Init()
 {
 	// Переменные для конфигурации EndPoint
-	Int16U EPIndexes[FEP_COUNT] = {
-		EPF_ExtInfoData, EPF_RegulatorUg,
-		EPF_RegulatorUpot, EPF_RegulatorIg,
-		EPF_RegulatorSetpoint, EPF_RegulatorCorrection,
-		EPF_RegulatorError, EPF_DACRaw
-	};
-	Int16U EPSized[FEP_COUNT] = {
-		VALUES_EXT_INFO_SIZE, VALUES_DEBUG_RGLTR_SIZE, VALUES_DEBUG_RGLTR_SIZE,
-		VALUES_DEBUG_RGLTR_SIZE, VALUES_DEBUG_RGLTR_SIZE,
-		VALUES_DEBUG_RGLTR_SIZE, VALUES_DEBUG_RGLTR_SIZE, VALUES_DEBUG_RGLTR_SIZE
-	};
-	pInt16U EPCounters[FEP_COUNT] = {
-		(pInt16U)&CONTROL_ExtInfoCounter,
-		(pInt16U)&CONTROL_Values_Counter,
-		(pInt16U)&CONTROL_Values_Counter,
-		(pInt16U)&CONTROL_Values_Counter,
-		(pInt16U)&CONTROL_Values_Counter,
-		(pInt16U)&CONTROL_Values_Counter,
-		(pInt16U)&CONTROL_Values_Counter,
-		(pInt16U)&CONTROL_Values_Counter
-	};
-	pFloat32 EPDatas[FEP_COUNT] = {
-		(pFloat32)CONTROL_ExtInfoData,
-		(pFloat32)CONTROL_RegulatorUg,
-		(pFloat32)CONTROL_RegulatorUpot,
-		(pFloat32)CONTROL_RegulatorIg,
-		(pFloat32)CONTROL_RegulatorSetpoint,
-		(pFloat32)CONTROL_RegulatorCorrection,
-		(pFloat32)CONTROL_RegulatorError,
-		(pFloat32)CONTROL_DACRaw
-	};
+	Int16U EPIndexes[FEP_COUNT] = {EP_ExtInfoData, EP_RegulatorUg, EP_RegulatorUpot,
+		EP_RegulatorIg, EP_RegulatorSetpoint, EP_RegulatorCorrection,
+		EP_RegulatorError, EP_DACRaw};
+	Int16U EPSized[FEP_COUNT] = {VALUES_EXT_INFO_SIZE, VALUES_DEBUG_RGLTR_SIZE, VALUES_DEBUG_RGLTR_SIZE,
+		VALUES_DEBUG_RGLTR_SIZE, VALUES_DEBUG_RGLTR_SIZE, VALUES_DEBUG_RGLTR_SIZE,
+		VALUES_DEBUG_RGLTR_SIZE, VALUES_DEBUG_RGLTR_SIZE};
+	pInt16U EPCounters[FEP_COUNT] = {(pInt16U)&CONTROL_ExtInfoCounter, (pInt16U)&CONTROL_Values_Counter, (pInt16U)&CONTROL_Values_Counter,
+		(pInt16U)&CONTROL_Values_Counter, (pInt16U)&CONTROL_Values_Counter, (pInt16U)&CONTROL_Values_Counter,
+		(pInt16U)&CONTROL_Values_Counter, (pInt16U)&CONTROL_Values_Counter};
+	pFloat32 EPDatas[FEP_COUNT] = {(pFloat32)CONTROL_ExtInfoData, (pFloat32)CONTROL_RegulatorUg, (pFloat32)CONTROL_RegulatorUpot,
+		(pFloat32)CONTROL_RegulatorIg, (pFloat32)CONTROL_RegulatorSetpoint, (pFloat32)CONTROL_RegulatorCorrection,
+		(pFloat32)CONTROL_RegulatorError, (pFloat32)CONTROL_DACRaw};
 
 	// Конфигурация сервиса работы DataTable и EPROM
 	EPROMServiceConfig EPROMService = {(FUNC_EPROM_WriteValues)&NFLASH_WriteDT, (FUNC_EPROM_ReadValues)&NFLASH_ReadDT};
@@ -120,6 +101,10 @@ void CONTROL_Init()
 	STF_LoadCounters();
 
 	CONTROL_ResetToDefaultState();
+	if(DataTable[REG_USE_SELFTEST] == ONLY_POT_ST ||DataTable[REG_USE_SELFTEST] == BOTH_ST)
+		CONTROL_StartMeasure(MT_ST_Upot);
+	else if(DataTable[REG_USE_SELFTEST] == ONLY_LOAD_ST)
+		CONTROL_StartMeasure(MT_ST_TestLoad);
 }
 //------------------------------------------
 
@@ -130,6 +115,7 @@ void CONTROL_ResetToDefaultState()
 	CONTROL_SetDeviceSubState(SS_None);
 
 	LL_SetCurrentChannel(I_CHANNEL_DEF);
+	DataTable[REG_FAULT_REASON] = DF_NONE;
 }
 //------------------------------------------
 
@@ -198,7 +184,8 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 		case ACT_FAULT_CLEAR:
 			if(CONTROL_State == DS_Fault)
 			{
-				CONTROL_SetDeviceState(DS_None);
+				LL_ExtIndication(false);
+				CONTROL_SetDeviceState(DS_Ready);
 				DataTable[REG_FAULT_REASON] = DF_NONE;
 			}
 			break;
@@ -228,14 +215,14 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 				*pUserError = ERR_DEVICE_NOT_READY;
 			break;
 
-		case ACT_START_SELFTEST_UPOT:
+		case ACT_DBG_START_SELFTEST_UPOT:
 			if(CONTROL_State == DS_Ready)
 				CONTROL_StartMeasure(MT_ST_Upot);
 			else
 				*pUserError = ERR_DEVICE_NOT_READY;
 			break;
 
-		case ACT_START_SELFTEST_TESTLOAD:
+		case ACT_DBG_START_SELFTEST_TESTLOAD:
 			if(CONTROL_State == DS_Ready)
 				CONTROL_StartMeasure(MT_ST_TestLoad);
 			else
@@ -266,7 +253,7 @@ bool CONTROL_IsSafetyOk()
 {
 	if(!DataTable[REG_SAFETY_MUTE])
 	{
-		if(LL_SafetyState())
+		if(LL_IsSafetyOk())
 		{
 			CONTROL_SwitchToProblem(PROBLEM_SAFETY);
 			return false;
@@ -362,6 +349,13 @@ void CONTROL_InitStoragePointers()
 	STF_AssignPointer(11, (Int32U)&DataTable[REG_DIAG_VOLTAGE]);
 	STF_AssignPointer(12, (Int32U)&DataTable[REG_DIAG_POT_VOLTAGE]);
 	STF_AssignPointer(13, (Int32U)&DataTable[REG_EP_DATA_STEP]);
+	STF_AssignPointer(14, (Int32U)CONTROL_RegulatorIg);
+	STF_AssignPointer(15, (Int32U)CONTROL_RegulatorUg);
+	STF_AssignPointer(16, (Int32U)CONTROL_RegulatorUpot);
+	STF_AssignPointer(17, (Int32U)CONTROL_RegulatorSetpoint);
+	STF_AssignPointer(18, (Int32U)CONTROL_RegulatorCorrection);
+	STF_AssignPointer(19, (Int32U)CONTROL_RegulatorError);
+	STF_AssignPointer(20, (Int32U)CONTROL_DACRaw);
 }
 //------------------------------------------
 
@@ -370,6 +364,7 @@ void CONTROL_SwitchToFault(Int16U Reason)
 	CONTROL_SetDeviceSubState(SS_None);
 	CONTROL_SetDeviceState(DS_Fault);
 	DataTable[REG_FAULT_REASON] = Reason;
+	DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
 }
 //------------------------------------------
 

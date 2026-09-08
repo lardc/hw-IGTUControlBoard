@@ -44,13 +44,14 @@
 #define SLEW_RATE_MIN				1.0f
 //
 #define U_RTH_MIN					110		// В мВ
-#define U_RTH_MAX					1100
+#define U_RTH_MAX					2000
 #define U_RTH_DEF					550
 //
 #define U_IGES_MIN					-30000		// В мВ
 #define U_IGES_MAX					30000
 #define U_IGES_DEF					5000
 #define U_SELTTEST_DEF				5000
+#define U_SELFTEST_MIN				1
 //
 #define U_ERR_COUNT_MIN				10		// в шт
 #define U_ERR_COUNT_MAX				20
@@ -85,6 +86,9 @@
 #define NO							0
 #define YES							1
 #define COEF_THRESHOLD_MAX			1
+#define ONLY_POT_ST					1
+#define ONLY_LOAD_ST				2
+#define BOTH_ST						3
 //
 #define RTH_MIN						0.01f
 #define RTH_MAX						1e+6f

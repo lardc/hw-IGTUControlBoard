@@ -13,6 +13,7 @@
 #include "Measurement.h"
 #include "RingBuffer.h"
 #include "Utils.h"
+#include "Constraints.h"
 
 // Variables
 //
@@ -20,12 +21,15 @@ static Int64U Timeout = 0;
 Int16U LOGIC_ChannelNumber = 0;
 Int16U RelaySwitchTimer = 0;
 static Int16U ForcedCh = 0;
+static Boolean SecondaryST = false;
 // Forward functions
 //
 void LOGIC_StopProcess();
 void LOGIC_SwitchChannels(float Ig);
 void LOGIC_SingleSw(float Ig);
 void LOGIC_TestLoadRelaySwitch();
+Boolean LOGIC_IsSelfTest();
+void LOGIC_ErrorHandler(DeviceSubState SubState);
 // Functions
 //
 
@@ -36,7 +40,10 @@ void LOGIC_HandleMeasurement()
 	if(CONTROL_State == DS_InProcess)
 	{
 		if(!CONTROL_IsSafetyOk())
+		{
 			LOGIC_StopProcess();
+			SecondaryST = false;
+		}
 
 		switch(CONTROL_SubState)
 		{
@@ -112,6 +119,8 @@ void LOGIC_HandleMeasurement()
 						RelaySwitchTimer = DataTable[REG_REGLTR_TIMER] + DataTable[REG_ST_UPOT_FLATTOP_DURATION];
 						LL_SetCurrentChannel(I_CHANNEL_0);
 						LOGIC_ChannelNumber = I_CHANNEL_0;
+						if(DataTable[REG_USE_SELFTEST] == BOTH_ST)
+							SecondaryST = true;
 						break;
 
 					case MT_ST_TestLoad:
@@ -172,6 +181,8 @@ void LOGIC_HandleMeasurement()
 				if(CONTROL_TimeCounter > Timeout)
 					if(IsMeasureOk)
 					{
+						UgResult = Sample.Ug;
+						UpotResult = Sample.UPot;
 						IgResult = Sample.Ig;
 						DataTable[REG_OP_RESULT] = OPRESULT_OK;
 						CONTROL_SetDeviceSubState(SS_FinishProcess);
@@ -189,20 +200,10 @@ void LOGIC_HandleMeasurement()
 				}
 				break;
 			case SS_FollowingErr:
-				LOGIC_StopProcess();
-				CONTROL_SwitchToProblem(PROBLEM_FOLLOWING_ERROR);
-				break;
 			case SS_FollowingErrUpot:
-				LOGIC_StopProcess();
-				CONTROL_SwitchToProblem(PROBLEM_FOLLOWING_ERROR_UPOT);
-				break;
 			case SS_VoltageErr:
-				LOGIC_StopProcess();
-				CONTROL_SwitchToProblem(PROBLEM_VOLTAGE_OUT_OF_RANGE);
-				break;
 			case SS_CurrentErr:
-				LOGIC_StopProcess();
-				CONTROL_SwitchToProblem(PROBLEM_CURRENT_OUT_OF_RANGE);
+				LOGIC_ErrorHandler(CONTROL_SubState);
 				break;
 
 			case SS_VoltageNoCurrentErr:
@@ -219,8 +220,6 @@ void LOGIC_HandleMeasurement()
 			case SS_GetResults:
 				if(CONTROL_TimeCounter > Timeout)
 				{
-					CONTROL_SetDeviceState(DS_Ready);
-					CONTROL_SetDeviceSubState(SS_None);
 					bool MainMeasurement = CONTROL_MeasureType == MT_Rth || CONTROL_MeasureType == MT_Iges
 							|| CONTROL_MeasureType == MT_Ugeth;
 					bool ResultOk = RINGBUF_IsFull() || !MainMeasurement;
@@ -291,6 +290,17 @@ void LOGIC_HandleMeasurement()
 						DataTable[REG_DIAG_POT_VOLTAGE] = UpotResult;
 					}
 					DataTable[REG_OP_RESULT] = ResultOk ? OPRESULT_OK : OPRESULT_FAIL;
+
+					if(SecondaryST)
+					{
+						CONTROL_StartMeasure(MT_ST_TestLoad);
+						SecondaryST = false;
+					}
+					else
+					{
+						CONTROL_SetDeviceState(DS_Ready);
+						CONTROL_SetDeviceSubState(SS_None);
+					}
 				}
 				break;
 
@@ -311,6 +321,12 @@ void LOGIC_StopProcess()
 	LL_SetSelfTestUpot(false);
 	LL_Sync(false);
 	LL_SetCurrentChannel(I_CHANNEL_DEF);
+}
+//------------------------------------------
+
+Boolean LOGIC_IsSelfTest()
+{
+	return CONTROL_MeasureType == MT_ST_Upot || CONTROL_MeasureType == MT_ST_TestLoad;
 }
 //------------------------------------------
 
@@ -413,5 +429,54 @@ void LOGIC_TestLoadRelaySwitch()
 		LOGIC_ChannelNumber = I_CHANNEL_7;
 		return;
 	}
+}
+//------------------------------------------
+
+void LOGIC_ErrorHandler(DeviceSubState SubState)
+{
+	Int16U FaultReason, ProblemReason;
+
+	switch(SubState)
+	{
+		case SS_FollowingErr:
+			FaultReason = DF_FOLLOWING_ERROR;
+			ProblemReason = PROBLEM_FOLLOWING_ERROR;
+			break;
+
+		case SS_FollowingErrUpot:
+			FaultReason = DF_FOLLOWING_ERROR_UPOT;
+			ProblemReason = PROBLEM_FOLLOWING_ERROR_UPOT;
+			break;
+
+		case SS_VoltageErr:
+			FaultReason = DF_VOLTAGE_OUT_OF_RANGE;
+			ProblemReason = PROBLEM_VOLTAGE_OUT_OF_RANGE;
+			break;
+
+		case SS_CurrentErr:
+			FaultReason = DF_CURRENT_OUT_OF_RANGE;
+			ProblemReason = PROBLEM_CURRENT_OUT_OF_RANGE;
+			break;
+
+		default:
+			return;
+	}
+
+	float Ug = Sample.Ug;
+	float Upot = Sample.UPot;
+	float Ig = Sample.Ig;
+
+	LOGIC_StopProcess();
+	SecondaryST = false;
+
+	if(LOGIC_IsSelfTest())
+	{
+		DataTable[REG_DIAG_CURRENT] = Ig;
+		DataTable[REG_DIAG_VOLTAGE] = Ug;
+		DataTable[REG_DIAG_POT_VOLTAGE] = Upot;
+		CONTROL_SwitchToFault(FaultReason);
+	}
+	else
+		CONTROL_SwitchToProblem(ProblemReason);
 }
 //------------------------------------------
