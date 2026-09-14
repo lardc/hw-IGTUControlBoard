@@ -49,7 +49,7 @@ void LOGIC_HandleMeasurement()
 		{
 			case SS_Init:
 				UgResult = UpotResult = IgResult = 0.0f;
-				ForcedCh = DataTable[REG_DIAG_FORCE_CHANNEL];
+				ForcedCh = DataTable[REG_DBG_FORCE_CHANNEL];
 
 				switch(CONTROL_MeasureType)
 				{
@@ -272,7 +272,14 @@ void LOGIC_HandleMeasurement()
 							case MT_Ugeth:
 								DataTable[REG_DIAG_CURRENT] = AvgI;
 								DataTable[REG_DIAG_VOLTAGE] = UgResult;
-								DataTable[REG_DIAG_POT_VOLTAGE] = DataTable[REG_UGE_TH] = AvgU;
+								if (AvgU >= (DataTable[REG_UGETH_MIN_THRESHOLD] * 0.001))
+									DataTable[REG_UGE_TH] = AvgU;
+								else
+								{
+									ResultOk = false;
+									DataTable[REG_PROBLEM] = PROBLEM_UGETH_SHORT;
+								}
+								DataTable[REG_DIAG_POT_VOLTAGE] = AvgU;
 								break;
 
 							default:

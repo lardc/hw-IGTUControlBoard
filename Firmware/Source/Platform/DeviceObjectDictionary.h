@@ -189,12 +189,11 @@
 #define REG_SCALING_MUTE				107	// Отключение масштабирования значений в EP
 #define REG_USE_SELFTEST				108	// Включение режимов самодиагностики(0 - выкл, 1 - только самодиаг. потенц. линий, 2 - только тест нагрузка
 											// 3 - обе самодиагностики.
+#define REG_UGETH_MIN_THRESHOLD			109	// Нижняя граница измерения Ugeth, мВ
 // 109 - 127
 
 // Несохраняемы регистры чтения-записи
 #define REG_WORK_CURRENT_UGETH			128	// Номинальный рабочий ток для измерения Ugeth, мА
-//
-#define REG_SAFETY_MUTE					130	// Отключение контура безопасности
 //
 #define REG_CNT_NUMBER					131	// Номер счетчика, в который будет записано значение
 #define REG_CNT_VALUE					132	// Значение, которое будет записано в счетчик
@@ -202,7 +201,8 @@
 #define REG_WORK_VOLTAGE_IGES			136	// Номинальное рабочее напряжение для измерения Iges, мВ
 //
 #define REG_DBG							150	// Отладочный регистр
-#define REG_DIAG_FORCE_CHANNEL			151	// Принудительное включение определенного диапазона тока
+#define REG_DBG_FORCE_CHANNEL			151	// Принудительное включение определенного диапазона тока
+#define REG_DBG_SAFETY_MUTE				152	// Отключение контура безопасности
 //
 // 152 - 191
 
@@ -215,9 +215,9 @@
 #define REG_OP_RESULT					197	// Регистр результата операции
 #define REG_DEV_SUBSTATE				198
 
-#define REG_UGE_TH						200 // Полученное пороговое напряжение затвор-эмиттер
-#define REG_IGES_RESULT					204	// Полученное значение тока Iges
-#define REG_THERM_RESIS					205	// Полученное сопротивление термистора
+#define REG_UGE_TH						200 // Полученное пороговое напряжение затвор-эмиттер, В
+#define REG_IGES_RESULT					204	// Полученное значение тока Iges, А
+#define REG_THERM_RESIS					205	// Полученное сопротивление термистора, Ом
 //
 #define REG_DIAG_CURRENT				230	// Полученный ток
 #define REG_DIAG_VOLTAGE				231	// Полученное напряжение
@@ -256,6 +256,7 @@
 #define PROBLEM_RTH_TOO_HIGH				9	// Значение Rth превысило допустимое максимальное значение
 #define PROBLEM_RTH_TOO_LOW					10	// Значение Rth превысило допустимое минимальное значение
 #define PROBLEM_IGES_TOO_HIGH				11	// Значение Iges превысило допустимый предел
+#define PROBLEM_UGETH_SHORT					12 	// Произошло короткое замыкание при измерении Ugeth(значение напряжения ниже мин порога)
 
 //  Warning
 #define WARNING_NONE					0

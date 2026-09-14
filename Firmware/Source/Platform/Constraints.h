@@ -52,6 +52,9 @@
 #define U_IGES_DEF					5000
 #define U_SELTTEST_DEF				5000
 #define U_SELFTEST_MIN				1
+#define U_UGETH_MIN					100
+#define U_UGETH_MAX					5000
+#define U_UGETH_DEF					2500
 //
 #define U_ERR_COUNT_MIN				10		// в шт
 #define U_ERR_COUNT_MAX				20
