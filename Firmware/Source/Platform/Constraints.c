@@ -76,7 +76,7 @@ const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE] =
 	{COEF_K_MIN, COEF_K_MAX, COEF_K_USET_DEF},									// 64
 	{COEF_B_MIN, COEF_B_MAX, 0},												// 65
 	{0, INT16U_MAX, U_SELTTEST_DEF},											// 66
-	{0, INT16U_MAX, U_SELTTEST_DEF},											// 67
+	{U_SELFTEST_MIN, INT16U_MAX, U_SELTTEST_DEF},								// 67
 	{U_RTH_MIN, U_RTH_MAX, U_RTH_DEF},											// 68
 	{COEF_I_CH0_MIN, INT16U_MAX, COEF_I_CH0_MIN},								// 69
 	{COEF_I_CH1_MIN, INT16U_MAX, COEF_I_CH1_MIN},								// 70
@@ -117,8 +117,8 @@ const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE] =
 	{IGES_MIN_MIN, IGES_MIN_MAX, IGES_MIN_DEF},									// 105
 	{NO, YES, NO},																// 106
 	{NO, YES, NO},																// 107
-	{0, 0, 0},																	// 108
-	{0, 0, 0},																	// 109
+	{NO, BOTH_ST, NO},															// 108
+	{U_UGETH_MIN, U_UGETH_MAX, U_UGETH_DEF},									// 109
 	{0, 0, 0},																	// 110
 	{0, 0, 0},																	// 111
 	{0, 0, 0},																	// 112
@@ -143,7 +143,7 @@ const TableItemConstraint VConstraint[DATA_TABLE_WP_START - DATA_TABLE_WR_START]
 {
 	{I_UGETH_MIN, I_UGETH_MAX, I_UGETH_DEF},									// 128
 	{0, 0, 0},																	// 129
-	{NO, YES, NO},																// 130
+	{0, 0, 0},																	// 130
 	{0, (COMMUTATION_TABLE_SIZE - 1), 0},										// 131
 	{0, INT16U_MAX, 0},															// 132
 	{0, 0, 0},																	// 133
@@ -165,7 +165,7 @@ const TableItemConstraint VConstraint[DATA_TABLE_WP_START - DATA_TABLE_WR_START]
 	{0, 0, 0},																	// 149
 	{0, INT16U_MAX, 0},															// 150
 	{NO, I_CHANNEL_7, NO},														// 151
-	{0, 0, 0},																	// 152
+	{NO, YES, NO},																// 152
 	{0, 0, 0},																	// 153
 	{0, 0, 0},																	// 154
 	{0, 0, 0},																	// 155

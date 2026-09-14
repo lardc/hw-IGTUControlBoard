@@ -52,7 +52,7 @@ void LL_SPI_WriteByte(Int16U Data);
 void LL_SPI_SetStateOE(bool State);
 void LL_WriteDAC(Int16U Data);
 void LL_SetCurrentChannel(IChannel Channel);
-bool LL_SafetyState();
+bool LL_IsSafetyOk();
 void LL_SetNegativePolarity(bool State);
 void LL_SetSelfTestUpot(bool State);
 void LL_SetSelfTestLoad(bool State);

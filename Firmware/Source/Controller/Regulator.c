@@ -124,6 +124,7 @@ void REGLTR_Init()
 
 		case MT_ST_TestLoad:
 			RiseRate = DataTable[REG_SLEW_RATE_ST_TESTLOAD];
+			DesiredCurrent = (DataTable[REG_WORK_VOLTAGE_ST_TESTLOAD] * 0.001f) /  DataTable[REG_ST_TESTLOAD_RESIS];
 			PulseAmplitude = DataTable[REG_WORK_VOLTAGE_ST_TESTLOAD] * 0.001f;
 			break;
 
@@ -221,9 +222,10 @@ void RGLTR_ErrorCheck(float *RegulatorError, float *RegulatorErrorUpot)
 
 		case RS_FlatTop:
 			{
-				// Расчет ошибки по напряжению
-				float VoltageErr = fabsf(PulseAmplitude - ((CONTROL_MeasureType == MT_Iges) ? Sample.Ug : Sample.UPot))
-						/ PulseAmplitude;
+				// Расчет метрологической ошибки по напряжению
+				float VoltageErr = fabsf(PulseAmplitude -
+					((CONTROL_MeasureType == MT_Iges || CONTROL_MeasureType == MT_ST_TestLoad) ? Sample.Ug : Sample.UPot))
+							/ PulseAmplitude;
 
 				if(VoltageErr < VoltagErrThreshold)
 				{
@@ -244,6 +246,25 @@ void RGLTR_ErrorCheck(float *RegulatorError, float *RegulatorErrorUpot)
 						return;
 					}
 				}
+
+				if(CONTROL_MeasureType == MT_ST_TestLoad)
+				{
+					float CurrentErr = fabsf(DesiredCurrent - Sample.Ig) / DesiredCurrent;
+					if(CurrentErr < CurrentErrThreshold)
+					{
+						IsMeasureOk = true;
+						CurrentErrCount = 0;
+					}
+					else
+					{
+						CurrentErrCount++;
+						if(CurrentErrCount > CurrentErrLimit)
+						{
+							CONTROL_SetDeviceSubState(SS_CurrentErr);
+							return;
+						}
+					}
+				}
 			}
 			break;
 
@@ -252,7 +273,7 @@ void RGLTR_ErrorCheck(float *RegulatorError, float *RegulatorErrorUpot)
 			break;
 	}
 
-	if(CONTROL_MeasureType == MT_Iges)
+	if(CONTROL_MeasureType == MT_Iges|| CONTROL_MeasureType == MT_ST_TestLoad)
 	{
 		float absError = fabsf(*RegulatorError) / RawSetPoint;
 		if(absError > FollowingErrThreshold)
