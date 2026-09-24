@@ -39,7 +39,9 @@ bool REGULATOR_Process(RegulatorParamsStruct* Regulator)
 			ABSError = fabsf(Regulator->Error) / DesiredValue;
 	}
 
-	if(Regulator->Mode == FeedBack && Regulator->ActiveFE && ABSError > Regulator->ErrorMax)
+	bool CheckFollowingError = (Regulator->CurrentTarget != 0) || (Regulator->Target >= REGULATOR_FE_VOLTAGE_MIN);
+
+	if(Regulator->Mode == FeedBack && Regulator->ActiveFE && CheckFollowingError && ABSError > Regulator->ErrorMax)
 	{
 		Regulator->FECounter++;
 
