@@ -40,6 +40,8 @@ volatile float  CONTROL_ExtInfoData[VALUES_EXT_INFO_SIZE];
 Int16U CONTROL_RegulatorValues_Counter = 0;
 Int16U CONTROL_Values_Counter = 0;
 volatile Int16U CONTROL_ExtInfoCounter = 0;
+static Int16U DummyCounter = 0;
+static float DummyData = 0;
 
 // Forward functions
 //
@@ -55,13 +57,26 @@ static void CONTROL_InitStoragePointers();
 void CONTROL_Init()
 {
 	// Переменные для конфигурации EndPoint
-	Int16U EPIndexes[FEP_COUNT] = {EP_VOLTAGE, EP_CURRENT, EP_REGULATOR_ERR, EP_REGULATOR_OUTPUT, EP_ExtInfoData};
-	Int16U EPSized[FEP_COUNT] = {VALUES_x_SIZE, VALUES_x_SIZE, VALUES_x_SIZE, VALUES_x_SIZE, VALUES_EXT_INFO_SIZE};
+	Int16U EPIndexes[FEP_COUNT] = {EP_VOLTAGE, EP_CURRENT, EP_REGULATOR_ERR, EP_REGULATOR_OUTPUT,
+			EP_DUMMY5, EP_DUMMY6, EP_DUMMY7, EP_DUMMY8, EP_DUMMY9, EP_DUMMY10,
+			EP_DUMMY11, EP_DUMMY12, EP_DUMMY13, EP_DUMMY14, EP_DUMMY15, EP_DUMMY16,
+			EP_DUMMY17, EP_DUMMY18, EP_DUMMY19, EP_ExtInfoData};
+	Int16U EPSized[FEP_COUNT] = {VALUES_x_SIZE, VALUES_x_SIZE, VALUES_x_SIZE, VALUES_x_SIZE,
+			1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+			VALUES_EXT_INFO_SIZE};
 	pInt16U EPCounters[FEP_COUNT] = {(pInt16U)&CONTROL_Values_Counter, (pInt16U)&CONTROL_Values_Counter,
-			(pInt16U)&CONTROL_RegulatorValues_Counter, (pInt16U)&CONTROL_RegulatorValues_Counter, (pInt16U)&CONTROL_ExtInfoCounter};
+			(pInt16U)&CONTROL_RegulatorValues_Counter, (pInt16U)&CONTROL_RegulatorValues_Counter,
+			&DummyCounter, &DummyCounter, &DummyCounter, &DummyCounter, &DummyCounter,
+			&DummyCounter, &DummyCounter, &DummyCounter, &DummyCounter, &DummyCounter,
+			&DummyCounter, &DummyCounter, &DummyCounter, &DummyCounter, &DummyCounter,
+			(pInt16U)&CONTROL_ExtInfoCounter};
 
 	pFloat32 EPDatas[FEP_COUNT] = {(pFloat32)CONTROL_VoltageValues, (pFloat32)CONTROL_CurrentValues,
-			(pFloat32)CONTROL_RegulatorErrValues, (pFloat32)CONTROL_RegulatorOutputValues, (pFloat32)CONTROL_ExtInfoData};
+			(pFloat32)CONTROL_RegulatorErrValues, (pFloat32)CONTROL_RegulatorOutputValues,
+			&DummyData, &DummyData, &DummyData, &DummyData, &DummyData,
+			&DummyData, &DummyData, &DummyData, &DummyData, &DummyData,
+			&DummyData, &DummyData, &DummyData, &DummyData, &DummyData,
+			(pFloat32)CONTROL_ExtInfoData};
 
 	// Конфигурация сервиса работы Data-table и EPROM
 	EPROMServiceConfig EPROMService = {(FUNC_EPROM_WriteValues)&NFLASH_WriteDT, (FUNC_EPROM_ReadValues)&NFLASH_ReadDT};

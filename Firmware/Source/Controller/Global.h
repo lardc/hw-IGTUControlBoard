@@ -10,7 +10,7 @@
 #define EP_WRITE_COUNT							0					// Количество массивов для записи
 
 #define EP_COUNT								0					// Количество массивов для чтения
-#define FEP_COUNT								5					// Количество массивов для чтения типа float
+#define FEP_COUNT								20					// Количество массивов для чтения типа float
 #define ENABLE_LOCKING							FALSE				// Защита NV регистров паролем
 #define VGS_VOLTAGE_MAX							11					// Максимальное измеряемое напряжение, В
 #define VGS_VOLTAGE_MIN							1					// Минимальное измеряемое напряжение, В
