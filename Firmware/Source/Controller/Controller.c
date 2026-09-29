@@ -102,7 +102,11 @@ void CONTROL_Init()
 
 	CONTROL_ResetToDefaultState();
 	if(DataTable[REG_USE_SELFTEST] == ONLY_POT_ST || DataTable[REG_USE_SELFTEST] == BOTH_ST)
+	{
 		CONTROL_StartMeasure(MT_ST_Upot);
+		if(DataTable[REG_USE_SELFTEST] == BOTH_ST && CONTROL_State == DS_InProcess)
+			LOGIC_SetAutoBothSelfTest(true);
+	}
 	else if(DataTable[REG_USE_SELFTEST] == ONLY_LOAD_ST)
 		CONTROL_StartMeasure(MT_ST_TestLoad);
 }
@@ -217,7 +221,10 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 
 		case ACT_DBG_START_SELFTEST_UPOT:
 			if(CONTROL_State == DS_Ready)
+			{
+				LOGIC_SetAutoBothSelfTest(false);
 				CONTROL_StartMeasure(MT_ST_Upot);
+			}
 			else
 				*pUserError = ERR_DEVICE_NOT_READY;
 			break;

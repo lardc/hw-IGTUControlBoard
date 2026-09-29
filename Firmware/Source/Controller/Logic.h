@@ -14,5 +14,6 @@ extern Int16U LOGIC_ChannelNumber;
 //Functions
 //
 void LOGIC_HandleMeasurement();
+void LOGIC_SetAutoBothSelfTest(Boolean Enable);
 
 #endif // CONTROLLER_LOGIC_H_

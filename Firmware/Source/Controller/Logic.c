@@ -22,6 +22,7 @@ Int16U LOGIC_ChannelNumber = 0;
 Int16U RelaySwitchTimer = 0;
 static Int16U ForcedCh = 0;
 static Boolean SecondaryST = false;
+static Boolean AutoBothSelfTest = false;
 // Forward functions
 //
 void LOGIC_StopProcess();
@@ -33,6 +34,12 @@ void LOGIC_ErrorHandler(DeviceSubState SubState);
 // Functions
 //
 
+void LOGIC_SetAutoBothSelfTest(Boolean Enable)
+{
+	AutoBothSelfTest = Enable;
+}
+//------------------------------------------
+
 void LOGIC_HandleMeasurement()
 {
 	static float UgResult, UpotResult, IgResult;
@@ -43,6 +50,7 @@ void LOGIC_HandleMeasurement()
 		{
 			LOGIC_StopProcess();
 			SecondaryST = false;
+			AutoBothSelfTest = false;
 		}
 
 		switch(CONTROL_SubState)
@@ -119,8 +127,11 @@ void LOGIC_HandleMeasurement()
 						RelaySwitchTimer = DataTable[REG_REGLTR_TIMER] + DataTable[REG_ST_UPOT_FLATTOP_DURATION];
 						LL_SetCurrentChannel(I_CHANNEL_0);
 						LOGIC_ChannelNumber = I_CHANNEL_0;
-						if(DataTable[REG_USE_SELFTEST] == BOTH_ST)
+						// Вторая ступень только у автоматического BOTH_ST при включении.
+						// Ручной ACT_DBG_START_SELFTEST_UPOT флаг не выставляет.
+						if(DataTable[REG_USE_SELFTEST] == BOTH_ST && AutoBothSelfTest)
 							SecondaryST = true;
+						AutoBothSelfTest = false;
 						break;
 
 					case MT_ST_TestLoad:
@@ -477,6 +488,7 @@ void LOGIC_ErrorHandler(DeviceSubState SubState)
 
 	LOGIC_StopProcess();
 	SecondaryST = false;
+	AutoBothSelfTest = false;
 
 	if(LOGIC_IsSelfTest())
 	{
