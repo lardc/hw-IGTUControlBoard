@@ -311,16 +311,15 @@ void LOGIC_HandleMeasurement()
 					}
 					DataTable[REG_OP_RESULT] = ResultOk ? OPRESULT_OK : OPRESULT_FAIL;
 
-					if(SecondaryST)
-					{
+					// Вторая ступень BOTH_ST только после успешной проверки потенциальных линий.
+					if(SecondaryST && ResultOk)
 						CONTROL_StartMeasure(MT_ST_TestLoad);
-						SecondaryST = false;
-					}
 					else
 					{
 						CONTROL_SetDeviceState(DS_Ready);
 						CONTROL_SetDeviceSubState(SS_None);
 					}
+					SecondaryST = false;
 				}
 				break;
 
