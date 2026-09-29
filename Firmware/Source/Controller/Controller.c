@@ -251,15 +251,10 @@ void CONTROL_StartMeasure(MeasureType Type)
 
 bool CONTROL_IsSafetyOk()
 {
-	if(!DataTable[REG_DBG_SAFETY_MUTE])
+	if(!DataTable[REG_DBG_SAFETY_MUTE] && !LL_IsSafetyOk())
 	{
-		if(LL_IsSafetyOk())
-		{
-			CONTROL_SwitchToProblem(PROBLEM_SAFETY);
-			return false;
-		}
-		else
-			return true;
+		CONTROL_SwitchToProblem(PROBLEM_SAFETY);
+		return false;
 	}
 	else
 		return true;
