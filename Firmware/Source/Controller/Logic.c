@@ -289,12 +289,14 @@ void LOGIC_HandleMeasurement()
 					else
 						DataTable[REG_PROBLEM] = PROBLEM_RING_BUFFER_NOT_FILLED;
 
-					// Последние мгновенные значения в случае проблемы или неосновного измерения
+					// Последние мгновенные значения в случае проблемы или неосновного измерения.
+					// При КЗ Ugeth в REG_DIAG_POT_VOLTAGE остаётся измеренное среднее AvgU.
 					if(!ResultOk || !MainMeasurement)
 					{
 						DataTable[REG_DIAG_CURRENT] = IgResult;
 						DataTable[REG_DIAG_VOLTAGE] = UgResult;
-						DataTable[REG_DIAG_POT_VOLTAGE] = UpotResult;
+						if(DataTable[REG_PROBLEM] != PROBLEM_UGETH_SHORT)
+							DataTable[REG_DIAG_POT_VOLTAGE] = UpotResult;
 					}
 					DataTable[REG_OP_RESULT] = ResultOk ? OPRESULT_OK : OPRESULT_FAIL;
 

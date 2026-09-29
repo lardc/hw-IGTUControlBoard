@@ -101,7 +101,7 @@ void CONTROL_Init()
 	STF_LoadCounters();
 
 	CONTROL_ResetToDefaultState();
-	if(DataTable[REG_USE_SELFTEST] == ONLY_POT_ST ||DataTable[REG_USE_SELFTEST] == BOTH_ST)
+	if(DataTable[REG_USE_SELFTEST] == ONLY_POT_ST || DataTable[REG_USE_SELFTEST] == BOTH_ST)
 		CONTROL_StartMeasure(MT_ST_Upot);
 	else if(DataTable[REG_USE_SELFTEST] == ONLY_LOAD_ST)
 		CONTROL_StartMeasure(MT_ST_TestLoad);
