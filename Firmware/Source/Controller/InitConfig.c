@@ -29,7 +29,7 @@ void INITCFG_IO()
 	GPIO_InitAnalog(GPIO_ANLG_IG);
 	
 	// Входы
-	GPIO_InitInput(GPIO_SAFETY, NoPull);
+	GPIO_InitInput(GPIO_SAFETY, Pull_Up);
 
 	// Выходы
 	GPIO_InitPushPullOutput(GPIO_SPI_OE);

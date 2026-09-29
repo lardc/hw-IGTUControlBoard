@@ -1,6 +1,8 @@
 ﻿// Header
 #include "StorageDescription.h"
 
+#include "Global.h"
+
 RecordDescription StorageDescription[] =
 {
 	{"REG_DEV_STATE",			DT_Float, 1},
@@ -19,6 +21,14 @@ RecordDescription StorageDescription[] =
 	{"REG_DIAG_VOLTAGE",		DT_Float, 1},
 	{"REG_DIAG_POT_VOLTAGE",	DT_Float, 1},
 	{"REG_EP_DATA_STEP",		DT_Float, 1},
+
+	{"EP_RegulatorIg",			DT_Float, VALUES_DEBUG_RGLTR_SIZE},
+	{"EP_RegulatorUg",			DT_Float, VALUES_DEBUG_RGLTR_SIZE},
+	{"EP_RegulatorUpot",		DT_Float, VALUES_DEBUG_RGLTR_SIZE},
+	{"EP_RegulatorSetpoint",	DT_Float, VALUES_DEBUG_RGLTR_SIZE},
+	{"EP_RegulatorCorrection",	DT_Float, VALUES_DEBUG_RGLTR_SIZE},
+	{"EP_RegulatorError",		DT_Float, VALUES_DEBUG_RGLTR_SIZE},
+	{"EP_DACRaw",				DT_Float, VALUES_DEBUG_RGLTR_SIZE},
 };
 
 Int32U TablePointers[sizeof(StorageDescription) / sizeof(StorageDescription[0])] = {0};

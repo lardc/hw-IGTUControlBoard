@@ -19,14 +19,15 @@
 #define ACT_DBG_24V_OFF					19	// Выключить питание 24 В
 #define ACT_DBG_SYNC					20	// Запуск синхронизации
 #define ACT_DBG_READ_VPOT				21	// Считывание напряжения с потенциальных линий, в тиках
+#define ACT_DBG_SFT						22	// Считывание состояния с пина SYNC_SAFETY
+
+#define ACT_DBG_START_SELFTEST_UPOT		30 // Запуск процесса самодиагностики потенциальных линий
+#define ACT_DBG_START_SELFTEST_TESTLOAD	31 // Запуск процесса самодиагностики с тестовой нагрузкой
 
 #define ACT_START_MEASURE_UGETH			100	// Запуск процесса измерения Uge_th
 //101
 #define ACT_START_MEASURE_IGES			102	// Запуск процесса измерения Iges
 #define ACT_START_MEASURE_RTH			103 // Запуск процесса измерения Rth
-
-#define ACT_START_SELFTEST_UPOT			110 // Запуск процесса самодиагностики потенциальных линий
-#define ACT_START_SELFTEST_TESTLOAD		111 // Запуск процесса самодиагностики с тестовой нагрузкой
 
 #define ACT_SAVE_TO_ROM					200	// Сохранение пользовательских данных во FLASH процессора
 #define ACT_RESTORE_FROM_ROM			201	// Восстановление данных из FLASH
@@ -186,13 +187,13 @@
 //
 #define REG_CNT_ACTIVE					106	// Включение сохранения счетчиков
 #define REG_SCALING_MUTE				107	// Отключение масштабирования значений в EP
-//
-// 108 - 127
+#define REG_USE_SELFTEST				108	// Включение режимов самодиагностики(0 - выкл, 1 - только самодиаг. потенц. линий, 2 - только тест нагрузка
+											// 3 - обе самодиагностики.
+#define REG_UGETH_MIN_THRESHOLD			109	// Нижняя граница измерения Ugeth, мВ
+// 109 - 127
 
 // Несохраняемы регистры чтения-записи
 #define REG_WORK_CURRENT_UGETH			128	// Номинальный рабочий ток для измерения Ugeth, мА
-//
-#define REG_SAFETY_MUTE					130	// Отключение контура безопасности
 //
 #define REG_CNT_NUMBER					131	// Номер счетчика, в который будет записано значение
 #define REG_CNT_VALUE					132	// Значение, которое будет записано в счетчик
@@ -200,7 +201,8 @@
 #define REG_WORK_VOLTAGE_IGES			136	// Номинальное рабочее напряжение для измерения Iges, мВ
 //
 #define REG_DBG							150	// Отладочный регистр
-#define REG_DIAG_FORCE_CHANNEL			151	// Принудительное включение определенного диапазона тока
+#define REG_DBG_FORCE_CHANNEL			151	// Принудительное включение определенного диапазона тока
+#define REG_DBG_SAFETY_MUTE				152	// Отключение контура безопасности
 //
 // 152 - 191
 
@@ -213,9 +215,9 @@
 #define REG_OP_RESULT					197	// Регистр результата операции
 #define REG_DEV_SUBSTATE				198
 
-#define REG_UGE_TH						200 // Полученное пороговое напряжение затвор-эмиттер
-#define REG_IGES_RESULT					204	// Полученное значение тока Iges
-#define REG_THERM_RESIS					205	// Полученное сопротивление термистора
+#define REG_UGE_TH						200 // Полученное пороговое напряжение затвор-эмиттер, В
+#define REG_IGES_RESULT					204	// Полученное значение тока Iges, А
+#define REG_THERM_RESIS					205	// Полученное сопротивление термистора, Ом
 //
 #define REG_DIAG_CURRENT				230	// Полученный ток
 #define REG_DIAG_VOLTAGE				231	// Полученное напряжение
@@ -236,6 +238,10 @@
 
 //  Fault and disable codes
 #define DF_NONE							0
+#define DF_FOLLOWING_ERROR				1	// Ошибка Following Error при самодиагностике
+#define DF_FOLLOWING_ERROR_UPOT			2	// Ошибка Following Error на потенциальных линиях при самодиагностике
+#define DF_VOLTAGE_OUT_OF_RANGE			3	// Ошибка по напряжению при самодиагностике
+#define DF_CURRENT_OUT_OF_RANGE			4	// Ошибка по току при самодиагностике
 
 // Problem
 #define PROBLEM_NONE						0
@@ -250,6 +256,7 @@
 #define PROBLEM_RTH_TOO_HIGH				9	// Значение Rth превысило допустимое максимальное значение
 #define PROBLEM_RTH_TOO_LOW					10	// Значение Rth превысило допустимое минимальное значение
 #define PROBLEM_IGES_TOO_HIGH				11	// Значение Iges превысило допустимый предел
+#define PROBLEM_UGETH_SHORT					12 	// Произошло короткое замыкание при измерении Ugeth(значение напряжения ниже мин порога)
 
 //  Warning
 #define WARNING_NONE					0
@@ -262,13 +269,13 @@
 #define ERR_WRONG_PWD					4	//  Неправильный ключ
 
 // EP
-#define EPF_RegulatorIg					1	// Regulator Ig data
-#define EPF_RegulatorUg					2	// Regulator Ug data
-#define EPF_RegulatorUpot				3	// Regulator Upot data
-#define EPF_RegulatorSetpoint			4	// Regulator Setpoint data
-#define EPF_RegulatorCorrection			5	// Regulator Correction data
-#define EPF_RegulatorError				6	// Regulator Error data
-#define EPF_DACRaw						7	// Raw data sent to DAC
-#define EPF_ExtInfoData					20	// Diag data drom flash
+#define EP_RegulatorIg					1	// Regulator Ig data
+#define EP_RegulatorUg					2	// Regulator Ug data
+#define EP_RegulatorUpot				3	// Regulator Upot data
+#define EP_RegulatorSetpoint			4	// Regulator Setpoint data
+#define EP_RegulatorCorrection			5	// Regulator Correction data
+#define EP_RegulatorError				6	// Regulator Error data
+#define EP_DACRaw						7	// Raw data sent to DAC
+#define EP_ExtInfoData					20	// Diag data drom flash
 
 #endif //  __DEV_OBJ_DIC_H
