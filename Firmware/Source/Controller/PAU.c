@@ -106,3 +106,14 @@ void PAU_ShortInput(bool State)
 		LL_V_ShortPAU(State);
 }
 //--------------------------------------
+
+float PAU_SelectRangeByCurrent(float Current_mA)
+{
+	if(Current_mA <= PAU_I_RANGE_0)
+		return PAU_I_RANGE_0;
+	else if(Current_mA <= PAU_I_RANGE_1)
+		return PAU_I_RANGE_1;
+	else
+		return PAU_I_RANGE_2;
+}
+//--------------------------------------

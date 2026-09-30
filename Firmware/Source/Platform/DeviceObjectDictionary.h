@@ -158,6 +158,7 @@
 #define	REG_DEACTIVATE_FE				88	// Отключение Following Error проверки
 //
 #define REG_RES_VOLTAGE					90	// Напряжение измерения сопротивления (В)
+#define REG_RES_I_THRESHOLD				91	// Порог тока для повторного измерения Res через PAU (мА)
 
 // Несохраняемые регистры чтения-записи
 //

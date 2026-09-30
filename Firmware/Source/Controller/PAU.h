@@ -43,5 +43,6 @@ bool PAU_ClearFault();
 bool PAU_ClearWarning();
 bool PAU_ReadMeasuredData(float* Data);
 void PAU_ShortInput(bool State);
+float PAU_SelectRangeByCurrent(float Current_mA);
 
 #endif /* CONTROLLER_PAU_H_ */

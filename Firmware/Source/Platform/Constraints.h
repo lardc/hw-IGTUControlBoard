@@ -95,6 +95,10 @@
 #define IGES_SAMPLES_MAX			400
 #define IGES_SAMPLES_DEF			50
 //
+#define RES_I_THRESHOLD_MIN			0
+#define RES_I_THRESHOLD_MAX			V_I_R2_MAX
+#define RES_I_THRESHOLD_DEF			V_I_R0_MAX
+//
 #define PAU_CAN_ID_DEF				101
 #define TOCUHP0_CAN_ID_DEF			130
 #define TOCUHP1_CAN_ID_DEF			131

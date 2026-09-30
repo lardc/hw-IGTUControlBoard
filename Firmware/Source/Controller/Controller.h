@@ -52,6 +52,8 @@ typedef enum __DeviceSubState
 
 	SS_ResPrepare = 70,
 	SS_ResProcess,
+	SS_ResPauPrepare,
+	SS_ResPauSaveResult,
 
 	SS_Sert_V_Prepare = 80,
 	SS_Sert_V_Process,

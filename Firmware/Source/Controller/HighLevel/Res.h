@@ -12,5 +12,7 @@
 //
 void RES_Prepare();
 void RES_Process();
+void RES_PauPrepare();
+void RES_PauSaveResult();
 
 #endif /* CONTROLLER_RES_H_ */

@@ -457,6 +457,14 @@ void CONTROL_LogicProcess()
 				RES_Prepare();
 				break;
 
+			case SS_ResPauPrepare:
+				RES_PauPrepare();
+				break;
+
+			case SS_ResPauSaveResult:
+				RES_PauSaveResult();
+				break;
+
 			case SS_Sert_V_Prepare:
 				SERT_V_Prepare();
 				break;
