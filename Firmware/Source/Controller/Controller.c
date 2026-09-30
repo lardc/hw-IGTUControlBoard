@@ -196,6 +196,7 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			
 		case ACT_WARNING_CLEAR:
 			DataTable[REG_WARNING] = 0;
+			DataTable[REG_PROBLEM] = 0;
 			break;
 			
 		case ACT_START_MEASURE_RTH:
