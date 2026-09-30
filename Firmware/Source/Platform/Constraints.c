@@ -166,7 +166,7 @@ const TableItemConstraint VConstraint[DATA_TABLE_WP_START - DATA_TABLE_WR_START]
 	{0, INT16U_MAX, 0},															// 150
 	{NO, I_CHANNEL_7, NO},														// 151
 	{NO, YES, NO},																// 152
-	{0, 0, 0},																	// 153
+	{SWITCH_TIME_MIN, SWITCH_TIME_MAX, SWITCH_TIME_DEF},						// 153
 	{0, 0, 0},																	// 154
 	{0, 0, 0},																	// 155
 	{0, 0, 0},																	// 156

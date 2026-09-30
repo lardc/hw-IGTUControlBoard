@@ -36,7 +36,7 @@ void REGLTR_StoreRegulatorDebug(float Ug, float UPot, float Ig, float Setpoint, 
 		float DACRaw);
 Int16U REGLTR_CorrectionLogDACPoint();
 void RGLTR_ErrorCheck(float *RegulatorError, float *RegulatorErrorUpot);
-Int16U REGLTR_GetScalingCoef();
+Int16U REGLTR_GetScalingCoef(Int16U ForcedChannel);
 
 // Functions
 void REGLTR_Process()
@@ -83,7 +83,7 @@ void REGLTR_Process()
 }
 //-----------------------------------------
 
-void REGLTR_Init()
+void REGLTR_Init(Int16U ForcedChannel)
 {
 	IsMeasureOk = false;
 	Qi = FollowingErrorCounter = VoltageErrCount = CurrentErrCount = FollowingErrorCounterUpot = 0;
@@ -143,7 +143,7 @@ void REGLTR_Init()
 		REGLTR_MemBuffIg[i] = 0;
 	}
 
-	ScalingCoef = ScalingCounter = DataTable[REG_SCALING_MUTE] ? 1 : REGLTR_GetScalingCoef();
+	ScalingCoef = ScalingCounter = DataTable[REG_SCALING_MUTE] ? 1 : REGLTR_GetScalingCoef(ForcedChannel);
 	DataTable[REG_EP_DATA_STEP] = ScalingCoef * TIMER15_uS;
 }
 //-----------------------------------------
@@ -349,7 +349,7 @@ void REGLTR_StoreRegulatorDebug(float Ug, float UPot, float Ig, float Setpoint, 
 }
 //-----------------------------------------
 
-Int16U REGLTR_GetScalingCoef()
+Int16U REGLTR_GetScalingCoef(Int16U ForcedChannel)
 {
 	const float MsToMks = 1000.0f;
 	float RangeTime, RangeTimeX, RisingPart, SumTicks = 0;
@@ -358,20 +358,34 @@ Int16U REGLTR_GetScalingCoef()
 	switch(CONTROL_MeasureType)
 	{
 		case MT_Rth:
-			RangeTime = MAX(DataTable[REG_RELAY_SW_TIMER_RTH], DataTable[REG_REGLTR_TIMER]);
-			RangeTime = MAX(RangeTime, TIME_RGLTR_PAUSE_RNG_SWITCH);
-			SumTicks = (RisingPart + 3 * RangeTime) * MsToMks / TIMER15_uS;
+			{
+				RangeTime = MAX(DataTable[REG_RELAY_SW_TIMER_RTH], DataTable[REG_REGLTR_TIMER]);
+				RangeTime = MAX(RangeTime, TIME_RGLTR_PAUSE_RNG_SWITCH);
+
+				Int16U PulseLength = ForcedChannel ? DataTable[REG_DBG_FORCED_CH_PULSE_LENGTH] : (3 * RangeTime);
+				SumTicks = (RisingPart + PulseLength) * MsToMks / TIMER15_uS;
+			}
 			break;
 
 		case MT_Iges:
-			RangeTime = MAX(DataTable[REG_RELAY_SW_TIMER_IGES], DataTable[REG_REGLTR_TIMER]);
-			RangeTimeX = MAX(DataTable[REG_RELAY_SW_TIMER_IGES_RANGE7], DataTable[REG_REGLTR_TIMER]);
-			SumTicks = (RisingPart + 2 * RangeTime + RangeTimeX) * MsToMks / TIMER15_uS;
+			{
+				RangeTime = MAX(DataTable[REG_RELAY_SW_TIMER_IGES], DataTable[REG_REGLTR_TIMER]);
+				RangeTimeX = MAX(DataTable[REG_RELAY_SW_TIMER_IGES_RANGE7], DataTable[REG_REGLTR_TIMER]);
+
+				Int16U PulseLength =
+						ForcedChannel ? DataTable[REG_DBG_FORCED_CH_PULSE_LENGTH] : (2 * RangeTime + RangeTimeX);
+				SumTicks = (RisingPart + PulseLength) * MsToMks / TIMER15_uS;
+			}
 			break;
 
 		case MT_Ugeth:
-			SumTicks = (RisingPart + DataTable[REG_RELAY_SW_TIMER_UGETH] + DataTable[REG_CURRENT_FLATTOP_DURATION])
-					* MsToMks / TIMER15_uS;
+			{
+				Int16U PulseLength =
+						ForcedChannel ?
+								DataTable[REG_DBG_FORCED_CH_PULSE_LENGTH] :
+								(DataTable[REG_RELAY_SW_TIMER_UGETH] + DataTable[REG_CURRENT_FLATTOP_DURATION]);
+				SumTicks = (RisingPart + PulseLength) * MsToMks / TIMER15_uS;
+			}
 			break;
 
 		case MT_ST_Upot:

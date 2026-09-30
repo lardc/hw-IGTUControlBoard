@@ -73,7 +73,8 @@ void LOGIC_HandleMeasurement()
 
 						LOGIC_ChannelNumber = ForcedCh ? ForcedCh : I_CHANNEL_0;
 						LL_SetCurrentChannel(LOGIC_ChannelNumber);
-						RelaySwitchTimer = DataTable[REG_RELAY_SW_TIMER_RTH];
+
+						RelaySwitchTimer = DataTable[ForcedCh ? REG_DBG_FORCED_CH_PULSE_LENGTH : REG_RELAY_SW_TIMER_RTH];
 						break;
 
 					case MT_Iges:
@@ -89,9 +90,12 @@ void LOGIC_HandleMeasurement()
 						LL_SetCurrentChannel(LOGIC_ChannelNumber);
 
 						// Для форсированного канала 7 выбирается отдельная задержка
-						RelaySwitchTimer = DataTable[
-								(LOGIC_ChannelNumber == I_CHANNEL_7) ?
-										REG_RELAY_SW_TIMER_IGES_RANGE7 : REG_RELAY_SW_TIMER_IGES];
+						if(ForcedCh)
+							RelaySwitchTimer = DataTable[REG_DBG_FORCED_CH_PULSE_LENGTH];
+						else
+							RelaySwitchTimer =
+									DataTable[(LOGIC_ChannelNumber == I_CHANNEL_7) ?
+									REG_RELAY_SW_TIMER_IGES_RANGE7 : REG_RELAY_SW_TIMER_IGES];
 						break;
 
 					case MT_Ugeth:
@@ -151,7 +155,7 @@ void LOGIC_HandleMeasurement()
 				break;
 
 			case SS_ConfigPulse:
-				REGLTR_Init();
+				REGLTR_Init(ForcedCh);
 				REGLTR_StartProcess();
 				LL_Sync(true);
 				Timeout = CONTROL_TimeCounter + MAX(RelaySwitchTimer, DataTable[REG_REGLTR_TIMER]);
@@ -267,12 +271,12 @@ void LOGIC_HandleMeasurement()
 								break;
 
 							case MT_Iges:
-								if(AvgI <= DataTable[REG_IGES_MAX_CURRENT])
-								{
-									DataTable[REG_DIAG_CURRENT] = DataTable[REG_IGES_RESULT] = AvgI;
-									DataTable[REG_DIAG_VOLTAGE] = AvgU;
-									DataTable[REG_DIAG_POT_VOLTAGE] = UpotResult;
-								}
+								DataTable[REG_DIAG_CURRENT] = AvgI;
+								DataTable[REG_DIAG_VOLTAGE] = AvgU;
+								DataTable[REG_DIAG_POT_VOLTAGE] = UpotResult;
+
+								if(AvgI <= DataTable[REG_IGES_MAX_CURRENT] || ForcedCh)
+									DataTable[REG_IGES_RESULT] = AvgI;
 								else
 								{
 									ResultOk = false;
@@ -294,20 +298,19 @@ void LOGIC_HandleMeasurement()
 								break;
 
 							default:
+								DataTable[REG_DIAG_CURRENT] = IgResult;
+								DataTable[REG_DIAG_VOLTAGE] = UgResult;
+								DataTable[REG_DIAG_POT_VOLTAGE] = UpotResult;
 								break;
 						}
 					}
 					else
+					{
 						DataTable[REG_PROBLEM] = PROBLEM_RING_BUFFER_NOT_FILLED;
 
-					// Последние мгновенные значения в случае проблемы или неосновного измерения.
-					// При КЗ Ugeth в REG_DIAG_POT_VOLTAGE остаётся измеренное среднее AvgU.
-					if(!ResultOk || !MainMeasurement)
-					{
 						DataTable[REG_DIAG_CURRENT] = IgResult;
 						DataTable[REG_DIAG_VOLTAGE] = UgResult;
-						if(DataTable[REG_PROBLEM] != PROBLEM_UGETH_SHORT)
-							DataTable[REG_DIAG_POT_VOLTAGE] = UpotResult;
+						DataTable[REG_DIAG_POT_VOLTAGE] = UpotResult;
 					}
 					DataTable[REG_OP_RESULT] = ResultOk ? OPRESULT_OK : OPRESULT_FAIL;
 
