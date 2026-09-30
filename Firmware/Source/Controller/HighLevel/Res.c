@@ -66,6 +66,7 @@ static Int16U ResSamplesCounter = 0;
 //
 void RES_CacheVariables();
 static float RES_CalculateResistance(float Voltage, float Current_mA);
+static void RES_ResetMeasureState();
 static void RES_HandleFollowingError();
 static void RES_HandleInternalComplete();
 static void RES_PAUsyncProcess(bool State);
@@ -130,13 +131,20 @@ static float RES_CalculateResistance(float Voltage, float Current_mA)
 }
 //-----------------------------------------------
 
+static void RES_ResetMeasureState()
+{
+	ResFineMeasure = false;
+	ResTestCurrent = V_I_R2_MAX;
+	ResPulse = RPK_Internal;
+	ResPauConfigStage = ResPau_Config;
+}
+//-----------------------------------------------
+
 static void RES_HandleFollowingError()
 {
 	DataTable[REG_RES_RESULT] = 0;
 	DataTable[REG_OP_RESULT] = OPRESULT_FAIL;
-	ResFineMeasure = false;
-	ResTestCurrent = V_I_R2_MAX;
-	ResPulse = RPK_Internal;
+	RES_ResetMeasureState();
 
 	if(ResSampledData.Current > LINE_SHORT_CURRENT)
 	{
@@ -162,6 +170,7 @@ static void RES_HandleInternalComplete()
 	{
 		ResFineMeasure = false;
 
+		// При эмуляции PAU остаёмся на внутренней цепи
 		if(AverageData.Current < DataTable[REG_RES_I_THRESHOLD] && !DataTable[REG_PAU_EMULATED])
 		{
 			ResTestCurrent = AverageData.Current;
@@ -188,12 +197,6 @@ static void RES_PAUsyncProcess(bool State)
 
 	if(State)
 	{
-		if(DataTable[REG_PAU_EMULATED])
-		{
-			ResSamplesCounter--;
-			return;
-		}
-
 		if(SyncDelayCounter)
 		{
 			SyncDelayCounter--;
@@ -225,6 +228,7 @@ static void RES_PAUsyncProcess(bool State)
 			if(CONTROL_TimeCounter > ResSamplesTimeoutCounter)
 			{
 				CONTROL_StopHighPriorityProcesses();
+				RES_ResetMeasureState();
 				CONTROL_SwitchToFault(DF_PAU_SYNC_TIMEOUT);
 			}
 		}
@@ -326,9 +330,6 @@ void RES_PauPrepare()
 {
 	float PAU_Range = 0;
 
-	if(DataTable[REG_PAU_EMULATED])
-		ResPauConfigStage = ResPau_HW_Config;
-
 	switch(ResPauConfigStage)
 	{
 		case ResPau_Config:
@@ -344,12 +345,14 @@ void RES_PauPrepare()
 				else
 				{
 					ResPauConfigStage = ResPau_Config;
+					RES_ResetMeasureState();
 					CONTROL_SwitchToFault(DF_PAU_INTERFACE);
 				}
 			}
 			else
 			{
 				ResPauConfigStage = ResPau_Config;
+				RES_ResetMeasureState();
 				CONTROL_SwitchToFault(DF_PAU_WRONG_STATE);
 			}
 			break;
@@ -360,6 +363,7 @@ void RES_PauPrepare()
 			else if(CONTROL_TimeCounter >= ResPauStateTimeout)
 			{
 				ResPauConfigStage = ResPau_Config;
+				RES_ResetMeasureState();
 				CONTROL_SwitchToFault(DF_PAU_WRONG_STATE);
 			}
 			break;
@@ -391,15 +395,6 @@ void RES_PauSaveResult()
 {
 	float PauCurrent = 0;
 
-	if(DataTable[REG_PAU_EMULATED])
-	{
-		DataTable[REG_RES_RESULT] = 0;
-		DataTable[REG_OP_RESULT] = OPRESULT_OK;
-		ResTestCurrent = V_I_R2_MAX;
-		CONTROL_SetDeviceState(DS_Ready, SS_None);
-		return;
-	}
-
 	if(PAU_IsReady())
 	{
 		if(PAU_ReadMeasuredData(&PauCurrent))
@@ -411,9 +406,15 @@ void RES_PauSaveResult()
 			CONTROL_SetDeviceState(DS_Ready, SS_None);
 		}
 		else
+		{
+			RES_ResetMeasureState();
 			CONTROL_SwitchToFault(DF_PAU_INTERFACE);
+		}
 	}
 	else if(CONTROL_TimeCounter >= ResPauStateTimeout)
+	{
+		RES_ResetMeasureState();
 		CONTROL_SwitchToFault(DF_PAU_WRONG_STATE);
+	}
 }
 //-----------------------------------------------
