@@ -33,7 +33,7 @@ void LOGIC_SingleSw(float Ig);
 void LOGIC_TestLoadRelaySwitch();
 Boolean LOGIC_IsSelfTest();
 void LOGIC_ErrorHandler(DeviceSubState SubState);
-Int32U LOGIC_CalcPauseAfterPulse();
+Int32U LOGIC_CalcPauseAfterPulse(float UgVoltage);
 
 // Functions
 //
@@ -230,12 +230,8 @@ void LOGIC_HandleMeasurement()
 			case SS_FollowingErrUpot:
 			case SS_VoltageErr:
 			case SS_CurrentErr:
-				LOGIC_ErrorHandler(CONTROL_SubState);
-				break;
-
 			case SS_VoltageNoCurrentErr:
-				LOGIC_StopProcess();
-				CONTROL_SwitchToProblem(PROBLEM_VOLTAGE_LIMIT_NO_CURRENT);
+				LOGIC_ErrorHandler(CONTROL_SubState);
 				break;
 
 			case SS_FinishProcess:
@@ -248,7 +244,7 @@ void LOGIC_HandleMeasurement()
 				if(CONTROL_TimeCounter > Timeout)
 				{
 					if(CONTROL_MeasureType == MT_Ugeth)
-						CooldownTimeout = CONTROL_TimeCounter + LOGIC_CalcPauseAfterPulse();
+						CooldownTimeout = CONTROL_TimeCounter + LOGIC_CalcPauseAfterPulse(UgResult);
 
 					bool MainMeasurement = CONTROL_MeasureType == MT_Rth || CONTROL_MeasureType == MT_Iges
 							|| CONTROL_MeasureType == MT_Ugeth;
@@ -500,6 +496,11 @@ void LOGIC_ErrorHandler(DeviceSubState SubState)
 			ProblemReason = PROBLEM_CURRENT_OUT_OF_RANGE;
 			break;
 
+		case SS_VoltageNoCurrentErr:
+			FaultReason = DF_CURRENT_OUT_OF_RANGE;
+			ProblemReason = PROBLEM_VOLTAGE_LIMIT_NO_CURRENT;
+			break;
+
 		default:
 			return;
 	}
@@ -511,6 +512,9 @@ void LOGIC_ErrorHandler(DeviceSubState SubState)
 	LOGIC_StopProcess();
 	SecondaryST = false;
 	AutoBothSelfTest = false;
+
+	if(CONTROL_MeasureType == MT_Ugeth)
+		CooldownTimeout = CONTROL_TimeCounter + LOGIC_CalcPauseAfterPulse(Ug);
 
 	if(LOGIC_IsSelfTest())
 	{
@@ -524,13 +528,13 @@ void LOGIC_ErrorHandler(DeviceSubState SubState)
 }
 //------------------------------------------
 
-Int32U LOGIC_CalcPauseAfterPulse()
+Int32U LOGIC_CalcPauseAfterPulse(float UgVoltage)
 {
 	Int32U PauseTime;
 	float VoltageSupply = 24.0f;
 	float PowerIndivTrans, VoltageCascode, TotalPulseDuration, RisingPart;
 
-	VoltageCascode = (VoltageSupply > DataTable[REG_DIAG_VOLTAGE]) ? (VoltageSupply - DataTable[REG_DIAG_VOLTAGE]) : 0;
+	VoltageCascode = (VoltageSupply > UgVoltage) ? (VoltageSupply - UgVoltage) : 0;
 
 	PowerIndivTrans = VoltageCascode *  (DataTable[REG_WORK_CURRENT_UGETH] * 0.001f);
 
