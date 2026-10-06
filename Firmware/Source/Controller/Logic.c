@@ -23,6 +23,7 @@ Int16U RelaySwitchTimer = 0;
 static Int16U ForcedCh = 0;
 static Boolean SecondaryST = false;
 static Boolean AutoBothSelfTest = false;
+
 // Forward functions
 //
 void LOGIC_StopProcess();
@@ -31,6 +32,8 @@ void LOGIC_SingleSw(float Ig);
 void LOGIC_TestLoadRelaySwitch();
 Boolean LOGIC_IsSelfTest();
 void LOGIC_ErrorHandler(DeviceSubState SubState);
+Int32U LOGIC_CalcPauseAfterPulse();
+
 // Functions
 //
 
@@ -326,6 +329,9 @@ void LOGIC_HandleMeasurement()
 				}
 				break;
 
+			case SS_WaitTransistorCooldown:
+				break;
+
 			default:
 				break;
 		}
@@ -501,5 +507,22 @@ void LOGIC_ErrorHandler(DeviceSubState SubState)
 	}
 	else
 		CONTROL_SwitchToProblem(ProblemReason);
+}
+//------------------------------------------
+
+Int32U LOGIC_CalcPauseAfterPulse()
+{
+	Int32U PauseTime;
+	float VoltageSupply = 24.0f;
+	float PowerIndivTrans, VoltageCascode, TotalPulseDuration, RisingPart;
+
+	VoltageCascode = (VoltageSupply > DataTable[REG_DIAG_VOLTAGE]) ? (VoltageSupply - DataTable[REG_DIAG_VOLTAGE]) : 0;
+
+	PowerIndivTrans = VoltageCascode *  DataTable[REG_WORK_CURRENT_UGETH];
+
+	RisingPart = DataTable[REG_MAX_VOLTAGE_UGETH] / DataTable[REG_SLEW_RATE_UGETH];
+	TotalPulseDuration = DataTable[REG_CURRENT_FLATTOP_DURATION] + RisingPart;
+	PauseTime = PowerIndivTrans * TotalPulseDuration / DataTable[REG_TRANSIST_POWER_ALLOWED];
+	return PauseTime;
 }
 //------------------------------------------

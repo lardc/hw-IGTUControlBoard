@@ -56,6 +56,10 @@
 #define U_UGETH_MAX					5000
 #define U_UGETH_DEF					2500
 //
+#define POWER_TRANSIS_MIN			0.1f	// в Вт
+#define POWER_TRANSIS_MAX			10
+#define POWER_TRANSIS_DEF			1
+//
 #define U_ERR_COUNT_MIN				10		// в шт
 #define U_ERR_COUNT_MAX				20
 #define U_ERR_COUNT_DEF				15

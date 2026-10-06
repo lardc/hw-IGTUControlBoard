@@ -29,8 +29,9 @@ typedef enum __DeviceSubState
 	SS_VoltageNoCurrentErr 	= 10,
 	SS_FinishProcess		= 11,
 	SS_GetResults 			= 12,
+	SS_WaitTransistorCooldown = 13,
 	// Самодиагностика
-	SS_RegulatorProcessSelfTest = 13,
+	SS_RegulatorProcessSelfTest = 14,
 } DeviceSubState;
 
 typedef enum __MeasureType
