@@ -18,6 +18,7 @@
 // Variables
 //
 static Int64U Timeout = 0;
+static Int64U CooldownTimeout = 0;
 Int16U LOGIC_ChannelNumber = 0;
 Int16U RelaySwitchTimer = 0;
 static Int16U ForcedCh = 0;
@@ -59,6 +60,14 @@ void LOGIC_HandleMeasurement()
 		switch(CONTROL_SubState)
 		{
 			case SS_Init:
+				if(CONTROL_TimeCounter < CooldownTimeout)
+				{
+					Timeout = CooldownTimeout;
+					CooldownTimeout = 0;
+					CONTROL_SetDeviceSubState(SS_WaitTransistorCooldown);
+					break;
+				}
+
 				UgResult = UpotResult = IgResult = 0.0f;
 				ForcedCh = DataTable[REG_DBG_FORCE_CHANNEL];
 
@@ -238,6 +247,9 @@ void LOGIC_HandleMeasurement()
 			case SS_GetResults:
 				if(CONTROL_TimeCounter > Timeout)
 				{
+					if(CONTROL_MeasureType == MT_Ugeth)
+						CooldownTimeout = CONTROL_TimeCounter + LOGIC_CalcPauseAfterPulse();
+
 					bool MainMeasurement = CONTROL_MeasureType == MT_Rth || CONTROL_MeasureType == MT_Iges
 							|| CONTROL_MeasureType == MT_Ugeth;
 					bool ResultOk = RINGBUF_IsFull() || !MainMeasurement;
@@ -330,6 +342,8 @@ void LOGIC_HandleMeasurement()
 				break;
 
 			case SS_WaitTransistorCooldown:
+				if(CONTROL_TimeCounter > Timeout)
+					CONTROL_SetDeviceSubState(SS_Init);
 				break;
 
 			default:
@@ -518,7 +532,7 @@ Int32U LOGIC_CalcPauseAfterPulse()
 
 	VoltageCascode = (VoltageSupply > DataTable[REG_DIAG_VOLTAGE]) ? (VoltageSupply - DataTable[REG_DIAG_VOLTAGE]) : 0;
 
-	PowerIndivTrans = VoltageCascode *  DataTable[REG_WORK_CURRENT_UGETH];
+	PowerIndivTrans = VoltageCascode *  (DataTable[REG_WORK_CURRENT_UGETH] * 0.001f);
 
 	RisingPart = DataTable[REG_MAX_VOLTAGE_UGETH] / DataTable[REG_SLEW_RATE_UGETH];
 	TotalPulseDuration = DataTable[REG_CURRENT_FLATTOP_DURATION] + RisingPart;
