@@ -52,6 +52,8 @@ void LOGIC_HandleMeasurement()
 	{
 		if(!CONTROL_IsSafetyOk())
 		{
+			if(CONTROL_SubState == SS_RegulatorProcessUgeth)
+				CooldownTimeout = CONTROL_TimeCounter + LOGIC_CalcPauseAfterPulse(UgResult);
 			LOGIC_StopProcess();
 			SecondaryST = false;
 			AutoBothSelfTest = false;
