@@ -100,6 +100,10 @@ void CONTROL_ResetOutputRegisters()
 	DataTable[REG_IGES_RESULT] = 0;
 	DataTable[REG_RES_RESULT] = 0;
 
+	DataTable[REG_DBG_RES_PAU_SWITCH] = false;
+	DataTable[REG_DBG_RES_I_MEAS_INTERNAL] = 0;
+	DataTable[REG_DBG_RES_I_MEAS_PAU] = 0;
+
 	DEVPROFILE_ResetScopes(0);
 	DEVPROFILE_ResetEPReadState();
 }

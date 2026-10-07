@@ -169,12 +169,13 @@ static void RES_HandleInternalComplete()
 	else
 	{
 		ResFineMeasure = false;
-
+		DataTable[REG_DBG_RES_I_MEAS_INTERNAL] = AverageData.Current;
 		// При эмуляции PAU остаёмся на внутренней цепи
 		if(AverageData.Current < DataTable[REG_RES_I_THRESHOLD] && !DataTable[REG_PAU_EMULATED])
 		{
 			ResTestCurrent = AverageData.Current;
 			ResPauConfigStage = ResPau_Config;
+			DataTable[REG_DBG_RES_PAU_SWITCH] = true;
 			CONTROL_SetDeviceState(DS_InProcess, SS_ResPauPrepare);
 		}
 		else
@@ -410,6 +411,7 @@ void RES_PauSaveResult()
 			RES_ResetMeasureState();
 			CONTROL_SwitchToFault(DF_PAU_INTERFACE);
 		}
+		DataTable[REG_DBG_RES_I_MEAS_PAU] = PauCurrent;
 	}
 	else if(CONTROL_TimeCounter >= ResPauStateTimeout)
 	{
