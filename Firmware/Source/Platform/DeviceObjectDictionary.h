@@ -27,7 +27,7 @@
 #define ACT_START_MEASURE_UGETH			100	// Запуск процесса измерения Uge_th
 //101
 #define ACT_START_MEASURE_IGES			102	// Запуск процесса измерения Iges
-#define ACT_START_MEASURE_RTH			103 // Запуск процесса измерения Rth
+#define ACT_START_MEASURE_RT			103 // Запуск процесса измерения Rt
 
 #define ACT_SAVE_TO_ROM					200	// Сохранение пользовательских данных во FLASH процессора
 #define ACT_RESTORE_FROM_ROM			201	// Восстановление данных из FLASH
@@ -123,7 +123,7 @@
 #define REG_I_7_B						57	// Коэффициент преобразования B
 #define REG_I_7_RSH						58	// Сопротивление шунта
 //
-#define REG_MEASUREMENT_AVG_COUNT		59	// Число усреднений при измерении Rth, Uge_th
+#define REG_MEASUREMENT_AVG_COUNT		59	// Число усреднений при измерении Rt, Uge_th
 //
 #define REG_CFG_NODE_ID					60	// Настройка CAN NodeID
 //
@@ -135,7 +135,7 @@
 //
 #define REG_WORK_VOLTAGE_ST_UPOT		66	// Номинальное рабочее напряжение для самодиагностики потенциальных линий, мВ
 #define REG_WORK_VOLTAGE_ST_TESTLOAD	67	// Номинальное рабочее напряжение для самодиагностики с тестовой нагрузкой, мВ
-#define REG_WORK_VOLTAGE_RTH			68	// Номинальное рабочее напряжение для измерения Rth, мВ
+#define REG_WORK_VOLTAGE_RT				68	// Номинальное рабочее напряжение для измерения Rt, мВ
 //
 #define REG_RANGE_I_0					69	// Диапазон тока для канала 0 - от 50 до 500 мА, в А
 #define REG_RANGE_I_1					70	// Диапазон тока для канала 1 - от 5 до 50 мА, в А
@@ -164,11 +164,11 @@
 #define REG_CURRENT_ERR_COUNT_LIMIT		88	// Лимит ошибки счетчика перед выставлением PROBLEM_CURRENT_OUT_OF_RANGE
 //
 #define REG_REGLTR_TIMER				89	// Время для выхода регулятора на рабочее напряжение, мс
-#define REG_RELAY_SW_TIMER_RTH			90	// Время для переключения реле тока при измерении Rth, мс
+#define REG_RELAY_SW_TIMER_RT			90	// Время для переключения реле тока при измерении Rt, мс
 #define REG_RELAY_SW_TIMER_IGES			91	// Время для переключения реле тока при измерении Iges, мс
 #define REG_RELAY_SW_TIMER_UGETH		92	// Время для переключения реле тока при измерении Uge_th, мс
 //
-#define REG_SLEW_RATE_RTH				93	// Скорость нарастания для измерения Rth, В\мс
+#define REG_SLEW_RATE_RT				93	// Скорость нарастания для измерения Rt, В\мс
 #define REG_SLEW_RATE_IGES				94	// Скорость нарастания для измерения Iges, В\мс
 #define REG_SLEW_RATE_UGETH				95	// Скорость нарастания для измерения Uge_th, В\мс
 #define REG_SLEW_RATE_ST_UPOT			96	// Скорость нарастания для самодиагностики Upot, В\мс
@@ -179,8 +179,8 @@
 #define REG_RGLTR_ST_ERR_THRESH			100	// Порог ошибки напряжения для диаг. потенциальных линий, в частях от 0 до 1
 #define REG_ST_TESTLOAD_RESIS			101	// Сопротивление тестовой нагрузки, Ом
 //
-#define REG_MAX_RTH_RESISTANCE			102	// Максимальное допустимое сопротивление Rth, Ом
-#define REG_MIN_RTH_RESISTANCE			103	// Минимальное допустимое сопротивление Rth, Ом
+#define REG_MAX_RT_RESISTANCE			102	// Максимальное допустимое сопротивление Rt, Ом
+#define REG_MIN_RT_RESISTANCE			103	// Минимальное допустимое сопротивление Rt, Ом
 //
 #define REG_RELAY_SW_TIMER_IGES_RANGE7	104	// Время для переключения реле тока при измерении Iges на диапазоне 7, мс
 #define REG_IGES_MAX_CURRENT			105	// Максимальный допустимый ток Iges, A
@@ -255,8 +255,8 @@
 #define PROBLEM_RING_BUFFER_NOT_FILLED		6	// Кольцевой буфер усреднения не заполнен
 #define PROBLEM_VOLTAGE_LIMIT_NO_CURRENT	7	// Достигнут установленный лимит напряжения без достижения уровня тока
 #define PROBLEM_WRONG_SELECTED_RELAY		8	// Выбрано неверное реле для диагностики
-#define PROBLEM_RTH_TOO_HIGH				9	// Значение Rth превысило допустимое максимальное значение
-#define PROBLEM_RTH_TOO_LOW					10	// Значение Rth превысило допустимое минимальное значение
+#define PROBLEM_RT_TOO_HIGH					9	// Значение Rt превысило допустимое максимальное значение
+#define PROBLEM_RT_TOO_LOW					10	// Значение Rt превысило допустимое минимальное значение
 #define PROBLEM_IGES_TOO_HIGH				11	// Значение Iges превысило допустимый предел
 #define PROBLEM_UGETH_SHORT					12 	// Произошло короткое замыкание при измерении Ugeth(значение напряжения ниже мин порога)
 

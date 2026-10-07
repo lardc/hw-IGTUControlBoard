@@ -106,9 +106,9 @@ void REGLTR_Init(Int16U ForcedChannel)
 			PulseAmplitude = fabsf(DataTable[REG_WORK_VOLTAGE_IGES]) * 0.001f;
 			break;
 
-		case MT_Rth:
-			RiseRate = DataTable[REG_SLEW_RATE_RTH];
-			PulseAmplitude = DataTable[REG_WORK_VOLTAGE_RTH] * 0.001f;
+		case MT_Rt:
+			RiseRate = DataTable[REG_SLEW_RATE_RT];
+			PulseAmplitude = DataTable[REG_WORK_VOLTAGE_RT] * 0.001f;
 			break;
 
 		case MT_Ugeth:
@@ -156,7 +156,7 @@ Int16U REGLTR_CorrectionLogDACPoint()
 	RGLTR_ErrorCheck(&RegulatorError, &RegulatorErrorUpot);
 
 	if(RegState != RS_FlatTopUgeth
-			&& (CONTROL_MeasureType == MT_ST_Upot || CONTROL_MeasureType == MT_Rth || CONTROL_MeasureType == MT_ST_Upot))
+			&& (CONTROL_MeasureType == MT_ST_Upot || CONTROL_MeasureType == MT_Rt || CONTROL_MeasureType == MT_ST_Upot))
 		RegError = RegulatorErrorUpot;
 	else
 		RegError = RegulatorError;
@@ -234,7 +234,7 @@ void RGLTR_ErrorCheck(float *RegulatorError, float *RegulatorErrorUpot)
 
 					if(CONTROL_MeasureType == MT_Iges)
 						RINGBUF_AddSample(Sample.Ig, Sample.Ug);
-					else if(CONTROL_MeasureType == MT_Rth)
+					else if(CONTROL_MeasureType == MT_Rt)
 						RINGBUF_AddSample(Sample.Ig, Sample.UPot);
 				}
 				else
@@ -357,9 +357,9 @@ Int16U REGLTR_GetScalingCoef(Int16U ForcedChannel)
 
 	switch(CONTROL_MeasureType)
 	{
-		case MT_Rth:
+		case MT_Rt:
 			{
-				RangeTime = MAX(DataTable[REG_RELAY_SW_TIMER_RTH], DataTable[REG_REGLTR_TIMER]);
+				RangeTime = MAX(DataTable[REG_RELAY_SW_TIMER_RT], DataTable[REG_REGLTR_TIMER]);
 				RangeTime = MAX(RangeTime, TIME_RGLTR_PAUSE_RNG_SWITCH);
 
 				Int16U PulseLength = ForcedChannel ? DataTable[REG_DBG_FORCED_CH_PULSE_LENGTH] : (3 * RangeTime);

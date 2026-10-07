@@ -37,7 +37,7 @@ typedef enum __DeviceSubState
 
 typedef enum __MeasureType
 {
-	MT_Rth			= 0,
+	MT_Rt			= 0,
 	MT_Iges			= 1,
 	MT_Ugeth 		= 2,
 	MT_ST_Upot		= 3,

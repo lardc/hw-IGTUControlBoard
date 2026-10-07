@@ -74,7 +74,7 @@ void LOGIC_HandleMeasurement()
 
 				switch(CONTROL_MeasureType)
 				{
-					case MT_Rth:
+					case MT_Rt:
 						if(ForcedCh && ForcedCh != I_CHANNEL_0 && ForcedCh != I_CHANNEL_1 && ForcedCh != I_CHANNEL_2
 								&& ForcedCh != I_CHANNEL_3)
 						{
@@ -87,7 +87,7 @@ void LOGIC_HandleMeasurement()
 						LOGIC_ChannelNumber = ForcedCh ? ForcedCh : I_CHANNEL_0;
 						LL_SetCurrentChannel(LOGIC_ChannelNumber);
 
-						RelaySwitchTimer = DataTable[ForcedCh ? REG_DBG_FORCED_CH_PULSE_LENGTH : REG_RELAY_SW_TIMER_RTH];
+						RelaySwitchTimer = DataTable[ForcedCh ? REG_DBG_FORCED_CH_PULSE_LENGTH : REG_RELAY_SW_TIMER_RT];
 						break;
 
 					case MT_Iges:
@@ -193,7 +193,7 @@ void LOGIC_HandleMeasurement()
 							CONTROL_SetDeviceSubState(SS_FinishProcess);
 						else
 						{
-							if(CONTROL_MeasureType == MT_Rth)
+							if(CONTROL_MeasureType == MT_Rt)
 								REGLTR_SetPause();
 							else if(CONTROL_MeasureType == MT_Iges && LOGIC_ChannelNumber == I_CHANNEL_6)
 								// Перед включением канала 7 выставляем задержку из выделенного регистра
@@ -247,7 +247,7 @@ void LOGIC_HandleMeasurement()
 					if(CONTROL_MeasureType == MT_Ugeth)
 						CooldownTimeout = CONTROL_TimeCounter + LOGIC_CalcPauseAfterPulse(UgResult);
 
-					bool MainMeasurement = CONTROL_MeasureType == MT_Rth || CONTROL_MeasureType == MT_Iges
+					bool MainMeasurement = CONTROL_MeasureType == MT_Rt || CONTROL_MeasureType == MT_Iges
 							|| CONTROL_MeasureType == MT_Ugeth;
 					bool ResultOk = RINGBUF_IsFull() || !MainMeasurement;
 
@@ -259,17 +259,17 @@ void LOGIC_HandleMeasurement()
 
 						switch(CONTROL_MeasureType)
 						{
-							case MT_Rth:
+							case MT_Rt:
 								R = (AvgI == 0.0f) ? 0.0f : (AvgU / AvgI);
-								if(R > DataTable[REG_MAX_RTH_RESISTANCE])
+								if(R > DataTable[REG_MAX_RT_RESISTANCE])
 								{
 									ResultOk = false;
-									DataTable[REG_PROBLEM] = PROBLEM_RTH_TOO_HIGH;
+									DataTable[REG_PROBLEM] = PROBLEM_RT_TOO_HIGH;
 								}
-								else if(R < DataTable[REG_MIN_RTH_RESISTANCE])
+								else if(R < DataTable[REG_MIN_RT_RESISTANCE])
 								{
 									ResultOk = false;
-									DataTable[REG_PROBLEM] = PROBLEM_RTH_TOO_LOW;
+									DataTable[REG_PROBLEM] = PROBLEM_RT_TOO_LOW;
 								}
 								else
 									DataTable[REG_THERM_RESIS] = R;

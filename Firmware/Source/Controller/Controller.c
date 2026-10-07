@@ -34,7 +34,7 @@ typedef void (*FUNC_AsyncDelegate)();
 volatile DeviceState CONTROL_State = DS_None;
 volatile DeviceSubState CONTROL_SubState = SS_None;
 static Boolean CycleActive = false;
-volatile MeasureType CONTROL_MeasureType = MT_Rth;
+volatile MeasureType CONTROL_MeasureType = MT_Rt;
 
 volatile Int64U CONTROL_TimeCounter = 0;
 static Int64U CT_SaveTimer = 0;					 // Последняя отметка времени автосохранения
@@ -198,9 +198,9 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			DataTable[REG_PROBLEM] = 0;
 			break;
 			
-		case ACT_START_MEASURE_RTH:
+		case ACT_START_MEASURE_RT:
 			if(CONTROL_State == DS_Ready)
-				CONTROL_StartMeasure(MT_Rth);
+				CONTROL_StartMeasure(MT_Rt);
 			else
 				*pUserError = ERR_DEVICE_NOT_READY;
 			break;
