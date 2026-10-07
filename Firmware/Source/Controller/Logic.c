@@ -533,16 +533,16 @@ void LOGIC_ErrorHandler(DeviceSubState SubState)
 Int32U LOGIC_CalcPauseAfterPulse(float UgVoltage)
 {
 	Int32U PauseTime;
-	float VoltageSupply = 24.0f;
-	float PowerIndivTrans, VoltageCascode, TotalPulseDuration, RisingPart;
 
-	VoltageCascode = (VoltageSupply > UgVoltage) ? (VoltageSupply - UgVoltage) : 0;
+	float PowerTransistor, VoltageTransistor, TotalPulseDuration, RisingPart;
 
-	PowerIndivTrans = VoltageCascode *  (DataTable[REG_WORK_CURRENT_UGETH] * 0.001f);
+	VoltageTransistor = (VOLTAGE_SUPPLY > UgVoltage) ? (VOLTAGE_SUPPLY - UgVoltage) : 0;
+
+	PowerTransistor = VoltageTransistor *  (DataTable[REG_WORK_CURRENT_UGETH] * 0.001f);
 
 	RisingPart = DataTable[REG_MAX_VOLTAGE_UGETH] / DataTable[REG_SLEW_RATE_UGETH];
 	TotalPulseDuration = DataTable[REG_CURRENT_FLATTOP_DURATION] + RisingPart;
-	PauseTime = PowerIndivTrans * TotalPulseDuration / DataTable[REG_TRANSIST_POWER_ALLOWED];
+	PauseTime = PowerTransistor * TotalPulseDuration / DataTable[REG_TRANSIST_POWER_ALLOWED];
 	return PauseTime;
 }
 //------------------------------------------
