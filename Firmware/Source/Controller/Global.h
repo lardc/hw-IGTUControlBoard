@@ -8,7 +8,7 @@
 #define EP_COUNT					0		// Количество массивов для чтения
 #define FEP_COUNT					8		// Количество массивов для чтения типа float
 #define ENABLE_LOCKING				FALSE	// Защита NV регистров паролем
-#define VOLTAGE_SUPPLY				24		// Ток питания, В
+#define PS_VOLTAGE_UGE_TH			24		// Напряжение питания, В
 
 // Временные параметры
 #define TIME_LED_BLINK				500		// Мигание светодиодом (в мс)

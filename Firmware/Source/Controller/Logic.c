@@ -62,10 +62,9 @@ void LOGIC_HandleMeasurement()
 		switch(CONTROL_SubState)
 		{
 			case SS_Init:
+			case SS_WaitTransistorCooldown:
 				if(CONTROL_TimeCounter < CooldownTimeout)
 				{
-					Timeout = CooldownTimeout;
-					CooldownTimeout = 0;
 					CONTROL_SetDeviceSubState(SS_WaitTransistorCooldown);
 					break;
 				}
@@ -339,11 +338,6 @@ void LOGIC_HandleMeasurement()
 				}
 				break;
 
-			case SS_WaitTransistorCooldown:
-				if(CONTROL_TimeCounter > Timeout)
-					CONTROL_SetDeviceSubState(SS_Init);
-				break;
-
 			default:
 				break;
 		}
@@ -532,17 +526,28 @@ void LOGIC_ErrorHandler(DeviceSubState SubState)
 
 Int32U LOGIC_CalcPauseAfterPulse(float UgVoltage)
 {
-	Int32U PauseTime;
+	if(PS_VOLTAGE_UGE_TH <= UgVoltage || UgVoltage < 0.1f)
+		return 0;
 
-	float PowerTransistor, VoltageTransistor, TotalPulseDuration, RisingPart;
+	float TransistorVoltage = PS_VOLTAGE_UGE_TH - UgVoltage;
+	float TransistorCurrent = DataTable[REG_WORK_CURRENT_UGETH] * 0.001f;
 
-	VoltageTransistor = (VOLTAGE_SUPPLY > UgVoltage) ? (VOLTAGE_SUPPLY - UgVoltage) : 0;
+	// Энергия на плоском участке
+	float EnergyFlattop = (DataTable[REG_CURRENT_FLATTOP_DURATION] * 0.001f) * TransistorVoltage * TransistorCurrent;
 
-	PowerTransistor = VoltageTransistor *  (DataTable[REG_WORK_CURRENT_UGETH] * 0.001f);
+	// Энергия на фронте нарастания - интеграл произведения U(t) * I(t)
+	// U(t) = Ups - Utr = PS_VOLTAGE_UGE_TH - Urate * t
+	// I(t) = Irate * t = TransistorCurrent / RiseTime * t
 
-	RisingPart = DataTable[REG_MAX_VOLTAGE_UGETH] / DataTable[REG_SLEW_RATE_UGETH];
-	TotalPulseDuration = DataTable[REG_CURRENT_FLATTOP_DURATION] + RisingPart;
-	PauseTime = PowerTransistor * TotalPulseDuration / DataTable[REG_TRANSIST_POWER_ALLOWED];
-	return PauseTime;
+	float Urate = DataTable[REG_SLEW_RATE_UGETH] * 1000.0f;
+	float RiseTime = UgVoltage / Urate;
+	float Irate = TransistorCurrent / RiseTime;
+
+	float EnergyRise = Irate * RiseTime * RiseTime *
+			(PS_VOLTAGE_UGE_TH / 2.0f - Urate * RiseTime / 3.0f);
+
+	// Время паузы в миллисекундах
+	Int32U Pause = (EnergyRise + EnergyFlattop) / DataTable[REG_TRANSIST_POWER_ALLOWED] * 1000.0f;
+	return Pause;
 }
 //------------------------------------------

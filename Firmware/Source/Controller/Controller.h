@@ -16,22 +16,23 @@ typedef enum __DeviceState
 
 typedef enum __DeviceSubState
 {
-	SS_None 				= 0,
-	SS_Init					= 1,
-	SS_WaitPowerSupply		= 2,
-	SS_ConfigPulse			= 3,
-	SS_RegulatorProcess		= 4,
-	SS_RegulatorProcessUgeth= 5,
-	SS_FollowingErr			= 6,
-	SS_FollowingErrUpot		= 7,
-	SS_VoltageErr			= 8,
-	SS_CurrentErr			= 9,
-	SS_VoltageNoCurrentErr 	= 10,
-	SS_FinishProcess		= 11,
-	SS_GetResults 			= 12,
-	SS_WaitTransistorCooldown = 13,
+	SS_None = 0,
+	SS_Init,
+	SS_WaitPowerSupply,
+	SS_ConfigPulse,
+	SS_RegulatorProcess,
+	SS_RegulatorProcessUgeth,
+	SS_FollowingErr,
+	SS_FollowingErrUpot,
+	SS_VoltageErr,
+	SS_CurrentErr,
+	SS_VoltageNoCurrentErr,
+	SS_FinishProcess,
+	SS_GetResults,
+	SS_WaitTransistorCooldown,
+	
 	// Самодиагностика
-	SS_RegulatorProcessSelfTest = 14,
+	SS_RegulatorProcessSelfTest,
 } DeviceSubState;
 
 typedef enum __MeasureType
