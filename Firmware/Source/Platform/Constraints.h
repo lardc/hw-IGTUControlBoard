@@ -95,6 +95,10 @@
 #define IGES_SAMPLES_MAX			400
 #define IGES_SAMPLES_DEF			50
 //
+#define RES_SAMPLES_MIN				1
+#define RES_SAMPLES_MAX				400
+#define RES_SAMPLES_DEF				10
+//
 #define RES_I_THRESHOLD_MIN			0
 #define RES_I_THRESHOLD_MAX			V_I_R2_MAX
 #define RES_I_THRESHOLD_DEF			V_I_R0_MAX

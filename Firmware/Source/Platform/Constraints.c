@@ -102,8 +102,8 @@ const TableItemConstraint Constraint[DATA_TABLE_WP_START] = {
 		{NO, YES, NO},																// 88
 		{0, 0, 0},																	// 89
 		{IGES_V_MIN, RES_TEST_VOLTAGE, IGES_V_MIN},									// 90
-		{RES_I_THRESHOLD_MIN, RES_I_THRESHOLD_MAX, RES_I_THRESHOLD_DEF},				// 91
-		{0, 0, 0},																	// 92
+		{RES_I_THRESHOLD_MIN, RES_I_THRESHOLD_MAX, RES_I_THRESHOLD_DEF},			// 91
+		{RES_SAMPLES_MIN, RES_SAMPLES_MAX, RES_SAMPLES_DEF},						// 92
 		{0, 0, 0},																	// 93
 		{0, 0, 0},																	// 94
 		{0, 0, 0},																	// 95

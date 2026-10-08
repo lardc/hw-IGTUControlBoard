@@ -78,7 +78,7 @@ void RES_CacheVariables()
 	CU_LoadConvertParams();
 	REGULATOR_ResetVariables(&RegulatorParams);
 	REGULATOR_CacheVariables(&RegulatorParams);
-	REGULATOR_Mode(&RegulatorParams, FeedBack);
+	REGULATOR_Mode(&RegulatorParams, (ResPulse == RPK_Pau) ? Parametric : FeedBack);
 	LOG_ClearBuffers(&ResRingBuffers);
 
 	TargetVoltage = DataTable[REG_RES_VOLTAGE] ? DataTable[REG_RES_VOLTAGE] : RES_TEST_VOLTAGE;
@@ -98,7 +98,7 @@ void RES_CacheVariables()
 	ResRingBuffers.RingCounterMask = LOG_COUNTER_MASK;
 
 	ResState = RPS_Ramp;
-	ResSamplesCounter = DataTable[REG_IGES_SAMPLES_NUMBER];
+	ResSamplesCounter = DataTable[REG_RES_PAU_SAMPLES];
 }
 //------------------------------
 
