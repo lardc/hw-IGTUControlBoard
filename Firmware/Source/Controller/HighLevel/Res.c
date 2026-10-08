@@ -170,8 +170,7 @@ static void RES_HandleInternalComplete()
 	{
 		ResFineMeasure = false;
 		DataTable[REG_DBG_RES_I_MEAS_INTERNAL] = AverageData.Current;
-		// При эмуляции PAU остаёмся на внутренней цепи
-		if(AverageData.Current < DataTable[REG_RES_I_THRESHOLD] && !DataTable[REG_PAU_EMULATED])
+		if(AverageData.Current < DataTable[REG_RES_I_THRESHOLD] && !DataTable[REG_PAU_EMULATED] && DataTable[REG_RES_I_THRESHOLD])
 		{
 			ResTestCurrent = AverageData.Current;
 			ResPauConfigStage = ResPau_Config;
@@ -338,7 +337,7 @@ void RES_PauPrepare()
 			{
 				PAU_Range = PAU_SelectRangeByCurrent(ResTestCurrent);
 
-				if(PAU_Configure(PAU_CHANNEL_IGTU, PAU_Range, DataTable[REG_IGES_SAMPLES_NUMBER]))
+				if(PAU_Configure(PAU_CHANNEL_IGTU, PAU_Range, DataTable[REG_RES_PAU_SAMPLES]))
 				{
 					ResPauStateTimeout = CONTROL_TimeCounter + PAU_WAIT_READY_TIMEOUT;
 					ResPauConfigStage = ResPau_Waiting;

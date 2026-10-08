@@ -305,7 +305,15 @@ Int16U DEVPROFILE_CallbackReadFastFloatX(Int16U Endpoint, float** Buffer, void* 
 
 	// Update content state
 	epState->LastReadCounter = epState->ReadCounter;
-	epState->ReadCounter += pLen;
+	// MaxNonStreamSize == 0: RS232 fast stream — не сдвигаем, чтобы raff можно было повторить
+	// MaxNonStreamSize != 0: CAN chunked — сдвигаем, иначе мастер зациклится и будет timeout
+	if(MaxNonStreamSize)
+	{
+		if(pLen == 0)
+			epState->ReadCounter = 0;
+		else
+			epState->ReadCounter += pLen;
+	}
 
 	return pLen;
 }
