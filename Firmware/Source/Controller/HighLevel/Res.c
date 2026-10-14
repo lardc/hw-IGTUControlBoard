@@ -328,16 +328,12 @@ void RES_Process()
 
 void RES_PauPrepare()
 {
-	float PAU_Range = 0;
-
 	switch(ResPauConfigStage)
 	{
 		case ResPau_Config:
 			if(PAU_IsReady() || PAU_IsConfigReady())
 			{
-				PAU_Range = PAU_SelectRangeByCurrent(ResTestCurrent);
-
-				if(PAU_Configure(PAU_CHANNEL_IGTU, PAU_Range, DataTable[REG_RES_PAU_SAMPLES]))
+				if(PAU_Configure(PAU_CHANNEL_IGTU, PAU_I_RANGE_20mA, DataTable[REG_RES_PAU_SAMPLES]))
 				{
 					ResPauStateTimeout = CONTROL_TimeCounter + PAU_WAIT_READY_TIMEOUT;
 					ResPauConfigStage = ResPau_Waiting;
