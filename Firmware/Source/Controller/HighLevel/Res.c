@@ -372,7 +372,7 @@ void RES_PauPrepare()
 			ResPauConfigStage = ResPau_Config;
 			ResPulse = RPK_Pau;
 
-			Int16U CurrentRange = MEASURE_V_SetCurrentRange(ResTestCurrent);
+			Int16U CurrentRange = MEASURE_V_SetCurrentRange(V_I_R2_MAX);
 
 			INITCFG_ConfigADC_VgsIges(CurrentRange);
 			INITCFG_ConfigDMA_VgsIges();

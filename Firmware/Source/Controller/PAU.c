@@ -109,11 +109,19 @@ void PAU_ShortInput(bool State)
 
 float PAU_SelectRangeByCurrent(float Current_mA)
 {
-	if(Current_mA <= PAU_I_RANGE_0)
-		return PAU_I_RANGE_0;
-	else if(Current_mA <= PAU_I_RANGE_1)
-		return PAU_I_RANGE_1;
+	if(Current_mA <= PAU_I_RANGE_20nA)
+		return PAU_I_RANGE_20nA;
+	else if(Current_mA <= PAU_I_RANGE_200nA)
+		return PAU_I_RANGE_200nA;
+	else if(Current_mA <= PAU_I_RANGE_2uA)
+		return PAU_I_RANGE_2uA;
+	else if(Current_mA <= PAU_I_RANGE_20uA)
+		return PAU_I_RANGE_20uA;
+	else if(Current_mA <= PAU_I_RANGE_200uA)
+		return PAU_I_RANGE_200uA;
+	else if(Current_mA <= PAU_I_RANGE_2mA)
+		return PAU_I_RANGE_2mA;
 	else
-		return PAU_I_RANGE_2;
+		return PAU_I_RANGE_20mA;
 }
 //--------------------------------------
