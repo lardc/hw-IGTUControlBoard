@@ -1,4 +1,4 @@
-﻿#include "InitConfig.h"
+#include "InitConfig.h"
 #include "Board.h"
 #include "SysConfig.h"
 #include "BCCIxParams.h"

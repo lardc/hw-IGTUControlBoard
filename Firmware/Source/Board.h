@@ -1,4 +1,4 @@
-﻿#ifndef __BOARD_H
+#ifndef __BOARD_H
 #define __BOARD_H
 
 #include "stm32f30x.h"

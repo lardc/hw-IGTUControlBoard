@@ -15,15 +15,15 @@
 
 // Definitions
 //
-#define CAL_PULSE_WIDTH_MS			10000	// ÏÍÒ
-#define CAL_VG_FRONT_TIME			5000	// ÏÍÒ
+#define CAL_PULSE_WIDTH_MS			10000	// –º–∫—Å
+#define CAL_VG_FRONT_TIME			5000	// –º–∫—Å
 //
 #define CAL_AVG_START_INDEX_DEF		20
 #define CAL_V_AVG_LENGTH			20
 #define CAL_I_AVG_LENGTH			75
 #define CAL_AVG_V_START_INDEX		950
 #define CAL_AVG_VN_START_INDEX		400
-#define CAL_ADC_DMA_BUFF_SIZE		1000
+#define CAL_ADC_DMA_BUFF_SIZE		VALUES_x_SIZE
 
 // Variables
 //

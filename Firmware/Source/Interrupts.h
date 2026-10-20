@@ -1,4 +1,4 @@
-﻿#ifndef __INTERRUPTS_H
+#ifndef __INTERRUPTS_H
 #define __INTERRUPTS_H
 
 #include "stdinc.h"

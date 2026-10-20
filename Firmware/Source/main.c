@@ -1,4 +1,4 @@
-﻿#include "Controller.h"
+#include "Controller.h"
 #include "InitConfig.h"
 #include "SysConfig.h"
 

@@ -1,4 +1,4 @@
-﻿// Header
+// Header
 #include "DebugActions.h"
 
 // Include
@@ -164,5 +164,27 @@ void DBGACT_C_TestPulse()
 	LL_I_Enable(false);
 	LL_I_SetDAC(0);
 	LL_ExDACVCutoff(0);
+}
+//-----------------------------
+
+void DBGACT_Filldata()
+{
+	for(int i = 0; i < VALUES_x_SIZE; i++)
+	{
+		CONTROL_VoltageValues[i] = i;
+		CONTROL_CurrentValues[i] = i * 10;
+		CONTROL_RegulatorOutputValues[i] = i * 0.1f;
+		CONTROL_RegulatorErrValues[i] = i * 0.01f;
+	}
+	DataTable[REG_VGS_RESULT] = 100;
+	DataTable[REG_VGS_I_RESULT] = 101;
+	DataTable[REG_QG_RESULT] = 102;
+	DataTable[REG_QG_I_RESULT] = 103;
+	DataTable[REG_IGES_RESULT] = 104;
+	DataTable[REG_RES_RESULT] = 105;
+	DataTable[REG_CAL_V_RESULT] = 106;
+	DataTable[REG_CAL_VN_RESULT] = 107;
+	DataTable[REG_CAL_I_RESULT] = 108;
+	RequestSaveToFlash = true;
 }
 //-----------------------------

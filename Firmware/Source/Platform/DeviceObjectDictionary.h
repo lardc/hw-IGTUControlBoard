@@ -1,4 +1,4 @@
-﻿#ifndef __DEV_OBJ_DIC_H
+#ifndef __DEV_OBJ_DIC_H
 #define __DEV_OBJ_DIC_H
 
 // Команды
@@ -26,6 +26,7 @@
 #define ACT_DBG_SWITCH_MUX				64	// Тест переключения выходного мультиплексора на реле
 #define ACT_DBG_SWITCH_TO_DIAG			65	// Тест переключения в режим самодиагностики
 #define ACT_DBG_PROTECTION				66	// Тест управления системой защиты
+#define ACT_DBG_FILL_DATA				67 	// Заполнить регистры и EP тестовыми значениями и выставить флаг сохранения в FLASH
 
 // Команды для калибровки
 #define ACT_CAL_V						70	// Калибровка источника напряжения
@@ -45,6 +46,13 @@
 #define ACT_RESET_TO_DEFAULT			202	// Сброс DataTable в состояние по умолчанию
 //
 #define ACT_BOOT_LOADER_REQUEST			320	// Перезапуск процессора с целью перепрограммирования
+
+#define ACT_FLASH_DIAG_INIT_READ		331	// Инициализировать начало считывания отладочной информации
+
+#define ACT_FLASH_DIAG_SAVE				332	// Сохранение блока отладочной информации во флэш
+#define ACT_FLASH_DIAG_ERASE			333	// Стирание области отладочной информации
+
+#define ACT_FLASH_DIAG_TO_EP			340	// Выполнить чтение массива из памяти отладочной информации в EP
 // -----------------------------
 
 // Регистры
@@ -160,6 +168,8 @@
 #define REG_RES_VOLTAGE					90	// Напряжение измерения сопротивления (В)
 #define REG_RES_I_THRESHOLD				91	// Порог тока для повторного измерения Res через PAU (мА)
 #define REG_RES_PAU_SAMPLES				92	// Количество замеров тока при измерении сопротивления через PAU
+
+#define REG_ACTIVE_SAVE_TO_FLASH		91	// Включение сохранения во FLASH
 
 // Несохраняемые регистры чтения-записи
 //
@@ -308,5 +318,21 @@
 #define	EP_CURRENT						2
 #define EP_REGULATOR_ERR				3
 #define EP_REGULATOR_OUTPUT				4
+#define EP_DUMMY5						5
+#define EP_DUMMY6						6
+#define EP_DUMMY7						7
+#define EP_DUMMY8						8
+#define EP_DUMMY9						9
+#define EP_DUMMY10						10
+#define EP_DUMMY11						11
+#define EP_DUMMY12						12
+#define EP_DUMMY13						13
+#define EP_DUMMY14						14
+#define EP_DUMMY15						15
+#define EP_DUMMY16						16
+#define EP_DUMMY17						17
+#define EP_DUMMY18						18
+#define EP_DUMMY19						19
+#define EP_ExtInfoData					20	// External information from flash
 
 #endif //  __DEV_OBJ_DIC_H

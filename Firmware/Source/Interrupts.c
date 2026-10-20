@@ -1,4 +1,4 @@
-﻿// Include
+// Include
 #include "Interrupts.h"
 //
 #include "Controller.h"

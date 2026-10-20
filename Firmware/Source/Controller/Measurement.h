@@ -1,4 +1,4 @@
-﻿#ifndef MEASUREMENT_H_
+#ifndef MEASUREMENT_H_
 #define MEASUREMENT_H_
 
 // Includes
