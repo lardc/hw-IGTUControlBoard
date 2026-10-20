@@ -166,6 +166,8 @@
 #define	REG_DEACTIVATE_FE				88	// Отключение Following Error проверки
 //
 #define REG_RES_VOLTAGE					90	// Напряжение измерения сопротивления (В)
+#define REG_RES_I_THRESHOLD				91	// Порог тока для повторного измерения Res через PAU (мА)
+#define REG_RES_PAU_SAMPLES				92	// Количество замеров тока при измерении сопротивления через PAU
 
 #define REG_ACTIVE_SAVE_TO_FLASH		91	// Включение сохранения во FLASH
 
@@ -192,7 +194,6 @@
 #define REG_CAL_VP						140	// Задание положительного напряжения при калибровке, В
 #define REG_CAL_VN						141	// Задание отрицательного напряжения при калибровке, В
 #define REG_CAL_I						142	// Задание тока при калибровке, мА
-
 
 #define REG_DBG							150	// Отладочный регистр
 //
@@ -223,6 +224,10 @@
 #define REG_EXT_UNIT_ERROR_CODE			220	// Ошибка интерфейса PAU: код ошибки
 #define REG_EXT_UNIT_FUNCTION			221	// Ошибка интерфейса PAU: код функции
 #define REG_EXT_UNIT_EXT_DATA			222	// Ошибка интерфейса PAU: расширенная информация
+
+#define REG_DBG_RES_PAU_SWITCH			230	// Флаг переключения на измерение сопротивления через PAU(0 - не было переключения, 1 - было)
+#define REG_DBG_RES_I_MEAS_INTERNAL		231	// Измерененный ток на внутренней цепи при измерении Rt,
+#define REG_DBG_RES_I_MEAS_PAU			232	// Измерененный ток на PAU при измерении Rt,
 // -----------------------------
 #define REG_FWINFO_SLAVE_NID			256	// Device CAN slave node ID
 #define REG_FWINFO_MASTER_NID			257	// Device CAN master node ID (if presented)

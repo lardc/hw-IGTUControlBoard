@@ -121,6 +121,10 @@ void CONTROL_ResetOutputRegisters()
 	DataTable[REG_IGES_RESULT] = 0;
 	DataTable[REG_RES_RESULT] = 0;
 
+	DataTable[REG_DBG_RES_PAU_SWITCH] = false;
+	DataTable[REG_DBG_RES_I_MEAS_INTERNAL] = 0;
+	DataTable[REG_DBG_RES_I_MEAS_PAU] = 0;
+
 	DEVPROFILE_ResetScopes(0);
 	DEVPROFILE_ResetEPReadState();
 }
@@ -488,6 +492,14 @@ void CONTROL_LogicProcess()
 
 			case SS_ResPrepare:
 				RES_Prepare();
+				break;
+
+			case SS_ResPauPrepare:
+				RES_PauPrepare();
+				break;
+
+			case SS_ResPauSaveResult:
+				RES_PauSaveResult();
 				break;
 
 			case SS_Sert_V_Prepare:

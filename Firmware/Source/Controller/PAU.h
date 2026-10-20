@@ -14,9 +14,13 @@
 #define PAU_WAIT_READY_TIMEOUT		5000
 #define PAU_SYNC_PERIOD_MAX			2000
 //
-#define PAU_I_RANGE_0				20e-6	// mA
-#define PAU_I_RANGE_1				200e-6	// mA
-#define PAU_I_RANGE_2				2e-3	// mA
+#define PAU_I_RANGE_20nA			20e-6
+#define PAU_I_RANGE_200nA			200e-6
+#define PAU_I_RANGE_2uA				2e-3
+#define PAU_I_RANGE_20uA			20e-3
+#define PAU_I_RANGE_200uA			200e-3
+#define PAU_I_RANGE_2mA				2.0f
+#define PAU_I_RANGE_20mA			20.0f
 //
 #define PAU_I_RANGE_1_OVERFLOW		210e-6	// mA, RANGE_200nA на PAU
 #define PAU_I_RANGE_2_OVERFLOW		2.1e-3	// mA, RANGE_2uA на PAU

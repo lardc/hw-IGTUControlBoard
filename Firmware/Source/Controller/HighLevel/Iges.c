@@ -71,11 +71,11 @@ void IGES_Prepare()
 				{
 					case PAU_CODE_RANGE0:
 					case PAU_CODE_RANGE1:
-						PAU_Current = PAU_I_RANGE_1;
+						PAU_Current = PAU_I_RANGE_200nA;
 						break;
 
 					case PAU_CODE_RANGE2:
-						PAU_Current = PAU_I_RANGE_2;
+						PAU_Current = PAU_I_RANGE_2uA;
 						break;
 				}
 
