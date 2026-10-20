@@ -11,6 +11,7 @@
 //
 #define REGULATOR_RING_BUFFER_SIZE		8
 #define RING_COUNTER_MASK				REGULATOR_RING_BUFFER_SIZE - 1
+#define REGULATOR_FE_VOLTAGE_MIN		0.2f	// В. Ниже этого задания относительный following error не проверяется
 
 // Structs
 //

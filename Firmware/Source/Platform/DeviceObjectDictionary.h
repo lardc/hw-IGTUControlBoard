@@ -313,7 +313,21 @@
 #define	EP_CURRENT						2
 #define EP_REGULATOR_ERR				3
 #define EP_REGULATOR_OUTPUT				4
-
+#define EP_DUMMY5						5
+#define EP_DUMMY6						6
+#define EP_DUMMY7						7
+#define EP_DUMMY8						8
+#define EP_DUMMY9						9
+#define EP_DUMMY10						10
+#define EP_DUMMY11						11
+#define EP_DUMMY12						12
+#define EP_DUMMY13						13
+#define EP_DUMMY14						14
+#define EP_DUMMY15						15
+#define EP_DUMMY16						16
+#define EP_DUMMY17						17
+#define EP_DUMMY18						18
+#define EP_DUMMY19						19
 #define EP_ExtInfoData					20	// External information from flash
 
 #endif //  __DEV_OBJ_DIC_H
