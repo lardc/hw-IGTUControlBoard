@@ -192,7 +192,8 @@
 											// 3 - обе самодиагностики.
 #define REG_UGETH_MIN_THRESHOLD			109	// Нижняя граница измерения Ugeth, мВ
 #define REG_TRANSIST_POWER_ALLOWED		110	// Разрешенная мощность на транзисторах, Вт
-// 109 - 127
+#define REG_DUT_NOT_FOUND_CURRENT_LVL	111 // Граница тока, ниже которой будет выставлена ошибка PROBLEM_DUT_NOT_FOUND, А
+// 112 - 127
 
 // Несохраняемы регистры чтения-записи
 #define REG_WORK_CURRENT_UGETH			128	// Номинальный рабочий ток для измерения Ugeth, мА
@@ -254,7 +255,8 @@
 #define PROBLEM_SAFETY						2	// Сработала система безопасности
 #define PROBLEM_VOLTAGE_LIMIT_NO_CURRENT	3	// Достигнут установленный лимит напряжения без достижения уровня тока
 #define PROBLEM_UGETH_SHORT					4 	// Произошло короткое замыкание при измерении Ugeth(значение напряжения ниже мин порога)
-// 5 - 6
+#define PROBLEM_DUT_NOT_FOUND				5	// Испытуемое устройство не обнаружено
+// 6
 #define PROBLEM_FOLLOWING_ERROR				7
 #define PROBLEM_FOLLOWING_ERROR_UPOT		8	// Ошибка Following Err на потенциальной линии
 #define PROBLEM_VOLTAGE_OUT_OF_RANGE		9	// Измеренное напряжение вне рабочего диапозона

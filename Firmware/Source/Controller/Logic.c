@@ -233,6 +233,11 @@ void LOGIC_HandleMeasurement()
 			case SS_VoltageNoCurrentErr:
 				LOGIC_ErrorHandler(CONTROL_SubState);
 				break;
+			case SS_DutNotFoundErr:
+				LOGIC_StopProcess();
+				CONTROL_SwitchToProblem(PROBLEM_DUT_NOT_FOUND);
+				break;
+
 
 			case SS_FinishProcess:
 				LOGIC_StopProcess();

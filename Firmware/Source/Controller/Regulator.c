@@ -18,7 +18,7 @@
 Int16U REGLTR_MemBuffUg[ADC_SEQ_LENGTH];
 Int16U REGLTR_MemBuffUPot[ADC_SEQ_LENGTH];
 Int16U REGLTR_MemBuffIg[ADC_SEQ_LENGTH];
-static float Kp, Ki, KiI, KpI, Qi = 0, FollowingErrThreshold, VoltagErrThreshold, CurrentErrThreshold;
+static float Kp, Ki, KiI, KpI, Qi = 0, FollowingErrThreshold, VoltagErrThreshold, CurrentErrThreshold, DutNotFoundThreshold;
 static Int16U FollowingErrLimit, VoltagErrLimit, VoltageErrCount, CurrentErrLimit, CurrentErrCount, ScalingCoef,
 		ScalingCounter;
 static Int16U FollowingErrorCounterUpot = 0,FollowingErrorCounter = 0;;
@@ -95,6 +95,7 @@ void REGLTR_Init(Int16U ForcedChannel)
 	VoltagErrLimit = DataTable[REG_VOLTAGE_ERR_COUNT_LIMIT];
 	CurrentErrThreshold = DataTable[REG_CURRENT_ERR_THRESH];
 	CurrentErrLimit = DataTable[REG_CURRENT_ERR_COUNT_LIMIT];
+	DutNotFoundThreshold = DataTable[REG_DUT_NOT_FOUND_CURRENT_LVL];
 	RawSetPoint = 0;
 	RegState = RS_Rise;
 	Counter = RegulatorPause = 0;
@@ -263,6 +264,14 @@ void RGLTR_ErrorCheck(float *RegulatorError, float *RegulatorErrorUpot)
 							CONTROL_SetDeviceSubState(SS_CurrentErr);
 							return;
 						}
+					}
+				}
+				if(CONTROL_MeasureType == MT_Iges)
+				{
+					if(Sample.Ig < DutNotFoundThreshold)
+					{
+						CONTROL_SetDeviceSubState(SS_DutNotFoundErr);
+						return;
 					}
 				}
 			}
