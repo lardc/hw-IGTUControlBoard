@@ -28,6 +28,7 @@
 //101
 #define ACT_START_MEASURE_IGES			102	// Запуск процесса измерения Iges
 #define ACT_START_MEASURE_RT			103 // Запуск процесса измерения Rt
+#define ACT_STOP_PROCESS				104	// Стоп измерения
 
 #define ACT_SAVE_TO_ROM					200	// Сохранение пользовательских данных во FLASH процессора
 #define ACT_RESTORE_FROM_ROM			201	// Восстановление данных из FLASH
@@ -241,24 +242,28 @@
 //  Fault and disable codes
 #define DF_NONE							0
 #define DF_FOLLOWING_ERROR				1	// Ошибка Following Error при самодиагностике
-#define DF_FOLLOWING_ERROR_UPOT			2	// Ошибка Following Error на потенциальных линиях при самодиагностике
-#define DF_VOLTAGE_OUT_OF_RANGE			3	// Ошибка по напряжению при самодиагностике
-#define DF_CURRENT_OUT_OF_RANGE			4	// Ошибка по току при самодиагностике
+// 2 - 8
+#define DF_VOLTAGE_OUT_OF_RANGE			9	// Ошибка по напряжению при самодиагностике
+#define DF_CURRENT_OUT_OF_RANGE			10	// Ошибка по току при самодиагностике
+// 11
+#define DF_FOLLOWING_ERROR_UPOT			12	// Ошибка Following Error на потенциальных линиях при самодиагностике
 
 // Problem
 #define PROBLEM_NONE						0
-#define PROBLEM_FOLLOWING_ERROR				1
-#define PROBLEM_FOLLOWING_ERROR_UPOT		2	// Ошибка Following Err на потенциальной линии
-#define PROBLEM_VOLTAGE_OUT_OF_RANGE		3	// Измеренное напряжение вне рабочего диапозона
-#define PROBLEM_CURRENT_OUT_OF_RANGE		4	// Измеренный ток вне рабочего диапозона
-#define PROBLEM_SAFETY						5	// Сработала система безопасности
-#define PROBLEM_RING_BUFFER_NOT_FILLED		6	// Кольцевой буфер усреднения не заполнен
-#define PROBLEM_VOLTAGE_LIMIT_NO_CURRENT	7	// Достигнут установленный лимит напряжения без достижения уровня тока
-#define PROBLEM_WRONG_SELECTED_RELAY		8	// Выбрано неверное реле для диагностики
-#define PROBLEM_RT_TOO_HIGH					9	// Значение Rt превысило допустимое максимальное значение
-#define PROBLEM_RT_TOO_LOW					10	// Значение Rt превысило допустимое минимальное значение
-#define PROBLEM_IGES_TOO_HIGH				11	// Значение Iges превысило допустимый предел
-#define PROBLEM_UGETH_SHORT					12 	// Произошло короткое замыкание при измерении Ugeth(значение напряжения ниже мин порога)
+#define PROBLEM_FORCED_STOP					1	// Принудительная остановка процесса
+#define PROBLEM_SAFETY						2	// Сработала система безопасности
+#define PROBLEM_VOLTAGE_LIMIT_NO_CURRENT	3	// Достигнут установленный лимит напряжения без достижения уровня тока
+#define PROBLEM_UGETH_SHORT					4 	// Произошло короткое замыкание при измерении Ugeth(значение напряжения ниже мин порога)
+// 5 - 6
+#define PROBLEM_FOLLOWING_ERROR				7
+#define PROBLEM_FOLLOWING_ERROR_UPOT		8	// Ошибка Following Err на потенциальной линии
+#define PROBLEM_VOLTAGE_OUT_OF_RANGE		9	// Измеренное напряжение вне рабочего диапозона
+#define PROBLEM_CURRENT_OUT_OF_RANGE		10	// Измеренный ток вне рабочего диапозона
+#define PROBLEM_RING_BUFFER_NOT_FILLED		11	// Кольцевой буфер усреднения не заполнен
+#define PROBLEM_WRONG_SELECTED_RELAY		12	// Выбрано неверное реле для диагностики
+#define PROBLEM_RT_TOO_HIGH					13	// Значение Rt превысило допустимое максимальное значение
+#define PROBLEM_RT_TOO_LOW					14	// Значение Rt превысило допустимое минимальное значение
+#define PROBLEM_IGES_TOO_HIGH				15	// Значение Iges превысило допустимый предел
 
 //  Warning
 #define WARNING_NONE					0

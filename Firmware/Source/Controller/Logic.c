@@ -27,7 +27,6 @@ static Boolean AutoBothSelfTest = false;
 
 // Forward functions
 //
-void LOGIC_StopProcess();
 void LOGIC_SwitchChannels(float Ig);
 void LOGIC_SingleSw(float Ig);
 void LOGIC_TestLoadRelaySwitch();

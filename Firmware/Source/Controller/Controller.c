@@ -219,6 +219,14 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 				*pUserError = ERR_DEVICE_NOT_READY;
 			break;
 
+		case ACT_STOP_PROCESS:
+			if(CONTROL_State == DS_InProcess)
+			{
+				LOGIC_StopProcess();
+				CONTROL_SwitchToProblem(PROBLEM_FORCED_STOP);
+			}
+			break;
+
 		case ACT_DBG_START_SELFTEST_UPOT:
 			if(CONTROL_State == DS_Ready)
 			{
