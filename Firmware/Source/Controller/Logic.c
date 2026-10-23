@@ -18,19 +18,22 @@
 // Variables
 //
 static Int64U Timeout = 0;
+static Int64U CooldownTimeout = 0;
 Int16U LOGIC_ChannelNumber = 0;
 Int16U RelaySwitchTimer = 0;
 static Int16U ForcedCh = 0;
 static Boolean SecondaryST = false;
 static Boolean AutoBothSelfTest = false;
+
 // Forward functions
 //
-void LOGIC_StopProcess();
 void LOGIC_SwitchChannels(float Ig);
 void LOGIC_SingleSw(float Ig);
 void LOGIC_TestLoadRelaySwitch();
 Boolean LOGIC_IsSelfTest();
 void LOGIC_ErrorHandler(DeviceSubState SubState);
+Int32U LOGIC_CalcPauseAfterPulse(float UgVoltage);
+
 // Functions
 //
 
@@ -48,6 +51,8 @@ void LOGIC_HandleMeasurement()
 	{
 		if(!CONTROL_IsSafetyOk())
 		{
+			if(CONTROL_SubState == SS_RegulatorProcessUgeth)
+				CooldownTimeout = CONTROL_TimeCounter + LOGIC_CalcPauseAfterPulse(UgResult);
 			LOGIC_StopProcess();
 			SecondaryST = false;
 			AutoBothSelfTest = false;
@@ -56,12 +61,19 @@ void LOGIC_HandleMeasurement()
 		switch(CONTROL_SubState)
 		{
 			case SS_Init:
+			case SS_WaitTransistorCooldown:
+				if(CONTROL_TimeCounter < CooldownTimeout)
+				{
+					CONTROL_SetDeviceSubState(SS_WaitTransistorCooldown);
+					break;
+				}
+
 				UgResult = UpotResult = IgResult = 0.0f;
 				ForcedCh = DataTable[REG_DBG_FORCE_CHANNEL];
 
 				switch(CONTROL_MeasureType)
 				{
-					case MT_Rth:
+					case MT_Rt:
 						if(ForcedCh && ForcedCh != I_CHANNEL_0 && ForcedCh != I_CHANNEL_1 && ForcedCh != I_CHANNEL_2
 								&& ForcedCh != I_CHANNEL_3)
 						{
@@ -73,7 +85,8 @@ void LOGIC_HandleMeasurement()
 
 						LOGIC_ChannelNumber = ForcedCh ? ForcedCh : I_CHANNEL_0;
 						LL_SetCurrentChannel(LOGIC_ChannelNumber);
-						RelaySwitchTimer = DataTable[REG_RELAY_SW_TIMER_RTH];
+
+						RelaySwitchTimer = DataTable[ForcedCh ? REG_DBG_FORCED_CH_PULSE_LENGTH : REG_RELAY_SW_TIMER_RT];
 						break;
 
 					case MT_Iges:
@@ -89,9 +102,12 @@ void LOGIC_HandleMeasurement()
 						LL_SetCurrentChannel(LOGIC_ChannelNumber);
 
 						// Для форсированного канала 7 выбирается отдельная задержка
-						RelaySwitchTimer = DataTable[
-								(LOGIC_ChannelNumber == I_CHANNEL_7) ?
-										REG_RELAY_SW_TIMER_IGES_RANGE7 : REG_RELAY_SW_TIMER_IGES];
+						if(ForcedCh)
+							RelaySwitchTimer = DataTable[REG_DBG_FORCED_CH_PULSE_LENGTH];
+						else
+							RelaySwitchTimer =
+									DataTable[(LOGIC_ChannelNumber == I_CHANNEL_7) ?
+									REG_RELAY_SW_TIMER_IGES_RANGE7 : REG_RELAY_SW_TIMER_IGES];
 						break;
 
 					case MT_Ugeth:
@@ -151,7 +167,7 @@ void LOGIC_HandleMeasurement()
 				break;
 
 			case SS_ConfigPulse:
-				REGLTR_Init();
+				REGLTR_Init(ForcedCh);
 				REGLTR_StartProcess();
 				LL_Sync(true);
 				Timeout = CONTROL_TimeCounter + MAX(RelaySwitchTimer, DataTable[REG_REGLTR_TIMER]);
@@ -176,7 +192,7 @@ void LOGIC_HandleMeasurement()
 							CONTROL_SetDeviceSubState(SS_FinishProcess);
 						else
 						{
-							if(CONTROL_MeasureType == MT_Rth)
+							if(CONTROL_MeasureType == MT_Rt)
 								REGLTR_SetPause();
 							else if(CONTROL_MeasureType == MT_Iges && LOGIC_ChannelNumber == I_CHANNEL_6)
 								// Перед включением канала 7 выставляем задержку из выделенного регистра
@@ -214,13 +230,15 @@ void LOGIC_HandleMeasurement()
 			case SS_FollowingErrUpot:
 			case SS_VoltageErr:
 			case SS_CurrentErr:
+			case SS_VoltageNoCurrentErr:
+			case SS_ForcedStopErr:
 				LOGIC_ErrorHandler(CONTROL_SubState);
 				break;
-
-			case SS_VoltageNoCurrentErr:
+			case SS_DutNotFoundErr:
 				LOGIC_StopProcess();
-				CONTROL_SwitchToProblem(PROBLEM_VOLTAGE_LIMIT_NO_CURRENT);
+				CONTROL_SwitchToProblem(PROBLEM_DUT_NOT_FOUND);
 				break;
+
 
 			case SS_FinishProcess:
 				LOGIC_StopProcess();
@@ -231,7 +249,10 @@ void LOGIC_HandleMeasurement()
 			case SS_GetResults:
 				if(CONTROL_TimeCounter > Timeout)
 				{
-					bool MainMeasurement = CONTROL_MeasureType == MT_Rth || CONTROL_MeasureType == MT_Iges
+					if(CONTROL_MeasureType == MT_Ugeth)
+						CooldownTimeout = CONTROL_TimeCounter + LOGIC_CalcPauseAfterPulse(UgResult);
+
+					bool MainMeasurement = CONTROL_MeasureType == MT_Rt || CONTROL_MeasureType == MT_Iges
 							|| CONTROL_MeasureType == MT_Ugeth;
 					bool ResultOk = RINGBUF_IsFull() || !MainMeasurement;
 
@@ -243,17 +264,17 @@ void LOGIC_HandleMeasurement()
 
 						switch(CONTROL_MeasureType)
 						{
-							case MT_Rth:
+							case MT_Rt:
 								R = (AvgI == 0.0f) ? 0.0f : (AvgU / AvgI);
-								if(R > DataTable[REG_MAX_RTH_RESISTANCE])
+								if(R > DataTable[REG_MAX_RT_RESISTANCE])
 								{
 									ResultOk = false;
-									DataTable[REG_PROBLEM] = PROBLEM_RTH_TOO_HIGH;
+									DataTable[REG_PROBLEM] = PROBLEM_RT_TOO_HIGH;
 								}
-								else if(R < DataTable[REG_MIN_RTH_RESISTANCE])
+								else if(R < DataTable[REG_MIN_RT_RESISTANCE])
 								{
 									ResultOk = false;
-									DataTable[REG_PROBLEM] = PROBLEM_RTH_TOO_LOW;
+									DataTable[REG_PROBLEM] = PROBLEM_RT_TOO_LOW;
 								}
 								else
 									DataTable[REG_THERM_RESIS] = R;
@@ -267,12 +288,12 @@ void LOGIC_HandleMeasurement()
 								break;
 
 							case MT_Iges:
-								if(AvgI <= DataTable[REG_IGES_MAX_CURRENT])
-								{
-									DataTable[REG_DIAG_CURRENT] = DataTable[REG_IGES_RESULT] = AvgI;
-									DataTable[REG_DIAG_VOLTAGE] = AvgU;
-									DataTable[REG_DIAG_POT_VOLTAGE] = UpotResult;
-								}
+								DataTable[REG_DIAG_CURRENT] = AvgI;
+								DataTable[REG_DIAG_VOLTAGE] = AvgU;
+								DataTable[REG_DIAG_POT_VOLTAGE] = UpotResult;
+
+								if(AvgI <= DataTable[REG_IGES_MAX_CURRENT] || ForcedCh)
+									DataTable[REG_IGES_RESULT] = AvgI;
 								else
 								{
 									ResultOk = false;
@@ -294,20 +315,19 @@ void LOGIC_HandleMeasurement()
 								break;
 
 							default:
+								DataTable[REG_DIAG_CURRENT] = IgResult;
+								DataTable[REG_DIAG_VOLTAGE] = UgResult;
+								DataTable[REG_DIAG_POT_VOLTAGE] = UpotResult;
 								break;
 						}
 					}
 					else
+					{
 						DataTable[REG_PROBLEM] = PROBLEM_RING_BUFFER_NOT_FILLED;
 
-					// Последние мгновенные значения в случае проблемы или неосновного измерения.
-					// При КЗ Ugeth в REG_DIAG_POT_VOLTAGE остаётся измеренное среднее AvgU.
-					if(!ResultOk || !MainMeasurement)
-					{
 						DataTable[REG_DIAG_CURRENT] = IgResult;
 						DataTable[REG_DIAG_VOLTAGE] = UgResult;
-						if(DataTable[REG_PROBLEM] != PROBLEM_UGETH_SHORT)
-							DataTable[REG_DIAG_POT_VOLTAGE] = UpotResult;
+						DataTable[REG_DIAG_POT_VOLTAGE] = UpotResult;
 					}
 					DataTable[REG_OP_RESULT] = ResultOk ? OPRESULT_OK : OPRESULT_FAIL;
 
@@ -477,6 +497,16 @@ void LOGIC_ErrorHandler(DeviceSubState SubState)
 			ProblemReason = PROBLEM_CURRENT_OUT_OF_RANGE;
 			break;
 
+		case SS_VoltageNoCurrentErr:
+			FaultReason = DF_CURRENT_OUT_OF_RANGE;
+			ProblemReason = PROBLEM_VOLTAGE_LIMIT_NO_CURRENT;
+			break;
+
+		case SS_ForcedStopErr:
+			FaultReason = DF_FORCED_STOP;
+			ProblemReason = PROBLEM_FORCED_STOP;
+			break;
+
 		default:
 			return;
 	}
@@ -489,6 +519,9 @@ void LOGIC_ErrorHandler(DeviceSubState SubState)
 	SecondaryST = false;
 	AutoBothSelfTest = false;
 
+	if(CONTROL_MeasureType == MT_Ugeth)
+		CooldownTimeout = CONTROL_TimeCounter + LOGIC_CalcPauseAfterPulse(Ug);
+
 	if(LOGIC_IsSelfTest())
 	{
 		DataTable[REG_DIAG_CURRENT] = Ig;
@@ -498,5 +531,34 @@ void LOGIC_ErrorHandler(DeviceSubState SubState)
 	}
 	else
 		CONTROL_SwitchToProblem(ProblemReason);
+}
+//------------------------------------------
+
+Int32U LOGIC_CalcPauseAfterPulse(float UgVoltage)
+{
+	if(PS_VOLTAGE_UGE_TH <= UgVoltage)
+		return 0;
+
+	float TransistorVoltage = PS_VOLTAGE_UGE_TH - UgVoltage;
+	float TransistorCurrent = DataTable[REG_WORK_CURRENT_UGETH] * 0.001f;
+
+	// Энергия на плоском участке
+	float EnergyFlattop = (DataTable[REG_CURRENT_FLATTOP_DURATION] * 0.001f) * TransistorVoltage * TransistorCurrent;
+
+	// Энергия на фронте нарастания - интеграл произведения U(t) * I(t)
+	// U(t) = Ups - Utr = PS_VOLTAGE_UGE_TH - Urate * t
+	// I(t) = Irate * t = TransistorCurrent / RiseTime * t
+
+	float Urate = DataTable[REG_SLEW_RATE_UGETH] * 1000.0f;
+	float RiseTime = UgVoltage / Urate;
+	float Irate = TransistorCurrent / RiseTime;
+
+	float EnergyRise = Irate * RiseTime * RiseTime *
+			(PS_VOLTAGE_UGE_TH / 2.0f - Urate * RiseTime / 3.0f);
+
+	// Время паузы в миллисекундах
+	float AllowedPower = DataTable[REG_TRANSIST_POWER_ALLOWED];
+	Int32U Pause = (EnergyRise + EnergyFlattop) /(AllowedPower ? AllowedPower : POWER_TRANSIS_DEF) * 1000.0f;
+	return Pause;
 }
 //------------------------------------------

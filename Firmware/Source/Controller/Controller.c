@@ -34,7 +34,7 @@ typedef void (*FUNC_AsyncDelegate)();
 volatile DeviceState CONTROL_State = DS_None;
 volatile DeviceSubState CONTROL_SubState = SS_None;
 static Boolean CycleActive = false;
-volatile MeasureType CONTROL_MeasureType = MT_Rth;
+volatile MeasureType CONTROL_MeasureType = MT_Rt;
 
 volatile Int64U CONTROL_TimeCounter = 0;
 static Int64U CT_SaveTimer = 0;					 // Последняя отметка времени автосохранения
@@ -188,7 +188,6 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 		case ACT_FAULT_CLEAR:
 			if(CONTROL_State == DS_Fault)
 			{
-				LL_ExtIndication(false);
 				CONTROL_SetDeviceState(DS_Ready);
 				DataTable[REG_FAULT_REASON] = DF_NONE;
 			}
@@ -196,11 +195,12 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 			
 		case ACT_WARNING_CLEAR:
 			DataTable[REG_WARNING] = 0;
+			DataTable[REG_PROBLEM] = 0;
 			break;
 			
-		case ACT_START_MEASURE_RTH:
+		case ACT_START_MEASURE_RT:
 			if(CONTROL_State == DS_Ready)
-				CONTROL_StartMeasure(MT_Rth);
+				CONTROL_StartMeasure(MT_Rt);
 			else
 				*pUserError = ERR_DEVICE_NOT_READY;
 			break;
@@ -217,6 +217,11 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 				CONTROL_StartMeasure(MT_Ugeth);
 			else
 				*pUserError = ERR_DEVICE_NOT_READY;
+			break;
+
+		case ACT_STOP_PROCESS:
+			if(CONTROL_State == DS_InProcess)
+				CONTROL_SetDeviceSubState(SS_ForcedStopErr);
 			break;
 
 		case ACT_DBG_START_SELFTEST_UPOT:
@@ -383,6 +388,7 @@ void CONTROL_SetDeviceState(DeviceState NewState)
 {
 	CONTROL_State = NewState;
 	DataTable[REG_DEV_STATE] = NewState;
+	LL_ExtIndication(NewState == DS_InProcess);
 }
 //------------------------------------------
 

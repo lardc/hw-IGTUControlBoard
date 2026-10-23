@@ -27,7 +27,8 @@
 #define ACT_START_MEASURE_UGETH			100	// Запуск процесса измерения Uge_th
 //101
 #define ACT_START_MEASURE_IGES			102	// Запуск процесса измерения Iges
-#define ACT_START_MEASURE_RTH			103 // Запуск процесса измерения Rth
+#define ACT_START_MEASURE_RT			103 // Запуск процесса измерения Rt
+#define ACT_STOP_PROCESS				104	// Стоп измерения
 
 #define ACT_SAVE_TO_ROM					200	// Сохранение пользовательских данных во FLASH процессора
 #define ACT_RESTORE_FROM_ROM			201	// Восстановление данных из FLASH
@@ -123,7 +124,7 @@
 #define REG_I_7_B						57	// Коэффициент преобразования B
 #define REG_I_7_RSH						58	// Сопротивление шунта
 //
-#define REG_MEASUREMENT_AVG_COUNT		59	// Число усреднений при измерении Rth, Uge_th
+#define REG_MEASUREMENT_AVG_COUNT		59	// Число усреднений при измерении Rt, Uge_th
 //
 #define REG_CFG_NODE_ID					60	// Настройка CAN NodeID
 //
@@ -135,7 +136,7 @@
 //
 #define REG_WORK_VOLTAGE_ST_UPOT		66	// Номинальное рабочее напряжение для самодиагностики потенциальных линий, мВ
 #define REG_WORK_VOLTAGE_ST_TESTLOAD	67	// Номинальное рабочее напряжение для самодиагностики с тестовой нагрузкой, мВ
-#define REG_WORK_VOLTAGE_RTH			68	// Номинальное рабочее напряжение для измерения Rth, мВ
+#define REG_WORK_VOLTAGE_RT				68	// Номинальное рабочее напряжение для измерения Rt, мВ
 //
 #define REG_RANGE_I_0					69	// Диапазон тока для канала 0 - от 50 до 500 мА, в А
 #define REG_RANGE_I_1					70	// Диапазон тока для канала 1 - от 5 до 50 мА, в А
@@ -164,11 +165,11 @@
 #define REG_CURRENT_ERR_COUNT_LIMIT		88	// Лимит ошибки счетчика перед выставлением PROBLEM_CURRENT_OUT_OF_RANGE
 //
 #define REG_REGLTR_TIMER				89	// Время для выхода регулятора на рабочее напряжение, мс
-#define REG_RELAY_SW_TIMER_RTH			90	// Время для переключения реле тока при измерении Rth, мс
+#define REG_RELAY_SW_TIMER_RT			90	// Время для переключения реле тока при измерении Rt, мс
 #define REG_RELAY_SW_TIMER_IGES			91	// Время для переключения реле тока при измерении Iges, мс
 #define REG_RELAY_SW_TIMER_UGETH		92	// Время для переключения реле тока при измерении Uge_th, мс
 //
-#define REG_SLEW_RATE_RTH				93	// Скорость нарастания для измерения Rth, В\мс
+#define REG_SLEW_RATE_RT				93	// Скорость нарастания для измерения Rt, В\мс
 #define REG_SLEW_RATE_IGES				94	// Скорость нарастания для измерения Iges, В\мс
 #define REG_SLEW_RATE_UGETH				95	// Скорость нарастания для измерения Uge_th, В\мс
 #define REG_SLEW_RATE_ST_UPOT			96	// Скорость нарастания для самодиагностики Upot, В\мс
@@ -179,8 +180,8 @@
 #define REG_RGLTR_ST_ERR_THRESH			100	// Порог ошибки напряжения для диаг. потенциальных линий, в частях от 0 до 1
 #define REG_ST_TESTLOAD_RESIS			101	// Сопротивление тестовой нагрузки, Ом
 //
-#define REG_MAX_RTH_RESISTANCE			102	// Максимальное допустимое сопротивление Rth, Ом
-#define REG_MIN_RTH_RESISTANCE			103	// Минимальное допустимое сопротивление Rth, Ом
+#define REG_MAX_RT_RESISTANCE			102	// Максимальное допустимое сопротивление Rt, Ом
+#define REG_MIN_RT_RESISTANCE			103	// Минимальное допустимое сопротивление Rt, Ом
 //
 #define REG_RELAY_SW_TIMER_IGES_RANGE7	104	// Время для переключения реле тока при измерении Iges на диапазоне 7, мс
 #define REG_IGES_MAX_CURRENT			105	// Максимальный допустимый ток Iges, A
@@ -190,7 +191,9 @@
 #define REG_USE_SELFTEST				108	// Включение режимов самодиагностики(0 - выкл, 1 - только самодиаг. потенц. линий, 2 - только тест нагрузка
 											// 3 - обе самодиагностики.
 #define REG_UGETH_MIN_THRESHOLD			109	// Нижняя граница измерения Ugeth, мВ
-// 109 - 127
+#define REG_TRANSIST_POWER_ALLOWED		110	// Разрешенная мощность на транзисторах, Вт
+#define REG_DUT_NOT_FOUND_CURRENT_LVL	111 // Граница тока, ниже которой будет выставлена ошибка PROBLEM_DUT_NOT_FOUND, А
+// 112 - 127
 
 // Несохраняемы регистры чтения-записи
 #define REG_WORK_CURRENT_UGETH			128	// Номинальный рабочий ток для измерения Ugeth, мА
@@ -203,8 +206,9 @@
 #define REG_DBG							150	// Отладочный регистр
 #define REG_DBG_FORCE_CHANNEL			151	// Принудительное включение определенного диапазона тока
 #define REG_DBG_SAFETY_MUTE				152	// Отключение контура безопасности
+#define REG_DBG_FORCED_CH_PULSE_LENGTH	153	// Длительность импульса при форсированном выборе канала, мс
 //
-// 152 - 191
+// 154 - 191
 
 // Регистры только чтение
 #define REG_DEV_STATE					192	// Регистр состояния
@@ -239,24 +243,30 @@
 //  Fault and disable codes
 #define DF_NONE							0
 #define DF_FOLLOWING_ERROR				1	// Ошибка Following Error при самодиагностике
-#define DF_FOLLOWING_ERROR_UPOT			2	// Ошибка Following Error на потенциальных линиях при самодиагностике
-#define DF_VOLTAGE_OUT_OF_RANGE			3	// Ошибка по напряжению при самодиагностике
-#define DF_CURRENT_OUT_OF_RANGE			4	// Ошибка по току при самодиагностике
+// 2 - 8
+#define DF_VOLTAGE_OUT_OF_RANGE			9	// Ошибка по напряжению при самодиагностике
+#define DF_CURRENT_OUT_OF_RANGE			10	// Ошибка по току при самодиагностике
+// 11
+#define DF_FOLLOWING_ERROR_UPOT			12	// Ошибка Following Error на потенциальных линиях при самодиагностике
+#define DF_FORCED_STOP					13	// Принудительная остановка во время самодиагностики
 
 // Problem
 #define PROBLEM_NONE						0
-#define PROBLEM_FOLLOWING_ERROR				1
-#define PROBLEM_FOLLOWING_ERROR_UPOT		2	// Ошибка Following Err на потенциальной линии
-#define PROBLEM_VOLTAGE_OUT_OF_RANGE		3	// Измеренное напряжение вне рабочего диапозона
-#define PROBLEM_CURRENT_OUT_OF_RANGE		4	// Измеренный ток вне рабочего диапозона
-#define PROBLEM_SAFETY						5	// Сработала система безопасности
-#define PROBLEM_RING_BUFFER_NOT_FILLED		6	// Кольцевой буфер усреднения не заполнен
-#define PROBLEM_VOLTAGE_LIMIT_NO_CURRENT	7	// Достигнут установленный лимит напряжения без достижения уровня тока
-#define PROBLEM_WRONG_SELECTED_RELAY		8	// Выбрано неверное реле для диагностики
-#define PROBLEM_RTH_TOO_HIGH				9	// Значение Rth превысило допустимое максимальное значение
-#define PROBLEM_RTH_TOO_LOW					10	// Значение Rth превысило допустимое минимальное значение
-#define PROBLEM_IGES_TOO_HIGH				11	// Значение Iges превысило допустимый предел
-#define PROBLEM_UGETH_SHORT					12 	// Произошло короткое замыкание при измерении Ugeth(значение напряжения ниже мин порога)
+#define PROBLEM_FORCED_STOP					1	// Принудительная остановка процесса
+#define PROBLEM_SAFETY						2	// Сработала система безопасности
+#define PROBLEM_VOLTAGE_LIMIT_NO_CURRENT	3	// Достигнут установленный лимит напряжения без достижения уровня тока
+#define PROBLEM_UGETH_SHORT					4 	// Произошло короткое замыкание при измерении Ugeth(значение напряжения ниже мин порога)
+#define PROBLEM_DUT_NOT_FOUND				5	// Испытуемое устройство не обнаружено
+// 6
+#define PROBLEM_FOLLOWING_ERROR				7
+#define PROBLEM_FOLLOWING_ERROR_UPOT		8	// Ошибка Following Err на потенциальной линии
+#define PROBLEM_VOLTAGE_OUT_OF_RANGE		9	// Измеренное напряжение вне рабочего диапозона
+#define PROBLEM_CURRENT_OUT_OF_RANGE		10	// Измеренный ток вне рабочего диапозона
+#define PROBLEM_RING_BUFFER_NOT_FILLED		11	// Кольцевой буфер усреднения не заполнен
+#define PROBLEM_WRONG_SELECTED_RELAY		12	// Выбрано неверное реле для диагностики
+#define PROBLEM_RT_TOO_HIGH					13	// Значение Rt превысило допустимое максимальное значение
+#define PROBLEM_RT_TOO_LOW					14	// Значение Rt превысило допустимое минимальное значение
+#define PROBLEM_IGES_TOO_HIGH				15	// Значение Iges превысило допустимый предел
 
 //  Warning
 #define WARNING_NONE					0

@@ -43,9 +43,9 @@
 //
 #define SLEW_RATE_MIN				1.0f
 //
-#define U_RTH_MIN					110		// В мВ
-#define U_RTH_MAX					2000
-#define U_RTH_DEF					550
+#define U_RT_MIN					110		// В мВ
+#define U_RT_MAX					2000
+#define U_RT_DEF					550
 //
 #define U_IGES_MIN					-30000		// В мВ
 #define U_IGES_MAX					30000
@@ -55,6 +55,10 @@
 #define U_UGETH_MIN					100
 #define U_UGETH_MAX					5000
 #define U_UGETH_DEF					2500
+//
+#define POWER_TRANSIS_MIN			0.1f	// в Вт
+#define POWER_TRANSIS_MAX			10
+#define POWER_TRANSIS_DEF			1
 //
 #define U_ERR_COUNT_MIN				10		// в шт
 #define U_ERR_COUNT_MAX				20
@@ -93,9 +97,9 @@
 #define ONLY_LOAD_ST				2
 #define BOTH_ST						3
 //
-#define RTH_MIN						0.01f
-#define RTH_MAX						1e+6f
-#define RTH_DEF						10
+#define RT_MIN						0.01f
+#define RT_MAX						1e+6f
+#define RT_DEF						10
 //
 #define IGES_MIN_MIN				1e-12f
 #define IGES_MIN_MAX				1.0f

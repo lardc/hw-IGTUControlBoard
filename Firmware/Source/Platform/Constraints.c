@@ -77,7 +77,7 @@ const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE] =
 	{COEF_B_MIN, COEF_B_MAX, 0},												// 65
 	{0, INT16U_MAX, U_SELTTEST_DEF},											// 66
 	{U_SELFTEST_MIN, INT16U_MAX, U_SELTTEST_DEF},								// 67
-	{U_RTH_MIN, U_RTH_MAX, U_RTH_DEF},											// 68
+	{U_RT_MIN, U_RT_MAX, U_RT_DEF},												// 68
 	{COEF_I_CH0_MIN, INT16U_MAX, COEF_I_CH0_MIN},								// 69
 	{COEF_I_CH1_MIN, INT16U_MAX, COEF_I_CH1_MIN},								// 70
 	{COEF_I_CH2_MIN, INT16U_MAX, COEF_I_CH2_MIN},								// 71
@@ -111,16 +111,16 @@ const TableItemConstraint NVConstraint[DATA_TABLE_NV_SIZE] =
 	{0, INT16U_MAX, COEF_FLATTOP_DURATION_DEF},									// 99
 	{0, COEF_THRESHOLD_MAX, 0},													// 100
 	{R_TESTLOAD_MIN, INT16U_MAX, R_TESTLOAD_DEF},								// 101
-	{RTH_MIN, RTH_MAX, RTH_DEF},												// 102
-	{RTH_MIN, RTH_MAX, RTH_DEF},												// 103
+	{RT_MIN, RT_MAX, RT_DEF},													// 102
+	{RT_MIN, RT_MAX, RT_DEF},													// 103
 	{SWITCH_TIME_MIN, SWITCH_TIME_MAX, SWITCH_TIME_DEF},						// 104
 	{IGES_MIN_MIN, IGES_MIN_MAX, IGES_MIN_DEF},									// 105
 	{NO, YES, NO},																// 106
 	{NO, YES, NO},																// 107
 	{NO, BOTH_ST, NO},															// 108
 	{U_UGETH_MIN, U_UGETH_MAX, U_UGETH_DEF},									// 109
-	{0, 0, 0},																	// 110
-	{0, 0, 0},																	// 111
+	{POWER_TRANSIS_MIN, POWER_TRANSIS_MAX, POWER_TRANSIS_DEF},					// 110
+	{0, INT16U_MAX, 0},															// 111
 	{0, 0, 0},																	// 112
 	{0, 0, 0},																	// 113
 	{0, 0, 0},																	// 114
@@ -166,7 +166,7 @@ const TableItemConstraint VConstraint[DATA_TABLE_WP_START - DATA_TABLE_WR_START]
 	{0, INT16U_MAX, 0},															// 150
 	{NO, I_CHANNEL_7, NO},														// 151
 	{NO, YES, NO},																// 152
-	{0, 0, 0},																	// 153
+	{SWITCH_TIME_MIN, SWITCH_TIME_MAX, SWITCH_TIME_DEF},						// 153
 	{0, 0, 0},																	// 154
 	{0, 0, 0},																	// 155
 	{0, 0, 0},																	// 156

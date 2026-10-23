@@ -44,11 +44,12 @@ void MEASURE_ConvertADC_X(pFloat32 InputArray, Int16U DataLength, Int16U Registe
 
 float MEASURE_ConvertX(float SampleADC, Int16U RegisterP2, Int16U RegisterP1, Int16U RegisterP0, Int16U RegisterK, Int16U RegisterB, Int16U RegisterRshunt)
 {
-	float Result = (SampleADC / ADC_RESOLUTION) * DataTable[REG_U_ADC_REF] * DataTable[RegisterK] + DataTable[RegisterB];
+	float Result = (SampleADC / ADC_RESOLUTION) * DataTable[REG_U_ADC_REF] * DataTable[RegisterK];
 
-	if (RegisterRshunt)
+	if(RegisterRshunt)
 		Result /= DataTable[RegisterRshunt];
 
+	Result += DataTable[RegisterB];
 	Result = Result * Result * DataTable[RegisterP2] + Result * DataTable[RegisterP1] + DataTable[RegisterP0];
 
 	return (Result > 0) ? Result : 0;
