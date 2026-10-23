@@ -231,6 +231,7 @@ void LOGIC_HandleMeasurement()
 			case SS_VoltageErr:
 			case SS_CurrentErr:
 			case SS_VoltageNoCurrentErr:
+			case SS_ForcedStopErr:
 				LOGIC_ErrorHandler(CONTROL_SubState);
 				break;
 			case SS_DutNotFoundErr:
@@ -501,6 +502,11 @@ void LOGIC_ErrorHandler(DeviceSubState SubState)
 			ProblemReason = PROBLEM_VOLTAGE_LIMIT_NO_CURRENT;
 			break;
 
+		case SS_ForcedStopErr:
+			FaultReason = DF_FORCED_STOP;
+			ProblemReason = PROBLEM_FORCED_STOP;
+			break;
+
 		default:
 			return;
 	}
@@ -530,7 +536,7 @@ void LOGIC_ErrorHandler(DeviceSubState SubState)
 
 Int32U LOGIC_CalcPauseAfterPulse(float UgVoltage)
 {
-	if(PS_VOLTAGE_UGE_TH <= UgVoltage || UgVoltage < 0.1f)
+	if(PS_VOLTAGE_UGE_TH <= UgVoltage)
 		return 0;
 
 	float TransistorVoltage = PS_VOLTAGE_UGE_TH - UgVoltage;
@@ -551,7 +557,8 @@ Int32U LOGIC_CalcPauseAfterPulse(float UgVoltage)
 			(PS_VOLTAGE_UGE_TH / 2.0f - Urate * RiseTime / 3.0f);
 
 	// Время паузы в миллисекундах
-	Int32U Pause = (EnergyRise + EnergyFlattop) / DataTable[REG_TRANSIST_POWER_ALLOWED] * 1000.0f;
+	float AllowedPower = DataTable[REG_TRANSIST_POWER_ALLOWED];
+	Int32U Pause = (EnergyRise + EnergyFlattop) /(AllowedPower ? AllowedPower : POWER_TRANSIS_DEF) * 1000.0f;
 	return Pause;
 }
 //------------------------------------------

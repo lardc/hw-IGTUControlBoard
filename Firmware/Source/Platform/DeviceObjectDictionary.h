@@ -248,6 +248,7 @@
 #define DF_CURRENT_OUT_OF_RANGE			10	// Ошибка по току при самодиагностике
 // 11
 #define DF_FOLLOWING_ERROR_UPOT			12	// Ошибка Following Error на потенциальных линиях при самодиагностике
+#define DF_FORCED_STOP					13	// Принудительная остановка во время самодиагностики
 
 // Problem
 #define PROBLEM_NONE						0

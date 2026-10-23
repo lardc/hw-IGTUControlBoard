@@ -221,10 +221,7 @@ static Boolean CONTROL_DispatchAction(Int16U ActionID, pInt16U pUserError)
 
 		case ACT_STOP_PROCESS:
 			if(CONTROL_State == DS_InProcess)
-			{
-				LOGIC_StopProcess();
-				CONTROL_SwitchToProblem(PROBLEM_FORCED_STOP);
-			}
+				CONTROL_SetDeviceSubState(SS_ForcedStopErr);
 			break;
 
 		case ACT_DBG_START_SELFTEST_UPOT:

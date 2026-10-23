@@ -28,6 +28,7 @@ typedef enum __DeviceSubState
 	SS_CurrentErr,
 	SS_VoltageNoCurrentErr,
 	SS_DutNotFoundErr,
+	SS_ForcedStopErr,
 	SS_FinishProcess,
 	SS_GetResults,
 	SS_WaitTransistorCooldown,
