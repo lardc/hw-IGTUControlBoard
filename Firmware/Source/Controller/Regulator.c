@@ -18,7 +18,7 @@
 Int16U REGLTR_MemBuffUg[ADC_SEQ_LENGTH];
 Int16U REGLTR_MemBuffUPot[ADC_SEQ_LENGTH];
 Int16U REGLTR_MemBuffIg[ADC_SEQ_LENGTH];
-static float Kp, Ki, KiI, KpI, Qi = 0, FollowingErrThreshold, VoltagErrThreshold, CurrentErrThreshold;
+static float Kp, Ki, KiI, KpI, Qi = 0, FollowingErrThreshold, VoltagErrThreshold, CurrentErrThreshold, DutNotFoundThreshold;
 static Int16U FollowingErrLimit, VoltagErrLimit, VoltageErrCount, CurrentErrLimit, CurrentErrCount, ScalingCoef,
 		ScalingCounter;
 static Int16U FollowingErrorCounterUpot = 0,FollowingErrorCounter = 0;;
@@ -36,7 +36,7 @@ void REGLTR_StoreRegulatorDebug(float Ug, float UPot, float Ig, float Setpoint, 
 		float DACRaw);
 Int16U REGLTR_CorrectionLogDACPoint();
 void RGLTR_ErrorCheck(float *RegulatorError, float *RegulatorErrorUpot);
-Int16U REGLTR_GetScalingCoef();
+Int16U REGLTR_GetScalingCoef(Int16U ForcedChannel);
 
 // Functions
 void REGLTR_Process()
@@ -83,7 +83,7 @@ void REGLTR_Process()
 }
 //-----------------------------------------
 
-void REGLTR_Init()
+void REGLTR_Init(Int16U ForcedChannel)
 {
 	IsMeasureOk = false;
 	Qi = FollowingErrorCounter = VoltageErrCount = CurrentErrCount = FollowingErrorCounterUpot = 0;
@@ -95,6 +95,7 @@ void REGLTR_Init()
 	VoltagErrLimit = DataTable[REG_VOLTAGE_ERR_COUNT_LIMIT];
 	CurrentErrThreshold = DataTable[REG_CURRENT_ERR_THRESH];
 	CurrentErrLimit = DataTable[REG_CURRENT_ERR_COUNT_LIMIT];
+	DutNotFoundThreshold = DataTable[REG_DUT_NOT_FOUND_CURRENT_LVL];
 	RawSetPoint = 0;
 	RegState = RS_Rise;
 	Counter = RegulatorPause = 0;
@@ -106,9 +107,9 @@ void REGLTR_Init()
 			PulseAmplitude = fabsf(DataTable[REG_WORK_VOLTAGE_IGES]) * 0.001f;
 			break;
 
-		case MT_Rth:
-			RiseRate = DataTable[REG_SLEW_RATE_RTH];
-			PulseAmplitude = DataTable[REG_WORK_VOLTAGE_RTH] * 0.001f;
+		case MT_Rt:
+			RiseRate = DataTable[REG_SLEW_RATE_RT];
+			PulseAmplitude = DataTable[REG_WORK_VOLTAGE_RT] * 0.001f;
 			break;
 
 		case MT_Ugeth:
@@ -143,7 +144,7 @@ void REGLTR_Init()
 		REGLTR_MemBuffIg[i] = 0;
 	}
 
-	ScalingCoef = ScalingCounter = DataTable[REG_SCALING_MUTE] ? 1 : REGLTR_GetScalingCoef();
+	ScalingCoef = ScalingCounter = DataTable[REG_SCALING_MUTE] ? 1 : REGLTR_GetScalingCoef(ForcedChannel);
 	DataTable[REG_EP_DATA_STEP] = ScalingCoef * TIMER15_uS;
 }
 //-----------------------------------------
@@ -156,7 +157,7 @@ Int16U REGLTR_CorrectionLogDACPoint()
 	RGLTR_ErrorCheck(&RegulatorError, &RegulatorErrorUpot);
 
 	if(RegState != RS_FlatTopUgeth
-			&& (CONTROL_MeasureType == MT_ST_Upot || CONTROL_MeasureType == MT_Rth || CONTROL_MeasureType == MT_ST_Upot))
+			&& (CONTROL_MeasureType == MT_ST_Upot || CONTROL_MeasureType == MT_Rt || CONTROL_MeasureType == MT_ST_Upot))
 		RegError = RegulatorErrorUpot;
 	else
 		RegError = RegulatorError;
@@ -234,7 +235,7 @@ void RGLTR_ErrorCheck(float *RegulatorError, float *RegulatorErrorUpot)
 
 					if(CONTROL_MeasureType == MT_Iges)
 						RINGBUF_AddSample(Sample.Ig, Sample.Ug);
-					else if(CONTROL_MeasureType == MT_Rth)
+					else if(CONTROL_MeasureType == MT_Rt)
 						RINGBUF_AddSample(Sample.Ig, Sample.UPot);
 				}
 				else
@@ -263,6 +264,14 @@ void RGLTR_ErrorCheck(float *RegulatorError, float *RegulatorErrorUpot)
 							CONTROL_SetDeviceSubState(SS_CurrentErr);
 							return;
 						}
+					}
+				}
+				if(CONTROL_MeasureType == MT_Iges)
+				{
+					if(Sample.Ig < DutNotFoundThreshold)
+					{
+						CONTROL_SetDeviceSubState(SS_DutNotFoundErr);
+						return;
 					}
 				}
 			}
@@ -349,7 +358,7 @@ void REGLTR_StoreRegulatorDebug(float Ug, float UPot, float Ig, float Setpoint, 
 }
 //-----------------------------------------
 
-Int16U REGLTR_GetScalingCoef()
+Int16U REGLTR_GetScalingCoef(Int16U ForcedChannel)
 {
 	const float MsToMks = 1000.0f;
 	float RangeTime, RangeTimeX, RisingPart, SumTicks = 0;
@@ -357,21 +366,35 @@ Int16U REGLTR_GetScalingCoef()
 
 	switch(CONTROL_MeasureType)
 	{
-		case MT_Rth:
-			RangeTime = MAX(DataTable[REG_RELAY_SW_TIMER_RTH], DataTable[REG_REGLTR_TIMER]);
-			RangeTime = MAX(RangeTime, TIME_RGLTR_PAUSE_RNG_SWITCH);
-			SumTicks = (RisingPart + 3 * RangeTime) * MsToMks / TIMER15_uS;
+		case MT_Rt:
+			{
+				RangeTime = MAX(DataTable[REG_RELAY_SW_TIMER_RT], DataTable[REG_REGLTR_TIMER]);
+				RangeTime = MAX(RangeTime, TIME_RGLTR_PAUSE_RNG_SWITCH);
+
+				Int16U PulseLength = ForcedChannel ? DataTable[REG_DBG_FORCED_CH_PULSE_LENGTH] : (3 * RangeTime);
+				SumTicks = (RisingPart + PulseLength) * MsToMks / TIMER15_uS;
+			}
 			break;
 
 		case MT_Iges:
-			RangeTime = MAX(DataTable[REG_RELAY_SW_TIMER_IGES], DataTable[REG_REGLTR_TIMER]);
-			RangeTimeX = MAX(DataTable[REG_RELAY_SW_TIMER_IGES_RANGE7], DataTable[REG_REGLTR_TIMER]);
-			SumTicks = (RisingPart + 2 * RangeTime + RangeTimeX) * MsToMks / TIMER15_uS;
+			{
+				RangeTime = MAX(DataTable[REG_RELAY_SW_TIMER_IGES], DataTable[REG_REGLTR_TIMER]);
+				RangeTimeX = MAX(DataTable[REG_RELAY_SW_TIMER_IGES_RANGE7], DataTable[REG_REGLTR_TIMER]);
+
+				Int16U PulseLength =
+						ForcedChannel ? DataTable[REG_DBG_FORCED_CH_PULSE_LENGTH] : (2 * RangeTime + RangeTimeX);
+				SumTicks = (RisingPart + PulseLength) * MsToMks / TIMER15_uS;
+			}
 			break;
 
 		case MT_Ugeth:
-			SumTicks = (RisingPart + DataTable[REG_RELAY_SW_TIMER_UGETH] + DataTable[REG_CURRENT_FLATTOP_DURATION])
-					* MsToMks / TIMER15_uS;
+			{
+				Int16U PulseLength =
+						ForcedChannel ?
+								DataTable[REG_DBG_FORCED_CH_PULSE_LENGTH] :
+								(DataTable[REG_RELAY_SW_TIMER_UGETH] + DataTable[REG_CURRENT_FLATTOP_DURATION]);
+				SumTicks = (RisingPart + PulseLength) * MsToMks / TIMER15_uS;
+			}
 			break;
 
 		case MT_ST_Upot:
